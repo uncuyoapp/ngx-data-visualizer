@@ -1,0 +1,25 @@
+{
+  "name": "ngx-data-visualizer",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^17.2.0",
+    "@angular/core": "^17.2.0",
+    "echarts": "^5.5.0",
+    "file-saver": "^2.0.5",
+    "jquery": "^3.7.1",
+    "lodash.uniqby": "^4.7.0",
+    "ngx-echarts": "^17.1.0",
+    "pivottable": "^2.23.0",
+    "xlsx": "^0.18.5"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/jquery": "^3.5.29",
+    "@types/lodash.uniqby": "^4.7.9",
+    "resize-observer-polyfill": "^1.5.1"
+  }
+}

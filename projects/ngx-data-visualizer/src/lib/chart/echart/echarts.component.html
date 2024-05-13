@@ -1,0 +1,5 @@
+@if(mainChart){
+<div id="chart" echarts [initOpts]="initOptions" [options]="mainChart.options" class="chart" [autoResize]="true"
+  (chartInit)="setChartInstance($event)">
+</div>
+}

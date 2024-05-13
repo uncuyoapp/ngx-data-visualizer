@@ -1,0 +1,85 @@
+@import "../styles.scss";
+.icon-nav {
+  display: none;
+  @include isMobile {
+    display: block;
+    z-index: 99;
+  }
+  position: absolute;
+  top: 50%;
+  &.back {
+    left: 0;
+  }
+  &.forward {
+    right: 0;
+  }
+}
+.charts-container {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  max-height: 100%;
+
+  @include isMobile {
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+  }
+
+  .chart-item {
+    width: calc((100% / 3) - 64px);
+    box-shadow: 0px 0px 20px #6467f31a;
+    margin: 16px;
+    padding: 16px;
+    position: relative;
+
+    @include max-md {
+      width: calc((100% / 2) - 64px);
+    }
+
+    @include max-sm {
+      width: 100%;
+    }
+
+    .arrow {
+      display: none;
+    }
+
+    @include isMobile {
+      width: calc(100% - 64px);
+      min-width: calc(100% - 64px);
+      box-shadow: none;
+      margin: 0;
+      padding: 0px 32px;
+      .arrow {
+        display: block;
+        position: absolute;
+        top: calc(50% - 8pt);
+      }
+      .back {
+        left: 0px;
+      }
+      .next {
+        right: 0px;
+      }
+    }
+
+    .icon-expand {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      cursor: pointer;
+      @include isMobile {
+        display: none;
+      }
+    }
+    &.expanded {
+      width: 100%;
+    }
+  }
+}

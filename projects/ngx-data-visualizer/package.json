@@ -8,6 +8,7 @@
     "file-saver": "^2.0.5",
     "jquery": "^3.7.1",
     "lodash.uniqby": "^4.7.0",
+    "lodash.clonedeep": "^4.5.0",
     "ngx-echarts": "^17.1.0",
     "pivottable": "^2.23.0",
     "xlsx": "^0.18.5"

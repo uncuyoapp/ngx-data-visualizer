@@ -1,4 +1,5 @@
 import { Injectable, Type } from "@angular/core";
+import { cloneDeep } from 'lodash';
 import { DIMENSION_YEAR, DataProvider } from "../data-provider";
 import { Dataset } from "../dataset";
 import { Dimension } from "../models";
@@ -29,10 +30,11 @@ export class ChartService {
 
   public getChartConfiguration(dataset: Dataset, options: ChartConfigurationOptions): ChartConfiguration {
     const chartConfiguration = { dataset } as ChartConfiguration;
-    chartConfiguration.options = { ...{ ...DEFAULT_OPTIONS }, ...options };
+    chartConfiguration.options = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
     this.configureFiltersAndData(chartConfiguration);
     chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options, chartConfiguration.options.isPreview);
     chartConfiguration.chartRenderType = this.chartRenderEngine;
+    console.log(chartConfiguration);
     return chartConfiguration;
   }
 
@@ -42,7 +44,7 @@ export class ChartService {
     dimension.items.filter(i => i.selected).forEach(item => {
       const datasetCopy = new Dataset(dataset);
       datasetCopy.dataProvider.filters = JSON.parse(JSON.stringify(dataset.dataProvider.filters));
-      const chartConfiguration = { dataset: datasetCopy, options: { ...{ ...DEFAULT_OPTIONS }, ...options } } as ChartConfiguration;
+      const chartConfiguration = { dataset: datasetCopy, options: { ...cloneDeep(DEFAULT_OPTIONS), ...options } } as ChartConfiguration;
 
       chartConfiguration.dataset.dataProvider.filters.rollUp.push(dimension.nameView);
       chartConfiguration.dataset.dataProvider.filters.filter.push({
@@ -71,7 +73,7 @@ export class ChartService {
     const chartData = chartConfiguration.chartData;
     const seriesConfig = chartConfiguration.seriesConfig;
     const rollUp = chartData.dataProvider.filters.rollUp;
-    
+
     if (!seriesConfig.x1 && !seriesConfig.x2) {
       throw new Error('An error occurred when generating the series configuration.');
     }
@@ -155,7 +157,7 @@ export class ChartService {
     const chartData = new ChartData(chartConfiguration.dataset.dataProvider, seriesConfig);
 
     //save the copy of the config series
-    chartConfiguration.seriesConfig = { ...seriesConfig };
+    chartConfiguration.seriesConfig = cloneDeep(seriesConfig);
     chartConfiguration.chartData = chartData;
     this.updateSeriesConfig(chartConfiguration);
   }

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from "echarts";
+import { cloneDeep } from 'lodash';
 import { ChartConfigurationOptions } from "../chart-configuration";
 import { ParserOptions } from "../chart.service";
 import { EC_CHART_CONFIG_PREVIEW } from "./echartsConfigurations";
@@ -18,8 +19,12 @@ export class ParserOptionsEChart implements ParserOptions {
   }
 
   applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: EChartsOption) {
-    libraryConfig["type"] = config.type
-    libraryConfig.color = config.colors;
+    libraryConfig["type"] = config.type;
+
+    if (config.colors) {
+      libraryConfig.color = config.colors;
+    }
+
     (libraryConfig.tooltip as any).trigger = config.tooltip.shared ? 'axis' : 'item';
 
     if (typeof config.title === 'string') {
@@ -36,8 +41,8 @@ export class ParserOptionsEChart implements ParserOptions {
   }
 
   private mergeOptions(config: any, preview?: boolean) {
-    const defaultOptions = preview ? EC_CHART_CONFIG_PREVIEW : EC_CHART_CONFIG_PREVIEW;    
-    const renderOptions: EChartsOption = { ...defaultOptions, ...config };
+    const defaultOptions = preview ? EC_CHART_CONFIG_PREVIEW : EC_CHART_CONFIG_PREVIEW;
+    const renderOptions: EChartsOption = { ...cloneDeep(defaultOptions), ...config };
     return renderOptions;
   }
 

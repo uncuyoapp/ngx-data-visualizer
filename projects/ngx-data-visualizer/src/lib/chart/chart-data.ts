@@ -32,7 +32,7 @@ export class ChartData {
           name: nameSeries,
           stack: stack !== nameSeries ? stack : null,
           data: new Map(dataStruct),
-          color,
+          color
         });
       }
 

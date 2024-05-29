@@ -43,6 +43,8 @@ export class EchartsComponent implements OnInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
+  id: number = Math.floor(Math.random() * 100);
+
 
   ngOnInit(): void {
     this.configInitOptions();
@@ -76,6 +78,7 @@ export class EchartsComponent implements OnInit {
 
   setChartInstance(instance: ECharts) {
     this.mainChart.instance = instance;
+
     setTimeout(() => {
       this.emitSeries();
     });

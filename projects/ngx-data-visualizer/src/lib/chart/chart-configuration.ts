@@ -42,6 +42,7 @@ export interface ChartConfigurationOptions {
   toPercent: boolean,
   measureUnit: string;
   isPreview: boolean;
+  disableAutoUpdate: boolean;
 }
 
 export const DEFAULT_OPTIONS: ChartConfigurationOptions = {
@@ -75,14 +76,14 @@ export const DEFAULT_OPTIONS: ChartConfigurationOptions = {
     start: null,
     end: null
   },
-  colors: ['#5CA7FC', '#7F93F1', '#C089E8', '#E683CC', '#B18AEC', '#EB6083', '#F1626A', '#EF8069', '#F1A973', '#ECDE5F'],
   width: null,
   height: null,
   filterLastYear: false,
   showYearsLegend: false,
   toPercent: false,
   measureUnit: '',
-  isPreview: false
+  isPreview: false,
+  disableAutoUpdate: false
 }
 
 export interface SeriesConfig {

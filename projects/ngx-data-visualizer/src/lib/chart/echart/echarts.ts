@@ -27,6 +27,8 @@ export class EChart extends Chart {
 
   set instance(instance: ECharts) {
     this.chartInstance = instance;
+    (this.options.tooltip as any).formatter =
+      (params: any) => this.tooltipFormatter(params, this.options, this.configuration?.options.tooltip.decimals, this.configuration.options.tooltip.suffix);
   }
 
   get instance(): ECharts {
@@ -143,7 +145,8 @@ export class EChart extends Chart {
     // this.chartInstance.convertToPixel({ seriesIndex: 0 }, [0, 0]); // This step might be necessary
     const pngDataUrl = this.chartInstance.getConnectedDataURL({
       type: 'jpeg',
-      pixelRatio: 2, // Set the pixel ratio (e.g., 2 for higher resolution)
+      pixelRatio: 2, // Set the pixel ratio (e.g., 2 for higher resolution),
+      backgroundColor: '#FFFF'
     });
     this.resizeChart(width, height); //Reset to original size
     const downloadLink = document.createElement('a');
@@ -167,8 +170,6 @@ export class EChart extends Chart {
   private generateConfiguration() {
     this.seriesConfiguration(this.data.getSeries());
     this.axisConfiguration();
-    (this.options.tooltip as any).formatter =
-      (params: any) => this.tooltipFormatter(params, this.options, this.configuration?.options.tooltip.decimals, this.configuration.options.tooltip.suffix);
   }
 
   private summarizeTotals(series: Array<any>) {
@@ -205,6 +206,7 @@ export class EChart extends Chart {
       }
 
       s.visible = true;
+      
       if (!s.color && s.type !== 'pie' && this.configuration.options.colors) {
         s.color = this.configuration.options.colors[index % this.configuration.options.colors.length];
       }
@@ -285,7 +287,6 @@ export class EChart extends Chart {
       dataX1 = this.data.getItems(this.data.seriesConfig.x1);
       xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
     }
-
     this.options.xAxis = this.configuration.options.type === 'bar' ? yAxis as XAXisComponentOption : xAxis;
     this.options.yAxis = this.configuration.options.type === 'bar' ? xAxis : yAxis as YAXisComponentOption;
   }

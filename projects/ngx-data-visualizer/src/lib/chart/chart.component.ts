@@ -35,11 +35,12 @@ export class ChartComponent implements OnInit, OnDestroy {
   goalChartData!: ChartData;
 
   ngOnInit(): void {
-
-    this.subscription = this.chartConfiguration?.dataset.dataUpdated.subscribe(() => {
-      this.chartService.updateSeriesConfig(this.chartConfiguration);
-      this.echart.updateChart();
-    })
+    if (!this.chartConfiguration.options.disableAutoUpdate) {
+      this.subscription = this.chartConfiguration?.dataset.dataUpdated.subscribe(() => {
+        this.chartService.updateSeriesConfig(this.chartConfiguration);
+        this.echart.updateChart();
+      });
+    }
   }
 
   ngOnDestroy(): void {

@@ -32,14 +32,14 @@
   }
 
   .chart-item {
-    width: calc((100% / 3) - 64px);
+    width: calc((100% / 3) - 32px);
     box-shadow: 0px 0px 20px #6467f31a;
     margin: 16px;
     padding: 16px;
     position: relative;
 
     @include max-md {
-      width: calc((100% / 2) - 64px);
+      width: calc((100% / 2) - 32px);
     }
 
     @include max-sm {

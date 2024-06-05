@@ -1,8 +1,0 @@
-{
-  "cols": ["Departamentos"],
-  "rows": ["Año"],
-  "digitsAfterDecimal": 1,
-  "suffix": "",
-  "totalCol": true,
-  "totalRow": false
-}

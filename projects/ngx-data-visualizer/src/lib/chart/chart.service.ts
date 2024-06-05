@@ -34,7 +34,6 @@ export class ChartService {
     this.configureFiltersAndData(chartConfiguration);
     chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options, chartConfiguration.options.isPreview);
     chartConfiguration.chartRenderType = this.chartRenderEngine;
-    console.log(chartConfiguration);
     return chartConfiguration;
   }
 

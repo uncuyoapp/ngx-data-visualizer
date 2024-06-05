@@ -1,0 +1,39 @@
+<div class="actions my-2 shadow p-4 rounded">
+  <div class="dimensions">
+    <h3>Filtrar dimensiones e items</h3>
+    @for (dimension of dataset.dimensions; track $index) {
+    <div class="dimension">
+      <input [id]="dimension.id" type="checkbox" [(ngModel)]="dimension.selected" (change)="filter()">
+      <label [for]="dimension.id">{{dimension.nameView}}</label>
+
+      <div class="items">
+        @for (item of dimension.items; track $index) {
+        <div class="item">
+          <input [id]="'item'+item.id" type="checkbox" [(ngModel)]="item.selected" (change)="filter()">
+          <label [for]="'item'+item.id">{{item.name}}</label>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  <button class="button-4" (click)="percentView(chartOne)">Vista porcentual</button>
+  <button class="button-4" (click)="clearFilters()">Limpiar filtros</button>
+  <button class="button-4" (click)="showGoal(chartOne)">Mostrar meta</button>
+  <button class="button-4" (click)="exportChart(chartOne)">Descargar gráfico</button>
+  <button class="button-4" (click)="exportTable(tableOne)">Descargar tabla</button>
+</div>
+
+
+<div class="chart my-4 shadow p-4 rounded">
+  <libChart #chartOne="libChart" [dataset]="dataset" [options]="chartOptions" (seriesChange)="onSeriesChange($event)">
+  </libChart>
+</div>
+
+<div class="table my-4 shadow p-4 rounded">
+  <libTable #tableOne="libTable" [dataset]="dataset" [options]="tableOptions"></libTable>
+</div>
+
+<div class="multiChart my-4 shadow p-4 rounded">
+  <libMultipleChart [dataset]="dataset" [options]="chartOptions" [splitDimension]="splitDimension"></libMultipleChart>
+</div>

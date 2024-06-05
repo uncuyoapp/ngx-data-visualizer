@@ -1,0 +1,8 @@
+{
+  "cols": ["Año"],
+  "rows": ["Condición"],
+  "digitsAfterDecimal": 1,
+  "suffix": "",
+  "totalCol": true,
+  "totalRow": false
+}

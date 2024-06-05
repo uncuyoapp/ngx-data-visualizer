@@ -1,36 +1,20 @@
-<div class="actions">
-  <div class="dimensions">
-    <h3>Filtrar dimensiones e items</h3>
-    @for (dimension of dataset.dimensions; track $index) {
-    <div class="dimension">
-      <input [id]="dimension.id" type="checkbox" [(ngModel)]="dimension.selected" (change)="filter()">
-      <label [for]="dimension.id">{{dimension.nameView}}</label>
+<main>
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <span class="fs-4">ngx-data-visualizer</span>
+      </a>
 
-      <div class="items">
-        @for (item of dimension.items; track $index) {
-        <div class="item">
-          <input [id]="'item'+item.id" type="checkbox" [(ngModel)]="item.selected" (change)="filter()">
-          <label [for]="'item'+item.id">{{item.name}}</label>
-        </div>
-        }
-      </div>
-    </div>
-    }
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a routerLink="/" class="nav-link" [class.active]="">Inicio</a></li>
+        <li class="nav-item"><a routerLink="full-example" class="nav-link">Indicador</a></li>
+        <li class="nav-item"><a routerLink="dashboard" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank"
+            class="nav-link"><img src="assets/github-mark.svg" alt="GitHub" height="30"></a></li>
+      </ul>
+    </header>
   </div>
-  <button class="button-4" (click)="percentView(chartOne)">Vista porcentual</button>
-  <button class="button-4" (click)="clearFilters()">Limpiar filtros</button>
-  <button class="button-4" (click)="showGoal(chartOne)">Mostrar meta</button>
-  <button class="button-4" (click)="exportChart(chartOne)">Descargar gráfico</button>
-  <button class="button-4" (click)="exportTable(tableOne)">Descargar tabla</button>
-</div>
-<div class="chart">
-  <libChart #chartOne="libChart" [dataset]="dataset" [options]="chartOptions" (seriesChange)="onSeriesChange($event)">
-  </libChart>
-</div>
-
-<div class="table">
-  <libTable #tableOne="libTable" [dataset]="dataset" [options]="tableOptions"></libTable>
-</div>
-<div class="multiChart">
-  <libMultipleChart [dataset]="dataset" [options]="chartOptions" [splitDimension]="splitDimension"></libMultipleChart>
-</div>
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>

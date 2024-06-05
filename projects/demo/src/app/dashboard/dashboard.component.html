@@ -1,0 +1,40 @@
+<div class="wrapper">
+  <div class="actions shadow p-2">
+    @for (dimension of dimensions; track $index) {
+      <div class="dimension">
+        
+        <span>{{dimension.nameView}}</span>
+  
+        <div class="items">
+          @for (item of dimension.items; track $index) {
+          <div class="item">
+            <input [id]="'item'+item.id" type="checkbox" [(ngModel)]="item.selected" (change)="filter()">
+            <label [for]="'item'+item.id">{{item.name}}</label>
+          </div>
+          }
+        </div>
+      </div>
+      }
+  </div>
+  <div class="dashboard">
+    <div class="element one">
+      
+      <libChart [dataset]="datasetOne" [options]="chartOptionsOne"></libChart>
+    </div>
+    <div class="element two">
+      
+      <libChart [dataset]="datasetTwo" [options]="chartOptionsTwo"></libChart>
+    </div>
+    <div class="element three">
+      
+      <libChart [dataset]="datasetThree" [options]="chartOptionsThree"></libChart>
+    </div>
+    <div class="element four">
+      <libChart [dataset]="datasetFour" [options]="chartOptionsFour"></libChart>
+    </div>
+    <div class="element five">
+      <libTable [dataset]="datasetFour" [options]="tableOptions"></libTable>
+    </div>
+  </div>
+</div>
+

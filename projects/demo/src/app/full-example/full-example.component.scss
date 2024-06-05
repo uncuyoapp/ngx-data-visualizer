@@ -1,0 +1,39 @@
+.actions,
+.chart,
+.table,
+.multiChart {
+  button {
+    margin-right: 0.5rem;
+  }
+  h3 {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+}
+.multiChart {
+  max-height: 100vw;
+  height: 82vh;
+}
+
+.dimensions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  .dimension {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    .items {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      .item {
+        margin: 0.3rem 1rem;
+      }
+    }
+  }
+}
+
+label {
+  margin-left: 0.5rem;
+}

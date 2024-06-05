@@ -1,0 +1,62 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.actions {
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+  background-color: white;
+  margin-bottom: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  .dimension {
+    display: flex;
+    span, input {
+      margin-left: 1rem;
+      margin-right: 0.2rem;
+      font-weight: bold;
+    }
+    .items{
+      display: flex;
+    }
+    
+  }
+}
+.dashboard {
+  height: calc(100vh - 72px);
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-gap: 10px;
+  grid-template-rows: repeat(3, 1fr);
+  // grid-auto-rows: minmax(auto, auto);
+
+  .element {
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    background-color: white;
+  }
+
+  .one {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .two {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .three {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .four {
+    grid-column: 2/4;
+    grid-row: 1/3;
+  }
+  .five {
+    grid-column: 2/4;
+    grid-row: 3;
+  }
+}

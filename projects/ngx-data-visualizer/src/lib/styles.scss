@@ -100,7 +100,6 @@ $sceeen-xxl-min: 1400px;
   }
 }
 
-
 table.pvtTable {
   font-size: 12pt;
   text-align: left;
@@ -178,5 +177,30 @@ table.pvtTable {
   .pvtTotal,
   .pvtGrandTotal {
     font-weight: bold;
+  }
+}
+
+.ec-tooltip {
+  .title {
+    width: 100%;
+    font-weight: bold;
+    border-bottom: 1px solid #c3c3c3;
+    text-align: center;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  .series-name {
+    margin-bottom: 0.2rem;
+  }
+  .value {
+    font-weight: bold;
+    margin-left: 10px;
+    float: right;
+  }
+  .summation {
+    font-weight: bold;
+  }
+  hr {
+    margin: 5px auto;
   }
 }

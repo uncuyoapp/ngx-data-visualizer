@@ -7,8 +7,8 @@
     "echarts": "^5.5.0",
     "file-saver": "^2.0.5",
     "jquery": "^3.7.1",
-    "lodash.uniqby": "^4.7.0",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.uniqby": "^4.7.0",
     "ngx-echarts": "^17.1.0",
     "pivottable": "^2.23.0",
     "xlsx": "^0.18.5"
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
     "@types/jquery": "^3.5.29",
+    "@types/lodash": "^4.17.5",
     "@types/lodash.uniqby": "^4.7.9",
     "resize-observer-polyfill": "^1.5.1"
   }

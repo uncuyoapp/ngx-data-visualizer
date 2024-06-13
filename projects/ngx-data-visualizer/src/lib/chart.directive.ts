@@ -44,7 +44,7 @@ export class ChartDirective {
 
 
   toPercentage() {
-    this.chartComponent?.mainChart?.toPercentage();
+    this.chartComponent?.mainChart?.togglePercentMode();
   }
 
   export(type: 'svg' | 'jpg') {

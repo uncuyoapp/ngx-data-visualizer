@@ -32,7 +32,7 @@ export const EC_CHART_CONFIG_PREVIEW: EChartsOption = {
   },
   // backgroundColor: '#fff',
   textStyle: {
-    fontFamily: 'Inter'
+    fontFamily: 'sans-serif'
   },
 };
 

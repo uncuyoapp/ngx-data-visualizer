@@ -32,7 +32,7 @@ export class ChartService {
     const chartConfiguration = { dataset } as ChartConfiguration;
     chartConfiguration.options = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
     this.configureFiltersAndData(chartConfiguration);
-    chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options, chartConfiguration.options.isPreview);
+    chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options);
     chartConfiguration.chartRenderType = this.chartRenderEngine;
     return chartConfiguration;
   }
@@ -55,7 +55,7 @@ export class ChartService {
       chartConfiguration.options.legends.show = false;
       this.configureFiltersAndData(chartConfiguration);
 
-      chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options, chartConfiguration.options.isPreview);
+      chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options);
       chartConfiguration.chartRenderType = this.chartRenderEngine;
       this.updateSeriesConfig(chartConfiguration);
       configurationReturns.push(chartConfiguration);
@@ -69,61 +69,74 @@ export class ChartService {
   }
 
   public updateSeriesConfig(chartConfiguration: ChartConfiguration) {
-    const chartData = chartConfiguration.chartData;
-    const seriesConfig = chartConfiguration.seriesConfig;
-    const rollUp = chartData.dataProvider.filters.rollUp;
+    const { chartData, seriesConfig, options, dataset } = chartConfiguration;
+    const { rollUp } = chartData.dataProvider.filters;
 
     if (!seriesConfig.x1 && !seriesConfig.x2) {
       throw new Error('An error occurred when generating the series configuration.');
     }
 
-    chartData.seriesConfig = {
+    if (options?.filterLastYear) {
+      this.filterLastPeriod(chartConfiguration);
+    }
+
+    chartData.seriesConfig = this.initializeSeriesConfig(seriesConfig);
+
+    //the first x-axis can be use
+    if (this.canUseAxis(seriesConfig.x1, rollUp)) {
+      chartData.seriesConfig.x1 = seriesConfig.x1;
+      //the second x-axis can be use
+      if (seriesConfig.x2 && this.canUseAxis(seriesConfig.x2, rollUp)) {
+        chartData.seriesConfig.x2 = seriesConfig.x2;
+      }
+    }
+    //the first x-axis cannot be use
+    //the second x-axis can be use
+    else if (seriesConfig.x2 && this.canUseAxis(seriesConfig.x2, rollUp)) {
+      chartData.seriesConfig.x1 = seriesConfig.x2;
+      chartData.seriesConfig.x2 = undefined;
+    }
+    //the first and second x-axis cannot be use
+    //DIMENSION_YEAR can be use 
+    else if (this.canUseAxis(DIMENSION_YEAR, rollUp)) {
+      chartData.seriesConfig.x1 = DIMENSION_YEAR;
+    }
+    //the first and second x-axis cannot be use
+    //DIMENSION_YEAR cannot be use
+    //find a dimension for the x-axis 
+    else {
+      const availableDimension = this.findAvailableDimension(dataset.dimensions, rollUp);
+      if (availableDimension) {
+        chartData.seriesConfig.x1 = availableDimension;
+        chartData.seriesConfig.x2 = undefined;
+      }
+      //no free dimension for the x-axis
+      else {
+        throw new Error('An error occurred when generating the series configuration: no free dimension for the x-axis.');
+      }
+    }
+  }
+
+  private initializeSeriesConfig(seriesConfig: SeriesConfig): SeriesConfig {
+    return {
       x1: '',
       x2: undefined,
       stack: seriesConfig.stack,
       measure: seriesConfig.measure
     };
-
-    //the first x-axis can be use
-    if (rollUp.indexOf(seriesConfig.x1) === -1) {
-      chartData.seriesConfig.x1 = seriesConfig.x1;
-      //the second x-axis can be use
-      if (seriesConfig.x2 && rollUp.indexOf(seriesConfig.x2) === -1) {
-        chartData.seriesConfig.x2 = seriesConfig.x2;
-      }
-    }
-
-    //the first x-axis cannot be use
-    //the second x-axis can be use
-    else if (seriesConfig.x2 && rollUp.indexOf(seriesConfig.x2) === -1) {
-      chartData.seriesConfig.x1 = seriesConfig.x1;
-      chartData.seriesConfig.x2 = undefined;
-    }
-
-    //the first and second x-axis cannot be use
-    //DIMENSION_YEAR can be use
-    else if (rollUp.indexOf(DIMENSION_YEAR) === -1) {
-      chartData.seriesConfig.x1 = DIMENSION_YEAR;
-    }
-
-    //the first and second x-axis cannot be use
-    //DIMENSION_YEAR cannot be use
-    //find a dimension for the x-axis
-    else {
-      const dimensionFree = chartConfiguration.dataset.dimensions.filter(dimension => rollUp.indexOf(dimension.nameView) === -1);
-      if (dimensionFree.length) {
-        chartData.seriesConfig.x1 = dimensionFree[0].nameView;
-        chartData.seriesConfig.x2 = undefined;
-      }
-      //no free dimension for the x-axis
-      else {
-        throw new Error('An error occurred when generating the series configuration.');
-      }
-    }
   }
 
-  private getLibraryOptions(options: ChartConfigurationOptions, isPreview: boolean) {
-    return isPreview
+  private canUseAxis(axis: string, rollUp: string[]): boolean {
+    return rollUp.indexOf(axis) === -1;
+  }
+
+  private findAvailableDimension(dimensions: Dimension[], rollUp: string[]): string | null {
+    const dimensionFree = dimensions.filter(dimension => rollUp.indexOf(dimension.nameView) === -1);
+    return dimensionFree.length ? dimensionFree[0].nameView : null;
+  }
+
+  private getLibraryOptions(options: ChartConfigurationOptions) {
+    return options.isPreview
       ? this.parserOptions.getPreviewOptions(options)
       : this.parserOptions.getFullOptions(options);
   }
@@ -135,15 +148,20 @@ export class ChartService {
     };
   }
 
-  private configureFiltersAndData(chartConfiguration: ChartConfiguration) {
+  private filterLastPeriod(chartConfiguration: ChartConfiguration) {
     //filter the last period
-    if (chartConfiguration.options?.filterLastYear) {
-      const items = chartConfiguration.dataset.dataProvider.getItems(DIMENSION_YEAR).slice(-1);
-      if (items.length) {
+    const items = chartConfiguration.dataset.dataProvider.getItems(DIMENSION_YEAR).slice(-1);
+    if (items.length) {
+      const filter = chartConfiguration.dataset.dataProvider.filters.filter.find(f => f.name === DIMENSION_YEAR);
+      if (filter) {
+        filter.items = [items[0]];
+      } else {
         chartConfiguration.dataset.dataProvider.filters.filter.push({ name: DIMENSION_YEAR, items: [items[0]] });
       }
     }
+  }
 
+  private configureFiltersAndData(chartConfiguration: ChartConfiguration) {
     //set up the default series config
     const seriesConfig: SeriesConfig = {
       x1: chartConfiguration.dataset.dataProvider.dimensions.find(d => d.id === chartConfiguration.options?.xAxis?.firstLevel)?.nameView ?? '',

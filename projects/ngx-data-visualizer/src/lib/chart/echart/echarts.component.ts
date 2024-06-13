@@ -63,8 +63,6 @@ export class EchartsComponent implements OnInit {
 
   createChart(): void {
     this.mainChart = new EChart(
-      this.chartConfiguration.chartData,
-      this.chartConfiguration.libraryOptions,
       this.chartConfiguration
     );
     this.mainChart.render();

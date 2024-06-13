@@ -2,7 +2,6 @@
 import { ECharts, EChartsOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
 import { Chart } from "../chart";
 import { ChartConfiguration } from "../chart-configuration";
-import { ChartData } from "../chart-data";
 import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from "./echartsConfigurations";
 
 
@@ -10,7 +9,8 @@ export class EChart extends Chart {
   public chartInstance!: ECharts;
 
   override name: string = '';
-  protected override series: any[] = [];
+  override libraryOptions!: EChartsOption;
+  override series: any[] = [];
 
   private totals: any[] = [];
   private suffixSaved: string | null = '';
@@ -18,29 +18,22 @@ export class EChart extends Chart {
 
   private savedYAxisMaxValue: number | null = null;
 
-  constructor(
-    public override data: ChartData,
-    public override options: EChartsOption,
-    public override configuration: ChartConfiguration) {
-    super(data, options, configuration);
+  constructor(public override configuration: ChartConfiguration) {
+    super(configuration);
   }
 
   set instance(instance: ECharts) {
     this.chartInstance = instance;
-    (this.options.tooltip as any).formatter =
-      (params: any) => this.tooltipFormatter(params, this.options, this.configuration?.options.tooltip.decimals, this.configuration.options.tooltip.suffix);
+    (this.libraryOptions.tooltip as any).formatter =
+      (params: any) => this.tooltipFormatter(params, this.libraryOptions, this.chartOptions.tooltip.decimals, this.chartOptions.tooltip.suffix);
   }
 
   get instance(): ECharts {
     return this.chartInstance;
   }
 
-  setChartData(data: ChartData): void {
-    this.data = data;
-  }
-
-  setOptions(options: any): void {
-    this.chartInstance.setOption(options);
+  getOptions() {
+    return this.chartInstance?.getOption();
   }
 
   getSeries(): any[] {
@@ -75,10 +68,6 @@ export class EChart extends Chart {
     series.visible = !series.visible;
   }
 
-  getOptions() {
-    return this.chartInstance?.getOption();
-  }
-
   expand(): void {
     setTimeout(() => {
       this.chartInstance.getDom().scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -91,37 +80,58 @@ export class EChart extends Chart {
 
   hide(): void { }
 
-  toPercentage(): void {
-    this.configuration.options.toPercent = !this.configuration.options.toPercent;
-
-    if (this.configuration.options.toPercent) {
-
-      if (!this.data.seriesConfig.stack) {
-        this.data.seriesConfig.stack = 'stack';
-      }
-      this.suffixSaved = this.configuration.options.tooltip.suffix;
-      this.configuration.options.tooltip.suffix = '%';
-      this.summarizeTotals(this.data.getSeries());
-
-      if (this.configuration.options.yAxis.max) {
-        this.savedYAxisMaxValue = this.configuration.options.yAxis.max;
-      }
-      this.configuration.options.yAxis.max = 100;
-    }
-    else {
-      if (!this.configuration.options.stacked) {
-        this.data.seriesConfig.stack = null;
-      }
-      this.configuration.options.tooltip.suffix = this.suffixSaved;
-      this.configuration.options.yAxis.max = this.savedYAxisMaxValue;
-      this.savedYAxisMaxValue = null;
+  togglePercentMode() {
+    this.chartOptions.toPercent = !this.chartOptions.toPercent;
+    if (this.chartOptions.toPercent) {
+      this.enablePercentMode();
+    } else {
+      this.disablePercentMode();
     }
     this.render();
-
   }
+
+  private enablePercentMode() {
+    this.ensureStackedSeries();
+    this.suffixSaved = this.chartOptions.tooltip.suffix;
+    this.chartOptions.tooltip.suffix = '%';
+    this.summarizeTotals(this.chartData.getSeries());
+    this.saveAndSetYAxisMax(100);
+  }
+
+  private disablePercentMode() {
+    this.unstackSeriesIfNotStacked();
+    this.chartOptions.tooltip.suffix = this.suffixSaved;
+    this.restoreYAxisMax();
+  }
+
+  private ensureStackedSeries() {
+    if (!this.chartData.seriesConfig.stack) {
+      this.chartData.seriesConfig.stack = 'stack';
+    }
+  }
+
+  private unstackSeriesIfNotStacked() {
+    if (!this.chartOptions.stacked) {
+      this.chartData.seriesConfig.stack = null;
+    }
+  }
+
+  private saveAndSetYAxisMax(maxValue: number) {
+    if (this.chartOptions.yAxis.max) {
+      this.savedYAxisMaxValue = this.chartOptions.yAxis.max;
+    }
+    this.chartOptions.yAxis.max = maxValue;
+  }
+
+  private restoreYAxisMax() {
+    this.chartOptions.yAxis.max = this.savedYAxisMaxValue;
+    this.savedYAxisMaxValue = null;
+  }
+
   setExtremes(): void {
     throw new Error('Method not implemented.');
   }
+
   export(type: 'svg' | 'jpg') {
     return type === 'svg' ? this.getSVG() : this.downloadImage();
   }
@@ -151,7 +161,7 @@ export class EChart extends Chart {
     this.resizeChart(width, height); //Reset to original size
     const downloadLink = document.createElement('a');
     downloadLink.href = pngDataUrl;
-    downloadLink.download = this.configuration.options.title + 'chart.jpg';
+    downloadLink.download = this.chartOptions.title + 'chart.jpg';
     downloadLink.click();
   }
 
@@ -163,13 +173,13 @@ export class EChart extends Chart {
     this.generateConfiguration();
     if (this.chartInstance) {
       this.chartInstance.clear();
-      this.chartInstance.setOption(this.options);
+      this.chartInstance.setOption(this.libraryOptions);
     }
   }
 
   private generateConfiguration() {
-    this.seriesConfiguration(this.data.getSeries());
-    this.axisConfiguration();
+    this.configureSeries(this.chartData.getSeries());
+    this.configureAxis();
   }
 
   private summarizeTotals(series: Array<any>) {
@@ -185,33 +195,51 @@ export class EChart extends Chart {
     });
   }
 
-  private seriesConfiguration(series: Array<any>) {
-
+  private configureSeries(series: Array<any>) {
     series.forEach((s, index) => {
-      s.type = this.getChartType(this.options["type"] as string);
-      type ObjectKey = keyof typeof EC_SERIES_CONFIG;
-      Object.assign(s, EC_SERIES_CONFIG[s.type as ObjectKey]);
+      s.type = this.getChartType(this.libraryOptions["type"] as string);
+      this.assignSeriesConfig(s);
+      s.data = this.processSeriesData(s.data);
+      this.ensureSeriesStack(s);
+      this.setSeriesVisibility(s);
+      this.setSeriesColor(s, index);
+    });
+    this.libraryOptions.series = series;
+  }
 
-      s.data = (s.data as Array<any>).map((v, i) => {
-        this.maxValue = v[1] > this.maxValue ? v[1] : this.maxValue;
-        if (this.configuration?.options.type !== 'pie') {
-          return this.configuration.options.toPercent ? (v[1] * 100 / this.totals[i]) : v[1];
-        } else {
-          return this.configuration.options.toPercent ? { name: v[0], value: v[1] * 100 / this.totals[i] } : { name: v[0], value: v[1] };
-        }
-      });
+  private assignSeriesConfig(s: any) {
+    type ObjectKey = keyof typeof EC_SERIES_CONFIG;
+    Object.assign(s, EC_SERIES_CONFIG[s.type as ObjectKey]);
+  }
 
-      if (!s.stack && this.data.seriesConfig.stack) {
-        s.stack = this.data.seriesConfig.stack;
-      }
+  private processSeriesData(data: Array<any>) {
+    return data.map((v, i) => {
+      this.maxValue = Math.max(this.maxValue, v[1]);
 
-      s.visible = true;
-      
-      if (!s.color && s.type !== 'pie' && this.configuration.options.colors) {
-        s.color = this.configuration.options.colors[index % this.configuration.options.colors.length];
+      if (this.chartOptions.type !== 'pie') {
+        return this.chartOptions.toPercent ? (v[1] * 100 / this.totals[i]) : v[1];
+      } else {
+        return this.chartOptions.toPercent
+          ? { name: v[0], value: v[1] * 100 / this.totals[i] }
+          : { name: v[0], value: v[1] };
       }
     });
-    this.options.series = series;
+  }
+
+  private ensureSeriesStack(s: any) {
+    if (!s.stack && this.chartData.seriesConfig.stack) {
+      s.stack = this.chartData.seriesConfig.stack;
+    }
+  }
+
+  private setSeriesVisibility(s: any) {
+    s.visible = true;
+  }
+
+  private setSeriesColor(s: any, index: number) {
+    if (!s.color && s.type !== 'pie' && this.chartOptions.colors) {
+      s.color = this.chartOptions.colors[index % this.chartOptions.colors.length];
+    }
   }
 
   private getChartType(type: string) {
@@ -228,109 +256,143 @@ export class EChart extends Chart {
     }
   }
 
-
   private configureAxisOptions(axisOptions: any, data: any[], isSecondaryAxis: boolean = false) {
-    axisOptions.show = this.configuration.options.type !== 'pie';
-    axisOptions.name = isSecondaryAxis ? null : this.configuration.options.xAxis.title;
-    axisOptions.nameGap = this.configuration.options.type === 'bar' ? 20 : 35;
-    axisOptions.nameLocation = this.configuration.options.type === 'bar' ? 'end' : 'middle';
+    axisOptions.show = this.chartOptions.type !== 'pie';
+    axisOptions.name = isSecondaryAxis ? null : this.chartOptions.xAxis.title;
+    axisOptions.nameGap = this.chartOptions.type === 'bar' ? 20 : 35;
+    axisOptions.nameLocation = this.chartOptions.type === 'bar' ? 'end' : 'middle';
     axisOptions.nameTextStyle = { fontWeight: 'bold' };
-    axisOptions.axisLabel.rotate = this.configuration.options.xAxis.rotateLabels;
+    axisOptions.axisLabel.rotate = this.chartOptions.xAxis.rotateLabels;
     axisOptions.data = data;
     axisOptions.axisTick.show = true;
-    axisOptions.splitArea.show = !isSecondaryAxis && !this.data.seriesConfig.x2;
+    axisOptions.splitArea.show = !isSecondaryAxis && !this.chartData.seriesConfig.x2;
 
     if (isSecondaryAxis) {
       axisOptions.axisLabel.rotate = null;
       axisOptions.splitArea.show = true;
-      axisOptions.position = this.configuration.options.type === 'bar' ? 'left' : 'bottom';
-      axisOptions.offset = this.configuration.options.type === 'bar' ? 60 : 30;
+      axisOptions.position = this.chartOptions.type === 'bar' ? 'left' : 'bottom';
+      axisOptions.offset = this.chartOptions.type === 'bar' ? 60 : 30;
     }
 
     return axisOptions;
   }
 
+  private configureAxis() {
+    const nameGap = this.calculateNameGap();
+    const xAxis: any[] = [];
+    const yAxis = this.createYAxis(nameGap);
 
-  private axisConfiguration() {
-    const nameGap = (Math.log(this.maxValue) * Math.LOG10E + 1 | 1) * 10;
+    if (this.chartData.seriesConfig.x2) {
+      this.configureDualXAxis(xAxis, this.chartData.seriesConfig.x1, this.chartData.seriesConfig.x2);
+    } else {
+      this.configureSingleXAxis(xAxis);
+    }
 
-    const xAxis = [];
-    const yAxis = {
-      show: this.configuration.options.type !== 'pie',
+    this.libraryOptions.xAxis = this.chartOptions.type === 'bar' ? yAxis as XAXisComponentOption : xAxis;
+    this.libraryOptions.yAxis = this.chartOptions.type === 'bar' ? xAxis : yAxis as YAXisComponentOption;
+  }
+
+  private calculateNameGap(): number {
+    return Math.max((Math.log(this.maxValue) * Math.LOG10E + 1 | 1) * 10, 30);
+  }
+
+  private createYAxis(nameGap: number): any {
+    return {
+      show: this.chartOptions.type !== 'pie',
       type: 'value',
-      name: this.configuration?.options.yAxis.title,
+      name: this.chartOptions.yAxis.title,
       nameLocation: 'middle',
-      nameGap: Math.max(nameGap, 30),
+      nameGap: nameGap,
       nameTextStyle: { fontWeight: 'bold' },
-      max: this.configuration?.options.yAxis.max,
+      max: this.chartOptions.yAxis.max,
       axisLabel: {
         formatter: (value: string) => this.valueFormatter(value)
       }
     };
-
-    let dataX1 = [];
-    let dataX2 = [];
-
-    if (this.data.seriesConfig.x2) {
-      const items1 = this.data.getItems(this.data.seriesConfig.x1);
-      const items2 = this.data.getItems(this.data.seriesConfig.x2);
-
-      dataX1 = Array<string>().concat(... new Array(items1.length).fill(items2));
-      dataX2 = this.configuration.options.navigator.show ? Array<string>().concat(...items1.map(i => new Array(items2.length).fill(i))) : items1;
-      xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
-      xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX2, true));
-      xAxis[0].nameGap = 70;
-      if (this.configuration?.options.navigator.show) {
-        (this.options.grid as any).bottom = 100;
-      }
-    } else {
-      dataX1 = this.data.getItems(this.data.seriesConfig.x1);
-      xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
-    }
-    this.options.xAxis = this.configuration.options.type === 'bar' ? yAxis as XAXisComponentOption : xAxis;
-    this.options.yAxis = this.configuration.options.type === 'bar' ? xAxis : yAxis as YAXisComponentOption;
   }
 
+  private configureDualXAxis(xAxis: any[], x1: string, x2: string) {
+    const items1 = this.chartData.getItems(x1);
+    const items2 = this.chartData.getItems(x2);
+
+    const dataX1 = this.createDataX1(items1, items2);
+    const dataX2 = this.createDataX2(items1, items2);
+
+    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
+    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX2, true));
+
+    xAxis[0].nameGap = 70;
+    if (this.chartOptions.navigator.show) {
+      (this.libraryOptions.grid as any).bottom = 100;
+    }
+  }
+
+  private createDataX1(items1: any[], items2: any[]): string[] {
+    return Array<string>().concat(...new Array(items1.length).fill(items2));
+  }
+
+  private createDataX2(items1: any[], items2: any[]): string[] {
+    return this.chartOptions.navigator.show
+      ? Array<string>().concat(...items1.map(i => new Array(items2.length).fill(i)))
+      : items1;
+  }
+
+  private configureSingleXAxis(xAxis: any[]) {
+    const dataX1 = this.chartData.getItems(this.chartData.seriesConfig.x1);
+    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
+  }
 
   private tooltipFormatter(params: any, options: EChartsOption, decimals?: number | null, suffix?: string | null) {
-    let template = '';
+    const title = this.formatTooltipTitle(params, options);
+    const template = Array.isArray(params)
+      ? this.formatMultipleParamsTooltip(params, title, options, decimals, suffix)
+      : this.formatSingleParamTooltip(params, title, decimals, suffix);
+
+    return template;
+  }
+
+  private formatTooltipTitle(params: any, options: EChartsOption): string {
     let title = Array.isArray(params) ? params[0].name : params.name;
     const dataIndex = Array.isArray(params) ? params[0].dataIndex : params.dataIndex;
 
     if (Array.isArray(options.xAxis) && options.xAxis.length > 1) {
-      title = (options.xAxis[1] as any).data[Math.floor(dataIndex / ((options.xAxis[0] as any).data.length / (options.xAxis[1] as any).data.length))] + ' - ' + title;
+      title = `${(options.xAxis[1] as any).data[Math.floor(dataIndex / ((options.xAxis[0] as any).data.length / (options.xAxis[1] as any).data.length))]} - ${title}`;
     } else if (Array.isArray(options.yAxis) && options.yAxis.length > 1) {
-      title = (options.yAxis[1] as any).data[Math.floor(dataIndex / ((options.yAxis[0] as any).data.length / (options.yAxis[1] as any).data.length))] + ' - ' + title;
+      title = `${(options.yAxis[1] as any).data[Math.floor(dataIndex / ((options.yAxis[0] as any).data.length / (options.yAxis[1] as any).data.length))]} - ${title}`;
     }
 
-    if (!Array.isArray(params)) {
-      template = `
-      <div class="ec-tooltip">
-        <label class="title">${title}</label><br>
-        ${params.marker}
-        <label class="serie-name">${params.seriesName}</label>:<label class="value">${params.value !== null ? this.valueFormatter(params.value, decimals, suffix) : '-'}</label>
-      </div>
-      `;
-    } else {
+    return title;
+  }
 
-      let list = params.map(params => (
-        `${params.marker}
-        <label class="serie-name">${params.seriesName}</label>:<label class="value">${params.value !== null ? this.valueFormatter(params.value, decimals, suffix) : '-'}</label>`
-      )).join('<br>');
+  private formatSingleParamTooltip(param: any, title: string, decimals?: number | null, suffix?: string | null): string {
+    const value = param.value !== null ? this.valueFormatter(param.value, decimals, suffix) : '-';
 
-      if ((options.tooltip as any).showTotal) {
-        const showTotal = params.map(params => params.value).reduce((a, c) => a + c, 0);
-        list += `<hr><label class="summation">Total</label>:<label class="value">${this.valueFormatter(showTotal, decimals, suffix)}</label>`;
-      }
+    return `
+        <div class="ec-tooltip">
+            <label class="title">${title}</label><br>
+            ${param.marker}
+            <label class="series-name">${param.seriesName}</label>:<label class="value">${value}</label>
+        </div>
+    `;
+  }
 
-      template = `
-      <div class="ec-tooltip">
-        <label class="title">${title}</label><br>
-        ${list}
-      </div>
-      `;
+  private formatMultipleParamsTooltip(params: any[], title: string, options: EChartsOption, decimals?: number | null, suffix?: string | null): string {
+    let list = params.map(param => (
+      `${param.marker}
+        <label class="series-name">${param.seriesName}</label>:<label class="value">${param.value !== null ? this.valueFormatter(param.value, decimals, suffix) : '-'}</label>`
+    )).join('<br>');
+
+    if ((options.tooltip as any).showTotal) {
+      const showTotal = params.reduce((total, param) => total + param.value, 0);
+      list += `<hr><label class="summation">Total</label>:<label class="value">${this.valueFormatter(showTotal, decimals, suffix)}</label>`;
     }
-    return template;
+
+    return `
+        <div class="ec-tooltip">
+            <label class="title">${title}</label><br>
+            ${list}
+        </div>
+    `;
   }
 
   private valueFormatter(value: string, decimals?: number | null, suffix?: string | null) {

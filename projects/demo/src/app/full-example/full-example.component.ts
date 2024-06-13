@@ -57,9 +57,8 @@ export class FullExampleComponent implements OnInit {
     this.dataset = new Dataset({ dimensions, enableRollUp: true, id: 1, rowData });
     this.splitDimension = dimensions[0];
     this.years = this.dataset.dataProvider.getItems('Año');
-    // this.chartOptions2.stacked = '';
-    // this.chartOptions2.x
-    // this.chartOptions2.xAxis.secondLevel = null;
+    this.chartOptions.stacked = 'Departamentos';
+    this.chartOptions.xAxis.secondLevel = null;
   }
 
   filter() {

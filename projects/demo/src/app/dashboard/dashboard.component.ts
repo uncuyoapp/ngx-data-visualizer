@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ChartConfigurationOptions, ChartDirective, Dataset, Dimension, PivotConfiguration, RowData, TableDirective } from 'ngx-data-visualizer';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { cloneDeep } from 'lodash';
+import { ChartConfigurationOptions, ChartDirective, Dataset, Dimension, PivotConfiguration, RowData, TableDirective } from 'ngx-data-visualizer';
 import optionsChart from '../../assets/chart-options-dash.json';
 import dimensionsData from '../../assets/dash-dimensions.json';
 import data from '../../assets/example-data-2.json';
@@ -91,20 +92,21 @@ export class DashboardComponent implements OnInit {
       name: dimension.nameView,
       items: dimension.items.filter(item => item.selected).map(item => item.name)
     }));
-    const datasetFilterOne = this.datasetOne.dataProvider.filters;
-    datasetFilterOne.filter = filter;
+
+    const datasetFilterOne = this.datasetOne.dataProvider.filters
+    datasetFilterOne.filter = [...cloneDeep(filter)];
     this.datasetOne.applyFilters(datasetFilterOne);
 
     const datasetFilterTwo = this.datasetTwo.dataProvider.filters;
-    datasetFilterTwo.filter = filter;
+    datasetFilterTwo.filter = [...cloneDeep(filter)];
     this.datasetTwo.applyFilters(datasetFilterTwo);
 
     const datasetFilterThree = this.datasetThree.dataProvider.filters;
-    datasetFilterThree.filter = filter;
+    datasetFilterThree.filter = [...cloneDeep(filter)];
     this.datasetThree.applyFilters(datasetFilterThree);
 
     const datasetFilterFour = this.datasetFour.dataProvider.filters;
-    datasetFilterFour.filter = filter;
+    datasetFilterFour.filter = [...cloneDeep(filter)];
     this.datasetFour.applyFilters(datasetFilterFour);
   }
 }

@@ -2,7 +2,8 @@
   <button type="button" class="legend-show-button clear-button" (click)="onClickShowLegends()">Ver leyendas</button>
 
   <div #legends class="legends" [hidden]="!showLegends">
-    <button class="legend clear-button" *ngFor="let seriesElement of series()" [title]="seriesElement.name"
+    @for (seriesElement of series(); track seriesElement.name) {
+    <button class="legend clear-button" [title]="seriesElement.name"
       (click)="onClickLegend(seriesElement)" (mouseenter)="onHoverLegend(seriesElement)"
       (mouseleave)="onHoverLegend(seriesElement)">
 
@@ -22,5 +23,6 @@
       }
       <span>{{seriesElement.name}}</span>
     </button>
+    }
   </div>
 </div>

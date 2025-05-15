@@ -1,4 +1,4 @@
-@import '../styles.scss';
+@use '../styles.scss' as styles;
 
 .legend-wrapper {
   padding: 1.2rem 0;

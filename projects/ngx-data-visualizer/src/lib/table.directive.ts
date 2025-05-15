@@ -44,7 +44,8 @@ export class TableDirective implements OnDestroy {
     }
     this.tableRenderComponentRef = this.viewContainerRef.createComponent<TableComponent>(TableComponent);
     this.tableComponent = this.tableRenderComponentRef.instance;
-    this.tableComponent.tableConfiguration = this.tableConfiguration;
+    // Acceder al setter de tableConfiguration a través de la propiedad especial
+    (this.tableComponent as any).tableConfiguration = this.tableConfiguration;
   }
 
   updateTable() {

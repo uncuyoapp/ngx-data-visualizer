@@ -1,12 +1,12 @@
-@import "../styles.scss";
+@use "../styles.scss" as styles;
 .icon-nav {
   display: none;
-  @include isMobile {
+  position: absolute;
+  top: 50%;
+  @include styles.isMobile {
     display: block;
     z-index: 99;
   }
-  position: absolute;
-  top: 50%;
   &.back {
     left: 0;
   }
@@ -26,7 +26,7 @@
   align-items: flex-start;
   max-height: 100%;
 
-  @include isMobile {
+  @include styles.isMobile {
     flex-wrap: nowrap;
     overflow-x: hidden;
   }
@@ -38,11 +38,11 @@
     padding: 16px;
     position: relative;
 
-    @include max-md {
+    @include styles.max-md {
       width: calc((100% / 2) - 32px);
     }
 
-    @include max-sm {
+    @include styles.max-sm {
       width: 100%;
     }
 
@@ -50,7 +50,7 @@
       display: none;
     }
 
-    @include isMobile {
+    @include styles.isMobile {
       width: calc(100% - 64px);
       min-width: calc(100% - 64px);
       box-shadow: none;
@@ -74,7 +74,7 @@
       bottom: 10px;
       right: 10px;
       cursor: pointer;
-      @include isMobile {
+      @include styles.isMobile {
         display: none;
       }
     }

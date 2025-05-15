@@ -39,7 +39,8 @@ export class ChartDirective {
     this.chartRenderComponentRef = this.viewContainerRef.createComponent<ChartComponent>(ChartComponent);
     this.chartConfiguration = this.chartService.getChartConfiguration(this.dataset(), this.options());
     this.chartComponent = this.chartRenderComponentRef.instance;
-    this.chartComponent.chartConfiguration = this.chartConfiguration;
+    // Acceder al setter de chartConfiguration a través de la propiedad especial
+    (this.chartComponent as any).chartConfiguration = this.chartConfiguration;
   }
 
 

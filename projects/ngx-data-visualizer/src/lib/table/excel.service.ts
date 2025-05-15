@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import * as FileSaver from 'file-saver';
+import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import { SecureXLSX } from '../utils/xlsx-security';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
 /**
- * This is an service that provides functionality to export an HTML table as an Excel file.
- * It uses the FileSaver library to save the file and the XLSX library to convert the table into an Excel worksheet.
+ * This is a service that provides functionality to export an HTML table as an Excel file.
+ * It uses the FileSaver library to save the file and the SecureXLSX wrapper to safely convert
+ * the table into an Excel worksheet, mitigating known vulnerabilities in the XLSX library.
  */
 @Injectable({
   providedIn: 'root'
@@ -25,9 +27,10 @@ export class ExcelService {
     this.replaceCharactersInTable(clonedTable, 'pvtTotal');
     this.replaceCharactersInTable(clonedTable, 'pvtGrandTotal');
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.table_to_sheet(clonedTable, { raw: false });
+    // Usar el wrapper seguro SecureXLSX en lugar de XLSX directamente
+    const worksheet: XLSX.WorkSheet = SecureXLSX.table_to_sheet(clonedTable, { raw: false });
     const workbook: XLSX.WorkBook = { Sheets: { Datos: worksheet }, SheetNames: ['Datos'] };
-    const excelBuffer: BlobPart = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBuffer: BlobPart = SecureXLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
     this.saveAsExcelFile(excelBuffer, excelFileName);
   }
@@ -46,7 +49,7 @@ export class ExcelService {
   private saveAsExcelFile(buffer: BlobPart, fileName: string): void {
     try {
       const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
-      FileSaver.default.saveAs(data, fileName + EXCEL_EXTENSION);
+      saveAs(data, fileName + EXCEL_EXTENSION);
     } catch (error) {
       console.error('An error occurred while saving the Excel file:', error);
     }

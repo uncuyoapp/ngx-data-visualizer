@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, effect, inject, input, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DIMENSION_VALUE, DIMENSION_YEAR, DataProvider } from '../data-provider';
 import { LegendComponent } from '../legend/legend.component';
@@ -21,8 +21,7 @@ import { EchartsComponent } from './echart/echarts.component';
   ]
 })
 export class ChartComponent implements OnInit, OnDestroy {
-  @Input()
-  chartConfiguration!: ChartConfiguration;
+  chartConfiguration = input.required<ChartConfiguration>();
   series = signal<Series[]>([]);
   @ViewChild(EchartsComponent) echart!: EchartsComponent;
   mainChart!: Chart;
@@ -35,12 +34,21 @@ export class ChartComponent implements OnInit, OnDestroy {
   goalChartData!: ChartData;
 
   ngOnInit(): void {
-    if (!this.chartConfiguration.options.disableAutoUpdate) {
-      this.subscription = this.chartConfiguration?.dataset.dataUpdated.subscribe(() => {
-        this.chartService.updateSeriesConfig(this.chartConfiguration);
+    if (!this.chartConfiguration().options.disableAutoUpdate) {
+      this.subscription = this.chartConfiguration().dataset.dataUpdated.subscribe(() => {
+        this.chartService.updateSeriesConfig(this.chartConfiguration());
         this.echart.updateChart();
       });
     }
+    
+    effect(() => {
+      // Este efecto se activará cada vez que chartConfiguration cambie
+      const config = this.chartConfiguration();
+      if (config && this.echart) {
+        this.chartService.updateSeriesConfig(config);
+        this.echart.updateChart();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -80,8 +88,9 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   private hideGoal() {
     const { savedSeriesConfiguration, savedFilters } = this;
-    this.chartConfiguration.seriesConfig = { ...savedSeriesConfiguration };
-    this.chartConfiguration.dataset.applyFilters({ ...savedFilters });
+    const config = this.chartConfiguration();
+    config.seriesConfig = { ...savedSeriesConfiguration };
+    config.dataset.applyFilters({ ...savedFilters });
   }
 
   private generateGoalChartData(goal: Goal) {
@@ -92,14 +101,14 @@ export class ChartComponent implements OnInit, OnDestroy {
       x1: DIMENSION_YEAR,
       x2: goalDimensions.length ? goalDimensions[0] : undefined,
       stack: null,
-      measure: this.chartConfiguration.seriesConfig.measure
+      measure: this.chartConfiguration().seriesConfig.measure
     };
 
     this.goalChartData = new ChartData(dataProvider, seriesConfig);
   }
 
   private updateSeriesConfig(seriesConfig: SeriesConfig) {
-    const { chartConfiguration } = this;
+    const chartConfiguration = this.chartConfiguration();
     const { dataset } = chartConfiguration;
     const { dimensions } = dataset;
 
@@ -111,6 +120,8 @@ export class ChartComponent implements OnInit, OnDestroy {
     };
     this.savedSeriesConfiguration = { ...chartConfiguration.seriesConfig };
     this.savedFilters = { ...dataset.dataProvider.filters };
+    // Nota: Estamos modificando directamente el objeto chartConfiguration
+    // que es una referencia al objeto pasado a través del input
     chartConfiguration.seriesConfig = seriesConfig;
     dataset.applyFilters(filters);
   }

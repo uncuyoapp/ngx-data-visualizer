@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, effect, input } from '@angular/core';
 import { PivotConfiguration, TableConfiguration } from './table-configuration';
 import { TableHelper } from './table-helper';
 import { TableService } from './table.service';
@@ -13,8 +13,8 @@ import { TableService } from './table.service';
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
-export class TableComponent implements OnInit, OnChanges {
-  @Input() tableConfiguration!: TableConfiguration;
+export class TableComponent implements OnInit {
+  tableConfiguration = input.required<TableConfiguration>();
   @ViewChild('pivotTable', { static: true }) pivotTable!: ElementRef;
 
   constructor(private tableService: TableService) { }
@@ -26,16 +26,19 @@ export class TableComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.configure();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes && !changes['tableConfiguration'].firstChange) {
-      this.configure();
-    }
+    
+    // Usar effect para reaccionar a cambios en tableConfiguration
+    effect(() => {
+      // Este efecto se activará cada vez que tableConfiguration cambie
+      const config = this.tableConfiguration();
+      if (config) {
+        this.configure();
+      }
+    });
   }
 
   configure() {
-    const pivotConfig = this.tableService.getTableConfiguration(this.tableConfiguration);
+    const pivotConfig = this.tableService.getTableConfiguration(this.tableConfiguration());
     this.render(pivotConfig);
   }
 
@@ -46,7 +49,7 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private render(pivotConfig: PivotConfiguration) {
-    TableHelper.renderPivot(this.pivotTable.nativeElement, this.tableConfiguration.data.getData(), pivotConfig);
+    TableHelper.renderPivot(this.pivotTable.nativeElement, this.tableConfiguration().data.getData(), pivotConfig);
     TableHelper.stickyTable(this.pivotTable.nativeElement);
   }
 }

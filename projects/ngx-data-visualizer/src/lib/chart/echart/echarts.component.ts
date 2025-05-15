@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit, effect, input, output } from '@angular/core';
 import { ECharts } from 'echarts';
 import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from 'ngx-echarts';
 import { Series } from '../../models';
@@ -25,14 +25,9 @@ import { EChart } from './echarts';
   ],
 })
 export class EchartsComponent implements OnInit {
-  @Input()
-  chartConfiguration!: ChartConfiguration;
-
-  @Output()
-  seriesChange: EventEmitter<Series[]> = new EventEmitter<Series[]>();
-
-  @Output()
-  chartCreated: EventEmitter<Chart> = new EventEmitter<Chart>();
+  chartConfiguration = input.required<ChartConfiguration>();
+  seriesChange = output<Series[]>();
+  chartCreated = output<Chart>();
 
   mainChart!: EChart;
   initOptions = {
@@ -52,18 +47,18 @@ export class EchartsComponent implements OnInit {
   }
 
   configInitOptions() {
-    if (this.chartConfiguration.options.height) {
-      this.initOptions.height = this.chartConfiguration.options.height + 'px';
+    const config = this.chartConfiguration();
+    if (config.options.height) {
+      this.initOptions.height = config.options.height + 'px';
     }
-    if (this.chartConfiguration.options.width) {
-      this.initOptions.width = this.chartConfiguration.options.width + 'px';
+    if (config.options.width) {
+      this.initOptions.width = config.options.width + 'px';
     }
-
   }
 
   createChart(): void {
     this.mainChart = new EChart(
-      this.chartConfiguration
+      this.chartConfiguration()
     );
     this.mainChart.render();
     this.chartCreated.emit(this.mainChart);

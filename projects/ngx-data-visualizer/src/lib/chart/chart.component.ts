@@ -32,6 +32,16 @@ export class ChartComponent implements OnInit, OnDestroy {
   savedSeriesConfiguration!: SeriesConfig;
   savedFilters!: Filters;
   goalChartData!: ChartData;
+  
+  // Inicializador de campo para el efecto
+  private configEffect = effect(() => {
+    // Este efecto se activará cada vez que chartConfiguration cambie
+    const config = this.chartConfiguration();
+    if (config && this.echart) {
+      this.chartService.updateSeriesConfig(config);
+      this.echart.updateChart();
+    }
+  });
 
   ngOnInit(): void {
     if (!this.chartConfiguration().options.disableAutoUpdate) {
@@ -40,15 +50,6 @@ export class ChartComponent implements OnInit, OnDestroy {
         this.echart.updateChart();
       });
     }
-    
-    effect(() => {
-      // Este efecto se activará cada vez que chartConfiguration cambie
-      const config = this.chartConfiguration();
-      if (config && this.echart) {
-        this.chartService.updateSeriesConfig(config);
-        this.echart.updateChart();
-      }
-    });
   }
 
   ngOnDestroy(): void {

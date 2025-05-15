@@ -1,5 +1,5 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { ChartConfiguration } from '../chart/chart-configuration';
 import { ChartComponent } from '../chart/chart.component';
 import { BackComponent } from '../icons/back/back.component';
@@ -22,8 +22,21 @@ import { ForwardComponent } from '../icons/forward/forward.component';
   styleUrl: './multiple-chart.component.scss'
 })
 export class MultipleChartComponent {
-  @Input()
-  chartConfigurations!: ChartConfiguration[];
+  chartConfigurations = input.required<ChartConfiguration[]>();
+  
+  // Inicializador de campo para el efecto
+  private configEffect = effect(() => {
+    // Este efecto se activará cada vez que chartConfigurations cambie
+    const configs = this.chartConfigurations();
+    if (configs) {
+      // Asegurarse de que todas las configuraciones tengan la propiedad expanded
+      configs.forEach(config => {
+        if (config.expanded === undefined) {
+          config.expanded = false;
+        }
+      });
+    }
+  });
 
   chartComponent = ChartComponent;
 

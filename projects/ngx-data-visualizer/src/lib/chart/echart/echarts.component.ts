@@ -79,7 +79,9 @@ export class EchartsComponent implements OnInit {
   }
 
   emitSeries() {
-    this.seriesChange.emit(this.mainChart.getSeries());
+    if (this.mainChart) {
+      this.seriesChange.emit(this.mainChart.getSeries());
+    }
   }
 
   getGoalSeries(chartData: ChartData, type: string) {

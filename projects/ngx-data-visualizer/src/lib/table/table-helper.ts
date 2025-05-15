@@ -1,9 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import $ from 'jquery';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { PivotConfiguration } from "./table-configuration";
-declare const $: any;
+import { JQueryService } from "../utils/jquery.service";
+
+// Extender la interfaz de jQuery para incluir los métodos de pivottable
+declare global {
+  interface JQuery {
+    pivot(data: any[], options?: any, locale?: string): JQuery;
+  }
+
+  interface JQueryStatic {
+    pivotUtilities: {
+      aggregatorTemplates: {
+        sum: (formatter?: any) => (fields: string[]) => (data: any[], rowKey: string[], colKey: string[]) => any;
+        count: (formatter?: any) => (fields: string[]) => (data: any[], rowKey: string[], colKey: string[]) => any;
+        average: (formatter?: any) => (fields: string[]) => (data: any[], rowKey: string[], colKey: string[]) => any;
+      };
+      renderers: {
+        [key: string]: any;
+      };
+      derivers: {
+        [key: string]: any;
+      };
+      locales: {
+        [key: string]: any;
+      };
+      naturalSort: (a: any, b: any) => number;
+      numberFormat: (opts?: any) => (num: number) => string;
+      sortAs: (orderValues: string[]) => (a: string, b: string) => number;
+    };
+  }
+}
 
 export class TableHelper {
+  // Instancia estática de jQuery proporcionada por el servicio
+  private static jQueryService: JQueryService;
+  
+  /**
+   * Inicializa el TableHelper con el servicio de jQuery
+   * @param jQueryService Servicio que proporciona jQuery
+   */
+  static initialize(jQueryService: JQueryService): void {
+    TableHelper.jQueryService = jQueryService;
+  }
 
   /**
    * Render an HTMLTable in an HTMLElement using pivotJS
@@ -13,8 +52,14 @@ export class TableHelper {
    * @param config PivotConfiguration is the configuration for pivot table
    */
   static renderPivot(element: HTMLDivElement, data: any[], config: PivotConfiguration): void {
+    // Asegurarse de que jQuery esté inicializado
+    if (!TableHelper.jQueryService) {
+      throw new Error('TableHelper no ha sido inicializado. Llama a TableHelper.initialize() primero.');
+    }
+    
+    const $ = TableHelper.jQueryService.$;
     const pivotConfiguration = TableHelper.configurePivot(config);
-    ($(element)).pivot(data, pivotConfiguration, 'es');
+    $(element).pivot(data, pivotConfiguration, 'es');
     $('td').on('mouseenter', function (e: any) { $(e.currentTarget).click() });
     $('td').on('click', () => { });
   }
@@ -35,6 +80,7 @@ export class TableHelper {
   }
 
   private static configurePivot(config: PivotConfiguration) {
+    const $ = TableHelper.jQueryService.$;
     const sum = $.pivotUtilities.aggregatorTemplates.sum;
     const numberFormat = $.pivotUtilities.numberFormat;
     const intFormat = numberFormat({
@@ -48,6 +94,7 @@ export class TableHelper {
   }
 
   private static configureSorters(config: PivotConfiguration) {
+    const $ = TableHelper.jQueryService.$;
     const sorters = {};
     config.sorters.forEach(sorter => {
       const items = [...sorter.items].sort((a, b) => a.order - b.order).map(a => a.name);
@@ -80,6 +127,7 @@ export class TableHelper {
   }
 
   private static hoverFunction(e: any, filter: any) {
+    const $ = TableHelper.jQueryService.$;
     const x = e.clientX - e.offsetX;
     const y = e.clientY - e.offsetY - 1;
     const currentTarget = $(e.currentTarget);
@@ -89,10 +137,21 @@ export class TableHelper {
         $('th:contains(' + (item as string) + ')').filter((_i: any, th: any) => $(th).text() === item);
       if (aux.length > 1) {
         const parentType = aux[0].parentElement?.parentElement?.tagName;
+        // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
         if (parentType === 'THEAD') {
-          aux.filter((i: string | number) => (x >= aux[i].getBoundingClientRect().x && x <= aux[i].getBoundingClientRect().x + aux[i].getBoundingClientRect().width)).addClass('hovered');
+          // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
+          aux.filter((i: number) => {
+            // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
+            const rect = aux[i].getBoundingClientRect();
+            return (x >= rect.x && x <= rect.x + rect.width);
+          }).addClass('hovered');
         } else {
-          aux.filter((i: string | number) => (y >= aux[i].getBoundingClientRect().y && y <= aux[i].getBoundingClientRect().y + aux[i].getBoundingClientRect().height)).addClass('hovered');
+          // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
+          aux.filter((i: number) => {
+            // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
+            const rect = aux[i].getBoundingClientRect();
+            return (y >= rect.y && y <= rect.y + rect.height);
+          }).addClass('hovered');
         }
       } else {
         aux.addClass('hovered');

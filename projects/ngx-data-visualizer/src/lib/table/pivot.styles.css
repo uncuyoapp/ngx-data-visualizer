@@ -1,0 +1,114 @@
+/* Estilos para pivottable */
+.pvtUi { color: #333; }
+
+table.pvtTable {
+    font-size: 12pt;
+    text-align: left;
+    border-spacing: 0px;
+    margin: 0 auto;
+    position: relative;
+    border-collapse: unset;
+    width: 100%;
+    max-width: 100%;
+}
+
+table.pvtTable thead tr th, table.pvtTable tbody tr th {
+    background-color: #f2f2f2;
+    border: 2px solid white;
+    padding: 5px;
+}
+
+table.pvtTable .pvtColLabel,
+table.pvtTable .pvtTotalLabel,
+table.pvtTable .pvtRowLabel {
+    background-color: #f2f2f2 !important;
+    text-align: center;
+    border: 2px solid white;
+    z-index: 995;
+}
+
+table.pvtTable .pvtVal, 
+table.pvtTable .pvtTotal, 
+table.pvtTable .pvtGrandTotal {
+    vertical-align: middle;
+    border: 2px solid white;
+    background-color: inherit;
+    padding: 5px 10px 5px 5px;
+}
+
+table.pvtTable .hovered {
+    background-color: #0450ff !important;
+    color: white !important;
+}
+
+table.pvtTable .pvtTotalLabel,
+table.pvtTable .pvtTotal,
+table.pvtTable .pvtGrandTotal {
+    font-weight: bold;
+}
+
+.pvtAxisContainer, .pvtVals {
+    border: 1px solid #ccc;
+    background: #f6f6f6;
+    padding: 5px;
+}
+
+.pvtAxisContainer li {
+    padding: 8px 6px;
+    list-style-type: none;
+    cursor: move;
+}
+
+.pvtAxisContainer li.pvtPlaceholder {
+    padding: 3px 15px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px dashed #aaa;
+}
+
+.pvtAxisContainer li span.pvtAttr {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 2px 5px;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.pvtTriangle {
+    cursor: pointer;
+    color: grey;
+}
+
+.pvtHorizList li { display: inline-block; }
+.pvtVertList { vertical-align: top; }
+
+.pvtFilteredAttribute { font-style: italic }
+
+.pvtFilterBox{
+    z-index: 100;
+    width: 300px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    position: absolute;
+    padding: 20px;
+    text-align: center;
+}
+
+.pvtFilterBox h4{ margin: 0; }
+.pvtFilterBox p { margin: 10px 0; }
+
+.pvtCheckContainer{
+    text-align: left;
+    overflow: auto;
+    width: 100%;
+    max-height: 200px;
+}
+
+.pvtCheckContainer p{ margin: 5px; }
+
+.pvtRendererArea { padding: 5px; }

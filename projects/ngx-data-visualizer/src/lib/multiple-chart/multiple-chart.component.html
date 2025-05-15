@@ -1,6 +1,7 @@
 <div class="charts-container">
 
-  @for (chartConfiguration of chartConfigurations; track $index) {
+  @if (chartConfigurations()) {
+  @for (chartConfiguration of chartConfigurations(); track $index) {
   <div #chartItem [id]="'chartItem'+$index" class="chart-item">
 
     @if ($index !== 0) {
@@ -10,7 +11,7 @@
 
     <ng-container *ngComponentOutlet="chartComponent; inputs: {chartConfiguration: chartConfiguration}"></ng-container>
 
-    @if($index !== chartConfigurations.length - 1){
+    @if($index !== chartConfigurations().length - 1){
     <lib-icon-forward class="icon-nav forward" (click)="moveToChartItem('chartItem'+($index + 1))"
       (keypress)="moveToChartItem('chartItem'+($index + 1))"></lib-icon-forward>
     }
@@ -25,5 +26,6 @@
     }
 
   </div>
+  }
   }
 </div>

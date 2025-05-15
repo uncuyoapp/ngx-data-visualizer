@@ -6,5 +6,6 @@
   },
   "assets": [
     "./src/lib/styles.scss"
-  ]
+  ],
+  "allowedNonPeerDependencies": ["jquery", "tslib"]
 }

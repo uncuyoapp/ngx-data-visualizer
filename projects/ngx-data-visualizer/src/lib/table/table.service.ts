@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import { PivotConfiguration, TableConfiguration } from '../table/table-configuration';
+import { TableHelper } from './table-helper';
+import { JQueryService } from '../utils/jquery.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class TableService {
+
+  constructor(private jQueryService: JQueryService) {
+    // Inicializar el TableHelper con el servicio de jQuery
+    TableHelper.initialize(jQueryService);
+  }
 
   public getTableConfiguration(configuration: TableConfiguration): PivotConfiguration {
     const cols = configuration.options.cols?.filter(col => configuration.dimensions.find(d => d.nameView === col)) || [];

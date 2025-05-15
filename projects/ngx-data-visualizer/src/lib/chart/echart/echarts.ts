@@ -37,7 +37,10 @@ export class EChart extends Chart {
   }
 
   getSeries(): any[] {
-    return this.instance?.getOption()["series"] as any;
+    if (!this.instance || !this.instance.getOption()) {
+      return [];
+    }
+    return this.instance.getOption()["series"] as any[] || [];
   }
 
   addSeries(series: any): void {

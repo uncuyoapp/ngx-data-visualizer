@@ -17,6 +17,15 @@ export class TableComponent implements OnInit {
   tableConfiguration = input.required<TableConfiguration>();
   @ViewChild('pivotTable', { static: true }) pivotTable!: ElementRef;
 
+  // Inicializador de campo para el efecto
+  private configEffect = effect(() => {
+    // Este efecto se activará cada vez que tableConfiguration cambie
+    const config = this.tableConfiguration();
+    if (config) {
+      this.configure();
+    }
+  });
+
   constructor(private tableService: TableService) { }
 
   // @HostListener('window:resize')
@@ -26,15 +35,6 @@ export class TableComponent implements OnInit {
 
   ngOnInit() {
     this.configure();
-    
-    // Usar effect para reaccionar a cambios en tableConfiguration
-    effect(() => {
-      // Este efecto se activará cada vez que tableConfiguration cambie
-      const config = this.tableConfiguration();
-      if (config) {
-        this.configure();
-      }
-    });
   }
 
   configure() {

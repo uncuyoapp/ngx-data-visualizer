@@ -37,10 +37,15 @@ export class MultipleChartDirective {
 
   createMultipleChartComponent() {
     this.viewContainerRef.clear();
+    // Crear el componente
     this.multipleChartRenderComponentRef = this.viewContainerRef.createComponent<MultipleChartComponent>(MultipleChartComponent);
     this.multipleChartComponent = this.multipleChartRenderComponentRef.instance;
+    
+    // Obtener la configuración de gráficos múltiples
     this.multipleChartConfiguration = this.chartService.getSplitConfiguration(this.dataset(), this.options(), this.splitDimension());
-    this.multipleChartComponent.chartConfigurations = this.multipleChartConfiguration;
+    
+    // Configurar la entrada usando setInput
+    this.multipleChartRenderComponentRef.setInput('chartConfigurations', this.multipleChartConfiguration);
   }
 
 }

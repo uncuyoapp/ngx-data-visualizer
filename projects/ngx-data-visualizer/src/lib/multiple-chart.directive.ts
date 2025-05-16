@@ -1,51 +1,130 @@
-import { ComponentRef, Directive, ViewContainerRef, effect, input } from '@angular/core';
+import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { ChartConfiguration, ChartConfigurationOptions, Dimension } from '../public-api';
 import { ChartService } from './chart/chart.service';
 import { Dataset } from './dataset';
 import { MultipleChartComponent } from './multiple-chart/multiple-chart.component';
 
+/**
+ * Directiva que permite mostrar múltiples gráficos basados en una dimensión de división.
+ * Crea un gráfico separado para cada valor único en la dimensión especificada.
+ */
 @Directive({
   selector: 'libMultipleChart, [libMultipleChart]',
   standalone: true,
   exportAs: 'libMultipleChart'
 })
-export class MultipleChartDirective {
+export class MultipleChartDirective implements OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+  /** Conjunto de datos para los gráficos */
   dataset = input.required<Dataset>();
+  
+  /** Opciones de configuración para los gráficos */
   options = input.required<ChartConfigurationOptions>();
+  
+  /** Dimensión que se utilizará para dividir los datos en múltiples gráficos */
   splitDimension = input.required<Dimension>();
 
   private multipleChartRenderComponentRef!: ComponentRef<MultipleChartComponent>;
   private multipleChartComponent!: MultipleChartComponent;
+  
+  /** Configuración de los gráficos múltiples */
   private multipleChartConfiguration!: ChartConfiguration[];
 
+  /** Suscripción para cambios en los datos */
   subscription!: Subscription;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
     private chartService: ChartService
   ) {
-    effect(() => {
-      this.createMultipleChartComponent();
-      this.subscription = this.dataset()?.dataUpdated.subscribe(() => {
-        this.createMultipleChartComponent();
-      });
-    });
-
-
+    this.initializeMultipleCharts();
   }
 
-  createMultipleChartComponent() {
+  /**
+   * Inicializa los gráficos múltiples y configura las suscripciones necesarias
+   */
+  private initializeMultipleCharts(): void {
+    effect(() => {
+      const dataset = this.dataset();
+      this.createMultipleChartComponent();
+      
+      // Limpiar suscripción anterior si existe
+      this.cleanupSubscription();
+      
+      // Configurar nueva suscripción a cambios en los datos
+      if (dataset) {
+        this.subscription = dataset.dataUpdated
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => this.createMultipleChartComponent());
+      }
+    });
+  }
+  
+  /**
+   * Limpia la suscripción actual si existe
+   */
+  private cleanupSubscription(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = null!;
+    }
+  }
+
+  /**
+   * Crea y configura los componentes de gráficos múltiples
+   * basados en la dimensión de división especificada
+   */
+  /**
+   * Crea y configura los componentes de gráficos múltiples
+   * basados en la dimensión de división especificada
+   */
+  createMultipleChartComponent(): void {
+    try {
+      this.viewContainerRef.clear();
+      
+      const dataset = this.dataset();
+      const options = this.options();
+      const splitDimension = this.splitDimension();
+      
+      if (!dataset || !options || !splitDimension) {
+        console.warn('No se pueden crear los gráficos: datos de entrada incompletos');
+        return;
+      }
+      
+      // Crear el componente
+      this.multipleChartRenderComponentRef = this.viewContainerRef
+        .createComponent<MultipleChartComponent>(MultipleChartComponent);
+      
+      this.multipleChartComponent = this.multipleChartRenderComponentRef.instance;
+      
+      // Obtener la configuración de gráficos múltiples
+      this.multipleChartConfiguration = this.chartService.getSplitConfiguration(
+        dataset,
+        options,
+        splitDimension
+      );
+      
+      // Configurar la entrada usando setInput
+      this.multipleChartRenderComponentRef.setInput(
+        'chartConfigurations',
+        this.multipleChartConfiguration
+      );
+    } catch (error) {
+      console.error('Error al crear los gráficos múltiples:', error);
+      this.viewContainerRef.clear();
+    }
+  }
+  
+  /**
+   * Limpia los recursos al destruir la directiva
+   */
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cleanupSubscription();
     this.viewContainerRef.clear();
-    // Crear el componente
-    this.multipleChartRenderComponentRef = this.viewContainerRef.createComponent<MultipleChartComponent>(MultipleChartComponent);
-    this.multipleChartComponent = this.multipleChartRenderComponentRef.instance;
-    
-    // Obtener la configuración de gráficos múltiples
-    this.multipleChartConfiguration = this.chartService.getSplitConfiguration(this.dataset(), this.options(), this.splitDimension());
-    
-    // Configurar la entrada usando setInput
-    this.multipleChartRenderComponentRef.setInput('chartConfigurations', this.multipleChartConfiguration);
   }
 
 }

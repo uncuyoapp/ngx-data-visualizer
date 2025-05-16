@@ -7,9 +7,10 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 const EXCEL_EXTENSION = '.xlsx';
 
 /**
- * This is a service that provides functionality to export an HTML table as an Excel file.
- * It uses the FileSaver library to save the file and the SecureXLSX wrapper to safely convert
- * the table into an Excel worksheet, mitigating known vulnerabilities in the XLSX library.
+ * Servicio que proporciona funcionalidad para exportar una tabla HTML a un archivo de Excel.
+ * Utiliza la biblioteca FileSaver para guardar el archivo y el wrapper SecureXLSX para convertir
+ * de manera segura la tabla en una hoja de cálculo de Excel, mitigando vulnerabilidades conocidas
+ * en la biblioteca XLSX.
  */
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,9 @@ const EXCEL_EXTENSION = '.xlsx';
 export class ExcelService {
 
   /**
-   * Export the given HTML table as an Excel file.
-   * @param table The HTML table element to export.
-   * @param excelFileName The desired name of the Excel file.
+   * Exporta la tabla HTML proporcionada como un archivo de Excel.
+   * @param table Elemento HTML de la tabla a exportar.
+   * @param excelFileName Nombre deseado para el archivo de Excel.
    */
   public exportAsExcelFile(table: HTMLElement, excelFileName: string): void {
     const clonedTable = table.cloneNode(true) as HTMLElement;
@@ -51,7 +52,7 @@ export class ExcelService {
       const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
       saveAs(data, fileName + EXCEL_EXTENSION);
     } catch (error) {
-      console.error('An error occurred while saving the Excel file:', error);
+      console.error('Ocurrió un error al guardar el archivo Excel:', error);
     }
   }
 }

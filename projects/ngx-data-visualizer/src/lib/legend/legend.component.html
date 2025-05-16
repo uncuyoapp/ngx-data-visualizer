@@ -1,28 +1,68 @@
 <div class="legend-wrapper">
-  <button type="button" class="legend-show-button clear-button" (click)="onClickShowLegends()">Ver leyendas</button>
+  <button 
+    type="button" 
+    class="legend-toggle-button clear-button" 
+    (click)="toggleLegendVisibility()"
+    [attr.aria-expanded]="isLegendVisible()"
+    [attr.aria-controls]="'legend-content'"
+  >
+    {{ legendButtonText() }}
+  </button>
 
-  <div #legends class="legends" [hidden]="!showLegends">
-    @for (seriesElement of series(); track seriesElement.name) {
-    <button class="legend clear-button" [title]="seriesElement.name"
-      (click)="onClickLegend(seriesElement)" (mouseenter)="onHoverLegend(seriesElement)"
-      (mouseleave)="onHoverLegend(seriesElement)">
-
-      @if (seriesElement.visible) {
-      <svg xmlns="http://www.w3.org/2000/svg" title="Mostrar" [style.color]="seriesElement.color" fill="currentcolor"
-        class="series-icon" viewBox="0 0 512 512">
-        <path
-          d="M416 464H96a48.05 48.05 0 01-48-48V96a48.05 48.05 0 0148-48h320a48.05 48.05 0 0148 48v320a48.05 48.05 0 01-48 48z" />
-      </svg>
-      } @else {
-      <svg xmlns="http://www.w3.org/2000/svg" title="Ocultar" [style.color]="seriesElement.color" class="series-icon"
-        viewBox="0 0 512 512">
-        <path
-          d="M416 448H96a32.09 32.09 0 01-32-32V96a32.09 32.09 0 0132-32h320a32.09 32.09 0 0132 32v320a32.09 32.09 0 01-32 32z"
-          fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" />
-      </svg>
+  @if (isLegendVisible()) {
+    <div 
+      id="legend-content"
+      class="legends"
+      role="region"
+      aria-label="Leyenda de series"
+    >
+      @for (seriesItem of series(); track trackBySeriesName($index, seriesItem)) {
+        <button 
+          type="button"
+          class="legend-item clear-button" 
+          [title]="seriesItem.name"
+          (click)="onLegendClick(seriesItem)" 
+          (mouseenter)="onLegendHover(seriesItem)"
+          (mouseleave)="onLegendHover(seriesItem)"
+          [attr.aria-pressed]="seriesItem.visible"
+          [attr.aria-label]="seriesItem.name + (seriesItem.visible ? ' visible' : ' oculto')"
+        >
+          @if (seriesItem.visible) {
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              [attr.title]="'Ocultar ' + seriesItem.name"
+              [style.color]="seriesItem.color" 
+              fill="currentcolor"
+              class="series-icon" 
+              viewBox="0 0 512 512"
+              aria-hidden="true"
+            >
+              <path
+                d="M416 464H96a48.05 48.05 0 01-48-48V96a48.05 48.05 0 0148-48h320a48.05 48.05 0 0148 48v320a48.05 48.05 0 01-48 48z" 
+              />
+            </svg>
+          } @else {
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              [attr.title]="'Mostrar ' + seriesItem.name"
+              [style.color]="seriesItem.color" 
+              class="series-icon"
+              viewBox="0 0 512 512"
+              aria-hidden="true"
+            >
+              <path
+                d="M416 448H96a32.09 32.09 0 01-32-32V96a32.09 32.09 0 0132-32h320a32.09 32.09 0 0132 32v320a32.09 32.09 0 01-32 32z"
+                fill="none" 
+                stroke="currentcolor" 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="32" 
+              />
+            </svg>
+          }
+          <span class="legend-item-label">{{ seriesItem.name }}</span>
+        </button>
       }
-      <span>{{seriesElement.name}}</span>
-    </button>
-    }
-  </div>
+    </div>
+  }
 </div>

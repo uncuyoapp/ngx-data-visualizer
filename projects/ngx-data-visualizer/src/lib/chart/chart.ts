@@ -1,8 +1,10 @@
-import { ChartConfiguration, ChartConfigurationOptions } from "./chart-configuration";
-import { ChartData } from "./chart-data";
+import {
+  ChartConfiguration,
+  ChartConfigurationOptions,
+} from './chart-configuration';
+import { ChartData } from './chart-data';
 
 export abstract class Chart {
-
   abstract name: string;
   enabled = true;
   protected abstract series: object[];
@@ -10,7 +12,7 @@ export abstract class Chart {
   public libraryOptions: object;
   public chartOptions: ChartConfigurationOptions;
 
-  constructor(public configuration: ChartConfiguration) { 
+  constructor(public configuration: ChartConfiguration) {
     this.chartData = configuration.chartData;
     this.libraryOptions = configuration.libraryOptions;
     this.chartOptions = configuration.options;
@@ -33,6 +35,6 @@ export abstract class Chart {
   abstract hide(): void;
   abstract togglePercentMode(): void;
   abstract setExtremes(): void;
-  abstract export(type: 'svg' | 'jpg'): string|void;
-
+  abstract export(type: 'svg' | 'jpg'): string | void;
+  abstract dispose(): void;
 }

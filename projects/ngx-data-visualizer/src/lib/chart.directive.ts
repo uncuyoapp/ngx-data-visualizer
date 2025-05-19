@@ -1,6 +1,17 @@
-import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input, output } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
-import { ChartConfiguration, ChartConfigurationOptions } from './chart/chart-configuration';
+import {
+  ComponentRef,
+  Directive,
+  OnDestroy,
+  ViewContainerRef,
+  effect,
+  input,
+  output,
+} from '@angular/core';
+import { Subject } from 'rxjs';
+import {
+  ChartConfiguration,
+  ChartConfigurationOptions,
+} from './chart/chart-configuration';
 import { ChartComponent } from './chart/chart.component';
 import { ChartService } from './chart/chart.service';
 import { Dataset } from './dataset';
@@ -19,16 +30,16 @@ export class ChartDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
   /** Conjunto de datos para el gráfico */
   dataset = input.required<Dataset>();
-  
+
   /** Opciones de configuración del gráfico */
   options = input.required<ChartConfigurationOptions>();
-  
+
   /** Evento que se emite cuando cambian las series del gráfico */
   seriesChange = output<Series[]>();
 
   private chartRenderComponentRef!: ComponentRef<ChartComponent>;
   private chartConfiguration!: ChartConfiguration;
-  
+
   /** Referencia al componente de gráfico creado */
   chartComponent!: ChartComponent;
 
@@ -37,6 +48,7 @@ export class ChartDirective implements OnDestroy {
     private chartService: ChartService
   ) {
     this.initializeChart();
+    this.initializeSeriesEffect();
   }
 
   /**
@@ -45,16 +57,19 @@ export class ChartDirective implements OnDestroy {
   private initializeChart(): void {
     effect(() => {
       this.createChartComponent();
-      
-      // Configurar la suscripción a cambios en las series
+    });
+  }
+
+  /**
+   * Inicializa el efecto para las series
+   */
+  private initializeSeriesEffect(): void {
+    effect(() => {
       if (this.chartComponent) {
-        // Usamos la señal directamente ya que no hay un evento seriesChange
-        effect(() => {
-          const currentSeries = this.chartComponent.series();
-          if (currentSeries) {
-            this.seriesChange.emit(currentSeries);
-          }
-        });
+        const currentSeries = this.chartComponent.series();
+        if (currentSeries) {
+          this.seriesChange.emit(currentSeries);
+        }
       }
     });
   }
@@ -64,16 +79,22 @@ export class ChartDirective implements OnDestroy {
    */
   createChartComponent() {
     this.viewContainerRef.clear();
-    this.chartConfiguration = this.chartService.getChartConfiguration(this.dataset(), this.options());
-    
-    // Crear el componente
-    this.chartRenderComponentRef = this.viewContainerRef.createComponent<ChartComponent>(ChartComponent);
-    this.chartComponent = this.chartRenderComponentRef.instance;
-    
-    // Configurar la entrada usando setInput
-    this.chartRenderComponentRef.setInput('chartConfiguration', this.chartConfiguration);
-  }
+    this.chartConfiguration = this.chartService.getChartConfiguration(
+      this.dataset(),
+      this.options()
+    );
 
+    // Crear el componente
+    this.chartRenderComponentRef =
+      this.viewContainerRef.createComponent<ChartComponent>(ChartComponent);
+    this.chartComponent = this.chartRenderComponentRef.instance;
+
+    // Configurar la entrada usando setInput
+    this.chartRenderComponentRef.setInput(
+      'chartConfiguration',
+      this.chartConfiguration
+    );
+  }
 
   /**
    * Cambia la visualización del gráfico a modo porcentual
@@ -95,6 +116,12 @@ export class ChartDirective implements OnDestroy {
    * Alterna la visibilidad de una meta específica en el gráfico
    * @param goal Objeto Goal que representa la meta a mostrar/ocultar
    */
+  toggleShowGoal(goal: Goal) {
+    if (this.chartComponent) {
+      this.chartComponent.toggleShowGoal(goal);
+    }
+  }
+
   /**
    * Limpia los recursos al destruir la directiva
    */
@@ -102,11 +129,5 @@ export class ChartDirective implements OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.viewContainerRef.clear();
-  }
-
-  toggleShowGoal(goal: Goal) {
-    if (this.chartComponent) {
-      this.chartComponent.toggleShowGoal(goal);
-    }
   }
 }

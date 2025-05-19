@@ -8,13 +8,13 @@ import { Dimension, Filters, RowData, TimeSeries } from './models';
 export interface DatasetModel {
   /** Identificador único opcional del dataset */
   id?: number;
-  
+
   /** Dimensiones disponibles en el dataset */
   dimensions: Dimension[];
-  
+
   /** Indica si está habilitada la agrupación (roll up) de datos */
   enableRollUp: boolean;
-  
+
   /** Datos en formato de filas */
   rowData: RowData[];
 }
@@ -26,19 +26,19 @@ export interface DatasetModel {
 export class Dataset implements DatasetModel {
   /** Identificador único opcional del dataset */
   public readonly id?: number;
-  
+
   /** Dimensiones disponibles en el dataset */
   public readonly dimensions: Dimension[];
-  
+
   /** Indica si está habilitada la agrupación (roll up) de datos */
   public readonly enableRollUp: boolean;
-  
+
   /** Datos en formato de filas */
   public readonly rowData: RowData[];
-  
+
   /** Proveedor de datos para operaciones de filtrado y consulta */
   public readonly dataProvider: DataProvider;
-  
+
   /** Subject que emite cuando los datos son actualizados */
   public readonly dataUpdated = new Subject<boolean>();
 
@@ -74,7 +74,7 @@ export class Dataset implements DatasetModel {
     this.rowData = this.validateRowData(config.rowData);
     this.enableRollUp = Boolean(config.enableRollUp);
     this.dataProvider = new DataProvider({ dimensions: this.dimensions, rowData: this.rowData });
-    
+
     // Validar que las dimensiones en los datos coincidan con las dimensiones definidas
     this.validateDataAgainstDimensions();
   }
@@ -90,22 +90,22 @@ export class Dataset implements DatasetModel {
       console.warn('Las dimensiones deben ser un arreglo, se usará un arreglo vacío');
       return [];
     }
-    
+
     // Validar que cada dimensión tenga los campos requeridos
     return dimensions.map((dim, index) => {
       if (!dim || typeof dim !== 'object') {
         throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
       }
-      
-      const requiredFields = ['id', 'name', 'nameView', 'items', 'selected', 'showItems', 'enableMulti'];
+
+      const requiredFields = ['id', 'name', 'nameView', 'items', 'selected', 'enableMulti'];
       const missingFields = requiredFields.filter(field => !(field in dim));
-      
+
       if (missingFields.length > 0) {
         throw new Error(
           `Dimensión '${dim.name || 'sin nombre'}' falta(n) campo(s) requerido(s): ${missingFields.join(', ')}`
         );
       }
-      
+
       return { ...dim };
     });
   }
@@ -121,7 +121,7 @@ export class Dataset implements DatasetModel {
       console.warn('Los datos de fila deben ser un arreglo, se usará un arreglo vacío');
       return [];
     }
-    
+
     return rowData.map((row, index) => {
       if (!row || typeof row !== 'object' || Array.isArray(row)) {
         throw new Error(`Fila en posición ${index} no es un objeto válido`);
@@ -170,28 +170,8 @@ export class Dataset implements DatasetModel {
    * });
    */
   public applyFilters(filters: Filters): void {
-    if (!filters) {
-      throw new Error('Los filtros son requeridos');
-    }
-
-    try {
-      // Validar los filtros antes de aplicarlos
-      filters.validate();
-      
-      // Crear una copia profunda de los filtros
-      const filtersCopy = new Filters();
-      filtersCopy.rollUp = [...(filters.rollUp || [])];
-      filtersCopy.filter = (filters.filter || []).map(f => ({
-        name: f.name,
-        items: [...(f.items || [])]
-      }));
-      
-      this.dataProvider.filters = filtersCopy;
-      this.dataUpdated.next(true);
-    } catch (error) {
-      console.error('Error al aplicar filtros:', error);
-      throw new Error(`Error al aplicar filtros: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    this.dataProvider.filters = filters;
+    this.dataUpdated.next(true);
   }
 
   /**

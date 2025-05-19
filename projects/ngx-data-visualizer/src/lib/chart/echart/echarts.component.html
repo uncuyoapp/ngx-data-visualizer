@@ -1,5 +1,11 @@
-@if(mainChart){
-<div [id]="id" echarts [initOpts]="initOptions" [options]="mainChart.libraryOptions" class="chart" [autoResize]="true"
-  (chartInit)="setChartInstance($event)">
-</div>
+@if (mainChart) {
+  <div
+    [id]="id"
+    echarts
+    [initOpts]="initOptions"
+    [options]="mainChart.libraryOptions"
+    class="chart"
+    [autoResize]="true"
+    (chartInit)="setChartInstance($event)">
+  </div>
 }

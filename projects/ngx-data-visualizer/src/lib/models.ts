@@ -4,25 +4,22 @@
 export interface Dimension {
   /** Identificador único de la dimensión */
   id: number;
-  
+
   /** Nombre interno de la dimensión */
   name: string;
-  
+
   /** Nombre para mostrar de la dimensión */
   nameView: string;
-  
+
   /** Elementos que componen la dimensión */
   items: Item[];
-  
+
   /** Indica si la dimensión está seleccionada */
   selected: boolean;
-  
-  /** Indica si se deben mostrar los elementos de la dimensión */
-  showItems: boolean;
-  
+
   /** Habilita la selección múltiple de elementos */
   enableMulti: boolean;
-  
+
   /** Tipo de dimensión (opcional) */
   type?: number;
 }
@@ -33,16 +30,16 @@ export interface Dimension {
 export interface Item {
   /** Identificador único del ítem */
   id: number;
-  
+
   /** Nombre del ítem */
   name: string;
-  
+
   /** Color asociado al ítem (opcional) */
   color?: string;
-  
+
   /** Orden de visualización del ítem (opcional) */
   order?: number;
-  
+
   /** Indica si el ítem está seleccionado */
   selected: boolean;
 }
@@ -70,32 +67,9 @@ export interface TimeSeries {
 export class Filters {
   /** Nombres de dimensiones a agrupar */
   public rollUp: string[] = [];
-  
+
   /** Filtros de dimensión a aplicar */
   public filter: DimensionFilter[] = [];
-
-  /**
-   * Valida si los filtros son válidos
-   * @throws {Error} Si los filtros no son válidos
-   */
-  public validate(): void {
-    if (!Array.isArray(this.rollUp)) {
-      throw new Error('rollUp debe ser un array');
-    }
-    
-    if (!Array.isArray(this.filter)) {
-      throw new Error('filter debe ser un array');
-    }
-    
-    this.filter.forEach((f, index) => {
-      if (!f.name || typeof f.name !== 'string') {
-        throw new Error(`Filtro en posición ${index} no tiene un nombre válido`);
-      }
-      if (!Array.isArray(f.items)) {
-        throw new Error(`Los items del filtro '${f.name}' deben ser un array`);
-      }
-    });
-  }
 }
 
 /**
@@ -104,7 +78,7 @@ export class Filters {
 export interface DimensionFilter {
   /** Nombre de la dimensión a filtrar */
   name: string;
-  
+
   /** Valores seleccionados para el filtro */
   items: Array<string | number>;
 }
@@ -134,16 +108,39 @@ export interface RowData {
 export interface Series {
   /** Nombre de la serie */
   name: string;
-  
+
   /** Color de la serie */
   color: string;
-  
+
   /** Indica si la serie es visible */
   visible: boolean;
-  
+
   /** Datos de la serie */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+  data: Array<number | [number, number] | { value: number }>;
+
+  /** Indica si la serie debe mostrarse con líneas suaves */
+  smooth?: boolean;
+
+  /** Indica si la serie debe apilarse con otras series */
+  stacking?: string | undefined;
+
+  /** Tipo de gráfico asociado a la serie */
+  chartType?: string;
+
+  /** Tipo de serie para ECharts */
+  type?: string;
+
+  /** Símbolo para los puntos de la serie */
+  symbol?: string;
+
+  /** Tamaño del símbolo */
+  symbolSize?: number;
+
+  /** Estilo de la línea */
+  lineStyle?: {
+    width?: number;
+    type?: string;
+  };
 }
 
 /**
@@ -152,10 +149,10 @@ export interface Series {
 export interface Goal {
   /** Tipo de gráfico para representar la meta */
   chartType: string;
-  
+
   /** Texto descriptivo de la meta */
   text: string;
-  
+
   /** Datos asociados a la meta */
   data: RowData[];
 }

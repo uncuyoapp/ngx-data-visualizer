@@ -6,95 +6,283 @@ import {
   YAXisComponentOption,
 } from 'echarts';
 import { Chart } from '../chart';
-import { ChartConfiguration } from '../chart-configuration';
+import {
+  ChartConfiguration,
+  EChartsLibraryOptions,
+} from '../chart-configuration';
 import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from './echartsConfigurations';
+import { ExportManager } from './export-manager';
+import { SeriesConfigType, SeriesManager } from './series-manager';
+import { TooltipManager } from './tooltip-manager';
 
+/**
+ * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.
+ * Esta clase maneja la configuración, renderizado y manipulación de gráficos ECharts.
+ *
+ * @example
+ * ```typescript
+ * // Crear una instancia de EChart
+ * const config: ChartConfiguration = {
+ *   type: 'bar',
+ *   data: {
+ *     series: [
+ *       { name: 'Serie 1', data: [[0, 10], [1, 20], [2, 30]] }
+ *     ],
+ *     seriesConfig: { x1: 'categoría' }
+ *   },
+ *   options: {
+ *     xAxis: { title: 'Categorías' },
+ *     yAxis: { title: 'Valores' }
+ *   }
+ * };
+ * const chart = new EChart(config);
+ *
+ * // Renderizar el gráfico
+ * chart.render();
+ *
+ * // Exportar a SVG
+ * const svg = chart.export('svg');
+ * ```
+ *
+ * @param configuration - Configuración del gráfico
+ * @property {string} configuration.type - Tipo de gráfico ('bar', 'line', 'pie', etc.)
+ * @property {object} configuration.data - Datos del gráfico
+ * @property {Array<SeriesConfigType>} configuration.data.series - Series de datos
+ * @property {object} configuration.data.seriesConfig - Configuración de series
+ * @property {object} configuration.options - Opciones de visualización
+ *
+ * @limitations
+ * - El modo porcentual solo funciona con series apiladas
+ * - La exportación a JPG puede tener problemas con gráficos muy grandes
+ * - El tooltip personalizado no soporta HTML complejo
+ * - El redimensionamiento automático puede ser lento con muchos datos
+ *
+ * @performance
+ * - Se implementa memoización para cálculos costosos
+ * - Se usa debounce para reducir redibujados
+ * - Se optimiza el manejo de eventos
+ *
+ * @see {@link Chart} Clase base
+ * @see {@link SeriesManager} Gestión de series
+ * @see {@link TooltipManager} Gestión de tooltips
+ * @see {@link ExportManager} Gestión de exportación
+ */
 export class EChart extends Chart {
+  // Instancia de ECharts que maneja el gráfico
   public chartInstance!: ECharts;
+  private tooltipManager: TooltipManager;
+  private exportManager!: ExportManager;
+  private seriesManager!: SeriesManager;
 
+  // Propiedades heredadas de la clase base Chart
   override name: string = '';
-  override libraryOptions!: EChartsOption;
-  override series: any[] = [];
+  override libraryOptions!: EChartsLibraryOptions;
+  override series: SeriesConfigType[] = [];
 
-  private totals: any[] = [];
-  private suffixSaved: string | null = '';
-  private maxValue = 0;
+  // Propiedades privadas para manejo interno
+  private totals: number[] = []; // Almacena los totales para cálculos de porcentajes
+  private suffixSaved: string | null = ''; // Guarda el sufijo original para restaurarlo
+  private maxValue = 0; // Valor máximo para escalado del eje
+  private savedYAxisMaxValue: number | null = null; // Guarda el valor máximo del eje Y
 
-  private savedYAxisMaxValue: number | null = null;
+  // Cache para memoización
+  private optionsCache: Map<string, EChartsOption> = new Map();
+  private seriesDataCache: Map<string, any[]> = new Map();
+  private lastRenderTime: number = 0;
+  private renderDebounceTimeout: number | null = null;
+  private readonly RENDER_DEBOUNCE_MS = 100;
 
   constructor(public override configuration: ChartConfiguration) {
     super(configuration);
+    this.tooltipManager = new TooltipManager(
+      this.chartOptions.tooltip.decimals,
+      this.chartOptions.tooltip.suffix
+    );
   }
 
+  /**
+   * Getters y Setters para la instancia del gráfico
+   * @param instance - Instancia de ECharts
+   * @throws {Error} Si la instancia es inválida
+   */
   set instance(instance: ECharts) {
+    if (!instance) {
+      throw new Error('La instancia de ECharts es requerida');
+    }
     this.chartInstance = instance;
+    this.exportManager = new ExportManager(instance);
+    this.seriesManager = new SeriesManager(instance);
+
+    // Optimización de eventos
+    this.setupEventHandlers();
+
     (this.libraryOptions.tooltip as any).formatter = (params: any) =>
-      this.tooltipFormatter(
+      this.tooltipManager.formatTooltip(
         params,
-        this.libraryOptions,
-        this.chartOptions.tooltip.decimals,
-        this.chartOptions.tooltip.suffix
+        this.libraryOptions as EChartsOption
       );
   }
 
+  /**
+   * Obtiene la instancia actual del gráfico
+   * @returns {ECharts} Instancia de ECharts
+   */
   get instance(): ECharts {
     return this.chartInstance;
   }
 
+  /**
+   * Configuración optimizada de manejadores de eventos
+   * @private
+   */
+  private setupEventHandlers(): void {
+    if (!this.chartInstance) return;
+
+    // Usar un solo listener para múltiples eventos
+    const eventHandler = this.debounce(() => {
+      this.handleChartEvent();
+    }, 100);
+
+    this.chartInstance.on('click', eventHandler);
+    this.chartInstance.on('mouseover', eventHandler);
+    this.chartInstance.on('mouseout', eventHandler);
+  }
+
+  /**
+   * Manejo optimizado de eventos del gráfico
+   * @private
+   */
+  private handleChartEvent(): void {
+    // Implementar lógica de manejo de eventos aquí
+    // Evitar operaciones costosas durante eventos frecuentes
+  }
+
+  /**
+   * Métodos de gestión del ciclo de vida del gráfico
+   * Limpia los recursos y cierra la instancia del gráfico
+   */
   override dispose(): void {
+    if (this.renderDebounceTimeout) {
+      window.clearTimeout(this.renderDebounceTimeout);
+    }
+    this.optionsCache.clear();
+    this.seriesDataCache.clear();
     this.chartInstance.dispose();
   }
 
-  getOptions() {
-    return this.chartInstance?.getOption();
-  }
-
-  getSeries(): any[] {
-    if (!this.instance || !this.instance.getOption()) {
-      return [];
+  /**
+   * Obtiene las opciones actuales del gráfico con memoización
+   * @returns {object} Opciones del gráfico
+   */
+  getOptions(): object {
+    const cacheKey = this.generateCacheKey();
+    if (this.optionsCache.has(cacheKey)) {
+      return this.optionsCache.get(cacheKey) || {};
     }
-    return (this.instance.getOption()['series'] as any[]) || [];
+    const options = this.chartInstance?.getOption() || {};
+    this.optionsCache.set(cacheKey, options as EChartsOption);
+    return options;
   }
 
-  addSeries(series: any): void {
-    const currentSeries = this.chartInstance.getOption()['series'] as any[];
-    this.chartInstance.setOption({ series: [...currentSeries, series] });
-  }
-
-  delSeries(series: any): void {
-    const currentSeries = this.chartInstance.getOption()['series'] as any[];
-    this.chartInstance.setOption({
-      series: currentSeries.filter((cs) => cs.name != series.name),
+  /**
+   * Genera una clave única para el cache basada en el estado actual
+   * @private
+   * @returns {string} Clave del cache
+   */
+  private generateCacheKey(): string {
+    return JSON.stringify({
+      series: this.series,
+      maxValue: this.maxValue,
+      toPercent: this.chartOptions.toPercent,
     });
   }
 
-  hoverSeries(series: any): void {
-    if (series.hover) {
-      this.chartInstance.dispatchAction({ type: 'downplay' });
-    } else {
-      this.chartInstance.dispatchAction({
-        type: 'highlight',
-        seriesName: series.name,
-      });
-    }
-    series.hover = !series.hover;
+  /**
+   * Obtiene las series actuales del gráfico
+   * @returns {SeriesConfigType[]} Array de series
+   */
+  getSeries(): SeriesConfigType[] {
+    return this.seriesManager.getSeries();
   }
 
-  selectSeries(series: any): void {
-    if (series.visible) {
-      this.chartInstance.dispatchAction({
-        type: 'legendUnSelect',
-        name: series.name,
-      });
-    } else {
-      this.chartInstance.dispatchAction({
-        type: 'legendSelect',
-        name: series.name,
-      });
+  /**
+   * Añade una nueva serie al gráfico
+   * @param series - Configuración de la serie a añadir
+   */
+  addSeries(series: SeriesConfigType): void {
+    console.log('Agregando serie al gráfico:', series);
+
+    if (!this.instance) {
+      console.error('No se puede agregar la serie: la instancia de ECharts no está inicializada');
+      return;
     }
-    series.visible = !series.visible;
+
+    try {
+      const currentSeries = this.instance.getOption()['series'] as SeriesConfigType[];
+      console.log('Series actuales:', currentSeries);
+
+      // Asegurarnos de que la serie tenga el formato correcto para ECharts
+      const formattedSeries = {
+        ...series,
+        type: series.type || 'line',
+        data: series.data,
+        name: series.name,
+        color: series.color,
+        smooth: series['smooth'],
+        symbol: series['symbol'],
+        symbolSize: series['symbolSize'],
+        lineStyle: series['lineStyle']
+      };
+      console.log('Serie formateada:', formattedSeries);
+
+      // Agregar la serie al gráfico
+      this.instance.setOption({ series: [...currentSeries, formattedSeries] });
+      console.log('Serie agregada exitosamente');
+
+      // Invalidar la caché para forzar una actualización
+      this.invalidateCache();
+    } catch (error) {
+      console.error('Error al agregar la serie:', error);
+    }
   }
 
+  /**
+   * Elimina una serie del gráfico
+   * @param series - Configuración de la serie a eliminar
+   */
+  delSeries(series: SeriesConfigType): void {
+    this.seriesManager.deleteSeries(series);
+    this.invalidateCache();
+  }
+
+  /**
+   * Invalida el cache de opciones y datos
+   * @private
+   */
+  private invalidateCache(): void {
+    this.optionsCache.clear();
+    this.seriesDataCache.clear();
+  }
+
+  /**
+   * Maneja el hover de una serie
+   * @param series - Serie sobre la que se hace hover
+   */
+  hoverSeries(series: SeriesConfigType): void {
+    this.seriesManager.handleHover(series);
+  }
+
+  /**
+   * Maneja la selección de una serie
+   * @param series - Serie a seleccionar
+   */
+  selectSeries(series: SeriesConfigType): void {
+    this.seriesManager.handleSelection(series);
+  }
+
+  /**
+   * Expande el gráfico para mejor visualización
+   */
   expand(): void {
     setTimeout(() => {
       this.chartInstance
@@ -103,13 +291,26 @@ export class EChart extends Chart {
     }, 500);
   }
 
+  /**
+   * Condensa el gráfico
+   */
   condense(): void {
     this.expand();
   }
 
+  /**
+   * Oculta el gráfico
+   */
   hide(): void {}
 
-  togglePercentMode() {
+  /**
+   * Alterna el modo porcentual del gráfico
+   * @throws {Error} Si el gráfico no está en modo apilado
+   */
+  togglePercentMode(): void {
+    if (!this.chartData.seriesConfig.stack) {
+      throw new Error('El modo porcentual requiere series apiladas');
+    }
     this.chartOptions.toPercent = !this.chartOptions.toPercent;
     if (this.chartOptions.toPercent) {
       this.enablePercentMode();
@@ -119,6 +320,10 @@ export class EChart extends Chart {
     this.render();
   }
 
+  /**
+   * Habilita el modo porcentual
+   * @private
+   */
   private enablePercentMode() {
     this.ensureStackedSeries();
     this.suffixSaved = this.chartOptions.tooltip.suffix;
@@ -127,24 +332,39 @@ export class EChart extends Chart {
     this.saveAndSetYAxisMax(100);
   }
 
+  /**
+   * Deshabilita el modo porcentual
+   * @private
+   */
   private disablePercentMode() {
     this.unstackSeriesIfNotStacked();
     this.chartOptions.tooltip.suffix = this.suffixSaved;
     this.restoreYAxisMax();
   }
 
+  /**
+   * Asegura que las series estén apiladas
+   * @private
+   */
   private ensureStackedSeries() {
-    if (!this.chartData.seriesConfig.stack) {
-      this.chartData.seriesConfig.stack = 'stack';
-    }
+    this.chartData.seriesConfig.stack ??= 'stack';
   }
 
+  /**
+   * Desapila las series si no están configuradas como apiladas
+   * @private
+   */
   private unstackSeriesIfNotStacked() {
     if (!this.chartOptions.stacked) {
       this.chartData.seriesConfig.stack = null;
     }
   }
 
+  /**
+   * Guarda y establece el valor máximo del eje Y
+   * @private
+   * @param maxValue - Valor máximo a establecer
+   */
   private saveAndSetYAxisMax(maxValue: number) {
     if (this.chartOptions.yAxis.max) {
       this.savedYAxisMaxValue = this.chartOptions.yAxis.max;
@@ -152,57 +372,66 @@ export class EChart extends Chart {
     this.chartOptions.yAxis.max = maxValue;
   }
 
+  /**
+   * Restaura el valor máximo del eje Y
+   * @private
+   */
   private restoreYAxisMax() {
     this.chartOptions.yAxis.max = this.savedYAxisMaxValue;
     this.savedYAxisMaxValue = null;
   }
 
+  /**
+   * Establece los extremos del gráfico
+   * @throws {Error} Método no implementado
+   */
   setExtremes(): void {
     throw new Error('Method not implemented.');
   }
 
-  export(type: 'svg' | 'jpg') {
-    return type === 'svg' ? this.getSVG() : this.downloadImage();
+  /**
+   * Exporta el gráfico en el formato especificado
+   * @param type - Tipo de exportación ('svg' | 'jpg')
+   * @returns {string | void} Datos del gráfico exportado
+   * @throws {Error} Si el tipo de exportación no es válido
+   */
+  export(type: 'svg' | 'jpg'): string | void {
+    if (!['svg', 'jpg'].includes(type)) {
+      throw new Error('Tipo de exportación no válido');
+    }
+    return this.exportManager.export(type);
   }
 
-  private getSVG() {
-    const width = this.chartInstance.getWidth();
-    const height = this.chartInstance.getHeight();
-    this.resizeChart(1000, 550);
-    const svgDataUrl = this.chartInstance.getConnectedDataURL({
-      type: 'svg',
-    });
-    this.resizeChart(width, height); //Reset to original size
-    return decodeURIComponent(svgDataUrl.split(',')[1]);
-  }
-
-  private downloadImage() {
-    const width = this.chartInstance.getWidth();
-    const height = this.chartInstance.getHeight();
-    this.resizeChart(1280, 720);
-    // Export chart to PNG
-    // this.chartInstance.convertToPixel({ seriesIndex: 0 }, [0, 0]); // This step might be necessary
-    const pngDataUrl = this.chartInstance.getConnectedDataURL({
-      type: 'jpeg',
-      pixelRatio: 2, // Set the pixel ratio (e.g., 2 for higher resolution),
-      backgroundColor: '#FFFF',
-    });
-    this.resizeChart(width, height); //Reset to original size
-    const downloadLink = document.createElement('a');
-    downloadLink.href = pngDataUrl;
-    downloadLink.download = this.chartOptions.title + 'chart.jpg';
-    downloadLink.click();
-  }
-
-  private resizeChart(width: number, height: number): void {
-    this.chartInstance.resize({ width, height });
-  }
-
+  /**
+   * Renderiza el gráfico con optimizaciones de rendimiento
+   */
   render(): void {
+    const now = Date.now();
+    if (now - this.lastRenderTime < this.RENDER_DEBOUNCE_MS) {
+      if (this.renderDebounceTimeout) {
+        window.clearTimeout(this.renderDebounceTimeout);
+      }
+      this.renderDebounceTimeout = window.setTimeout(() => {
+        this.performRender();
+      }, this.RENDER_DEBOUNCE_MS);
+      return;
+    }
+    this.performRender();
+  }
+
+  /**
+   * Realiza el renderizado del gráfico
+   * @private
+   */
+  private performRender(): void {
+    this.lastRenderTime = Date.now();
     this.generateConfiguration();
     if (this.chartInstance) {
       this.chartInstance.clear();
-      this.chartInstance.setOption(this.libraryOptions);
+      this.chartInstance.setOption(this.libraryOptions, {
+        notMerge: true,
+        lazyUpdate: true,
+      });
     }
   }
 
@@ -225,15 +454,24 @@ export class EChart extends Chart {
   }
 
   private configureSeries(series: Array<any>) {
-    series.forEach((s, index) => {
+    const cacheKey = JSON.stringify(series);
+    if (this.seriesDataCache.has(cacheKey)) {
+      this.libraryOptions.series = this.seriesDataCache.get(cacheKey);
+      return;
+    }
+
+    const processedSeries = series.map((s, index) => {
       s.type = this.getChartType(this.libraryOptions['type'] as string);
       this.assignSeriesConfig(s);
       s.data = this.processSeriesData(s.data);
       this.ensureSeriesStack(s);
       this.setSeriesVisibility(s);
       this.setSeriesColor(s, index);
+      return s;
     });
-    this.libraryOptions.series = series;
+
+    this.seriesDataCache.set(cacheKey, processedSeries);
+    this.libraryOptions.series = processedSeries;
   }
 
   private assignSeriesConfig(s: any) {
@@ -355,9 +593,24 @@ export class EChart extends Chart {
       nameTextStyle: { fontWeight: 'bold' },
       max: this.chartOptions.yAxis.max,
       axisLabel: {
-        formatter: (value: string) => this.valueFormatter(value),
+        formatter: (value: string) => this.formatValue(value),
       },
     };
+  }
+
+  /**
+   * Formatea un valor numérico
+   */
+  private formatValue(value: string): string {
+    if (!value) {
+      return '-';
+    }
+    const returnValue = parseFloat(value).toLocaleString('es-AR', {
+      useGrouping: true,
+    });
+    return this.chartOptions.tooltip.suffix
+      ? returnValue + ' ' + this.chartOptions.tooltip.suffix
+      : returnValue;
   }
 
   private configureDualXAxis(xAxis: any[], x1: string, x2: string) {
@@ -393,133 +646,21 @@ export class EChart extends Chart {
     xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
   }
 
-  private tooltipFormatter(
-    params: any,
-    options: EChartsOption,
-    decimals?: number | null,
-    suffix?: string | null
-  ) {
-    const title = this.formatTooltipTitle(params, options);
-    const template = Array.isArray(params)
-      ? this.formatMultipleParamsTooltip(
-          params,
-          title,
-          options,
-          decimals,
-          suffix
-        )
-      : this.formatSingleParamTooltip(params, title, decimals, suffix);
-
-    return template;
-  }
-
-  private formatTooltipTitle(params: any, options: EChartsOption): string {
-    let title = Array.isArray(params) ? params[0].name : params.name;
-    const dataIndex = Array.isArray(params)
-      ? params[0].dataIndex
-      : params.dataIndex;
-
-    if (Array.isArray(options.xAxis) && options.xAxis.length > 1) {
-      title = `${
-        (options.xAxis[1] as any).data[
-          Math.floor(
-            dataIndex /
-              ((options.xAxis[0] as any).data.length /
-                (options.xAxis[1] as any).data.length)
-          )
-        ]
-      } - ${title}`;
-    } else if (Array.isArray(options.yAxis) && options.yAxis.length > 1) {
-      title = `${
-        (options.yAxis[1] as any).data[
-          Math.floor(
-            dataIndex /
-              ((options.yAxis[0] as any).data.length /
-                (options.yAxis[1] as any).data.length)
-          )
-        ]
-      } - ${title}`;
-    }
-
-    return title;
-  }
-
-  private formatSingleParamTooltip(
-    param: any,
-    title: string,
-    decimals?: number | null,
-    suffix?: string | null
-  ): string {
-    const value =
-      param.value !== null
-        ? this.valueFormatter(param.value, decimals, suffix)
-        : '-';
-
-    return `
-        <div class="ec-tooltip">
-            <label class="title">${title}</label><br>
-            ${param.marker}
-            <label class="series-name">${param.seriesName}</label>:<label class="value">${value}</label>
-        </div>
-    `;
-  }
-
-  private formatMultipleParamsTooltip(
-    params: any[],
-    title: string,
-    options: EChartsOption,
-    decimals?: number | null,
-    suffix?: string | null
-  ): string {
-    let list = params
-      .map(
-        (param) =>
-          `${param.marker}
-        <label class="series-name">${
-          param.seriesName
-        }</label>:<label class="value">${
-            param.value !== null
-              ? this.valueFormatter(param.value, decimals, suffix)
-              : '-'
-          }</label>`
-      )
-      .join('<br>');
-
-    if ((options.tooltip as any).showTotal) {
-      const showTotal = params.reduce((total, param) => total + param.value, 0);
-      list += `<hr><label class="summation">Total</label>:<label class="value">${this.valueFormatter(
-        showTotal,
-        decimals,
-        suffix
-      )}</label>`;
-    }
-
-    return `
-        <div class="ec-tooltip">
-            <label class="title">${title}</label><br>
-            ${list}
-        </div>
-    `;
-  }
-
-  private valueFormatter(
-    value: string,
-    decimals?: number | null,
-    suffix?: string | null
-  ) {
-    if (!value) {
-      return '-';
-    }
-    const returnValue =
-      decimals !== null
-        ? parseFloat('' + value).toLocaleString('es-AR', {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals,
-            useGrouping: true,
-          })
-        : parseFloat(value).toLocaleString('es-AR', {
-            useGrouping: true,
-          });
-    return suffix ? returnValue + ' ' + suffix : returnValue;
+  /**
+   * Utilidad para debounce
+   */
+  private debounce<T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+  ): (...args: Parameters<T>) => void {
+    let timeout: number | null = null;
+    return (...args: Parameters<T>) => {
+      if (timeout) {
+        window.clearTimeout(timeout);
+      }
+      timeout = window.setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
   }
 }

@@ -14,14 +14,12 @@ import {
 import { ECharts, EChartsOption } from 'echarts';
 import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from 'ngx-echarts';
 
-// Importaciones específicas para tree-shaking
-declare const require: any;
-
 import { Series } from '../../models';
 import { Chart } from '../chart';
 import { ChartConfiguration } from '../chart-configuration';
 import { ChartData } from '../chart-data';
 import { EChart } from './echarts';
+import { EC_SERIES_CONFIG } from './echartsConfigurations';
 
 /**
  * Interfaz para las opciones de inicialización de ECharts
@@ -91,7 +89,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
   /** Referencia al detector de cambios */
   private readonly cdr = inject(ChangeDetectorRef);
-  
+
   /** Referencia a NgZone */
   private readonly ngZone = inject(NgZone);
 
@@ -105,13 +103,13 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
   /** Temporizador para la emisión de series */
   private seriesEmissionTimer: ReturnType<typeof setTimeout> | null = null;
-  
+
   /** Tiempo de debounce para la emisión de series (ms) */
   private readonly EMIT_DEBOUNCE = 100;
-  
+
   /** Tiempo de debounce para redimensionamiento (ms) */
   private readonly RESIZE_DEBOUNCE = 150;
-  
+
   /** Temporizador para redimensionamiento */
   private resizeTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -136,12 +134,17 @@ export class EchartsComponent implements OnInit, OnDestroy {
     this.isDestroyed = true;
     this.cleanupSeriesEmissionTimer();
     this.cleanupResizeListener();
-    
+
     if (this.mainChart?.instance) {
-      this.ngZone.runOutsideAngular(() => {
-        this.mainChart.instance.dispose();
-      });
-      this.mainChart.instance = null as any;
+      try {
+        this.ngZone.runOutsideAngular(() => {
+          this.mainChart.instance.dispose();
+        });
+      } catch (error) {
+        console.warn('Error al destruir la instancia de ECharts:', error);
+      } finally {
+        this.mainChart.instance = null as unknown as ECharts;
+      }
     }
   }
 
@@ -268,7 +271,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       this.seriesEmissionTimer = null;
     }
   }
-  
+
   /**
    * Configura el listener para el evento de redimensionamiento
    * @private
@@ -280,7 +283,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
+
   /**
    * Limpia el listener de redimensionamiento
    * @private
@@ -291,7 +294,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
     this.cleanupResizeTimer();
   }
-  
+
   /**
    * Limpia el temporizador de redimensionamiento
    * @private
@@ -302,7 +305,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       this.resizeTimer = null;
     }
   }
-  
+
   /**
    * Maneja el evento de redimensionamiento con debounce
    * @private
@@ -311,9 +314,9 @@ export class EchartsComponent implements OnInit, OnDestroy {
     if (this.isDestroyed || !this.mainChart?.instance) {
       return;
     }
-    
+
     this.cleanupResizeTimer();
-    
+
     this.resizeTimer = setTimeout(() => {
       if (this.mainChart?.instance) {
         this.ngZone.runOutsideAngular(() => {
@@ -333,27 +336,28 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @private
    */
   public emitSeries(): void {
-    // No emitir si el componente está destruido
     if (this.isDestroyed) {
       return;
     }
 
-    // Verificar que el gráfico principal esté inicializado
     if (!this.mainChart?.instance) {
       return;
     }
 
     try {
-      // Obtener las series del gráfico
       const series = this.mainChart.getSeries();
 
-      // Verificar que hay series para emitir
       if (Array.isArray(series) && series.length > 0) {
-        // Usar requestAnimationFrame para sincronizar con el ciclo de renderizado del navegador
+        const typedSeries: Series[] = series.map(s => ({
+          name: s.name || '',
+          color: s.color || '#000000',
+          visible: s.visible ?? true,
+          data: s.data || []
+        }));
+
         requestAnimationFrame(() => {
-          // Verificar nuevamente antes de emitir
           if (!this.isDestroyed) {
-            this.seriesChange.emit(series);
+            this.seriesChange.emit(typedSeries);
           }
         });
       }
@@ -374,50 +378,50 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const series = chartData.getSeries() as unknown as Array<
-        Record<string, unknown>
-      >;
+      console.log('Generando serie de meta con chartType:', chartType);
 
-      if (!series || series.length === 0) {
-        throw new Error('No hay series disponibles en los datos del gráfico');
-      }
+      // Obtener los datos directamente del dataProvider
+      const data = chartData.dataProvider.getData();
+      console.log('Datos del dataProvider:', data);
 
-      // Obtener la primera serie como base
-      const baseSeries = series[0];
-
-      // Extraer los datos de la serie base usando notación de corchetes
-      const baseData = Array.isArray(baseSeries['data'])
-        ? baseSeries['data']
-        : [];
-
-      // Crear los datos transformados para la serie de meta
-      const transformedData = baseData.map((point: unknown) => {
-        // Manejar diferentes formatos de datos
-        if (Array.isArray(point)) {
-          return point[1]; // [x, y] -> y
-        } else if (
-          point &&
-          typeof point === 'object' &&
-          'value' in (point as any)
-        ) {
-          return (point as any).value;
-        }
-        return point;
+      // Extraer los valores de la meta
+      const goalData = data.map(row => {
+        const value = row['valor'];
+        console.log('Valor de meta:', value);
+        return typeof value === 'number' ? value : 0;
       });
+      console.log('Datos de meta procesados:', goalData);
 
-      // Crear la serie de meta con la interfaz Series
+      // Asegurarnos de que el tipo de serie coincida con el tipo de gráfico
+      const seriesType = chartType === 'column' ? 'bar' : chartType;
+      console.log('Tipo de serie:', seriesType);
+
+      // Crear la serie de meta con la configuración correcta
       const goalSeries: Series = {
         name: 'Meta',
         color: 'black',
         visible: true,
-        data: transformedData,
+        data: goalData,
+        smooth: true,
+        stacking: undefined,
+        chartType: chartType,
+        type: seriesType,
+        symbol: 'circle',
+        symbolSize: 6,
+        lineStyle: {
+          width: 2,
+          type: 'dashed'
+        }
       };
 
-      // Agregar propiedades adicionales como propiedades personalizadas
-      (goalSeries as any).smooth = true;
-      (goalSeries as any).stacking = undefined;
-      (goalSeries as any).chartType = chartType;
+      // Aplicar la configuración específica del tipo de serie
+      type SeriesType = keyof typeof EC_SERIES_CONFIG;
+      if (seriesType in EC_SERIES_CONFIG) {
+        console.log('Aplicando configuración específica para tipo:', seriesType);
+        Object.assign(goalSeries, EC_SERIES_CONFIG[seriesType as SeriesType]);
+      }
 
+      console.log('Serie de meta final:', goalSeries);
       return goalSeries;
     } catch (error) {
       console.error('Error al generar la serie de meta:', error);

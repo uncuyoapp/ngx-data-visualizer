@@ -8,11 +8,12 @@ import {
   Dimension,
   Filters,
   Goal,
+  Item,
   MultipleChartDirective,
   PivotConfiguration,
   RowData,
   Series,
-  TableDirective
+  TableDirective,
 } from 'ngx-data-visualizer';
 
 import optionsChart from '../chart-options.json';
@@ -33,12 +34,15 @@ import optionsTable from '../table-options.json';
     MultipleChartDirective,
   ],
   templateUrl: './full-example.component.html',
-  styleUrl: './full-example.component.scss'
+  styleUrl: './full-example.component.scss',
 })
 export class FullExampleComponent implements OnInit {
   dataset!: Dataset;
-  chartOptions: ChartConfigurationOptions = optionsChart as ChartConfigurationOptions;
-  chartOptions2: ChartConfigurationOptions = { ...optionsChart } as ChartConfigurationOptions;
+  chartOptions: ChartConfigurationOptions =
+    optionsChart as ChartConfigurationOptions;
+  chartOptions2: ChartConfigurationOptions = {
+    ...optionsChart,
+  } as ChartConfigurationOptions;
   tableOptions: PivotConfiguration = optionsTable as PivotConfiguration;
   goal: Goal = goal as Goal;
 
@@ -54,7 +58,12 @@ export class FullExampleComponent implements OnInit {
     const dimensions = dimensionsData as Dimension[];
     const rowData = data as RowData[];
 
-    this.dataset = new Dataset({ dimensions, enableRollUp: true, id: 1, rowData });
+    this.dataset = new Dataset({
+      dimensions,
+      enableRollUp: true,
+      id: 1,
+      rowData,
+    });
     this.splitDimension = dimensions[0];
     this.years = this.dataset.dataProvider.getItems('Año');
     this.chartOptions.stacked = 'Departamentos';
@@ -66,12 +75,21 @@ export class FullExampleComponent implements OnInit {
       filter: [],
       rollUp: []
     };
-    filters.rollUp = this.dataset.dimensions.filter(dimension => !dimension.selected).map(dimension => dimension.nameView);
-    filters.filter = this.dataset.dimensions.map(dimension =>
-    ({
+
+    // Obtener las dimensiones que no están seleccionadas para rollUp
+    filters.rollUp = this.dataset.dimensions
+      .filter(dimension => !dimension.selected)
+      .map(dimension => dimension.nameView);
+
+    // Obtener los filtros para cada dimensión basados en los items seleccionados
+    filters.filter = this.dataset.dimensions.map(dimension => ({
       name: dimension.nameView,
-      items: dimension.items.filter(item => item.selected).map(item => item.name)
+      items: dimension.items
+        .filter(item => item.selected)
+        .map(item => item.name)
     }));
+
+    // Aplicar los filtros al dataset
     this.dataset.applyFilters(filters);
   }
 
@@ -80,8 +98,11 @@ export class FullExampleComponent implements OnInit {
   }
 
   clearFilters() {
-    this.dataset.dimensions.map(dimension => { dimension.selected = true; dimension.items.map(item => item.selected = true) });
-    this.dataset.applyFilters({ filter: [], rollUp: [] });
+    this.dataset.dimensions.forEach((dimension: Dimension) => {
+      dimension.selected = true;
+      dimension.items.forEach((item: Item) => (item.selected = true));
+    });
+    this.dataset.applyFilters(new Filters());
   }
 
   onSeriesChange(series: Series[]) {

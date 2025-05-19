@@ -12,8 +12,10 @@ import {
   inject,
   input,
   signal,
+  output,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 import {
   DIMENSION_VALUE,
   DIMENSION_YEAR,
@@ -185,30 +187,63 @@ export class ChartComponent implements OnInit, OnDestroy {
   toggleShowGoal(goal: Goal) {
     this.showingGoal = !this.showingGoal;
     if (this.showingGoal) {
+      console.log('Series antes de mostrar meta:', this.mainChart?.getSeries());
       this.showGoal(goal);
     } else {
+      console.log('Series antes de ocultar meta:', this.mainChart?.getSeries());
       this.hideGoal();
     }
   }
 
-  private showGoal(goal: Goal) {
-    if (!this.goalChartData) {
-      this.generateGoalChartData(goal);
+  public showGoal(goal: Goal): void {
+    console.log('Iniciando showGoal con meta:', goal);
+    if (!goal) {
+      console.warn('No se proporcionó una meta válida');
+      return;
     }
-    this.updateSeriesConfig(this.goalChartData.seriesConfig);
-    this.mainChart.addSeries(
-      this.echart.getGoalSeries(this.goalChartData, goal.chartType)
-    );
-    this.echart.emitSeries();
+
+    try {
+      console.log('Generando goalChartData...');
+      this.generateGoalChartData(goal);
+      console.log('goalChartData generado:', this.goalChartData);
+
+      if (!this.goalChartData) {
+        console.warn('No se pudo generar los datos de meta');
+        return;
+      }
+
+      console.log('Actualizando configuración de series...');
+      this.updateSeriesConfig(this.goalChartData.seriesConfig);
+      console.log('Suscribiéndose a dataUpdated...');
+
+      // Suscribirse al evento dataUpdated para asegurar que los datos se han actualizado
+      const subscription = this.chartConfiguration().dataset.dataUpdated
+        .pipe(take(1)) // Tomar solo la primera emisión
+        .subscribe((updated) => {
+          console.log('Datos actualizados:', updated);
+          if (this.mainChart) {
+            console.log('Generando serie de meta...');
+            const goalSeries = this.echart.getGoalSeries(this.goalChartData, goal.chartType);
+            console.log('Serie de meta generada:', goalSeries);
+            this.mainChart.addSeries(goalSeries);
+            console.log('Serie de meta agregada al gráfico');
+          } else {
+            console.warn('No hay instancia de EChart disponible');
+          }
+          subscription.unsubscribe(); // Limpiar la suscripción
+        });
+    } catch (error) {
+      console.error('Error al mostrar la meta:', error);
+    }
   }
 
   private hideGoal() {
     const { savedSeriesConfiguration, savedFilters } = this;
     const config = this.chartConfiguration();
-    
+
     // Restaurar la configuración de series guardada
     config.seriesConfig = { ...savedSeriesConfiguration };
-    
+
     // Crear una nueva instancia de Filters con los valores guardados
     if (savedFilters) {
       const filters = new Filters();
@@ -222,6 +257,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   private generateGoalChartData(goal: Goal) {
+    console.log('Generando datos de meta con:', goal);
     const dataProvider = new DataProvider();
     dataProvider.setData(goal.data);
     const goalDimensions = dataProvider
@@ -235,16 +271,18 @@ export class ChartComponent implements OnInit, OnDestroy {
     };
 
     this.goalChartData = new ChartData(dataProvider, seriesConfig);
+    console.log('Datos de meta generados:', this.goalChartData);
   }
 
   private updateSeriesConfig(seriesConfig: SeriesConfig) {
+    console.log('Actualizando configuración de series con:', seriesConfig);
     const chartConfiguration = this.chartConfiguration();
     const { dataset } = chartConfiguration;
     const { dimensions } = dataset;
 
     // Crear una nueva instancia de Filters
     const filters = new Filters();
-    
+
     // Configurar rollUp con las dimensiones que no son x1 ni x2
     filters.rollUp = dimensions
       .filter(
@@ -253,10 +291,13 @@ export class ChartComponent implements OnInit, OnDestroy {
           dimension.nameView !== seriesConfig.x2
       )
       .map((dimension) => dimension.nameView);
-    
+
+    console.log('Filtros configurados:', filters);
+
     // Guardar la configuración actual
     this.savedSeriesConfiguration = { ...chartConfiguration.seriesConfig };
-    
+    console.log('Configuración guardada:', this.savedSeriesConfiguration);
+
     // Guardar una copia de los filtros actuales
     if (dataset.dataProvider.filters) {
       this.savedFilters = new Filters();
@@ -265,9 +306,17 @@ export class ChartComponent implements OnInit, OnDestroy {
     } else {
       this.savedFilters = new Filters();
     }
-    
+    console.log('Filtros guardados:', this.savedFilters);
+
     // Actualizar la configuración de series y aplicar los filtros
     chartConfiguration.seriesConfig = seriesConfig;
+    console.log('Nueva configuración de series:', chartConfiguration.seriesConfig);
+
+    // Aplicar los filtros y forzar una actualización
     dataset.applyFilters(filters);
+    console.log('Filtros aplicados, forzando actualización...');
+
+    // Forzar una actualización de datos con el valor booleano correcto
+    dataset.dataUpdated.next(true);
   }
 }

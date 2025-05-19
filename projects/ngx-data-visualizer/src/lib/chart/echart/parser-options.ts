@@ -8,36 +8,36 @@ import { EC_CHART_CONFIG_PREVIEW } from "./echartsConfigurations";
 
 export class ParserOptionsEChart implements ParserOptions {
 
-  getPreviewOptions(config: ChartConfigurationOptions) {
+  getPreviewOptions(config: ChartConfigurationOptions): unknown {
     const options = this.mergeOptions({}, true);
     return this.applyChartConfigurations(config, options);
   }
 
-  getFullOptions(config: ChartConfigurationOptions) {
+  getFullOptions(config: ChartConfigurationOptions): unknown {
     const options = this.mergeOptions({}, false);
     return this.applyChartConfigurations(config, options);
   }
 
-  applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: EChartsOption) {
-    libraryConfig["type"] = config.type;
+  applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: unknown): unknown {
+    const echartsConfig = libraryConfig as EChartsOption;
+    echartsConfig["type"] = config.type;
 
     if (config.colors) {
-      libraryConfig.color = config.colors;
+      echartsConfig.color = config.colors;
     }
 
-    (libraryConfig.tooltip as any).trigger = config.tooltip.shared ? 'axis' : 'item';
+    (echartsConfig.tooltip as any).trigger = config.tooltip.shared ? 'axis' : 'item';
 
     if (typeof config.title === 'string') {
-      libraryConfig.title = {
+      echartsConfig.title = {
         text: config.title,
         show: true,
         left: 'center'
-      }
+      };
     }
-    (libraryConfig.dataZoom as any).show = config.navigator.show;
-
-    (libraryConfig.tooltip as any).showTotal = config.tooltip.showTotal;
-    return libraryConfig;
+    (echartsConfig.dataZoom as any).show = config.navigator.show;
+    (echartsConfig.tooltip as any).showTotal = config.tooltip.showTotal;
+    return echartsConfig;
   }
 
   private mergeOptions(config: any, preview?: boolean) {

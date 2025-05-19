@@ -15,10 +15,10 @@ export const DIMENSION_VALUE = 'valor';
 export class DataProvider {
   /** Filtros actuales aplicados a los datos */
   public filters: Filters;
-  
+
   /** Dimensiones disponibles en los datos */
   public dimensions: Dimension[];
-  
+
   /** Datos crudos sin procesar */
   private rowData: RowData[];
 
@@ -113,21 +113,21 @@ export class DataProvider {
     if (!Array.isArray(data)) {
       throw new Error('Los datos deben ser un arreglo');
     }
-    
+
     // Validar que cada fila tenga la misma estructura
     if (data.length > 0) {
       const firstRowKeys = Object.keys(data[0] || {});
       const invalidRow = data.find(row => {
         const rowKeys = Object.keys(row || {});
-        return rowKeys.length !== firstRowKeys.length || 
+        return rowKeys.length !== firstRowKeys.length ||
                !rowKeys.every(key => firstRowKeys.includes(key));
       });
-      
+
       if (invalidRow) {
         throw new Error('Todas las filas deben tener la misma estructura');
       }
     }
-    
+
     this.rowData = data.map(row => ({ ...row }));
   }
 
@@ -161,7 +161,7 @@ export class DataProvider {
 
     if (dimensionName !== DIMENSION_YEAR) {
       const dimension = this.dimensions.find(d => d.nameView === dimensionName);
-      
+
       if (dimension && Array.isArray(dimension.items) && dimension.items.length > 0) {
         items.sort((a, b) => {
           const itemA = dimension!.items!.find(i => i.name === a);
@@ -170,7 +170,7 @@ export class DataProvider {
         });
       }
     }
-    
+
     return items;
   }
 
@@ -182,17 +182,14 @@ export class DataProvider {
    */
   private processConfig(): RowData[] {
     try {
-      // Validar filtros antes de procesar
-      this.filters.validate();
-      
       const mapFilter = new Map<string, RowData>();
-      
+
       for (const row of this.rowData) {
         if (!this.isFiltered(row)) {
           this.rollUp({ ...row }, mapFilter);
         }
       }
-      
+
       return Array.from(mapFilter.values());
     } catch (error) {
       console.error('Error al procesar la configuración:', error);
@@ -210,7 +207,7 @@ export class DataProvider {
     if (!this.filters?.filter) {
       return false;
     }
-    
+
     return this.filters.filter.some(filter => {
       const value = row[filter.name];
       // Verificar que el valor no sea null, undefined y que sea del tipo correcto
@@ -238,13 +235,13 @@ export class DataProvider {
     // Realizar la operación de agrupación
     const value = row[DIMENSION_VALUE];
     const rowCopy = { ...row };
-    
+
     // Eliminar la columna de valor y las columnas a agrupar
     delete rowCopy[DIMENSION_VALUE];
     this.filters.rollUp.forEach(key => {
       delete rowCopy[key];
     });
-    
+
     const rowKey = Object.values(rowCopy).toString();
     const existingRow = mapFilter.get(rowKey);
 
@@ -275,5 +272,9 @@ export class DataProvider {
    */
   private parseValue(value: unknown): number {
     return Number(value) || 0;
+  }
+
+  public setFilters(filters: Filters): void {
+    this.filters = filters;
   }
 }

@@ -5,6 +5,7 @@
     "nameView": "Departamentos",
     "type": 3,
     "selected": true,
+    "enableMulti": true,
     "items": [
       {
         "id": 58,
@@ -140,6 +141,7 @@
     "nameView": "Año",
     "type": 0,
     "selected": true,
+    "enableMulti": true,
     "items": [
       {
         "name": "2003",

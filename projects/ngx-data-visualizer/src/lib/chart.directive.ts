@@ -44,8 +44,8 @@ export class ChartDirective implements OnDestroy {
   chartComponent!: ChartComponent;
 
   constructor(
-    private viewContainerRef: ViewContainerRef,
-    private chartService: ChartService
+    private readonly viewContainerRef: ViewContainerRef,
+    private readonly chartService: ChartService
   ) {
     this.initializeChart();
     this.initializeSeriesEffect();

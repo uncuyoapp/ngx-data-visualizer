@@ -76,6 +76,9 @@ export class EchartsComponent implements OnInit, OnDestroy {
   /** Evento que se emite cuando se crea el gráfico */
   public readonly chartCreated = output<Chart>();
 
+  /** Evento que se emite cuando el gráfico se ha actualizado completamente */
+  public readonly chartUpdated = output<void>();
+
   /** Instancia del gráfico ECharts */
   protected mainChart!: EChart;
 
@@ -210,8 +213,27 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
 
     try {
+      // Remover cualquier listener previo del evento finished
+      if (this.mainChart?.instance) {
+        this.mainChart.instance.off('finished');
+      }
+
       this.mainChart.render();
       this.scheduleSeriesEmission();
+
+      // Emitir el evento de actualización después de que el gráfico se haya renderizado
+      this.ngZone.runOutsideAngular(() => {
+        if (this.mainChart?.instance) {
+          // Usar requestAnimationFrame para asegurar que el renderizado principal haya terminado
+          requestAnimationFrame(() => {
+            this.mainChart.instance.on('finished', () => {
+              this.ngZone.run(() => {
+                this.chartUpdated.emit();
+              });
+            });
+          });
+        }
+      });
     } catch (error) {
       console.error('Error al actualizar el gráfico:', error);
     }

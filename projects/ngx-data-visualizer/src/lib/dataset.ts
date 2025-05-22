@@ -97,7 +97,7 @@ export class Dataset implements DatasetModel {
         throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
       }
 
-      const requiredFields = ['id', 'name', 'nameView', 'items', 'selected', 'enableMulti'];
+      const requiredFields = ['id', 'name', 'nameView', 'items', 'selected'];
       const missingFields = requiredFields.filter(field => !(field in dim));
 
       if (missingFields.length > 0) {

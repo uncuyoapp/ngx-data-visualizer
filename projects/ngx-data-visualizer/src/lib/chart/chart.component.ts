@@ -11,14 +11,13 @@ import {
   effect,
   inject,
   input,
-  signal
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LegendComponent } from '../legend/legend.component';
 import { Filters, Goal, Series } from '../models';
 import { Chart } from './chart';
-import { ChartConfiguration, SeriesConfig } from './chart-configuration';
-import { ChartData } from './chart-data';
+import { ChartConfiguration } from './chart-configuration';
 import { ChartService } from './chart.service';
 import { EchartsComponent } from './echart/echarts.component';
 import { GoalChartHelper } from './goal-chart.helper';
@@ -53,9 +52,6 @@ export class ChartComponent implements OnInit, OnDestroy {
   showingGoal = false;
 
   // Estado interno
-  private readonly savedSeriesConfiguration!: SeriesConfig;
-  private readonly savedFilters!: Filters;
-  private readonly goalChartData!: ChartData;
   private resizeObserver: ResizeObserver | null = null;
 
   /**
@@ -178,11 +174,19 @@ export class ChartComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSeriesChange(series: Series[]) {
+  /**
+   * Maneja el cambio en las series del gráfico
+   * @param series - Array de series actualizadas
+   */
+  public onSeriesChange(series: Series[]) {
     this.series.set(series);
   }
 
-  toggleShowGoal(goal: Goal) {
+  /**
+   * Alterna la visualización de la meta en el gráfico
+   * @param goal - Objeto Goal que contiene la configuración de la meta
+   */
+  public toggleShowGoal(goal: Goal) {
     this.showingGoal = !this.showingGoal;
     if (this.showingGoal) {
       this.showGoal(goal);
@@ -191,17 +195,27 @@ export class ChartComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Muestra la meta en el gráfico
+   * @param goal - Objeto Goal que contiene la configuración de la meta
+   * @private
+   */
   private showGoal(goal: Goal): void {
     const goalChartData = this.goalChartHelper.showGoal(goal);
     if (goalChartData && this.mainChart) {
-      const goalSeries = this.echart.getGoalSeries(goalChartData, goal.chartType);
-      
+      const goalSeries = this.echart.getGoalSeries(
+        goalChartData,
+        goal.chartType
+      );
+      let isFirstEmission = true;
+
       // Suscribirse al evento chartUpdated para asegurar que el gráfico se ha actualizado
       const subscription = this.echart.chartUpdated.subscribe(() => {
-        if (this.mainChart) {
+        if (this.mainChart && isFirstEmission) {
           // Usar requestAnimationFrame para asegurar que estamos fuera del ciclo de renderizado principal
           requestAnimationFrame(() => {
-            if (this.mainChart) {
+            if (this.mainChart && isFirstEmission) {
+              isFirstEmission = false;
               this.mainChart.addSeries(goalSeries);
               subscription.unsubscribe(); // Limpiar la suscripción después de agregar la serie
             }
@@ -211,6 +225,10 @@ export class ChartComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Oculta la meta del gráfico y restaura la configuración original
+   * @private
+   */
   private hideGoal() {
     const { savedSeriesConfig, savedFilters } = this.goalChartHelper.hideGoal();
     const config = this.chartConfiguration();

@@ -3,13 +3,30 @@ import { Filters, Goal } from '../models';
 import { ChartConfiguration, SeriesConfig } from './chart-configuration';
 import { ChartData } from './chart-data';
 
+/**
+ * Clase auxiliar para manejar la visualización de metas en los gráficos.
+ * Proporciona funcionalidades para mostrar y ocultar metas, así como para
+ * gestionar la configuración de series y filtros asociados.
+ */
 export class GoalChartHelper {
+  /** Configuración de series guardada antes de mostrar la meta */
   private savedSeriesConfiguration!: SeriesConfig;
+  /** Filtros guardados antes de mostrar la meta */
   private savedFilters!: Filters;
+  /** Datos del gráfico de meta */
   private goalChartData!: ChartData;
 
+  /**
+   * Constructor de la clase
+   * @param chartConfiguration - Configuración del gráfico principal
+   */
   constructor(private readonly chartConfiguration: ChartConfiguration) { }
 
+  /**
+   * Muestra la meta en el gráfico
+   * @param goal - Objeto Goal que contiene la configuración y datos de la meta
+   * @returns Datos del gráfico de meta o undefined si hay algún error
+   */
   public showGoal(goal: Goal): ChartData | undefined {
     if (!goal) {
       console.warn('No se proporcionó una meta válida');
@@ -32,6 +49,10 @@ export class GoalChartHelper {
     }
   }
 
+  /**
+   * Oculta la meta y retorna la configuración guardada
+   * @returns Objeto con la configuración de series y filtros guardados
+   */
   public hideGoal(): { savedSeriesConfig: SeriesConfig; savedFilters: Filters } {
     return {
       savedSeriesConfig: this.savedSeriesConfiguration,
@@ -39,6 +60,11 @@ export class GoalChartHelper {
     };
   }
 
+  /**
+   * Genera los datos del gráfico para la meta
+   * @param goal - Objeto Goal que contiene los datos de la meta
+   * @private
+   */
   private generateGoalChartData(goal: Goal): void {
     const dataProvider = new DataProvider();
     dataProvider.setData(goal.data);
@@ -55,6 +81,11 @@ export class GoalChartHelper {
     this.goalChartData = new ChartData(dataProvider, seriesConfig);
   }
 
+  /**
+   * Actualiza la configuración de series para mostrar la meta
+   * @param seriesConfig - Nueva configuración de series para la meta
+   * @private
+   */
   private updateSeriesConfig(seriesConfig: SeriesConfig): void {
     const { dataset } = this.chartConfiguration;
     const { dimensions } = dataset;
@@ -82,4 +113,4 @@ export class GoalChartHelper {
     dataset.applyFilters(filters);
     dataset.dataUpdated.next(true);
   }
-} 
+}

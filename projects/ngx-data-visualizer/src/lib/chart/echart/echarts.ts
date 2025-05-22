@@ -70,7 +70,7 @@ import { TooltipManager } from './tooltip-manager';
 export class EChart extends Chart {
   // Instancia de ECharts que maneja el gráfico
   public chartInstance!: ECharts;
-  private tooltipManager: TooltipManager;
+  private readonly tooltipManager: TooltipManager;
   private exportManager!: ExportManager;
   private seriesManager!: SeriesManager;
 
@@ -82,12 +82,13 @@ export class EChart extends Chart {
   // Propiedades privadas para manejo interno
   private totals: number[] = []; // Almacena los totales para cálculos de porcentajes
   private suffixSaved: string | null = ''; // Guarda el sufijo original para restaurarlo
+  private decimalsSaved: number | null = null; // Guarda los decimales originales para restaurarlos
   private maxValue = 0; // Valor máximo para escalado del eje
   private savedYAxisMaxValue: number | null = null; // Guarda el valor máximo del eje Y
 
   // Cache para memoización
-  private optionsCache: Map<string, EChartsOption> = new Map();
-  private seriesDataCache: Map<string, any[]> = new Map();
+  private readonly optionsCache: Map<string, EChartsOption> = new Map();
+  private readonly seriesDataCache: Map<string, any[]> = new Map();
   private lastRenderTime: number = 0;
   private renderDebounceTimeout: number | null = null;
   private readonly RENDER_DEBOUNCE_MS = 100;
@@ -117,10 +118,7 @@ export class EChart extends Chart {
     this.setupEventHandlers();
 
     (this.libraryOptions.tooltip as any).formatter = (params: any) =>
-      this.tooltipManager.formatTooltip(
-        params,
-        this.libraryOptions as EChartsOption
-      );
+      this.tooltipManager.formatTooltip(params, this.libraryOptions);
   }
 
   /**
@@ -194,6 +192,7 @@ export class EChart extends Chart {
       series: this.series,
       maxValue: this.maxValue,
       toPercent: this.chartOptions.toPercent,
+      totals: this.totals,
     });
   }
 
@@ -210,16 +209,17 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a añadir
    */
   addSeries(series: SeriesConfigType): void {
-    console.log('Agregando serie al gráfico:', series);
-
     if (!this.instance) {
-      console.error('No se puede agregar la serie: la instancia de ECharts no está inicializada');
+      console.error(
+        'No se puede agregar la serie: la instancia de ECharts no está inicializada'
+      );
       return;
     }
 
     try {
-      const currentSeries = this.instance.getOption()['series'] as SeriesConfigType[];
-      console.log('Series actuales:', currentSeries);
+      const currentSeries = this.instance.getOption()[
+        'series'
+      ] as SeriesConfigType[];
 
       // Asegurarnos de que la serie tenga el formato correcto para ECharts
       const formattedSeries = {
@@ -231,13 +231,11 @@ export class EChart extends Chart {
         smooth: series['smooth'],
         symbol: series['symbol'],
         symbolSize: series['symbolSize'],
-        lineStyle: series['lineStyle']
+        lineStyle: series['lineStyle'],
       };
-      console.log('Serie formateada:', formattedSeries);
 
       // Agregar la serie al gráfico
       this.instance.setOption({ series: [...currentSeries, formattedSeries] });
-      console.log('Serie agregada exitosamente');
 
       // Invalidar la caché para forzar una actualización
       this.invalidateCache();
@@ -312,6 +310,7 @@ export class EChart extends Chart {
       throw new Error('El modo porcentual requiere series apiladas');
     }
     this.chartOptions.toPercent = !this.chartOptions.toPercent;
+    this.invalidateCache();
     if (this.chartOptions.toPercent) {
       this.enablePercentMode();
     } else {
@@ -327,7 +326,11 @@ export class EChart extends Chart {
   private enablePercentMode() {
     this.ensureStackedSeries();
     this.suffixSaved = this.chartOptions.tooltip.suffix;
+    this.decimalsSaved = this.chartOptions.tooltip.decimals;
     this.chartOptions.tooltip.suffix = '%';
+    this.chartOptions.tooltip.decimals = 2; // Por defecto 2 decimales para porcentajes
+    this.tooltipManager.updateSuffix('%');
+    this.tooltipManager.updateDecimals(2);
     this.summarizeTotals(this.chartData.getSeries());
     this.saveAndSetYAxisMax(100);
   }
@@ -339,6 +342,9 @@ export class EChart extends Chart {
   private disablePercentMode() {
     this.unstackSeriesIfNotStacked();
     this.chartOptions.tooltip.suffix = this.suffixSaved;
+    this.chartOptions.tooltip.decimals = this.decimalsSaved;
+    this.tooltipManager.updateSuffix(this.suffixSaved);
+    this.tooltipManager.updateDecimals(this.decimalsSaved);
     this.restoreYAxisMax();
   }
 
@@ -445,9 +451,9 @@ export class EChart extends Chart {
     series.forEach((s) => {
       (s.data as Array<any>).forEach((v, i) => {
         if (!this.totals[i]) {
-          this.totals[i] = v[1];
+          this.totals[i] = parseFloat(v[1]);
         } else {
-          this.totals[i] += v[1];
+          this.totals[i] += parseFloat(v[1]);
         }
       });
     });

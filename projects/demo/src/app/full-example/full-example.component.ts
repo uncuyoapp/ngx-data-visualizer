@@ -67,7 +67,7 @@ export class FullExampleComponent implements OnInit {
     this.splitDimension = dimensions[0];
     this.years = this.dataset.dataProvider.getItems('Año');
     this.chartOptions.stacked = 'Departamentos';
-    this.chartOptions.xAxis.secondLevel = null;
+    this.chartOptions.xAxis.secondLevel = 3;
   }
 
   filter() {

@@ -14,7 +14,7 @@
   },
   "tooltip": {
     "shared": true,
-    "decimals": 1,
+    "decimals": 2,
     "suffix": null,
     "format": null,
     "showTotal": true

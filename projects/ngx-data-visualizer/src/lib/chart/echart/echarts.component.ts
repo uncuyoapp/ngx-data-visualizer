@@ -146,7 +146,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       } catch (error) {
         console.warn('Error al destruir la instancia de ECharts:', error);
       } finally {
-        this.mainChart.instance = null as unknown as ECharts;
+        this.mainChart = null as unknown as EChart;
       }
     }
   }
@@ -332,7 +332,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * Maneja el evento de redimensionamiento con debounce
    * @private
    */
-  private handleResize = (): void => {
+  private readonly handleResize = (): void => {
     if (this.isDestroyed || !this.mainChart?.instance) {
       return;
     }

@@ -27,7 +27,7 @@ export class DataProvider {
    * @param initialData - Datos iniciales opcionales para el proveedor
    * @example
    * const dataProvider = new DataProvider({
-   *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [], selected: false, showItems: false, enableMulti: false }],
+   *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [], selected: false, showItems: false }],
    *   rowData: [{ 'Año': 2023, 'valor': 100 }]
    * });
    */
@@ -157,15 +157,15 @@ export class DataProvider {
     const processedConfig = this.processConfig();
     const items = uniqBy(processedConfig, dimensionName)
       .map((item) => item[dimensionName])
-      .filter((item): item is string => item !== undefined) as string[];
+      .filter((item): item is string => item !== undefined);
 
     if (dimensionName !== DIMENSION_YEAR) {
       const dimension = this.dimensions.find(d => d.nameView === dimensionName);
 
       if (dimension && Array.isArray(dimension.items) && dimension.items.length > 0) {
         items.sort((a, b) => {
-          const itemA = dimension!.items!.find(i => i.name === a);
-          const itemB = dimension!.items!.find(i => i.name === b);
+          const itemA = dimension.items.find(i => i.name === a);
+          const itemB = dimension.items.find(i => i.name === b);
           return (itemA?.order ?? 0) - (itemB?.order ?? 0);
         });
       }

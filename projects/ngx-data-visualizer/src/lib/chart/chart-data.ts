@@ -1,13 +1,12 @@
-import { DataProvider, DIMENSION_VALUE } from "../data-provider";
-import { Dimension, RowData } from "../models";
-import { SeriesConfig } from "./chart-configuration";
+import { DataProvider, DIMENSION_VALUE } from '../data-provider';
+import { Dimension, RowData } from '../models';
+import { SeriesConfig } from './chart-configuration';
 
 /**
  * Clase encargada de transformar y preparar datos para visualizaciones gráficas.
  * Gestiona la estructuración de datos en series, dimensiones y valores para representación visual.
  */
 export class ChartData {
-
   /**
    * Constructor de la clase ChartData
    * @param dataProvider Proveedor de datos para las visualizaciones
@@ -16,7 +15,7 @@ export class ChartData {
   constructor(
     public dataProvider: DataProvider,
     public seriesConfig: SeriesConfig
-  ) { }
+  ) {}
 
   /**
    * Obtiene los items de una columna específica
@@ -26,8 +25,10 @@ export class ChartData {
    */
   public getItems(column: string, withoutFilter?: boolean): string[] {
     if (withoutFilter) {
-      const dimension = this.dataProvider.dimensions.find(d => d.nameView === column);
-      return dimension?.items?.map(i => i.name) ?? [];
+      const dimension = this.dataProvider.dimensions.find(
+        (d) => d.nameView === column
+      );
+      return dimension?.items?.map((i) => i.name) ?? [];
     } else {
       return this.dataProvider.getItems(column);
     }
@@ -38,45 +39,49 @@ export class ChartData {
    * @returns Array de objetos que representan las series de datos
    */
   public getSeries(): object[] {
-    const { stackKey, axis0, axis1, items, items2, palette } = this.extractVariables();
+    const { stackKey, axis0, axis1, items, items2, palette } =
+      this.extractVariables();
     const dataStruct = this.createDataStruct(items, items2);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const series = new Map<string, any>();
 
-    this.dataProvider.getData().forEach(row => {
-      const { nameSeries, stack, firstLevel, secondLevel, color } = this.processRow(row, stackKey, axis0, axis1, palette);
+    this.dataProvider.getData().forEach((row) => {
+      const { nameSeries, stack, firstLevel, secondLevel, color } =
+        this.processRow(row, stackKey, axis0, axis1, palette);
       if (!series.get(nameSeries)) {
         series.set(nameSeries, {
           name: nameSeries,
           stack: stack !== nameSeries ? stack : null,
           data: new Map(dataStruct),
-          color
+          color,
         });
       }
 
       const actualSeries = series.get(nameSeries);
       // Asegurarse de que el valor sea numérico o null/undefined
       const rawValue = row['valor'];
-      const valor = (rawValue !== null && rawValue !== undefined) ? Number(rawValue) : null;
-      
+      const valor = rawValue !== null && rawValue !== undefined ? parseFloat(String(rawValue)) : null;
+
       if (!firstLevel) {
         throw new Error('FirstLevel is undefined');
       }
       if (actualSeries === undefined) {
         throw new Error('An error occurred when finding series');
       }
-      
+
       // Solo agregar el valor si es un número válido o null
       if (secondLevel) {
         // Utilizamos concatenación con separador para evitar ambigüedades
-        actualSeries.data.set(`${firstLevel}_${secondLevel}`, [secondLevel, valor]);
+        actualSeries.data.set(firstLevel.concat(secondLevel), [
+          secondLevel,
+          valor,
+        ]);
       } else {
         actualSeries.data.set(firstLevel, [firstLevel, valor]);
       }
-
     });
 
-    series.forEach(seriesElement => {
+    series.forEach((seriesElement) => {
       seriesElement.data = Array.from(seriesElement.data.values());
     });
     return Array.from(series.values());
@@ -94,14 +99,13 @@ export class ChartData {
     let items2: string[] = [];
     let palette: Map<string, string> | undefined;
 
-
-    this.dataProvider.dimensions.forEach(dimension => {
+    this.dataProvider.dimensions.forEach((dimension) => {
       if (dimension.selected && (!palette || palette.size === 0)) {
         palette = this.getPalette(dimension);
       }
     });
 
-    this.dataProvider.getDimensionsNames().forEach(dimensionName => {
+    this.dataProvider.getDimensionsNames().forEach((dimensionName) => {
       switch (dimensionName) {
         case this.seriesConfig.x1:
           axis0 = dimensionName;
@@ -128,9 +132,9 @@ export class ChartData {
    */
   private createDataStruct(items: string[], items2: string[]) {
     const dataStruct = new Map<string, [string, number | null]>();
-    items.forEach(item => {
+    items.forEach((item) => {
       if (items2.length > 0) {
-        items2.forEach(item2 => {
+        items2.forEach((item2) => {
           dataStruct.set(item.concat(item2), [item2, null]);
         });
       } else {
@@ -139,7 +143,6 @@ export class ChartData {
     });
     return dataStruct;
   }
-
 
   /**
    * Procesa una fila de datos para integrarla en las series
@@ -150,7 +153,13 @@ export class ChartData {
    * @param palette Mapa de colores para las series
    * @returns Objeto con los datos procesados (nombre de serie, stack, niveles y color)
    */
-  private processRow(row: RowData, stackKey: string, axis0: string, axis1: string, palette: Map<string, string> | undefined) {
+  private processRow(
+    row: RowData,
+    stackKey: string,
+    axis0: string,
+    axis1: string,
+    palette: Map<string, string> | undefined
+  ) {
     let nameSeries: string = '';
     let stack: string | undefined;
     let firstLevel: string | undefined;
@@ -160,39 +169,40 @@ export class ChartData {
     Object.entries(row).forEach(([key, value]) => {
       // Aseguramos que value sea string
       const valueStr = String(value);
-      
+
       switch (key) {
         case stackKey:
           stack = valueStr;
           nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-          
+
           // Manejo seguro de colores desde la paleta
           if (!color && palette) {
             const paletteColor = palette.get(valueStr);
             if (paletteColor) color = paletteColor;
           }
           break;
-          
+
         case axis0:
           firstLevel = valueStr;
           break;
-          
+
         case axis1:
           secondLevel = valueStr;
           break;
-          
+
         case DIMENSION_VALUE:
-          nameSeries = nameSeries === '' ? this.seriesConfig.measure ?? '' : nameSeries;
+          nameSeries =
+            nameSeries === '' ? this.seriesConfig.measure ?? '' : nameSeries;
           break;
-          
+
         default:
           nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-          
+
           // Actualizar stack solo si la clave corresponde a stackKey
           if (key === stackKey) {
             stack = valueStr;
           }
-          
+
           // Manejo seguro de colores desde la paleta
           if (!color && palette) {
             const paletteColor = palette.get(valueStr);
@@ -214,8 +224,8 @@ export class ChartData {
     const mapColors = new Map<string, string>();
     // Filtramos los items que tienen color definido y no es undefined
     dimension.items
-      .filter(item => item.color !== undefined && item.color !== null)
-      .forEach(i => {
+      .filter((item) => item.color !== undefined && item.color !== null)
+      .forEach((i) => {
         // Estamos seguros de que i.color no es undefined gracias al filtro previo
         mapColors.set(i.name, i.color as string);
       });

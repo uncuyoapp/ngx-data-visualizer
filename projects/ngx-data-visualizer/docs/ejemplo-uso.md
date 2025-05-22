@@ -13,16 +13,11 @@ import { Dataset, Dimension, Item } from 'ngx-data-visualizer';
 const dimensions: Dimension[] = [
   {
     id: 1,
-    name: 'year',
+    name: 'año',
     nameView: 'Año',
-    items: [
-      { id: 1, name: '2023', selected: true },
-      { id: 2, name: '2024', selected: true }
-    ],
-    selected: true,
-    showItems: true,
-    enableMulti: true,
-    type: 1
+    items: [],
+    selected: false,
+    showItems: false
   },
   {
     id: 2,
@@ -125,15 +120,11 @@ const config = {
   dimensions: [
     {
       id: 1,
-      name: 'year',
+      name: 'año',
       nameView: 'Año',
-      items: [
-        { id: 1, name: '2023', selected: true },
-        { id: 2, name: '2024', selected: true }
-      ],
-      selected: true,
-      showItems: true,
-      enableMulti: true
+      items: [],
+      selected: false,
+      showItems: false
     }
   ],
   rowData: [

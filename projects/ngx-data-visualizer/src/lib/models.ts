@@ -17,9 +17,6 @@ export interface Dimension {
   /** Indica si la dimensión está seleccionada */
   selected: boolean;
 
-  /** Habilita la selección múltiple de elementos */
-  enableMulti: boolean;
-
   /** Tipo de dimensión (opcional) */
   type?: number;
 }

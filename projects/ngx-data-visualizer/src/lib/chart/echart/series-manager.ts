@@ -4,8 +4,11 @@ import { ECharts } from 'echarts';
  * Interfaz para los datos de una serie
  */
 export interface SeriesData {
+  /** Nombre del punto de datos */
   name: string;
+  /** Valor numérico del punto de datos */
   value: number;
+  /** Propiedades adicionales */
   [key: string]: string | number | boolean;
 }
 
@@ -13,44 +16,56 @@ export interface SeriesData {
  * Interfaz para la configuración de una serie
  */
 export interface SeriesConfigType {
+  /** Nombre de la serie */
   name: string;
+  /** Tipo de gráfico de la serie (line, bar, pie, etc.) */
   type: string;
+  /** Datos de la serie */
   data: SeriesData[];
+  /** Grupo de apilamiento (opcional) */
   stack?: string;
+  /** Indica si la serie es visible */
   visible?: boolean;
+  /** Indica si la serie está en estado hover */
   hover?: boolean;
+  /** Color de la serie */
   color?: string;
+  /** Propiedades adicionales */
   [key: string]: string | number | boolean | SeriesData[] | undefined;
 }
 
 /**
- * Clase encargada de manejar las series de los gráficos ECharts
+ * Clase encargada de manejar las series de los gráficos ECharts.
+ * Proporciona funcionalidades para agregar, eliminar, seleccionar y
+ * configurar series en el gráfico.
  */
 export class SeriesManager {
-  constructor(private chartInstance: ECharts) {}
+  /**
+   * Constructor de la clase
+   * @param chartInstance - Instancia de ECharts que maneja el gráfico
+   */
+  constructor(private readonly chartInstance: ECharts) {}
 
   /**
    * Obtiene todas las series del gráfico
+   * @returns Array con la configuración de todas las series
    */
   getSeries(): SeriesConfigType[] {
-    if (!this.chartInstance || !this.chartInstance.getOption()) {
-      return [];
-    }
-    return (this.chartInstance.getOption()['series'] as SeriesConfigType[]) || [];
+    return (this.chartInstance?.getOption()?.['series'] as SeriesConfigType[]) || [];
   }
 
   /**
    * Añade una nueva serie al gráfico
+   * @param series - Configuración de la serie a añadir
    */
   addSeries(series: SeriesConfigType): void {
     const currentSeries = this.chartInstance.getOption()['series'] as SeriesConfigType[];
-    console.log(currentSeries, series);
-    console.log(this.chartInstance);
     this.chartInstance.setOption({ series: [...currentSeries, series] });
   }
 
   /**
    * Elimina una serie del gráfico
+   * @param series - Configuración de la serie a eliminar
    */
   deleteSeries(series: SeriesConfigType): void {
     const currentSeries = this.chartInstance.getOption()['series'] as SeriesConfigType[];
@@ -61,6 +76,7 @@ export class SeriesManager {
 
   /**
    * Maneja el hover de una serie
+   * @param series - Serie sobre la que se realiza el hover
    */
   handleHover(series: SeriesConfigType): void {
     if (series.hover) {
@@ -76,6 +92,7 @@ export class SeriesManager {
 
   /**
    * Maneja la selección de una serie
+   * @param series - Serie a seleccionar/deseleccionar
    */
   handleSelection(series: SeriesConfigType): void {
     if (series.visible) {
@@ -93,7 +110,11 @@ export class SeriesManager {
   }
 
   /**
-   * Procesa los datos de una serie
+   * Procesa los datos de una serie, opcionalmente convirtiendo valores a porcentajes
+   * @param data - Array de datos de la serie
+   * @param toPercent - Indica si se deben convertir los valores a porcentajes
+   * @param totals - Array de totales para el cálculo de porcentajes
+   * @returns Array de datos procesados
    */
   processSeriesData(data: SeriesData[], toPercent: boolean, totals?: number[]): SeriesData[] {
     return data.map((item, index) => {
@@ -109,6 +130,10 @@ export class SeriesManager {
 
   /**
    * Configura una serie con los parámetros proporcionados
+   * @param series - Configuración base de la serie
+   * @param index - Índice de la serie para asignar color
+   * @param colors - Array de colores disponibles
+   * @returns Configuración completa de la serie
    */
   configureSeries(series: SeriesConfigType, index: number, colors?: string[]): SeriesConfigType {
     return {

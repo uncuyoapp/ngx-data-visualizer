@@ -56,6 +56,7 @@ export class ChartDirective implements OnDestroy {
    */
   private initializeChart(): void {
     effect(() => {
+      console.log('initializeChart');
       this.createChartComponent();
     });
   }

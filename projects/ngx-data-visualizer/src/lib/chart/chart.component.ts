@@ -68,6 +68,7 @@ export class ChartComponent implements OnInit, OnDestroy {
    * Inicialización del componente
    */
   public ngOnInit(): void {
+    console.log('chartComponent ngOnInit');
     this.setupAutoUpdate();
     this.setupResizeObserver();
   }
@@ -108,12 +109,14 @@ export class ChartComponent implements OnInit, OnDestroy {
    * @private
    */
   private ngOnConfigChange(config: ChartConfiguration): void {
+    console.log('chartComponent ngOnConfigChange');
     this.chartService.updateSeriesConfig(config);
     this.goalChartHelper = new GoalChartHelper(config);
 
     // Usar requestAnimationFrame para agrupar actualizaciones
     requestAnimationFrame(() => {
       if (this.echart) {
+        console.log('chartComponent requestAnimationFrame');
         this.echart.updateChart();
       }
       this.cdr.markForCheck();

@@ -79,6 +79,10 @@ export class EChart extends Chart {
   override libraryOptions!: EChartsLibraryOptions;
   override series: SeriesConfigType[] = [];
 
+  // Propiedades para control de renderizado
+  public isRendering: boolean = false;
+  public hasRendered: boolean = false;
+
   // Propiedades privadas para manejo interno
   private totals: number[] = []; // Almacena los totales para cálculos de porcentajes
   private suffixSaved: string | null = ''; // Guarda el sufijo original para restaurarlo
@@ -94,6 +98,7 @@ export class EChart extends Chart {
   private readonly RENDER_DEBOUNCE_MS = 100;
 
   constructor(public override configuration: ChartConfiguration) {
+    console.log('eChart constructor');
     super(configuration);
     this.tooltipManager = new TooltipManager(
       this.chartOptions.tooltip.decimals,
@@ -107,6 +112,7 @@ export class EChart extends Chart {
    * @throws {Error} Si la instancia es inválida
    */
   set instance(instance: ECharts) {
+    console.log('eChart set instance');
     if (!instance) {
       throw new Error('La instancia de ECharts es requerida');
     }
@@ -412,6 +418,7 @@ export class EChart extends Chart {
    * Renderiza el gráfico con optimizaciones de rendimiento
    */
   render(): void {
+    console.log('eChart render');
     const now = Date.now();
     if (now - this.lastRenderTime < this.RENDER_DEBOUNCE_MS) {
       if (this.renderDebounceTimeout) {
@@ -430,6 +437,7 @@ export class EChart extends Chart {
    * @private
    */
   private performRender(): void {
+    console.log('eChart performRender');
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
     if (this.chartInstance) {
@@ -442,6 +450,7 @@ export class EChart extends Chart {
   }
 
   private generateConfiguration() {
+    console.log('eChart generateConfiguration');
     this.configureSeries(this.chartData.getSeries());
     this.configureAxis();
   }
@@ -460,6 +469,7 @@ export class EChart extends Chart {
   }
 
   private configureSeries(series: Array<any>) {
+    console.log('eChart configureSeries');
     const cacheKey = JSON.stringify(series);
     if (this.seriesDataCache.has(cacheKey)) {
       this.libraryOptions.series = this.seriesDataCache.get(cacheKey);
@@ -550,17 +560,18 @@ export class EChart extends Chart {
       !isSecondaryAxis && !this.chartData.seriesConfig.x2;
 
     if (isSecondaryAxis) {
-      axisOptions.axisLabel.rotate = null;
+      // axisOptions.axisLabel.rotate = 45;
       axisOptions.splitArea.show = true;
+
       axisOptions.position =
         this.chartOptions.type === 'bar' ? 'left' : 'bottom';
       axisOptions.offset = this.chartOptions.type === 'bar' ? 60 : 30;
     }
-
     return axisOptions;
   }
 
   private configureAxis() {
+    console.log('eChart configureAxis');
     const nameGap = this.calculateNameGap();
     const xAxis: any[] = [];
     const yAxis = this.createYAxis(nameGap);
@@ -626,8 +637,19 @@ export class EChart extends Chart {
     const dataX1 = this.createDataX1(items1, items2);
     const dataX2 = this.createDataX2(items1, items2);
 
-    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
-    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX2, true));
+    xAxis.push(
+      this.configureAxisOptions(
+        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
+        dataX1
+      )
+    );
+    xAxis.push(
+      this.configureAxisOptions(
+        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
+        dataX2,
+        true
+      )
+    );
 
     xAxis[0].nameGap = 70;
     if (this.chartOptions.navigator.show) {

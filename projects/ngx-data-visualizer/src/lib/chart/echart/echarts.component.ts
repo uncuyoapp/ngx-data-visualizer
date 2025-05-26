@@ -120,6 +120,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * Inicialización del componente
    */
   public ngOnInit(): void {
+    console.log('echartsComponent ngOnInit');
     try {
       this.configInitOptions();
       this.createChart();
@@ -181,6 +182,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
    */
   protected createChart(): void {
     try {
+      console.log('echartsComponent createChart');
       const config = this.chartConfiguration();
 
       if (!config) {
@@ -188,7 +190,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
       }
 
       this.mainChart = new EChart(config);
-      this.mainChart.render();
 
       // Emitir el evento de gráfico creado de forma asíncrona
       Promise.resolve().then(() => {
@@ -197,45 +198,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error al crear el gráfico:', error);
       throw new Error('No se pudo crear el gráfico');
-    }
-  }
-
-  /**
-   * Actualiza el gráfico con los datos actuales
-   * @public
-   */
-  public updateChart(): void {
-    if (!this.mainChart) {
-      console.warn(
-        'No se puede actualizar el gráfico: la instancia no está inicializada'
-      );
-      return;
-    }
-
-    try {
-      // Remover cualquier listener previo del evento finished
-      if (this.mainChart?.instance) {
-        this.mainChart.instance.off('finished');
-      }
-
-      this.mainChart.render();
-      this.scheduleSeriesEmission();
-
-      // Emitir el evento de actualización después de que el gráfico se haya renderizado
-      this.ngZone.runOutsideAngular(() => {
-        if (this.mainChart?.instance) {
-          // Usar requestAnimationFrame para asegurar que el renderizado principal haya terminado
-          requestAnimationFrame(() => {
-            this.mainChart.instance.on('finished', () => {
-              this.ngZone.run(() => {
-                this.chartUpdated.emit();
-              });
-            });
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error al actualizar el gráfico:', error);
     }
   }
 
@@ -252,10 +214,73 @@ export class EchartsComponent implements OnInit, OnDestroy {
     try {
       this.mainChart.instance = instance;
 
+      // Realizar el renderizado inicial solo cuando se establece la instancia
+      if (!this.mainChart.hasRendered) {
+        console.log('Realizando renderizado inicial en setChartInstance');
+        this.mainChart.render();
+        this.mainChart.hasRendered = true;
+      }
+
       // Programar la emisión inicial de series
-      this.scheduleSeriesEmission(100); // Pequeño retraso para asegurar que el gráfico esté listo
+      this.scheduleSeriesEmission(100);
     } catch (error) {
       console.error('Error al establecer la instancia de ECharts:', error);
+    }
+  }
+
+  /**
+   * Actualiza el gráfico con los datos actuales
+   * @public
+   */
+  public updateChart(): void {
+    console.log('echartsComponent updateChart');
+    if (!this.mainChart) {
+      console.warn(
+        'No se puede actualizar el gráfico: la instancia no está inicializada'
+      );
+      return;
+    }
+
+    // Evitar actualizaciones si el gráfico está en proceso de renderizado
+    if (this.mainChart.isRendering) {
+      console.log('El gráfico está en proceso de renderizado, se omite la actualización');
+      return;
+    }
+
+    // Evitar actualizaciones si es el renderizado inicial
+    if (!this.mainChart.hasRendered) {
+      console.log('Esperando al renderizado inicial, se omite la actualización');
+      return;
+    }
+
+    try {
+      this.mainChart.isRendering = true;
+
+      // Remover cualquier listener previo del evento finished
+      if (this.mainChart?.instance) {
+        this.mainChart.instance.off('finished');
+      }
+
+      this.mainChart.render();
+      this.scheduleSeriesEmission();
+
+      // Emitir el evento de actualización después de que el gráfico se haya renderizado
+      this.ngZone.runOutsideAngular(() => {
+        if (this.mainChart?.instance) {
+          // Usar requestAnimationFrame para asegurar que el renderizado principal haya terminado
+          requestAnimationFrame(() => {
+            this.mainChart.instance.on('finished', () => {
+              this.ngZone.run(() => {
+                this.chartUpdated.emit();
+                this.mainChart.isRendering = false;
+              });
+            });
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error al actualizar el gráfico:', error);
+      this.mainChart.isRendering = false;
     }
   }
 

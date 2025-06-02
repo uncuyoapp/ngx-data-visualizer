@@ -1,8 +1,8 @@
 import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Dataset } from './dataset';
-import { ExcelService } from './table/excel.service';
-import { PivotConfiguration, TableConfiguration } from './table/table-configuration';
+import { ExcelService } from './table/services/excel.service';
+import { PivotConfiguration, TableConfiguration } from './table/types/table-configuration';
 import { TableComponent } from './table/table.component';
 
 /**
@@ -18,16 +18,16 @@ export class TableDirective implements OnDestroy {
   private readonly DEFAULT_EXPORT_NAME = 'tabla';
   /** Conjunto de datos para la tabla */
   dataset = input.required<Dataset>();
-  
+
   /** Opciones de configuración de la tabla */
   options = input.required<PivotConfiguration>();
 
   /** Configuración de la tabla */
   tableConfiguration!: TableConfiguration;
-  
+
   /** Referencia al componente de tabla creado */
   tableRenderComponentRef!: ComponentRef<TableComponent>;
-  
+
   /** Instancia del componente de tabla */
   tableComponent!: TableComponent;
 
@@ -68,7 +68,7 @@ export class TableDirective implements OnDestroy {
     // Crear el componente
     this.tableRenderComponentRef = this.viewContainerRef.createComponent<TableComponent>(TableComponent);
     this.tableComponent = this.tableRenderComponentRef.instance;
-    
+
     // Configurar la entrada usando setInput
     this.tableRenderComponentRef.setInput('tableConfiguration', this.tableConfiguration);
   }
@@ -97,13 +97,6 @@ export class TableDirective implements OnDestroy {
    * @returns Dependiendo del tipo, puede devolver el HTML o el resultado de la exportación
    * @throws {Error} Si no se puede acceder al elemento de la tabla para la exportación
    */
-  /**
-   * Exporta la tabla en diferentes formatos
-   * @param type Tipo de exportación ('html' o 'xlsx')
-   * @param name Nombre opcional para el archivo exportado
-   * @returns Dependiendo del tipo, puede devolver el HTML o el resultado de la exportación
-   * @throws {Error} Si no se puede acceder al elemento de la tabla para la exportación
-   */
   export(type: 'html' | 'xlsx', name: string = this.DEFAULT_EXPORT_NAME) {
     if (!this.tableComponent) {
       console.warn('El componente de tabla no está inicializado');
@@ -114,14 +107,15 @@ export class TableDirective implements OnDestroy {
       switch (type) {
         case 'html':
           return this.tableComponent.getHtmlTable();
-          
-        case 'xlsx':
+
+        case 'xlsx': {
           const tableElement = this.tableComponent.getTableElement();
           if (!tableElement) {
             throw new Error('No se pudo acceder al elemento de la tabla');
           }
           return this.excelService.exportAsExcelFile(tableElement, name);
-          
+        }
+
         default:
           console.warn(`Tipo de exportación no soportado: ${type}`);
           return null;

@@ -36,17 +36,32 @@ export class ExcelService {
     this.saveAsExcelFile(excelBuffer, excelFileName);
   }
 
+  /**
+   * Reemplaza caracteres específicos en los elementos de la tabla que coinciden con la clase CSS proporcionada.
+   * @param table Elemento HTML de la tabla a procesar.
+   * @param className Nombre de la clase CSS para identificar los elementos a modificar.
+   */
   private replaceCharactersInTable(table: HTMLElement, className: string): void {
-    const elements = table.getElementsByClassName(className);
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].innerHTML = this.processCellContent(elements[i].innerHTML);
+    const elements = Array.from(table.getElementsByClassName(className));
+    for (const element of elements) {
+      element.innerHTML = this.processCellContent(element.innerHTML);
     }
   }
 
+  /**
+   * Procesa el contenido de una celda, reemplazando comas por puntos y eliminando puntos decimales.
+   * @param cellContent Contenido de la celda a procesar.
+   * @returns Contenido procesado de la celda.
+   */
   private processCellContent(cellContent: string): string {
     return cellContent.replace(/,/g, '-').split('.').join('').replace(/-/g, '.');
   }
 
+  /**
+   * Guarda el buffer de datos como un archivo Excel.
+   * @param buffer Datos del archivo Excel en formato BlobPart.
+   * @param fileName Nombre del archivo a guardar.
+   */
   private saveAsExcelFile(buffer: BlobPart, fileName: string): void {
     try {
       const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });

@@ -7,8 +7,8 @@ export * from './lib/chart.directive';
 export * from './lib/chart/chart-configuration';
 export * from './lib/multiple-chart.directive';
 export * from './lib/table.directive';
-export * from './lib/table/table-configuration';
+export * from './lib/table/types/table-configuration';
 
 // Servicios de utilidad
-export * from './lib/utils/jquery.service';
-export * from './lib/utils/xlsx-security';
+export * from './lib/table/utils/jquery.service';
+export * from './lib/table/utils/xlsx-security';

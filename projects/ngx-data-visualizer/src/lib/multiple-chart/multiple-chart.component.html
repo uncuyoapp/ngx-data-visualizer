@@ -1,64 +1,59 @@
 <div class="charts-container">
-  @if (chartConfigurations()) {
-    @for (chartConfiguration of chartConfigurations(); track $index) {
-      <div
-        #chartItem
-        [id]="'chartItem' + $index"
-        class="chart-item"
-      >
-        <!-- Botón de navegación hacia atrás (solo si no es el primer elemento) -->
-        @if ($index !== 0) {
-          <lib-icon-back
-            class="icon-nav back"
-            (click)="moveToChartItem('chartItem' + ($index - 1))"
-            (keypress)="moveToChartItem('chartItem' + ($index - 1))"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="'Ir al gráfico anterior'"
-          ></lib-icon-back>
-        }
-
-        <!-- Contenedor del gráfico -->
-        <ng-container
-          *ngComponentOutlet="
-            chartComponent;
-            inputs: { chartConfiguration: chartConfiguration }
-          "
-        ></ng-container>
-
-        <!-- Botón de navegación hacia adelante (solo si no es el último elemento) -->
-        @if ($index !== chartConfigurations().length - 1) {
-          <lib-icon-forward
-            class="icon-nav forward"
-            (click)="moveToChartItem('chartItem' + ($index + 1))"
-            (keypress)="moveToChartItem('chartItem' + ($index + 1))"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="'Ir al siguiente gráfico'"
-          ></lib-icon-forward>
-        }
-
-        <!-- Botón para expandir/contraer el gráfico -->
-        @if (chartConfiguration.expanded) {
-          <lib-icon-contract
-            class="icon-expand"
-            (click)="expandChartItem(chartItem, chartConfiguration)"
-            (keypress)="expandChartItem(chartItem, chartConfiguration)"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="'Contraer gráfico'"
-          ></lib-icon-contract>
-        } @else {
-          <lib-icon-expand
-            class="icon-expand"
-            (click)="expandChartItem(chartItem, chartConfiguration)"
-            (keypress)="expandChartItem(chartItem, chartConfiguration)"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="'Expandir gráfico'"
-          ></lib-icon-expand>
-        }
-      </div>
+  @if (chartConfigurations()) { @for (chartConfiguration of
+  chartConfigurations(); track $index) {
+  <div #chartItem [id]="'chartItem' + $index" class="chart-item">
+    <!-- Botón de navegación hacia atrás (solo si no es el primer elemento) -->
+    @if ($index !== 0) {
+    <button
+      class="icon-nav back"
+      (click)="moveToChartItem('chartItem' + ($index - 1))"
+      (keypress)="moveToChartItem('chartItem' + ($index - 1))"
+      [attr.aria-label]="'Ir al gráfico anterior'"
+    >
+      <lib-icon-back></lib-icon-back>
+    </button>
     }
-  }
+
+    <!-- Contenedor del gráfico -->
+    <ng-container
+      *ngComponentOutlet="
+        chartComponent;
+        inputs: { chartConfiguration: chartConfiguration }
+      "
+    ></ng-container>
+
+    <!-- Botón de navegación hacia adelante (solo si no es el último elemento) -->
+    @if ($index !== chartConfigurations().length - 1) {
+    <button
+      class="icon-nav forward"
+      (click)="moveToChartItem('chartItem' + ($index + 1))"
+      (keypress)="moveToChartItem('chartItem' + ($index + 1))"
+      [attr.aria-label]="'Ir al siguiente gráfico'"
+    >
+      <lib-icon-forward></lib-icon-forward>
+    </button>
+    }
+
+    <!-- Botón para expandir/contraer el gráfico -->
+    @if (chartConfiguration.expanded) {
+    <button
+      class="icon-expand"
+      (click)="expandChartItem(chartItem, chartConfiguration)"
+      (keypress)="expandChartItem(chartItem, chartConfiguration)"
+      [attr.aria-label]="'Contraer gráfico'"
+    >
+      <lib-icon-contract></lib-icon-contract>
+    </button>
+    } @else {
+    <button
+      class="icon-expand"
+      (click)="expandChartItem(chartItem, chartConfiguration)"
+      (keypress)="expandChartItem(chartItem, chartConfiguration)"
+      [attr.aria-label]="'Expandir gráfico'"
+    >
+      <lib-icon-expand></lib-icon-expand>
+    </button>
+    }
+  </div>
+  } }
 </div>

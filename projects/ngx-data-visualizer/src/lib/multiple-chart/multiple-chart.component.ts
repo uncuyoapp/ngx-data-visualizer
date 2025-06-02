@@ -29,7 +29,7 @@ import { ForwardComponent } from '../icons/forward/forward.component';
 export class MultipleChartComponent {
   /** Configuraciones de los gráficos a mostrar */
   chartConfigurations = input.required<ChartConfiguration[]>();
-  
+
   /** Referencia al componente de gráfico que se renderizará */
   chartComponent = ChartComponent;
 
@@ -37,14 +37,12 @@ export class MultipleChartComponent {
    * Efecto que se ejecuta cuando cambian las configuraciones de los gráficos
    * Asegura que todas las configuraciones tengan la propiedad expanded definida
    */
-  private configEffect = effect(() => {
+  private readonly configEffect = effect(() => {
     const configs = this.chartConfigurations();
-    
+
     if (configs) {
-      configs.forEach(config => {
-        if (config.expanded === undefined) {
-          config.expanded = false;
-        }
+      configs.forEach((config) => {
+        config.expanded ??= false;
       });
     }
   });
@@ -62,7 +60,7 @@ export class MultipleChartComponent {
       element.classList.add('expanded');
       config.expanded = true;
     }
-    
+
     setTimeout(() => {
       this.moveToChartItem(element.id);
     }, 300);

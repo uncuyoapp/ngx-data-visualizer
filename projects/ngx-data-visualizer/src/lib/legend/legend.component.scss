@@ -8,8 +8,14 @@
 
 // Animación para mostrar/ocultar la leyenda
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .legend-wrapper {
@@ -18,7 +24,7 @@
   --legend-bg-hover: rgba(0, 95, 204, 0.1);
   --legend-border-radius: 4px;
   --legend-transition: all 0.2s ease-in-out;
-  
+
   width: 100%;
   max-width: 100%;
   padding: 1.2rem 0;
@@ -30,23 +36,21 @@
 
 .legend-toggle-button {
   @include focus-visible;
-  
+
   cursor: pointer;
   padding: 0.5rem 1rem;
   border-radius: var(--legend-border-radius);
   background-color: transparent;
   color: var(--legend-text-color);
   font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
   transition: var(--legend-transition);
   border: 1px solid transparent;
-  
+
   &:hover {
     text-decoration: none;
     background-color: var(--legend-bg-hover);
   }
-  
+
   &[aria-expanded="true"] {
     text-decoration: none;
     font-weight: 600;
@@ -61,7 +65,7 @@
   animation: fadeIn 0.2s ease-out forwards;
   opacity: 0;
   transform: translateY(-8px);
-  
+
   // Add a small delay to the animation for each child
   @for $i from 1 through 10 {
     :nth-child(#{$i}) {
@@ -72,7 +76,7 @@
 
 .legend-item {
   @include focus-visible;
-  
+
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -81,14 +85,14 @@
   background-color: transparent;
   border: 1px solid transparent;
   transition: var(--legend-transition);
-  
+
   &:hover {
     background-color: var(--legend-bg-hover);
   }
-  
+
   &[aria-pressed="false"] {
     opacity: 0.6;
-    
+
     .legend-item-label {
       text-decoration: line-through;
     }
@@ -132,12 +136,12 @@
     align-items: flex-start;
     width: 100%;
   }
-  
+
   .legend-item {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .legend-item-label {
     max-width: none;
   }

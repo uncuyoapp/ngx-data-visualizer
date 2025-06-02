@@ -1,5 +1,9 @@
 @use '../styles.scss' as styles;
 
+button {
+  border: none;
+}
+
 /* Estilos para los botones de navegación */
 .icon-nav {
   display: none;
@@ -67,7 +71,7 @@
 
   /* Elemento individual del gráfico */
   .chart-item {
-    width: calc((100% / 3) - 24px);
+    width: calc((100% / 3) - 32px);
     min-height: 300px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin: 8px;

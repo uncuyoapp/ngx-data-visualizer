@@ -1,13 +1,12 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   input,
   output,
-  signal,
-  type Signal,
+  signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Series } from '../models';
 
 /**

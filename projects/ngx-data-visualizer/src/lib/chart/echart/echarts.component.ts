@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   NgZone,
@@ -55,8 +54,8 @@ interface EChartsInitOptions extends EChartsOption {
     {
       provide: NGX_ECHARTS_CONFIG,
       useFactory: () => ({
-        echarts: () => import('echarts').then(m => m)
-      })
+        echarts: () => import('echarts').then((m) => m),
+      }),
     },
   ],
 })
@@ -87,19 +86,15 @@ export class EchartsComponent implements OnInit, OnDestroy {
     locale: 'es',
     renderer: 'canvas', // Usar canvas en lugar de SVG para mejor rendimiento
     useDirtyRect: true, // Habilitar renderizado sucio para mejor rendimiento
-    devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
+    devicePixelRatio:
+      typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
   };
-
-  /** Referencia al detector de cambios */
-  private readonly cdr = inject(ChangeDetectorRef);
 
   /** Referencia a NgZone */
   private readonly ngZone = inject(NgZone);
 
   /** Identificador único para el componente */
-  public id: string = `echart-${Math.floor(
-    Math.random() * 10000
-  )}`;
+  public id: string = `echart-${Math.floor(Math.random() * 10000)}`;
 
   /** Bandera para controlar si el componente está destruido */
   private isDestroyed = false;
@@ -120,7 +115,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * Inicialización del componente
    */
   public ngOnInit(): void {
-    console.log('echartsComponent ngOnInit');
     try {
       this.configInitOptions();
       this.createChart();
@@ -169,7 +163,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       }
 
       // Asegurar que el locale siempre esté definido
-      this.initOptions.locale = this.initOptions.locale || 'es';
+      this.initOptions.locale = this.initOptions.locale ?? 'es';
     } catch (error) {
       console.error('Error al configurar las opciones del gráfico:', error);
       throw new Error('No se pudo configurar las opciones del gráfico');
@@ -182,7 +176,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
    */
   protected createChart(): void {
     try {
-      console.log('echartsComponent createChart');
       const config = this.chartConfiguration();
 
       if (!config) {
@@ -216,7 +209,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
       // Realizar el renderizado inicial solo cuando se establece la instancia
       if (!this.mainChart.hasRendered) {
-        console.log('Realizando renderizado inicial en setChartInstance');
         this.mainChart.render();
         this.mainChart.hasRendered = true;
       }
@@ -233,7 +225,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @public
    */
   public updateChart(): void {
-    console.log('echartsComponent updateChart');
     if (!this.mainChart) {
       console.warn(
         'No se puede actualizar el gráfico: la instancia no está inicializada'
@@ -241,15 +232,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Evitar actualizaciones si el gráfico está en proceso de renderizado
-    if (this.mainChart.isRendering) {
-      console.log('El gráfico está en proceso de renderizado, se omite la actualización');
-      return;
-    }
-
     // Evitar actualizaciones si es el renderizado inicial
     if (!this.mainChart.hasRendered) {
-      console.log('Esperando al renderizado inicial, se omite la actualización');
+      console.warn(
+        'Esperando al renderizado inicial, se omite la actualización'
+      );
       return;
     }
 
@@ -369,8 +356,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
         this.ngZone.runOutsideAngular(() => {
           this.mainChart.instance.resize({
             animation: {
-              duration: 300
-            }
+              duration: 300,
+            },
           });
         });
       }
@@ -395,11 +382,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
       const series = this.mainChart.getSeries();
 
       if (Array.isArray(series) && series.length > 0) {
-        const typedSeries: Series[] = series.map(s => ({
+        const typedSeries: Series[] = series.map((s) => ({
           name: s.name || '',
-          color: s.color || '#000000',
+          color: s.color ?? '#000000',
           visible: s.visible ?? true,
-          data: s.data || []
+          data: s.data || [],
         }));
 
         requestAnimationFrame(() => {
@@ -425,23 +412,17 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      console.log('Generando serie de meta con chartType:', chartType);
-
       // Obtener los datos directamente del dataProvider
       const data = chartData.dataProvider.getData();
-      console.log('Datos del dataProvider:', data);
 
       // Extraer los valores de la meta
-      const goalData = data.map(row => {
+      const goalData = data.map((row) => {
         const value = row['valor'];
-        console.log('Valor de meta:', value);
         return typeof value === 'number' ? value : 0;
       });
-      console.log('Datos de meta procesados:', goalData);
 
       // Asegurarnos de que el tipo de serie coincida con el tipo de gráfico
       const seriesType = chartType === 'column' ? 'bar' : chartType;
-      console.log('Tipo de serie:', seriesType);
 
       // Crear la serie de meta con la configuración correcta
       const goalSeries: Series = {
@@ -457,18 +438,16 @@ export class EchartsComponent implements OnInit, OnDestroy {
         symbolSize: 6,
         lineStyle: {
           width: 2,
-          type: 'dashed'
-        }
+          type: 'dashed',
+        },
       };
 
       // Aplicar la configuración específica del tipo de serie
       type SeriesType = keyof typeof EC_SERIES_CONFIG;
       if (seriesType in EC_SERIES_CONFIG) {
-        console.log('Aplicando configuración específica para tipo:', seriesType);
         Object.assign(goalSeries, EC_SERIES_CONFIG[seriesType as SeriesType]);
       }
 
-      console.log('Serie de meta final:', goalSeries);
       return goalSeries;
     } catch (error) {
       console.error('Error al generar la serie de meta:', error);

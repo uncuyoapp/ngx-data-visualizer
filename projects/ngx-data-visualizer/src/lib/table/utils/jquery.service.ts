@@ -1,35 +1,62 @@
 import { Injectable } from '@angular/core';
 import jQuery from 'jquery';
-import { PivotOptions, PivotUtilities } from './pivot-types';
+import {
+  PivotAggregator,
+  PivotDeriver,
+  PivotFormatter,
+  PivotLocale,
+  PivotOptions,
+  PivotRenderer,
+} from '../types/pivot-types';
+
+declare global {
+  interface Window {
+    jQuery: typeof jQuery;
+    $: typeof jQuery;
+  }
+}
 
 // Extender la interfaz de jQuery para incluir los métodos de pivottable
 declare global {
   interface JQuery {
-    pivot(data: Record<string, unknown>[], options?: PivotOptions, locale?: string): JQuery;
+    pivot(
+      data: Record<string, unknown>[],
+      options?: PivotOptions,
+      locale?: string
+    ): JQuery;
   }
 
   interface JQueryStatic {
     pivotUtilities: {
-      aggregatorTemplates: PivotUtilities['aggregatorTemplates'];
-      renderers: PivotUtilities['renderers'];
-      derivers: PivotUtilities['derivers'];
-      locales: PivotUtilities['locales'];
-      naturalSort: PivotUtilities['naturalSort'];
-      numberFormat: PivotUtilities['numberFormat'];
-      sortAs: PivotUtilities['sortAs'];
+      aggregatorTemplates: {
+        sum: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
+        count: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
+        average: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
+      };
+      renderers: Record<string, PivotRenderer>;
+      derivers: Record<string, PivotDeriver>;
+      locales: Record<string, PivotLocale>;
+      naturalSort: (a: string | number, b: string | number) => number;
+      numberFormat: (opts?: {
+        digitsAfterDecimal?: number;
+        scaler?: number;
+        prefix?: string;
+        suffix?: string;
+      }) => PivotFormatter;
+      sortAs: (orderValues: string[]) => (a: string, b: string) => number;
     };
   }
 }
 
-// Importar estilos de pivottable
-import 'pivottable/dist/pivot.css';
-
-// Importar pivottable y su localización
-import 'pivottable/dist/pivot.es.js';
-import 'pivottable/dist/pivot.js';
-
-// Importar pivottable (la importación de estilos y scripts se maneja en pivottable.ts)
+// Importar estilos y scripts de pivottable
 import 'pivottable';
+import 'pivottable/dist/pivot.css';
 
 /**
  * Servicio que proporciona acceso a jQuery y pivottable internamente en la biblioteca.
@@ -65,8 +92,8 @@ export class JQueryService {
    * @private
    */
   private initializeJQuery(): void {
-    (window as Window & typeof globalThis).jQuery = jQuery;
-    (window as Window & typeof globalThis).$ = jQuery;
+    window.jQuery = jQuery;
+    window.$ = jQuery;
   }
 
   /**

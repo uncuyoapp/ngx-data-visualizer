@@ -1,5 +1,5 @@
-import { DataProvider } from "../data-provider";
-import { Dimension } from "../models";
+import { DataProvider } from "../../data-provider";
+import { Dimension } from "../../models";
 
 export interface TableConfiguration {
   options: PivotConfiguration;

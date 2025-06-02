@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { 
+import {
   ChangeDetectionStrategy,
-  Component, 
-  ElementRef, 
-  OnInit, 
-  ViewChild, 
-  effect, 
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  effect,
   input,
   inject
 } from '@angular/core';
 
-import { PivotConfiguration, TableConfiguration } from './table-configuration';
-import { TableHelper } from './table-helper';
-import { TableService } from './table.service';
+import { PivotConfiguration, TableConfiguration } from './types/table-configuration';
+import { TableHelper } from './utils/table-helper';
+import { TableService } from './services/table.service';
 
 /**
  * Componente de tabla que muestra datos en formato tabular con capacidad de pivotado.
@@ -23,7 +23,7 @@ import { TableService } from './table.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './table.component.html',
-  styleUrl: './table.component.scss',
+  styleUrls: ['./table.component.scss', './styles/pivot.styles.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TableComponent implements OnInit {
@@ -35,10 +35,10 @@ export class TableComponent implements OnInit {
   protected readonly tableConfiguration = input.required<TableConfiguration>();
 
   // Referencias a elementos del DOM
-  @ViewChild('pivotTable', { static: true }) 
+  @ViewChild('pivotTable', { static: true })
   private readonly pivotTable!: ElementRef<HTMLDivElement>;
 
-  /** 
+  /**
    * Efecto que se activa cuando cambia la configuración de la tabla.
    * @private
    */
@@ -84,11 +84,11 @@ export class TableComponent implements OnInit {
   public getHtmlTable(): string {
     const tableElement = this.pivotTable.nativeElement;
     const firstChild = tableElement.firstElementChild;
-    
+
     if (firstChild) {
       firstChild.classList.add('table', 'table-bordered');
     }
-    
+
     return tableElement.innerHTML;
   }
 
@@ -114,7 +114,7 @@ export class TableComponent implements OnInit {
   private render(pivotConfig: PivotConfiguration): void {
     const tableElement = this.pivotTable.nativeElement;
     const tableData = this.tableConfiguration().data.getData();
-    
+
     // Asegurar que el elemento es un HTMLDivElement
     if (tableElement instanceof HTMLDivElement) {
       TableHelper.renderPivot(tableElement, tableData, pivotConfig);

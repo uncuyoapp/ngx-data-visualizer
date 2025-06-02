@@ -7,7 +7,7 @@ table.pvtTable {
     border-spacing: 0px;
     margin: 0 auto;
     position: relative;
-    border-collapse: unset;
+    border-collapse: unset !important;
     width: 100%;
     max-width: 100%;
 }
@@ -27,8 +27,8 @@ table.pvtTable .pvtRowLabel {
     z-index: 995;
 }
 
-table.pvtTable .pvtVal, 
-table.pvtTable .pvtTotal, 
+table.pvtTable .pvtVal,
+table.pvtTable .pvtTotal,
 table.pvtTable .pvtGrandTotal {
     vertical-align: middle;
     border: 2px solid white;

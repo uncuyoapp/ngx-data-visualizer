@@ -1,22 +1,9 @@
+import { ChartError } from './chart-base';
 import {
   ChartConfiguration,
   ChartConfigurationOptions,
 } from './chart-configuration';
-import { ChartData } from './chart-data';
-
-/**
- * Clase de error personalizada para errores relacionados con gráficos
- */
-export class ChartError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly originalError?: Error
-  ) {
-    super(message);
-    this.name = 'ChartError';
-  }
-}
+import { ChartData } from '../utils/chart-data';
 
 /**
  * Clase abstracta base para la implementación de diferentes tipos de gráficos.

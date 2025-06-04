@@ -16,11 +16,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LegendComponent } from '../legend/legend.component';
 import { Filters, Goal, Series } from '../models';
-import { Chart } from './chart';
-import { ChartConfiguration } from './chart-configuration';
-import { ChartService } from './chart.service';
 import { EchartsComponent } from './echart/echarts.component';
-import { GoalChartHelper } from './goal-chart.helper';
+import { ChartService } from './services/chart.service';
+import { Chart } from './types/chart';
+import { ChartConfiguration } from './types/chart-configuration';
+import { GoalChartHelper } from './utils/goal-chart.helper';
 
 /**
  * Componente principal de gráficos que encapsula la lógica de visualización

@@ -1,40 +1,14 @@
 import { Injectable, Type } from "@angular/core";
 import { cloneDeep } from 'lodash';
-import { DIMENSION_YEAR, DataProvider } from "../data-provider";
-import { Dataset } from "../dataset";
-import { Dimension, Filters, DimensionFilter } from "../models";
-import { ChartConfiguration, ChartConfigurationOptions, DEFAULT_OPTIONS, SeriesConfig } from "./chart-configuration";
-import { ChartData } from "./chart-data";
-import { EchartsComponent } from "./echart/echarts.component";
-import { ParserOptionsEChart } from "./echart/parser-options";
+import { DIMENSION_YEAR, DataProvider } from "../../data-provider";
+import { Dataset } from "../../dataset";
+import { Dimension, Filters, DimensionFilter } from "../../models";
+import { ChartConfiguration, ChartConfigurationOptions, DEFAULT_OPTIONS, SeriesConfig } from "../types/chart-configuration";
+import { ChartData } from "../utils/chart-data";
+import { EchartsComponent } from "../echart/echarts.component";
+import { ParserOptionsEChart } from "../echart/utils/parser-options";
 import { EChartsOption } from 'echarts';
-
-/**
- * Interfaz que define las operaciones necesarias para analizar y configurar opciones de gráficos
- */
-export interface ParserOptions {
-  /**
-   * Obtiene las opciones para la vista previa del gráfico
-   * @param config Configuración de opciones del gráfico
-   * @returns Objeto con las opciones para la vista previa
-   */
-  getPreviewOptions(config: ChartConfigurationOptions): unknown;
-
-  /**
-   * Obtiene las opciones completas para el gráfico
-   * @param config Configuración de opciones del gráfico
-   * @returns Objeto con las opciones completas
-   */
-  getFullOptions(config: ChartConfigurationOptions): unknown;
-
-  /**
-   * Aplica configuraciones adicionales al gráfico
-   * @param config Configuración de opciones
-   * @param libraryConfig Configuración actual de la biblioteca de gráficos
-   * @returns Configuración actualizada de la biblioteca
-   */
-  applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: unknown): unknown;
-}
+import { ParserOptions } from "../types/parser-options";
 
 /**
  * Servicio principal para la generación y configuración de gráficos.

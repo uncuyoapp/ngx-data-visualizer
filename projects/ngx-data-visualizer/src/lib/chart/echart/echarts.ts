@@ -5,15 +5,16 @@ import {
   XAXisComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { Chart } from '../chart';
+import { Chart } from '../types/chart';
 import {
   ChartConfiguration,
   EChartsLibraryOptions,
-} from '../chart-configuration';
-import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from './echartsConfigurations';
-import { ExportManager } from './export-manager';
-import { SeriesConfigType, SeriesManager } from './series-manager';
-import { TooltipManager } from './tooltip-manager';
+} from '../types/chart-configuration';
+import { ExportManager } from './managers/export-manager';
+import { SeriesManager } from './managers/series-manager';
+import { TooltipManager } from './managers/tooltip-manager';
+import { SeriesConfigType } from './types/echart.types';
+import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from './types/echartsConfigurations';
 
 /**
  * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.
@@ -303,7 +304,7 @@ export class EChart extends Chart {
   /**
    * Oculta el gráfico
    */
-  hide(): void {}
+  hide(): void { }
 
   /**
    * Alterna el modo porcentual del gráfico
@@ -657,8 +658,8 @@ export class EChart extends Chart {
   private createDataX2(items1: any[], items2: any[]): string[] {
     return this.chartOptions.navigator.show
       ? Array<string>().concat(
-          ...items1.map((i) => new Array(items2.length).fill(i))
-        )
+        ...items1.map((i) => new Array(items2.length).fill(i))
+      )
       : items1;
   }
 

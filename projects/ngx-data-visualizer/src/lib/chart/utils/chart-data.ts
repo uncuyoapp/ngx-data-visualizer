@@ -1,6 +1,6 @@
-import { DataProvider, DIMENSION_VALUE } from '../data-provider';
-import { Dimension, RowData } from '../models';
-import { SeriesConfig } from './chart-configuration';
+import { DataProvider, DIMENSION_VALUE } from '../../data-provider';
+import { Dimension, RowData } from '../../models';
+import { SeriesConfig } from '../types/chart-configuration';
 
 /**
  * Clase encargada de transformar y preparar datos para visualizaciones gráficas.

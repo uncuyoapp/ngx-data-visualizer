@@ -10,12 +10,12 @@ import {
 import { Subject } from 'rxjs';
 import {
   ChartConfiguration,
-  ChartConfigurationOptions,
-} from './chart/chart-configuration';
-import { ChartComponent } from './chart/chart.component';
-import { ChartService } from './chart/chart.service';
+  ChartConfigurationOptions
+} from './chart/types/chart-configuration';
+import { ChartService } from './chart/services/chart.service';
 import { Dataset } from './dataset';
 import { Goal, Series } from './models';
+import { ChartComponent } from './chart/chart.component';
 
 /**
  * Directiva que permite incrustar un gráfico en un componente contenedor.

@@ -1,7 +1,7 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { Component, effect, input } from '@angular/core';
 
-import { ChartConfiguration } from '../chart/chart-configuration';
+import { ChartConfiguration } from '../chart/types/chart-configuration';
 import { ChartComponent } from '../chart/chart.component';
 import { BackComponent } from '../icons/back/back.component';
 import { ContractComponent } from '../icons/contract/contract.component';

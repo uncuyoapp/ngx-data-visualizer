@@ -1,8 +1,8 @@
 import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ChartConfiguration, ChartConfigurationOptions, Dimension } from '../public-api';
-import { ChartService } from './chart/chart.service';
+
+import { ChartService } from './chart/services/chart.service';
 import { Dataset } from './dataset';
 import { MultipleChartComponent } from './multiple-chart/multiple-chart.component';
 
@@ -36,8 +36,8 @@ export class MultipleChartDirective implements OnDestroy {
   subscription!: Subscription;
 
   constructor(
-    private viewContainerRef: ViewContainerRef,
-    private chartService: ChartService
+    private readonly viewContainerRef: ViewContainerRef,
+    private readonly chartService: ChartService
   ) {
     this.initializeMultipleCharts();
   }

@@ -1,26 +1,17 @@
 import { Type } from "@angular/core";
-import { Dataset } from "../dataset";
-import { ChartData } from "./chart-data";
-import { EchartsComponent } from "./echart/echarts.component";
 import { EChartsOption } from "echarts";
-
-/**
- * Interfaz base para las opciones de configuración de cualquier librería de gráficos
- * @interface ChartLibraryOptions
- */
-export interface ChartLibraryOptions {
-  [key: string]: unknown;
-}
+import { Dataset } from "../../dataset";
+import { EchartsComponent } from "../echart/echarts.component";
+import { ChartLibraryOptions } from "./chart-base";
+import { ChartData } from "../utils/chart-data";
 
 /**
  * Interfaz específica para las opciones de configuración de ECharts
- * @interface EChartsLibraryOptions
  */
 export type EChartsLibraryOptions = EChartsOption;
 
 /**
  * Interfaz que define las opciones de configuración para un gráfico
- * @interface ChartConfigurationOptions
  */
 export interface ChartConfigurationOptions {
   /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
@@ -144,7 +135,6 @@ export const DEFAULT_OPTIONS: ChartConfigurationOptions = {
 
 /**
  * Interfaz que define la configuración de una serie del gráfico
- * @interface SeriesConfig
  */
 export interface SeriesConfig {
   /** Campo para el eje X primario */
@@ -159,7 +149,6 @@ export interface SeriesConfig {
 
 /**
  * Interfaz principal que define la configuración completa del gráfico
- * @interface ChartConfiguration
  */
 export interface ChartConfiguration {
   /** Componente de renderizado del gráfico */

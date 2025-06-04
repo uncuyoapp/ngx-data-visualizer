@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from "echarts";
 import { cloneDeep } from 'lodash';
-import { ChartConfigurationOptions } from "../chart-configuration";
-import { ParserOptions } from "../chart.service";
-import { EC_CHART_CONFIG_PREVIEW } from "./echartsConfigurations";
+import { ChartConfigurationOptions } from "../../types/chart-configuration";
+import { ParserOptions } from "../../types/parser-options";
+import { EC_CHART_CONFIG_PREVIEW } from "../types/echartsConfigurations";
 
 /**
  * Clase encargada de analizar y configurar las opciones de los gráficos ECharts.

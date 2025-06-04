@@ -1,24 +1,110 @@
-# NgxIndicatorDisplay
+# NgxDataVisualizer
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.0.
+NgxDataVisualizer es una librería Angular que proporciona componentes y directivas para la visualización de datos en forma de gráficos y tablas. Está diseñada para ser flexible, reutilizable y fácil de integrar en aplicaciones Angular.
 
-## Code scaffolding
+## Características Principales
 
-Run `ng generate component component-name --project ngx-data-visualizer` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-data-visualizer`.
-> Note: Don't forget to add `--project ngx-data-visualizer` or else it will be added to the default project in your `angular.json` file. 
+- Visualización de datos mediante gráficos y tablas
+- Soporte para múltiples tipos de gráficos
+- Directivas personalizables para la integración de datos
+- Sistema de leyendas integrado
+- Estilos personalizables mediante SCSS
 
-## Build
+## Componentes Principales
 
-Run `ng build ngx-data-visualizer` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Gráficos
+- `ChartDirective`: Directiva base para la renderización de gráficos
+- `MultipleChartDirective`: Directiva para la visualización de múltiples gráficos
+- Componentes de gráficos específicos en el directorio `chart/`
 
-## Publishing
+### Tablas
+- `TableDirective`: Directiva para la renderización de tablas de datos
+- Componentes de tabla en el directorio `table/`
 
-After building your library with `ng build ngx-data-visualizer`, go to the dist folder `cd dist/ngx-data-visualizer` and run `npm publish`.
+### Utilidades
+- `DataProvider`: Servicio para la gestión y transformación de datos
+- `Legend`: Componente para la visualización de leyendas
+- `Dataset`: Utilidades para el manejo de conjuntos de datos
 
-## Running unit tests
+## Instalación
 
-Run `ng test ngx-data-visualizer` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+npm install ngx-data-visualizer
+```
 
-## Further help
+## Uso Básico
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+1. Importar el módulo en tu aplicación:
+
+```typescript
+import { NgxDataVisualizerModule } from 'ngx-data-visualizer';
+
+@NgModule({
+  imports: [
+    NgxDataVisualizerModule
+  ]
+})
+export class AppModule { }
+```
+
+2. Usar los componentes en tus templates:
+
+```html
+<!-- Gráfico simple -->
+<div ngxChart [data]="chartData"></div>
+
+<!-- Tabla de datos -->
+<div ngxTable [data]="tableData"></div>
+
+<!-- Múltiples gráficos -->
+<div ngxMultipleChart [data]="multipleChartData"></div>
+```
+
+## Desarrollo
+
+### Generar un nuevo componente
+
+```bash
+ng generate component component-name --project ngx-data-visualizer
+```
+
+### Construir la librería
+
+```bash
+ng build ngx-data-visualizer
+```
+
+### Ejecutar pruebas
+
+```bash
+ng test ngx-data-visualizer
+```
+
+## Publicación
+
+1. Construir la librería:
+```bash
+ng build ngx-data-visualizer
+```
+
+2. Navegar al directorio de distribución:
+```bash
+cd dist/ngx-data-visualizer
+```
+
+3. Publicar en npm:
+```bash
+npm publish
+```
+
+## Documentación Adicional
+
+Para más información sobre el uso de la librería, consulta la documentación en el directorio `docs/` o visita nuestro sitio web.
+
+## Contribución
+
+Las contribuciones son bienvenidas. Por favor, lee nuestras guías de contribución antes de enviar un pull request.
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT - ver el archivo LICENSE para más detalles.

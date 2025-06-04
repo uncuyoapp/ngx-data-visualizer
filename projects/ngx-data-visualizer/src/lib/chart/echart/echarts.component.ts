@@ -12,12 +12,12 @@ import {
 } from '@angular/core';
 import { ECharts, EChartsOption } from 'echarts';
 import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from 'ngx-echarts';
-import { Series } from '../../models';
+import { Series } from '../types/chart-models';
 import { Chart } from '../types/chart';
 import { ChartConfiguration } from '../types/chart-configuration';
 import { ChartData } from '../utils/chart-data';
 import { EChart } from './echarts';
-import { EC_SERIES_CONFIG } from './types/echartsConfigurations';
+import { EC_SERIES_CONFIG } from '../../types/constants';
 
 /**
  * Interfaz para las opciones de inicialización de ECharts

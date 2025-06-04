@@ -7,7 +7,7 @@ import {
   output,
   signal
 } from '@angular/core';
-import { Series } from '../models';
+import { Series } from '../chart/types/chart-models';
 
 /**
  * Componente que muestra una leyenda para series de gráficos con funcionalidad de alternancia.

@@ -13,8 +13,8 @@ import {
 import { ExportManager } from './managers/export-manager';
 import { SeriesManager } from './managers/series-manager';
 import { TooltipManager } from './managers/tooltip-manager';
-import { SeriesConfigType } from './types/echart.types';
-import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from './types/echartsConfigurations';
+import { SeriesConfigType } from './types/echart-base';
+import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from '../../types/constants';
 
 /**
  * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.

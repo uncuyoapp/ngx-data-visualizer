@@ -15,7 +15,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LegendComponent } from '../legend/legend.component';
-import { Filters, Goal, Series } from '../models';
+import { Filters } from '../models';
+import { Goal, Series } from './types/chart-models';
 import { EchartsComponent } from './echart/echarts.component';
 import { ChartService } from './services/chart.service';
 import { Chart } from './types/chart';

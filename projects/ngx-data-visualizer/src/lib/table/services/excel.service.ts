@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { SecureXLSX } from '../utils/xlsx-security';
-
-const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-const EXCEL_EXTENSION = '.xlsx';
+import { EXCEL_TYPE, EXCEL_EXTENSION } from '../../types/constants';
 
 /**
  * Servicio que proporciona funcionalidad para exportar una tabla HTML a un archivo de Excel.

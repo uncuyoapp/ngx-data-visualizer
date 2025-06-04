@@ -10,7 +10,7 @@ import {
   inject
 } from '@angular/core';
 
-import { PivotConfiguration, TableConfiguration } from './types/table-configuration';
+import { PivotConfiguration, TableConfiguration } from './types/table-base';
 import { TableHelper } from './utils/table-helper';
 import { TableService } from './services/table.service';
 

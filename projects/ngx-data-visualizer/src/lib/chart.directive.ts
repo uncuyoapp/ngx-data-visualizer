@@ -14,7 +14,7 @@ import {
 } from './chart/types/chart-configuration';
 import { ChartService } from './chart/services/chart.service';
 import { Dataset } from './dataset';
-import { Goal, Series } from './models';
+import { Goal, Series } from './chart/types/chart-models';
 import { ChartComponent } from './chart/chart.component';
 
 /**

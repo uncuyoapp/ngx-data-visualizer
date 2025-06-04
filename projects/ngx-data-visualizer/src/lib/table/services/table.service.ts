@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import {
   PivotConfiguration,
   TableConfiguration,
-} from '../types/table-configuration';
+} from '../types/table-base';
 import { JQueryService } from '../utils/jquery.service';
 import { TableHelper } from '../utils/table-helper';
 

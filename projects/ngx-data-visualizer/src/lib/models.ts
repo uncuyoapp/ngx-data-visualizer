@@ -1,3 +1,6 @@
+import { DataValue, RowData } from './types/data.types';
+import { BaseSeries } from './chart/types/chart-base';
+
 /**
  * Interfaz que representa una dimensión en el conjunto de datos
  */
@@ -51,9 +54,6 @@ export interface TimeSeries {
 
 /**
  * Clase que representa los filtros aplicables a un conjunto de datos
- */
-/**
- * Clase que representa los filtros aplicables a un conjunto de datos
  * @example
  * const filters = new Filters();
  * filters.rollUp = ['categoria'];
@@ -80,64 +80,19 @@ export interface DimensionFilter {
   items: Array<string | number>;
 }
 
-/**
- * Tipo que define los valores permitidos en una fila de datos
- */
-type DataValue = string | number | boolean | null | undefined;
-
-/**
- * Interfaz que representa una fila de datos genérica
- * @example
- * {
- *   id: 1,
- *   name: 'Ejemplo',
- *   value: 100,
- *   active: true
- * }
- */
-export interface RowData {
-  [key: string]: DataValue;
-}
+// Re-exportar tipos comunes
+export { DataValue, RowData };
 
 /**
  * Interfaz que representa una serie de datos para gráficos
+ * Extiende de BaseSeries para mantener compatibilidad con el código existente
  */
-export interface Series {
-  /** Nombre de la serie */
-  name: string;
-
+export interface Series extends BaseSeries {
   /** Color de la serie */
   color: string;
 
   /** Indica si la serie es visible */
   visible: boolean;
-
-  /** Datos de la serie */
-  data: Array<number | [number, number] | { value: number }>;
-
-  /** Indica si la serie debe mostrarse con líneas suaves */
-  smooth?: boolean;
-
-  /** Indica si la serie debe apilarse con otras series */
-  stacking?: string | undefined;
-
-  /** Tipo de gráfico asociado a la serie */
-  chartType?: string;
-
-  /** Tipo de serie para ECharts */
-  type?: string;
-
-  /** Símbolo para los puntos de la serie */
-  symbol?: string;
-
-  /** Tamaño del símbolo */
-  symbolSize?: number;
-
-  /** Estilo de la línea */
-  lineStyle?: {
-    width?: number;
-    type?: string;
-  };
 }
 
 /**

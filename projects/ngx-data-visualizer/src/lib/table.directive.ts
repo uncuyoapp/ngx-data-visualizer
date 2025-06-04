@@ -2,7 +2,7 @@ import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } f
 import { Subscription } from 'rxjs';
 import { Dataset } from './dataset';
 import { ExcelService } from './table/services/excel.service';
-import { PivotConfiguration, TableConfiguration } from './table/types/table-configuration';
+import { PivotConfiguration, TableConfiguration } from './table/types/table-base';
 import { TableComponent } from './table/table.component';
 
 /**

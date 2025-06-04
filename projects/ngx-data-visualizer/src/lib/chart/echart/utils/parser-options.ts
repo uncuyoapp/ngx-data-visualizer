@@ -3,7 +3,7 @@ import { EChartsOption } from "echarts";
 import { cloneDeep } from 'lodash';
 import { ChartConfigurationOptions } from "../../types/chart-configuration";
 import { ParserOptions } from "../../types/parser-options";
-import { EC_CHART_CONFIG_PREVIEW } from "../types/echartsConfigurations";
+import { EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
 
 /**
  * Clase encargada de analizar y configurar las opciones de los gráficos ECharts.

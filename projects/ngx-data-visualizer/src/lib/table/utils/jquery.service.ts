@@ -7,7 +7,7 @@ import {
   PivotLocale,
   PivotOptions,
   PivotRenderer,
-} from '../types/pivot-types';
+} from '../types/table-base';
 
 declare global {
   interface Window {

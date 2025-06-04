@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { JQueryService } from './jquery.service';
-import { PivotConfiguration } from '../types/table-configuration';
-import { PivotFormatter, PivotAggregator, PivotRenderer, PivotDeriver, PivotLocale } from '../types/pivot-types';
+import { PivotConfiguration } from '../types/table-base';
+import { PivotFormatter, PivotAggregator, PivotRenderer, PivotDeriver, PivotLocale } from '../types/table-base';
 
 // Extender la interfaz de jQuery para incluir los métodos de pivottable
 declare global {

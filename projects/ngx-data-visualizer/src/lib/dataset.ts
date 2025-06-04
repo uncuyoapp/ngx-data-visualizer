@@ -1,29 +1,13 @@
 import { Subject } from 'rxjs';
 import { DataProvider } from './data-provider';
-import { Dimension, Filters, RowData, TimeSeries } from './models';
-
-/**
- * Interfaz que define la estructura de configuración para un Dataset
- */
-export interface DatasetModel {
-  /** Identificador único opcional del dataset */
-  id?: number;
-
-  /** Dimensiones disponibles en el dataset */
-  dimensions: Dimension[];
-
-  /** Indica si está habilitada la agrupación (roll up) de datos */
-  enableRollUp: boolean;
-
-  /** Datos en formato de filas */
-  rowData: RowData[];
-}
+import { Dimension, Filters, RowData } from './models';
+import { TimeSeries } from './chart/types/chart-models';
 
 /**
  * Clase que representa un conjunto de datos para visualización
  * Proporciona métodos para manejar y filtrar datos
  */
-export class Dataset implements DatasetModel {
+export class Dataset {
   /** Identificador único opcional del dataset */
   public readonly id?: number;
 
@@ -43,7 +27,7 @@ export class Dataset implements DatasetModel {
   public readonly dataUpdated = new Subject<boolean>();
 
   /** Serie temporal asociada al dataset (opcional) */
-  private timeSeries?: TimeSeries;
+  private readonly timeSeries?: TimeSeries;
 
   /**
    * Crea una nueva instancia de Dataset
@@ -64,7 +48,12 @@ export class Dataset implements DatasetModel {
    *   enableRollUp: true
    * });
    */
-  constructor(config: DatasetModel) {
+  constructor(config: {
+    id?: number;
+    dimensions: Dimension[];
+    enableRollUp: boolean;
+    rowData: RowData[];
+  }) {
     if (!config) {
       throw new Error('La configuración del dataset es requerida');
     }

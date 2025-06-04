@@ -1,5 +1,5 @@
 import { ECharts } from 'echarts';
-import { SeriesConfigType, SeriesData } from '../types/echart.types';
+import { SeriesConfigType, SeriesData } from '../types/echart-base';
 
 /**
  * Clase encargada de manejar las series de los gráficos ECharts.

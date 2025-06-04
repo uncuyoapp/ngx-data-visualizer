@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { MAX_LENGTH, DANGEROUS_ATTRS } from '../../types/constants';
 
 /**
  * Wrapper seguro para xlsx que implementa medidas de mitigación para las vulnerabilidades conocidas
@@ -50,7 +51,6 @@ export class SecureXLSX {
     }
     
     // Limitamos la longitud a un valor razonable
-    const MAX_LENGTH = 10000;
     if (str.length > MAX_LENGTH) {
       return str.substring(0, MAX_LENGTH);
     }
@@ -82,11 +82,8 @@ export class SecureXLSX {
    * @param element Elemento HTML a sanitizar
    */
   private static sanitizeHtmlAttributes(element: HTMLElement): void {
-    // Lista de atributos potencialmente peligrosos
-    const dangerousAttrs = ['onload', 'onerror', 'onclick', 'onmouseover', 'onmouseout', 'onkeydown', 'onkeyup', 'onkeypress'];
-    
     // Eliminamos atributos peligrosos
-    for (const attr of dangerousAttrs) {
+    for (const attr of DANGEROUS_ATTRS) {
       if (element.hasAttribute(attr)) {
         element.removeAttribute(attr);
       }

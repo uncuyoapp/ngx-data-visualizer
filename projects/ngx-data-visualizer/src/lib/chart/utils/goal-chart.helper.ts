@@ -1,5 +1,7 @@
-import { DataProvider, DIMENSION_VALUE, DIMENSION_YEAR } from '../../data-provider';
-import { Filters, Goal } from '../../models';
+import { DataProvider } from '../../data-provider';
+import { DIMENSION_VALUE, DIMENSION_YEAR } from '../../types/constants';
+import { Filters } from '../../models';
+import { Goal } from '../types/chart-models';
 import { ChartConfiguration, SeriesConfig } from '../types/chart-configuration';
 import { ChartData } from './chart-data';
 

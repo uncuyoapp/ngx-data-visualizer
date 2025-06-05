@@ -12,6 +12,7 @@ export * from './lib/directives/table.directive';
 export * from './lib/table/table.component';
 export * from './lib/table/types/table-base';
 export * from './lib/types/data.types';
+export * from './lib/chart/types/chart-models';
 
 // Servicios de utilidad
 export * from './lib/table/utils/jquery.service';

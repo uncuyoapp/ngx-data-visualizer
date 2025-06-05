@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { cloneDeep } from 'lodash';
 import { ChartConfigurationOptions, ChartDirective, Dataset, Dimension, PivotConfiguration, RowData, TableDirective } from 'ngx-data-visualizer';
-import optionsChart from '../../assets/chart-options-dash.json';
-import dimensionsData from '../../assets/dash-dimensions.json';
-import data from '../../assets/example-data-2.json';
-import optionsTable from '../../assets/table-options-dash.json';
+import optionsChart from '../../assets/data/chart-options-dash.json';
+import dimensionsData from '../../assets/data/dash-dimensions.json';
+import data from '../../assets/data/example-data-2.json';
+import optionsTable from '../../assets/data/table-options-dash.json';
 
 @Component({
   selector: 'app-dashboard',

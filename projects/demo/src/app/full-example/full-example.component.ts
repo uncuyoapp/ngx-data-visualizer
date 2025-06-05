@@ -16,11 +16,11 @@ import {
   TableDirective,
 } from 'ngx-data-visualizer';
 
-import optionsChart from '../chart-options.json';
-import data from '../data.json';
-import dimensionsData from '../dimensions.json';
-import goal from '../goal.json';
-import optionsTable from '../table-options.json';
+import optionsChart from '../../assets/data/chart-options.json';
+import data from '../../assets/data/data.json';
+import dimensionsData from '../../assets/data/dimensions.json';
+import goal from '../../assets/data/goal.json';
+import optionsTable from '../../assets/data/table-options.json';
 
 @Component({
   selector: 'app-full-example',

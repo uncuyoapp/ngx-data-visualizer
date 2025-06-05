@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as XLSX from 'xlsx';
 import { MAX_LENGTH, DANGEROUS_ATTRS } from '../../types/constants';
 
@@ -49,12 +50,12 @@ export class SecureXLSX {
     if (typeof str !== 'string') {
       return '';
     }
-    
+
     // Limitamos la longitud a un valor razonable
     if (str.length > MAX_LENGTH) {
       return str.substring(0, MAX_LENGTH);
     }
-    
+
     return str;
   }
 
@@ -70,10 +71,10 @@ export class SecureXLSX {
 
     // Clonamos el elemento para no modificar el original
     const clone = element.cloneNode(true) as HTMLElement;
-    
+
     // Sanitizamos los atributos y contenido
     this.sanitizeHtmlAttributes(clone);
-    
+
     return clone;
   }
 
@@ -88,7 +89,7 @@ export class SecureXLSX {
         element.removeAttribute(attr);
       }
     }
-    
+
     // Procesamos recursivamente los hijos
     for (let i = 0; i < element.children.length; i++) {
       this.sanitizeHtmlAttributes(element.children[i] as HTMLElement);
@@ -104,12 +105,12 @@ export class SecureXLSX {
   static read(data: any, opts?: any): XLSX.WorkBook {
     // Sanitizamos las opciones
     const safeOpts = this.sanitizeData(opts || {});
-    
+
     // Para datos binarios, no aplicamos sanitización para evitar corromper los datos
     if (safeOpts.type === 'binary' || safeOpts.type === 'buffer' || safeOpts.type === 'array') {
       return XLSX.read(data, safeOpts);
     }
-    
+
     // Para otros tipos de datos, aplicamos sanitización
     const safeData = typeof data === 'string' ? this.validateString(data) : this.sanitizeData(data);
     return XLSX.read(safeData, safeOpts);

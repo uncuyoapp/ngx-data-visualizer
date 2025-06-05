@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import {
+  PivotAggregator,
+  PivotConfiguration,
+  PivotDeriver,
+  PivotFormatter,
+  PivotLocale,
+  PivotRenderer,
+} from '../types/table-base';
 import { JQueryService } from './jquery.service';
-import { PivotConfiguration } from '../types/table-base';
-import { PivotFormatter, PivotAggregator, PivotRenderer, PivotDeriver, PivotLocale } from '../types/table-base';
 
 // Extender la interfaz de jQuery para incluir los métodos de pivottable
 declare global {
@@ -13,15 +19,26 @@ declare global {
   interface JQueryStatic {
     pivotUtilities: {
       aggregatorTemplates: {
-        sum: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
-        count: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
-        average: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
+        sum: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
+        count: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
+        average: (
+          formatter?: PivotFormatter
+        ) => (fields: string[]) => PivotAggregator;
       };
       renderers: Record<string, PivotRenderer>;
       derivers: Record<string, PivotDeriver>;
       locales: Record<string, PivotLocale>;
       naturalSort: (a: string | number, b: string | number) => number;
-      numberFormat: (opts?: { digitsAfterDecimal?: number; scaler?: number; prefix?: string; suffix?: string }) => PivotFormatter;
+      numberFormat: (opts?: {
+        digitsAfterDecimal?: number;
+        scaler?: number;
+        prefix?: string;
+        suffix?: string;
+      }) => PivotFormatter;
       sortAs: (orderValues: string[]) => (a: string, b: string) => number;
     };
   }
@@ -129,17 +146,22 @@ export class TableHelper {
   private static configureSorters(config: PivotConfiguration) {
     const $ = TableHelper.jQueryService.$;
     const sorters: Record<string, (a: string, b: string) => number> = {};
-    config.sorters.forEach((sorter: { name: string; items: Array<{ name: string; order: number }> }) => {
-      const items = [...sorter.items]
-        .sort((a, b) => a.order - b.order)
-        .map((a) => a.name);
-      Object.defineProperty(sorters, sorter.name, {
-        value: $.pivotUtilities.sortAs(items),
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      });
-    });
+    config.sorters.forEach(
+      (sorter: {
+        name: string;
+        items: Array<{ name: string; order: number }>;
+      }) => {
+        const items = [...sorter.items]
+          .sort((a, b) => a.order - b.order)
+          .map((a) => a.name);
+        Object.defineProperty(sorters, sorter.name, {
+          value: $.pivotUtilities.sortAs(items),
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      }
+    );
     return sorters;
   }
 

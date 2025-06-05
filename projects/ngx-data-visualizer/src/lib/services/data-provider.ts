@@ -1,9 +1,6 @@
 import { uniqBy } from 'lodash';
-import { Dimension, Filters, RowData } from './models';
-import { DIMENSION_YEAR, DIMENSION_VALUE } from './types/constants';
-
-// Re-exportar las constantes para mantener la compatibilidad
-export { DIMENSION_YEAR, DIMENSION_VALUE };
+import { Dimension, Filters, RowData } from '../types/data.types';
+import { DIMENSION_YEAR, DIMENSION_VALUE } from '../types/constants';
 
 /**
  * Proporciona funcionalidades para el manejo y procesamiento de datos en visualizaciones.

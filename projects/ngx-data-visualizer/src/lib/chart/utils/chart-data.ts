@@ -1,5 +1,6 @@
-import { DataProvider, DIMENSION_VALUE } from '../../data-provider';
-import { Dimension, RowData } from '../../models';
+import { DataProvider } from '../../services/data-provider';
+import { DIMENSION_VALUE } from '../../types/constants';
+import { Dimension, RowData } from '../../types/data.types';
 import { SeriesConfig } from '../types/chart-configuration';
 
 /**

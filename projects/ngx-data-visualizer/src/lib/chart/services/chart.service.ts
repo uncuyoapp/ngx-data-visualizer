@@ -1,12 +1,13 @@
 import { Injectable, Type } from "@angular/core";
 import { cloneDeep } from 'lodash';
-import { DIMENSION_YEAR, DataProvider } from "../../data-provider";
-import { Dataset } from "../../dataset";
-import { Dimension, Filters, DimensionFilter } from "../../models";
+import { DataProvider } from "../../services/data-provider";
+import { DIMENSION_YEAR } from "../../types/constants";
+import { Dataset } from "../../services/dataset";
+import { Dimension, Filters, DimensionFilter } from "../../types/data.types";
 import { ChartConfiguration, ChartConfigurationOptions, DEFAULT_OPTIONS, SeriesConfig } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
 import { EchartsComponent } from "../echart/echarts.component";
-import { ParserOptionsEChart } from "../echart/utils/parser-options";
+import { EChartParser } from "../echart/utils/echart-parser";
 import { EChartsOption } from 'echarts';
 import { ParserOptions } from "../types/parser-options";
 
@@ -25,7 +26,7 @@ export class ChartService {
   private readonly chartRenderEngine: Type<EchartsComponent>;
 
   constructor() {
-    this.parserOptions = new ParserOptionsEChart();
+    this.parserOptions = new EChartParser();
     this.chartRenderEngine = EchartsComponent;
   }
 

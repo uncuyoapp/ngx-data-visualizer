@@ -1,9 +1,9 @@
 import { Type } from "@angular/core";
 import { EChartsOption } from "echarts";
-import { Dataset } from "../../dataset";
 import { EchartsComponent } from "../echart/echarts.component";
 import { ChartLibraryOptions } from "./chart-base";
 import { ChartData } from "../utils/chart-data";
+import { Dataset } from "../../services/dataset";
 
 /**
  * Interfaz específica para las opciones de configuración de ECharts

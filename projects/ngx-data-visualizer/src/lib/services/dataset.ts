@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 import { DataProvider } from './data-provider';
-import { Dimension, Filters, RowData } from './models';
-import { TimeSeries } from './chart/types/chart-models';
+import { Dimension, Filters, RowData } from '../types/data.types';
+import { TimeSeries } from '../chart/types/chart-models';
 
 /**
  * Clase que representa un conjunto de datos para visualización

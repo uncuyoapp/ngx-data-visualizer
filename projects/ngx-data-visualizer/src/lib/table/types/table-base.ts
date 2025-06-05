@@ -2,8 +2,8 @@
  * Tipos base para las tablas de la librería
  */
 
-import { DataProvider } from "../../data-provider";
-import { Dimension } from "../../models";
+import { DataProvider } from "../../services/data-provider";
+import { Dimension } from "../../types/data.types";
 
 /**
  * Interfaz base para la configuración de tablas
@@ -144,12 +144,12 @@ export interface PivotUtilities {
   /** Función de ordenamiento natural */
   naturalSort: (a: string | number, b: string | number) => number;
   /** Función de formateo de números */
-  numberFormat: (opts?: { 
-    digitsAfterDecimal?: number; 
-    scaler?: number; 
-    prefix?: string; 
-    suffix?: string 
+  numberFormat: (opts?: {
+    digitsAfterDecimal?: number;
+    scaler?: number;
+    prefix?: string;
+    suffix?: string
   }) => PivotFormatter;
   /** Función de ordenamiento personalizado */
   sortAs: (orderValues: string[]) => (a: string, b: string) => number;
-} 
+}

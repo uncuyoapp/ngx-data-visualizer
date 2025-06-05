@@ -8,14 +8,14 @@ import {
   output,
 } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ChartComponent } from '../chart/chart.component';
+import { ChartService } from '../chart/services/chart.service';
 import {
   ChartConfiguration,
-  ChartConfigurationOptions
-} from './chart/types/chart-configuration';
-import { ChartService } from './chart/services/chart.service';
-import { Dataset } from './dataset';
-import { Goal, Series } from './chart/types/chart-models';
-import { ChartComponent } from './chart/chart.component';
+  ChartConfigurationOptions,
+} from '../chart/types/chart-configuration';
+import { Goal, Series } from '../chart/types/chart-models';
+import { Dataset } from '../services/dataset';
 
 /**
  * Directiva que permite incrustar un gráfico en un componente contenedor.

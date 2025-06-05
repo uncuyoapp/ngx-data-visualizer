@@ -1,10 +1,20 @@
-import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } from '@angular/core';
+import {
+  ComponentRef,
+  Directive,
+  OnDestroy,
+  ViewContainerRef,
+  effect,
+  input,
+} from '@angular/core';
 import { Subject, Subscription, takeUntil } from 'rxjs';
-import { ChartConfiguration, ChartConfigurationOptions, Dimension } from '../public-api';
-
-import { ChartService } from './chart/services/chart.service';
-import { Dataset } from './dataset';
-import { MultipleChartComponent } from './multiple-chart/multiple-chart.component';
+import {
+  ChartConfiguration,
+  ChartConfigurationOptions,
+} from '../../public-api';
+import { ChartService } from '../chart/services/chart.service';
+import { Dataset } from '../services/dataset';
+import { MultipleChartComponent } from '../multiple-chart/multiple-chart.component';
+import { Dimension } from '../types/data.types';
 
 /**
  * Directiva que permite mostrar múltiples gráficos basados en una dimensión de división.
@@ -13,7 +23,7 @@ import { MultipleChartComponent } from './multiple-chart/multiple-chart.componen
 @Directive({
   selector: 'libMultipleChart, [libMultipleChart]',
   standalone: true,
-  exportAs: 'libMultipleChart'
+  exportAs: 'libMultipleChart',
 })
 export class MultipleChartDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
@@ -90,15 +100,20 @@ export class MultipleChartDirective implements OnDestroy {
       const splitDimension = this.splitDimension();
 
       if (!dataset || !options || !splitDimension) {
-        console.warn('No se pueden crear los gráficos: datos de entrada incompletos');
+        console.warn(
+          'No se pueden crear los gráficos: datos de entrada incompletos'
+        );
         return;
       }
 
       // Crear el componente
-      this.multipleChartRenderComponentRef = this.viewContainerRef
-        .createComponent<MultipleChartComponent>(MultipleChartComponent);
+      this.multipleChartRenderComponentRef =
+        this.viewContainerRef.createComponent<MultipleChartComponent>(
+          MultipleChartComponent
+        );
 
-      this.multipleChartComponent = this.multipleChartRenderComponentRef.instance;
+      this.multipleChartComponent =
+        this.multipleChartRenderComponentRef.instance;
 
       // Obtener la configuración de gráficos múltiples
       this.multipleChartConfiguration = this.chartService.getSplitConfiguration(
@@ -118,7 +133,10 @@ export class MultipleChartDirective implements OnDestroy {
       try {
         this.viewContainerRef.clear();
       } catch (cleanupError) {
-        console.warn('Error al limpiar el contenedor después del error:', cleanupError);
+        console.warn(
+          'Error al limpiar el contenedor después del error:',
+          cleanupError
+        );
       }
     }
   }
@@ -132,5 +150,4 @@ export class MultipleChartDirective implements OnDestroy {
     this.cleanupSubscription();
     this.viewContainerRef.clear();
   }
-
 }

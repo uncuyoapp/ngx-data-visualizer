@@ -36,4 +36,4 @@ export interface Goal {
 
   /** Datos asociados a la meta */
   data: RowData[];
-} 
+}

@@ -91,5 +91,3 @@ Los ejemplos en este proyecto demo son una excelente manera de contribuir a la l
 ## Recursos Adicionales
 
 - [Documentación de NgxDataVisualizer](../ngx-data-visualizer/README.md)
-- [Guía de estilos](../ngx-data-visualizer/src/lib/styles.scss)
-- [Ejemplos de uso](../ngx-data-visualizer/src/lib) 

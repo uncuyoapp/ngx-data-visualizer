@@ -10,7 +10,7 @@ import { EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
  * Implementa la interfaz ParserOptions para proporcionar funcionalidades de
  * configuración tanto para vista previa como para visualización completa.
  */
-export class ParserOptionsEChart implements ParserOptions {
+export class EChartParser implements ParserOptions {
 
   /**
    * Obtiene las opciones para la vista previa del gráfico
@@ -72,5 +72,4 @@ export class ParserOptionsEChart implements ParserOptions {
     const renderOptions: EChartsOption = { ...cloneDeep(defaultOptions), ...config };
     return renderOptions;
   }
-
 }

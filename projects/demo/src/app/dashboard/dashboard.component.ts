@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { cloneDeep } from 'lodash';
 import { ChartConfigurationOptions, ChartDirective, Dataset, Dimension, PivotConfiguration, RowData, TableDirective } from 'ngx-data-visualizer';

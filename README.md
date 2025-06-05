@@ -9,7 +9,6 @@ app-uncuyo/
 ├── projects/
 │   ├── ngx-data-visualizer/    # Librería principal
 │   └── demo/                   # Proyecto de demostración
-├── src/                        # Código fuente de la aplicación principal
 └── package.json               # Configuración del proyecto
 ```
 
@@ -57,15 +56,10 @@ ng serve demo
 ng build ngx-data-visualizer
 ```
 
-### Ejecutar pruebas
-```bash
-ng test
-```
-
 ## Estructura de Carpetas
 
 ### NgxDataVisualizer
-- `src/lib/`: Código fuente de la librería
+- `projects/ngx-data-visualizer/src/lib`: Código fuente de la librería
   - `chart/`: Componentes de gráficos
   - `table/`: Componentes de tablas
   - `multiple-chart/`: Componentes para múltiples gráficos
@@ -73,7 +67,7 @@ ng test
   - `icons/`: Iconos personalizados
 
 ### Demo
-- `src/app/`: Código fuente de la aplicación demo
+- `projects/demo/src/app`: Código fuente de la aplicación demo
   - `dashboard/`: Componentes del dashboard
   - `chart-examples/`: Ejemplos de gráficos
   - `table-examples/`: Ejemplos de tablas

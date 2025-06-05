@@ -1,9 +1,19 @@
-import { ComponentRef, Directive, OnDestroy, ViewContainerRef, effect, input } from '@angular/core';
+import {
+  ComponentRef,
+  Directive,
+  OnDestroy,
+  ViewContainerRef,
+  effect,
+  input,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Dataset } from './dataset';
-import { ExcelService } from './table/services/excel.service';
-import { PivotConfiguration, TableConfiguration } from './table/types/table-base';
-import { TableComponent } from './table/table.component';
+import { Dataset } from '../services/dataset';
+import { ExcelService } from '../table/services/excel.service';
+import { TableComponent } from '../table/table.component';
+import {
+  PivotConfiguration,
+  TableConfiguration,
+} from '../table/types/table-base';
 
 /**
  * Directiva que permite incrustar una tabla dinámica en un componente contenedor.
@@ -12,7 +22,7 @@ import { TableComponent } from './table/table.component';
 @Directive({
   selector: 'libTable, [libTable]',
   standalone: true,
-  exportAs: 'libTable'
+  exportAs: 'libTable',
 })
 export class TableDirective implements OnDestroy {
   private readonly DEFAULT_EXPORT_NAME = 'tabla';
@@ -35,8 +45,8 @@ export class TableDirective implements OnDestroy {
   subscription!: Subscription;
 
   constructor(
-    private viewContainerRef: ViewContainerRef,
-    private excelService: ExcelService
+    private readonly viewContainerRef: ViewContainerRef,
+    private readonly excelService: ExcelService
   ) {
     this.initializeTable();
   }
@@ -63,21 +73,26 @@ export class TableDirective implements OnDestroy {
     this.tableConfiguration = {
       data: this.dataset().dataProvider,
       dimensions: this.dataset().dimensions,
-      options: this.options()
-    }
+      options: this.options(),
+    };
     // Crear el componente
-    this.tableRenderComponentRef = this.viewContainerRef.createComponent<TableComponent>(TableComponent);
+    this.tableRenderComponentRef =
+      this.viewContainerRef.createComponent<TableComponent>(TableComponent);
     this.tableComponent = this.tableRenderComponentRef.instance;
 
     // Configurar la entrada usando setInput
-    this.tableRenderComponentRef.setInput('tableConfiguration', this.tableConfiguration);
+    this.tableRenderComponentRef.setInput(
+      'tableConfiguration',
+      this.tableConfiguration
+    );
   }
 
   /**
    * Actualiza las dimensiones de la tabla cuando cambian los datos
    */
   updateTable() {
-    this.tableConfiguration.dimensions = this.dataset().dataProvider.getDimensions();
+    this.tableConfiguration.dimensions =
+      this.dataset().dataProvider.getDimensions();
     this.tableComponent.configure();
   }
 
@@ -87,7 +102,7 @@ export class TableDirective implements OnDestroy {
   private subscribeDataChanges() {
     this.subscription = this.dataset().dataUpdated.subscribe(() => {
       this.updateTable();
-    })
+    });
   }
 
   /**

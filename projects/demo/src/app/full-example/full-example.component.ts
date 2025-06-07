@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   ChartConfigurationOptions,
@@ -14,6 +14,7 @@ import {
   RowData,
   Series,
   TableDirective,
+  ThemeService,
 } from 'ngx-data-visualizer';
 
 import optionsChart from '../../assets/data/chart-options.json';
@@ -54,7 +55,49 @@ export class FullExampleComponent implements OnInit {
   toPercentage = true;
   splitDimension!: Dimension;
 
+  themeService: ThemeService = inject(ThemeService);
+
   ngOnInit(): void {
+    this.themeService.setTableTheme({
+      // Colores principales
+      tableHover: '#ff0000',
+      tableHoverContrast: '#ffffff',
+      tableBody: '#f5f5f5',
+      legendShow: '#0000ff',
+      
+      // Tamaños y espaciado
+      fontSize: '8pt',
+      headerFontSize: '10pt',
+      lineHeight: '35pt',
+      padding: {
+        cell: '8px 12px 8px 8px',
+        label: '6px',
+        rowLabel: '6px 12px 6px 0px',
+        colLabel: '12px 6px'
+      },
+      
+      // Colores de fondo
+      backgroundColor: {
+        header: '#e0e0e0',
+        label: '#e8e8e8',
+        corner: '#f8f8f8',
+        axisLabel: '#ffffff'
+      },
+      
+      // Bordes
+      border: {
+        color: '#dddddd',
+        width: '1px',
+        style: 'solid'
+      },
+      
+      // Sombras
+      shadow: {
+        color: 'rgba(0, 2, 0, 0.9)',
+        offset: '0px 2px',
+        blur: '4px'
+      }
+    });
     const dimensions = dimensionsData as Dimension[];
     const rowData = data as RowData[];
 

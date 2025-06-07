@@ -1,48 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
-  PivotAggregator,
-  PivotConfiguration,
-  PivotDeriver,
-  PivotFormatter,
-  PivotLocale,
-  PivotRenderer,
-} from '../types/table-base';
+import { PivotConfiguration } from '../types/table-base';
 import { JQueryService } from './jquery.service';
-
-// Extender la interfaz de jQuery para incluir los métodos de pivottable
-declare global {
-  interface JQuery {
-    pivot(data: any[], options?: any, locale?: string): JQuery;
-  }
-
-  interface JQueryStatic {
-    pivotUtilities: {
-      aggregatorTemplates: {
-        sum: (
-          formatter?: PivotFormatter
-        ) => (fields: string[]) => PivotAggregator;
-        count: (
-          formatter?: PivotFormatter
-        ) => (fields: string[]) => PivotAggregator;
-        average: (
-          formatter?: PivotFormatter
-        ) => (fields: string[]) => PivotAggregator;
-      };
-      renderers: Record<string, PivotRenderer>;
-      derivers: Record<string, PivotDeriver>;
-      locales: Record<string, PivotLocale>;
-      naturalSort: (a: string | number, b: string | number) => number;
-      numberFormat: (opts?: {
-        digitsAfterDecimal?: number;
-        scaler?: number;
-        prefix?: string;
-        suffix?: string;
-      }) => PivotFormatter;
-      sortAs: (orderValues: string[]) => (a: string, b: string) => number;
-    };
-  }
-}
+import { RowData } from '../../types/data.types';
 
 /**
  * Clase auxiliar para la manipulación y renderizado de tablas pivot
@@ -65,15 +25,15 @@ export class TableHelper {
   }
 
   /**
-   * Render an HTMLTable in an HTMLElement using pivotJS
+   * Renderiza una tabla HTML en un elemento HTMLElement usando pivotJS
    *
-   * @param element HTMLElement is al element to binding the pivot table
-   * @param data any[] is the array with data for pivot
-   * @param config PivotConfiguration is the configuration for pivot table
+   * @param element HTMLElement es el elemento donde se vinculará la tabla pivot
+   * @param data RowData[] es el array con los datos para el pivot
+   * @param config PivotConfiguration es la configuración para la tabla pivot
    */
   static renderPivot(
     element: HTMLDivElement,
-    data: any[],
+    data: RowData[],
     config: PivotConfiguration
   ): void {
     // Asegurarse de que jQuery esté inicializado
@@ -82,14 +42,13 @@ export class TableHelper {
         'TableHelper no ha sido inicializado. Llama a TableHelper.initialize() primero.'
       );
     }
-
     const $ = TableHelper.jQueryService.$;
     const pivotConfiguration = TableHelper.configurePivot(config);
     $(element).pivot(data, pivotConfiguration, 'es');
     $('td').on('mouseenter', function (e: any) {
       $(e.currentTarget).trigger('click');
     });
-    $('td').on('click', () => {});
+    $('td').on('click', () => { });
   }
 
   /**
@@ -103,16 +62,17 @@ export class TableHelper {
         setTimeout(() => TableHelper.stickyTable(div));
       } else if (table.tHead) {
         const offsetTop = table.getBoundingClientRect().top;
-        const offsetLeft = table.getBoundingClientRect().left;
+        const offsetLeft = TableHelper.getOffsetLeft(table);
+
         TableHelper.stickyHeader(div, offsetTop, offsetLeft, table.tHead);
         TableHelper.stickyBody(
-          table.tHead.clientHeight + 10,
+          table.tHead.clientHeight,
           offsetLeft,
           table.tBodies[0],
           'pvtRowLabel'
         );
         TableHelper.stickyBody(
-          table.tHead.clientHeight + 10,
+          table.tHead.clientHeight,
           offsetLeft,
           table.tBodies[0],
           'pvtTotalLabel'
@@ -259,6 +219,15 @@ export class TableHelper {
   }
 
   /**
+   * Aplica estilos CSS a un elemento HTML de manera segura
+   * @param element Elemento HTML al que se aplicarán los estilos
+   * @param styles Objeto con los estilos a aplicar
+   */
+  private static applyStyles(element: HTMLElement, styles: Record<string, string | number>): void {
+    Object.assign(element.style, styles);
+  }
+
+  /**
    * Hace que el encabezado de la tabla sea "sticky"
    * @param div Elemento contenedor de la tabla
    * @param offsetTop Desplazamiento superior
@@ -276,39 +245,32 @@ export class TableHelper {
         const top = th.getBoundingClientRect().top - offsetTop;
         const left = tHead.clientWidth > div.clientWidth ? th.offsetLeft : 0;
         const css = th.getAttribute('class');
+
+        const baseStyles = {
+          position: 'sticky',
+          top: `${top}px`,
+          zIndex: '99',
+          background: 'white',
+          border: '2px solid white'
+        };
+
         if (!css) {
-          th.setAttribute(
-            'style',
-            'position:sticky;top:' +
-              top +
-              'px;left:' +
-              left +
-              'px;z-index:999;background:white;border:2px solid white;'
-          );
+          TableHelper.applyStyles(th, {
+            ...baseStyles,
+            left: `${left}px`,
+            zIndex: '999'
+          });
           th.setAttribute('class', 'pvtCorner');
         } else if (css === 'pvtColLabel') {
-          th.setAttribute(
-            'style',
-            'position:sticky;top:' +
-              top +
-              'px;z-index: 99;background: white; border: 2px solid white;'
-          );
+          TableHelper.applyStyles(th, baseStyles);
         } else if (css === 'pvtAxisLabel') {
-          th.setAttribute(
-            'style',
-            'position:sticky;top:' +
-              (top - 2) +
-              'px;left:' +
-              (left > 0 ? left + 4 : 0) +
-              'px; z-index: 999; background:white; border: 2px solid white;'
-          );
+          TableHelper.applyStyles(th, {
+            ...baseStyles,
+            left: `${left}px`,
+            zIndex: '999'
+          });
         } else {
-          th.setAttribute(
-            'style',
-            'position:sticky;top:' +
-              top +
-              'px;z-index:99;background: white; border: 2px solid white;'
-          );
+          TableHelper.applyStyles(th, baseStyles);
         }
       });
     });
@@ -341,5 +303,18 @@ export class TableHelper {
       }
       element.setAttribute('style', 'position: sticky; left: ' + left + 'px;');
     });
+  }
+
+  /**
+   * Calcula el offset izquierdo de la tabla considerando padding y margin
+   * @param table Elemento HTML de la tabla
+   * @returns Número que representa el offset izquierdo ajustado
+   */
+  private static getOffsetLeft(table: HTMLElement): number {
+    const offsetLeft = table.getBoundingClientRect().left;
+    const style = window.getComputedStyle(table);
+    const paddingLeft = parseFloat(style.paddingLeft);
+    const marginLeft = parseFloat(style.marginLeft);
+    return offsetLeft + paddingLeft + marginLeft;
   }
 }

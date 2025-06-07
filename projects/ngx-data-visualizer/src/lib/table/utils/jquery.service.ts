@@ -55,8 +55,9 @@ declare global {
 }
 
 // Importar estilos y scripts de pivottable
-import 'pivottable';
-import 'pivottable/dist/pivot.css';
+import 'pivottable/dist/pivot.min.js';
+import 'pivottable/dist/pivot.min.css';
+import 'pivottable/dist/pivot.es.min.js';
 
 /**
  * Servicio que proporciona acceso a jQuery y pivottable internamente en la biblioteca.

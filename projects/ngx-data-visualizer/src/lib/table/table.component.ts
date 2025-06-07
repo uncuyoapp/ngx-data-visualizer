@@ -3,16 +3,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  OnInit,
   ViewChild,
   effect,
-  input,
-  inject
+  inject,
+  input
 } from '@angular/core';
 
+import { TableService } from './services/table.service';
 import { PivotConfiguration, TableConfiguration } from './types/table-base';
 import { TableHelper } from './utils/table-helper';
-import { TableService } from './services/table.service';
 
 /**
  * Componente de tabla que muestra datos en formato tabular con capacidad de pivotado.
@@ -23,10 +22,10 @@ import { TableService } from './services/table.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss', './styles/pivot.styles.css'],
+  styleUrls: ['./table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
   // Servicios
   private readonly tableService = inject(TableService);
 
@@ -48,23 +47,6 @@ export class TableComponent implements OnInit {
       this.configure();
     }
   });
-
-  /**
-   * Maneja el evento de redimensionamiento de la ventana.
-   * @private
-   */
-  // @HostListener('window:resize')
-  // private onResize(): void {
-  //   TableHelper.stickyTable(this.pivotTable.nativeElement);
-  // }
-
-  /**
-   * Inicialización del componente.
-   * Configura la tabla con los valores iniciales.
-   */
-  public ngOnInit(): void {
-    this.configure();
-  }
 
   /**
    * Configura la tabla con la configuración proporcionada.
@@ -101,11 +83,6 @@ export class TableComponent implements OnInit {
     return this.pivotTable?.nativeElement || null;
   }
 
-  /**
-   * Renderiza la tabla con la configuración de pivotado.
-   * @param pivotConfig - Configuración para el pivotado de la tabla.
-   * @private
-   */
   /**
    * Renderiza la tabla con la configuración de pivotado.
    * @param pivotConfig - Configuración para el pivotado de la tabla.

@@ -1,8 +1,34 @@
 :root {
+  // Valores por defecto
   --table-hover: #0450ff;
   --table-hover-contrast: #ffff;
   --table-body: #ffff;
   --legend-show: #0450ff;
+  
+  // Tamaños y espaciado
+  --table-font-size: 12pt;
+  --table-header-font-size: 14pt;
+  --table-line-height: 30pt;
+  --table-cell-padding: 5px 10px 5px 5px;
+  --table-label-padding: 5px;
+  --table-row-label-padding: 5px 10px 5px 0px;
+  --table-col-label-padding: 10px 5px;
+  
+  // Colores de fondo
+  --table-header-bg: #f2f2f2;
+  --table-label-bg: #f2f2f2;
+  --table-corner-bg: white;
+  --table-axis-label-bg: white;
+  
+  // Bordes
+  --table-border-color: white;
+  --table-border-width: 2px;
+  --table-border-style: solid;
+  
+  // Sombras
+  --table-shadow-color: rgba(242, 242, 242, 1);
+  --table-shadow-offset: 0px 4px;
+  --table-shadow-blur: 0px;
 }
 
 /*
@@ -101,10 +127,11 @@ $sceeen-xxl-min: 1400px;
 }
 
 table.pvtTable {
-  font-size: 12pt;
+  font-size: var(--table-font-size) !important;
   text-align: left;
   border-spacing: 0px;
-  margin: 0 auto;
+  margin: 0 auto !important;
+  padding: 0px !important;
   position: relative;
   border-collapse: unset !important;
   width: 100%;
@@ -114,8 +141,9 @@ table.pvtTable {
   tbody {
     background: var(--table-body);
     tr th {
-      line-height: 30pt;
+      line-height: var(--table-line-height);
       font-weight: normal;
+      font-size: var(--table-header-font-size) !important;
     }
   }
   tbody {
@@ -123,6 +151,7 @@ table.pvtTable {
     td {
       text-align: right;
       vertical-align: top;
+      
     }
   }
   .pvtCorner {
@@ -130,31 +159,31 @@ table.pvtTable {
   }
   .pvtCorner,
   .pvtAxisLabel {
-    box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 1);
-    -webkit-box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 1);
-    -moz-box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 1);
+    box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
+    -webkit-box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
+    -moz-box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
   }
 
   .pvtAxisLabel {
-    background-color: white;
+    background-color: var(--table-axis-label-bg);
     text-align: center;
     vertical-align: middle;
   }
   .pvtColLabel,
   .pvtTotalLabel,
   .pvtRowLabel {
-    background-color: #f2f2f2 !important;
+    background-color: var(--table-label-bg) !important;
     text-align: center;
-    border: 2px solid white;
+    border: var(--table-border-width) var(--table-border-style) var(--table-border-color);
     z-index: 995;
   }
 
   .pvtColLabel {
-    padding: 10px 5px;
+    padding: var(--table-col-label-padding);
   }
 
   .pvtRowLabel {
-    padding: 5px 10px 5px 0px;
+    padding: var(--table-row-label-padding);
     position: relative;
   }
 
@@ -162,12 +191,12 @@ table.pvtTable {
   .pvtTotal,
   .pvtGrandTotal {
     vertical-align: middle;
-    border: 2px solid white;
-    box-shadow: 0px 4px 0px 0px rgba(242, 242, 242, 1);
-    -webkit-box-shadow: 0px 4px 0px 0px rgba(242, 242, 242, 1);
-    -moz-box-shadow: 0px 4px 0px 0px rgba(242, 242, 242, 1);
+    border: var(--table-border-width) var(--table-border-style) var(--table-border-color);
+    box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
+    -webkit-box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
+    -moz-box-shadow: var(--table-shadow-offset) var(--table-shadow-blur) var(--table-shadow-color);
     background-color: inherit;
-    padding: 5px 10px 5px 5px;
+    padding: var(--table-cell-padding);
   }
   .hovered {
     background-color: var(--table-hover) !important;

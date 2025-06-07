@@ -104,7 +104,7 @@ export class SecureXLSX {
    */
   static read(data: any, opts?: any): XLSX.WorkBook {
     // Sanitizamos las opciones
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
 
     // Para datos binarios, no aplicamos sanitización para evitar corromper los datos
     if (safeOpts.type === 'binary' || safeOpts.type === 'buffer' || safeOpts.type === 'array') {
@@ -123,7 +123,7 @@ export class SecureXLSX {
    * @returns Libro de trabajo
    */
   static readFile(filename: string, opts?: any): XLSX.WorkBook {
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     return XLSX.readFile(this.validateString(filename), safeOpts);
   }
 
@@ -135,7 +135,7 @@ export class SecureXLSX {
    */
   static write(wb: XLSX.WorkBook, opts?: any): any {
     const safeWb = this.sanitizeData(wb);
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     return XLSX.write(safeWb, safeOpts);
   }
 
@@ -147,7 +147,7 @@ export class SecureXLSX {
    */
   static writeFile(wb: XLSX.WorkBook, filename: string, opts?: any): void {
     const safeWb = this.sanitizeData(wb);
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     XLSX.writeFile(safeWb, this.validateString(filename), safeOpts);
   }
 
@@ -159,7 +159,7 @@ export class SecureXLSX {
    */
   static sheet_to_json<T>(ws: XLSX.WorkSheet, opts?: any): T[] {
     const safeWs = this.sanitizeData(ws);
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     const result = XLSX.utils.sheet_to_json<T>(safeWs, safeOpts);
     return this.sanitizeData(result);
   }
@@ -172,7 +172,7 @@ export class SecureXLSX {
    */
   static json_to_sheet(data: any[], opts?: any): XLSX.WorkSheet {
     const safeData = this.sanitizeData(data);
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     return XLSX.utils.json_to_sheet(safeData, safeOpts);
   }
 
@@ -184,7 +184,7 @@ export class SecureXLSX {
    */
   static table_to_sheet(table: HTMLElement, opts?: any): XLSX.WorkSheet {
     const safeTable = this.sanitizeHtmlElement(table);
-    const safeOpts = this.sanitizeData(opts || {});
+    const safeOpts = this.sanitizeData(opts ?? {});
     return XLSX.utils.table_to_sheet(safeTable, safeOpts);
   }
 }

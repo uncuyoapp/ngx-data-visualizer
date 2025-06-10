@@ -276,6 +276,71 @@ export const Locale = {
   }
 } as const;
 
+/**
+ * Constantes relacionadas con los temas de tablas
+ */
+export const TableThemes = {
+  /** Tema por defecto */
+  DEFAULT: {
+    tableHover: '#0450ff',
+    tableHoverContrast: '#ffff',
+    tableDataBg: '#ffff',
+    tableLabelBg: '#f2f2f2',
+    fontSize: '12pt',
+    headerFontSize: '14pt',
+    lineHeight: '30pt',
+    padding: {
+      cell: '5px 10px',
+      label: '5px'
+    },
+    border: {
+      color: 'white',
+      width: '2px',
+      style: 'solid'
+    }
+  },
+
+  /** Tema Material Design */
+  MATERIAL: {
+    tableHover: '#1976d2',
+    tableHoverContrast: '#ffffff',
+    tableDataBg: '#ffffff',
+    tableLabelBg: '#f5f5f5',
+    fontSize: '14px',
+    headerFontSize: '16px',
+    lineHeight: '48px',
+    padding: {
+      cell: '16px',
+      label: '16px'
+    },
+    border: {
+      color: '#e0e0e0',
+      width: '1px',
+      style: 'solid'
+    }
+  },
+
+  /** Tema Bootstrap 5 */
+  BOOTSTRAP: {
+    tableHover: '#0d6efd',
+    tableHoverContrast: '#ffffff',
+    tableDataBg: '#ffffff',
+    tableLabelBg: '#f8f9fa',
+    fontSize: '1rem',
+    headerFontSize: '1.1rem',
+    lineHeight: '1.5',
+    padding: {
+      cell: '0.5rem',
+      label: '0.5rem'
+    },
+    border: {
+      color: '#dee2e6',
+      width: '1px',
+      style: 'solid'
+    }
+  }
+} as const;
+
 // Re-exportar constantes antiguas para mantener compatibilidad
 export const DIMENSION_YEAR = Dimensions.YEAR;
 export const DIMENSION_VALUE = Dimensions.VALUE;

@@ -56,7 +56,7 @@ declare global {
 
 // Importar estilos y scripts de pivottable
 import 'pivottable/dist/pivot.min.js';
-import 'pivottable/dist/pivot.min.css';
+// import 'pivottable/dist/pivot.min.css';
 import 'pivottable/dist/pivot.es.min.js';
 
 /**
@@ -78,6 +78,7 @@ export class JQueryService {
   constructor() {
     this.initializeJQuery();
     this.verifyPivotTable();
+    this.configureNumberFormat();
   }
 
   /**
@@ -110,5 +111,31 @@ export class JQueryService {
         'PivotTable no está disponible. Asegúrese de que el módulo pivottable.ts se haya importado correctamente.'
       );
     }
+  }
+
+  /**
+   * Configura el formato de números por defecto para PivotTable
+   * @private
+   */
+  private configureNumberFormat(): void {
+    jQuery.pivotUtilities.numberFormat = (opts = {}) => {
+      const defaults = {
+        digitsAfterDecimal: 2,
+        scaler: 1,
+        prefix: '',
+        suffix: '',
+        thousandsSep: '.',
+        decimalSep: ','
+      };
+      const options = { ...defaults, ...opts };
+      
+      return (x: number) => {
+        if (isNaN(x) || !isFinite(x)) return '';
+        const result = (x * options.scaler).toFixed(options.digitsAfterDecimal);
+        const parts = result.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, options.thousandsSep);
+        return options.prefix + parts.join(options.decimalSep) + options.suffix;
+      };
+    };
   }
 }

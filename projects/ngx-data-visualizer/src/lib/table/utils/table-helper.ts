@@ -243,15 +243,13 @@ export class TableHelper {
     tHead.childNodes.forEach((tr) => {
       tr.childNodes.forEach((th: any) => {
         const top = th.getBoundingClientRect().top - offsetTop;
-        const left = tHead.clientWidth > div.clientWidth ? th.offsetLeft : 0;
+        const left = tHead.clientWidth > div.clientWidth ? th.clientLeft + th.offsetLeft : 0;
         const css = th.getAttribute('class');
 
         const baseStyles = {
           position: 'sticky',
           top: `${top}px`,
-          zIndex: '99',
-          background: 'white',
-          border: '2px solid white'
+          zIndex: '99'
         };
 
         if (!css) {

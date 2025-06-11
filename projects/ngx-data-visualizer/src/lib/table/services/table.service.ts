@@ -55,7 +55,7 @@ export class TableService {
           order: item.order ?? index,
         })),
       })),
-      suffix: configuration.options.suffix,
+      suffix: configuration.options.suffix ?? '',
     };
   }
 }

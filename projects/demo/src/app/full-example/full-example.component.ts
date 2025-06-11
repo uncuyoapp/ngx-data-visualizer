@@ -58,7 +58,7 @@ export class FullExampleComponent implements OnInit {
   themeService: ThemeService = inject(ThemeService);
 
   ngOnInit(): void {
-    // this.themeService.setTheme('bootstrap');
+    this.themeService.setTheme('default');
     // this.themeService.setTableTheme({
     //   // Colores principales
     //   tableHover: '#ff0000',

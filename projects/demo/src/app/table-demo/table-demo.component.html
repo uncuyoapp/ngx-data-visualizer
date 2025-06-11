@@ -1,0 +1,318 @@
+<div class="container">
+  <h1>Ejemplos de Tabla</h1>
+
+  <section class="demo-section">
+    <h2>Configuración del Dataset</h2>
+    <p>El Dataset es el contenedor principal de los datos y sus dimensiones. Aquí se muestra cómo configurarlo:</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+// Dataset con dimensiones predefinidas
+dataset1 = new Dataset({{ '{' }}
+  rowData: exampleData,  // Datos de ejemplo
+  id: 1,                // Identificador único
+  dimensions: dashDimensions,  // Dimensiones importadas del archivo JSON
+  enableRollUp: true    // Habilita la agrupación de datos
+{{ '}' }});</code></pre>
+    </div>
+  </section>
+  
+  <section class="demo-section">
+    <h2>1. Configuración Básica</h2>
+    <p>Una columna y múltiples filas con totales habilitados.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+basicConfig: PivotConfiguration = {{ '{' }}
+  cols: ['Año'],
+  rows: ['Condición', 'Sector de gestión', 'Sexo'],
+  digitsAfterDecimal: 0,
+  sorters: [],
+  totalRow: true,
+  totalCol: true
+{{ '}' }};</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;libTable [dataset]="dataset1" [options]="basicConfig"&gt;&lt;/libTable&gt;</code></pre>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset1" [options]="basicConfig"></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>2. Múltiples Columnas</h2>
+    <p>Configuración con múltiples columnas y una fila.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+multiColConfig: PivotConfiguration = {{ '{' }}
+  cols: ['Año', 'Sexo'],
+  rows: ['Condición'],
+  digitsAfterDecimal: 0,
+  sorters: [],
+  totalRow: true,
+  totalCol: true
+{{ '}' }};</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;libTable [dataset]="dataset1" [options]="multiColConfig"&gt;&lt;/libTable&gt;</code></pre>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset1" [options]="multiColConfig"></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>3. Ordenamiento Personalizado</h2>
+    <p>Tabla con ordenamiento personalizado de años.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+sortedConfig: PivotConfiguration = {{ '{' }}
+  cols: ['Año'],
+  rows: ['Condición', 'Sector de gestión'],
+  digitsAfterDecimal: 0,
+  sorters: [
+    {{ '{' }}
+      name: 'Año',
+      items: [
+        {{ '{' }} name: '2012', order: 0 {{ '}' }},
+        {{ '{' }} name: '2011', order: 1 {{ '}' }},
+        {{ '{' }} name: '2010', order: 2 {{ '}' }},
+        {{ '{' }} name: '2013', order: 3 {{ '}' }},
+        {{ '{' }} name: '2014', order: 4 {{ '}' }},
+        {{ '{' }} name: '2015', order: 5 {{ '}' }},
+        {{ '{' }} name: '2016', order: 6 {{ '}' }},
+        {{ '{' }} name: '2017', order: 7 {{ '}' }},
+        {{ '{' }} name: '2018', order: 8 {{ '}' }}
+      ]
+    {{ '}' }}
+  ],
+  totalRow: true,
+  totalCol: true
+{{ '}' }};</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;libTable [dataset]="dataset1" [options]="sortedConfig"&gt;&lt;/libTable&gt;</code></pre>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset1" [options]="sortedConfig"></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>4. Valores con Sufijo</h2>
+    <p>Tabla con valores que incluyen un sufijo porcentual.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+suffixConfig: PivotConfiguration = {{ '{' }}
+  cols: ['Año'],
+  rows: ['Condición', 'Sector de gestión', 'Sexo'],
+  digitsAfterDecimal: 0,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+  suffix: '%'
+{{ '}' }};</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;libTable [dataset]="dataset1" [options]="suffixConfig"&gt;&lt;/libTable&gt;</code></pre>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset1" [options]="suffixConfig"></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>5. Dataset Alternativo</h2>
+    <p>Ejemplo usando un conjunto de datos diferente con dimensiones de departamentos.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+// Dataset alternativo
+dataset2 = new Dataset({{ '{' }}
+  rowData: exampleData2,
+  id: 2,
+  dimensions: dimensions,  // Dimensiones importadas del archivo JSON
+  enableRollUp: true
+{{ '}' }});
+
+// Configuración para el dataset alternativo
+dataset2Config: PivotConfiguration = {{ '{' }}
+  cols: ['Departamentos'],
+  rows: ['Año'],
+  digitsAfterDecimal: 0,
+  sorters: [
+    {{ '{' }}
+      name: 'Departamentos de Mendoza',
+      items: dimensions[0].items.map((item, index) => ({{ '{' }}
+        name: item.name,
+        order: index
+      {{ '}' }}))
+    {{ '}' }}
+  ],
+  totalRow: true,
+  totalCol: true
+{{ '}' }};</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;libTable [dataset]="dataset2" [options]="dataset2Config"&gt;&lt;/libTable&gt;</code></pre>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset2" [options]="dataset2Config"></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>6. Configuración de Temas</h2>
+    <p>Ejemplo de cómo configurar y cambiar el tema de la tabla usando ThemeService.</p>
+    <div class="code-example">
+      <pre><code>// TypeScript
+// Inyectar el servicio en el constructor
+constructor(private themeService: ThemeService) {{ '{' }} {{ '}' }}
+
+// Configurar los temas disponibles
+ngOnInit(): void {{ '{' }}
+  // Establecer el tema por defecto
+  this.themeService.setTheme('default');
+{{ '}' }}
+
+// Métodos para cambiar el tema
+setDefaultTheme(): void {{ '{' }}
+  this.themeService.setTheme('default');
+{{ '}' }}
+
+setMaterialTheme(): void {{ '{' }}
+  this.themeService.setTheme('material');
+{{ '}' }}
+
+setBootstrapTheme(): void {{ '{' }}
+  this.themeService.setTheme('bootstrap');
+{{ '}' }}</code></pre>
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;div class="theme-buttons"&gt;
+  &lt;button (click)="setDefaultTheme()"&gt;Tema por Defecto&lt;/button&gt;
+  &lt;button (click)="setMaterialTheme()"&gt;Tema Material&lt;/button&gt;
+  &lt;button (click)="setBootstrapTheme()"&gt;Tema Bootstrap&lt;/button&gt;
+  &lt;button (click)="updateThemeWithCustomColors()"&gt;Personalizar Tema&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div class="table-container"&gt;
+  &lt;libTable [dataset]="dataset1" [options]="basicConfig"&gt;&lt;/libTable&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <div class="theme-buttons">
+      <button (click)="setDefaultTheme()">Tema por Defecto</button>
+      <button (click)="setMaterialTheme()">Tema Material</button>
+      <button (click)="setBootstrapTheme()">Tema Bootstrap</button>
+      <button (click)="updateThemeWithCustomColors()">Personalizar Tema</button>
+    </div>
+    <div class="table-container">
+      <libTable [dataset]="dataset1" [options]="basicConfig"></libTable>
+    </div>
+  </section>
+
+  <section class="documentation">
+    <h2>Documentación</h2>
+    
+    <h3>Configuración del Dataset</h3>
+    <p>El Dataset es el contenedor principal de los datos y sus dimensiones:</p>
+    <ul>
+      <li><code>rowData</code>: Array con los datos de ejemplo</li>
+      <li><code>id</code>: Identificador único del dataset</li>
+      <li><code>dimensions</code>: Array de dimensiones disponibles
+        <ul>
+          <li><code>id</code>: Identificador de la dimensión</li>
+          <li><code>name</code>: Nombre interno de la dimensión</li>
+          <li><code>nameView</code>: Nombre mostrado en la interfaz</li>
+          <li><code>items</code>: Lista de valores posibles</li>
+          <li><code>selected</code>: Indica si la dimensión está seleccionada</li>
+        </ul>
+      </li>
+      <li><code>enableRollUp</code>: Habilita la agrupación de datos</li>
+    </ul>
+
+    <h3>Configuración de Columnas y Filas</h3>
+    <p>Las columnas y filas se configuran a través de las opciones de la tabla:</p>
+    <ul>
+      <li><code>cols</code>: Array de nombres de columnas para el eje horizontal (usar nameView)</li>
+      <li><code>rows</code>: Array de nombres de columnas para el eje vertical (usar nameView)</li>
+      <li><code>digitsAfterDecimal</code>: Número de decimales a mostrar</li>
+      <li><code>totalRow</code>: Mostrar fila de totales</li>
+      <li><code>totalCol</code>: Mostrar columna de totales</li>
+    </ul>
+
+    <h3>Ordenamiento Personalizado</h3>
+    <p>Puedes definir el orden específico de los valores usando la propiedad <code>sorters</code>:</p>
+    <ul>
+      <li><code>name</code>: Nombre de la dimensión a ordenar</li>
+      <li><code>items</code>: Lista de ítems con su orden específico
+        <ul>
+          <li><code>name</code>: Nombre del ítem</li>
+          <li><code>order</code>: Posición en el orden (0 es el primero)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Formato de Valores</h3>
+    <p>Puedes personalizar el formato de los valores numéricos:</p>
+    <ul>
+      <li><code>digitsAfterDecimal</code>: Número de decimales a mostrar</li>
+      <li><code>suffix</code>: Sufijo opcional para los valores (ej: '%', '€', etc.)</li>
+    </ul>
+
+    <h3>Configuración de Temas</h3>
+    <p>Puedes personalizar la apariencia de la tabla usando ThemeService. El servicio proporciona tres temas predefinidos:</p>
+    <ul>
+      <li><code>default</code>: Tema por defecto con colores neutros y diseño limpio</li>
+      <li><code>material</code>: Tema basado en Material Design con colores y estilos de Material UI</li>
+      <li><code>bootstrap</code>: Tema basado en Bootstrap 5 con colores y estilos de Bootstrap</li>
+    </ul>
+    <p>Para cambiar el tema, simplemente llama al método <code>setTheme</code> del servicio:</p>
+    <pre><code>// TypeScript
+constructor(private themeService: ThemeService) {{ '{' }} {{ '}' }}
+
+// Cambiar al tema por defecto
+this.themeService.setTheme('default');
+
+// Cambiar al tema Material
+this.themeService.setTheme('material');
+
+// Cambiar al tema Bootstrap
+this.themeService.setTheme('bootstrap');</code></pre>
+
+    <p>También puedes personalizar parcialmente el tema actual usando el método <code>updateTheme</code>:</p>
+    <pre><code>// TypeScript
+// Personalizar colores del tema actual
+this.themeService.updateTheme({{ '{' }}
+  tableHover: '#1976d2',
+  tableHoverContrast: '#ffffff',
+  tableDataBg: '#f8f9fa',
+  tableLabelBg: '#e9ecef',
+  axisLabelBg: '#ffffff',
+  textColor: '#212529',
+  dataTextColor: '#495057',
+  labelTextColor: '#6c757d'
+{{ '}' }});
+
+// Personalizar fuentes y espaciado
+this.themeService.updateTheme({{ '{' }}
+  fontSize: '14px',
+  headerFontSize: '16px',
+  lineHeight: '1.5',
+  padding: {{ '{' }}
+    cell: '12px',
+    label: '8px'
+  {{ '}' }}
+{{ '}' }});
+
+// Personalizar bordes y sombras
+this.themeService.updateTheme({{ '{' }}
+  border: {{ '{' }}
+    color: '#dee2e6',
+    width: '1px',
+    style: 'solid'
+  {{ '}' }},
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+{{ '}' }});</code></pre>
+
+    <p>El método <code>updateTheme</code> permite modificar solo las propiedades que desees, manteniendo el resto de la configuración del tema actual. Esto es útil para:</p>
+    <ul>
+      <li>Ajustar colores específicos sin cambiar todo el tema</li>
+      <li>Modificar tamaños de fuente o espaciado</li>
+      <li>Personalizar bordes y sombras</li>
+      <li>Crear variaciones de un tema base</li>
+    </ul>
+  </section>
+</div> 

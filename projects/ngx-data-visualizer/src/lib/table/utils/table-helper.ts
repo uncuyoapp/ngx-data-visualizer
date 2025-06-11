@@ -49,6 +49,81 @@ export class TableHelper {
       $(e.currentTarget).trigger('click');
     });
     $('td').on('click', () => { });
+
+    // Agregar el manejo de auto-scroll
+    TableHelper.setupAutoScroll(element);
+  }
+
+  /**
+   * Configura el comportamiento de auto-scroll cuando el mouse se acerca a los bordes
+   * @param element Elemento contenedor de la tabla
+   */
+  private static setupAutoScroll(element: HTMLDivElement): void {
+    const $ = TableHelper.jQueryService.$;
+    const scrollThreshold = 50; // Distancia en píxeles desde el borde para activar el scroll
+    const scrollSpeed = 10; // Velocidad del scroll en píxeles por frame
+    let scrollInterval: number | null = null;
+
+    $(element).on('mousemove', (e: any) => {
+      const rect = element.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      const maxX = rect.width;
+      const maxY = rect.height;
+
+      // Detener cualquier scroll anterior
+      if (scrollInterval) {
+        window.clearInterval(scrollInterval);
+        scrollInterval = null;
+      }
+
+      // Determinar la dirección del scroll
+      let scrollX = 0;
+      let scrollY = 0;
+
+      // Verificar si el mouse está sobre un elemento th
+      const target = e.target as HTMLElement;
+      const isOverTh = target.tagName === 'TH';
+      const isOverThead = target.closest('thead') !== null;
+
+      // Scroll horizontal
+      if (isOverTh || isOverThead) {
+        // Si está sobre un th o thead, activar scroll hacia la izquierda
+        if (mouseX < maxX / 2) {
+          scrollX = -scrollSpeed;
+        }
+      } else if (mouseX > maxX - scrollThreshold) {
+        // Scroll hacia la derecha solo cuando está cerca del borde derecho
+        scrollX = scrollSpeed;
+      }
+
+      // Scroll vertical
+      if (isOverTh || isOverThead) {
+        // Si está sobre un th o thead, activar scroll hacia arriba
+        if (mouseY < maxY / 2) {
+          scrollY = -scrollSpeed;
+        }
+      } else if (mouseY > maxY - scrollThreshold) {
+        // Scroll hacia abajo solo cuando está cerca del borde inferior
+        scrollY = scrollSpeed;
+      }
+
+      // Iniciar el scroll si es necesario
+      if (scrollX !== 0 || scrollY !== 0) {
+        scrollInterval = window.setInterval(() => {
+          element.scrollLeft += scrollX;
+          element.scrollTop += scrollY;
+        }, 16); // Aproximadamente 60fps
+      }
+    });
+
+    // Detener el scroll cuando el mouse sale del elemento
+    $(element).on('mouseleave', () => {
+      if (scrollInterval) {
+        window.clearInterval(scrollInterval);
+        scrollInterval = null;
+      }
+    });
   }
 
   /**

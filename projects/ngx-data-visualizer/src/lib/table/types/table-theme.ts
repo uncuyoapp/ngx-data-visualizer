@@ -10,6 +10,15 @@ export interface TableTheme {
   tableDataBg: string;
   /** Color de fondo para las etiquetas */
   tableLabelBg: string;
+  /** Color de fondo para las etiquetas de eje */
+  axisLabelBg: string;
+
+  /** Color de texto base para toda la tabla */
+  textColor: string;
+  /** Color de texto para los datos */
+  dataTextColor: string;
+  /** Color de texto para las etiquetas */
+  labelTextColor: string;
 
   /** Tamaño de fuente base */
   fontSize: string;
@@ -30,4 +39,7 @@ export interface TableTheme {
     width: string;
     style: string;
   };
+
+  /** Configuración de sombras */
+  boxShadow: string;
 } 

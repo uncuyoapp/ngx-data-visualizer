@@ -286,6 +286,10 @@ export const TableThemes = {
     tableHoverContrast: '#ffff',
     tableDataBg: '#ffff',
     tableLabelBg: '#f2f2f2',
+    axisLabelBg: '#ffff',
+    textColor: '#333333',
+    dataTextColor: '#333333',
+    labelTextColor: '#333333',
     fontSize: '12pt',
     headerFontSize: '14pt',
     lineHeight: '30pt',
@@ -295,9 +299,10 @@ export const TableThemes = {
     },
     border: {
       color: 'white',
-      width: '2px',
+      width: '4px',
       style: 'solid'
-    }
+    },
+    boxShadow: 'inset 0px 2px 0px #f2f2f2'
   },
 
   /** Tema Material Design */
@@ -306,6 +311,10 @@ export const TableThemes = {
     tableHoverContrast: '#ffffff',
     tableDataBg: '#ffffff',
     tableLabelBg: '#f5f5f5',
+    axisLabelBg: '#212121',
+    textColor: '#1976d2',
+    dataTextColor: 'rgba(0, 0, 0, 0.87)',
+    labelTextColor: '#1976d2',
     fontSize: '14px',
     headerFontSize: '16px',
     lineHeight: '48px',
@@ -317,7 +326,8 @@ export const TableThemes = {
       color: '#e0e0e0',
       width: '1px',
       style: 'solid'
-    }
+    },
+    boxShadow: 'inset 0px 2px 0px #f5f5f5'
   },
 
   /** Tema Bootstrap 5 */
@@ -326,6 +336,10 @@ export const TableThemes = {
     tableHoverContrast: '#ffffff',
     tableDataBg: '#ffffff',
     tableLabelBg: '#f8f9fa',
+    axisLabelBg: '#212529',
+    textColor: '#0d6efd',
+    dataTextColor: '#212529',
+    labelTextColor: '#0d6efd',
     fontSize: '1rem',
     headerFontSize: '1.1rem',
     lineHeight: '1.5',
@@ -337,7 +351,8 @@ export const TableThemes = {
       color: '#dee2e6',
       width: '1px',
       style: 'solid'
-    }
+    },
+    boxShadow: 'inset 0px 2px 0px #f8f9fa'
   }
 } as const;
 

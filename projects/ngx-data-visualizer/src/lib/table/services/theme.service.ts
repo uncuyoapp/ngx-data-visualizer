@@ -84,6 +84,12 @@ export class ThemeService {
     root.style.setProperty('--table-hover-contrast', theme.tableHoverContrast);
     root.style.setProperty('--table-data-bg', theme.tableDataBg);
     root.style.setProperty('--table-label-bg', theme.tableLabelBg);
+    root.style.setProperty('--table-axis-label-bg', theme.axisLabelBg);
+
+    // Aplicar colores de texto
+    root.style.setProperty('--table-text-color', theme.textColor);
+    root.style.setProperty('--table-data-text-color', theme.dataTextColor);
+    root.style.setProperty('--table-label-text-color', theme.labelTextColor);
 
     // Aplicar tamaños
     root.style.setProperty('--table-font-size', theme.fontSize);
@@ -98,5 +104,8 @@ export class ThemeService {
     root.style.setProperty('--table-border-color', theme.border.color);
     root.style.setProperty('--table-border-width', theme.border.width);
     root.style.setProperty('--table-border-style', theme.border.style);
+
+    // Aplicar sombras
+    root.style.setProperty('--table-cell-box-shadow', theme.boxShadow);
   }
 } 

@@ -194,6 +194,7 @@ table.pvtTable {
   .pvtAxisLabel,
   .pvtTotalLabel {
     color: var(--table-label-text-color);
+    vertical-align: middle;
   }
 
   // Estilos para etiquetas de eje
@@ -212,6 +213,10 @@ table.pvtTable {
     color: var(--table-data-text-color);
     vertical-align: middle;
     padding: var(--table-cell-padding);
+    box-shadow: var(--table-cell-box-shadow);
+  }
+
+  .pvtRowLabel {
     box-shadow: var(--table-cell-box-shadow);
   }
 

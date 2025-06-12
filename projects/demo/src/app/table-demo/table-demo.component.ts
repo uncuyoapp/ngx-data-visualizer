@@ -30,7 +30,7 @@ export class TableDemoComponent implements OnInit {
     dimensions: dimensions as Dimension[],
     enableRollUp: true
   });
-  
+
   // Ejemplo 1: Configuración básica con una columna y múltiples filas
   basicConfig: PivotConfiguration = {
     cols: ['Año'],
@@ -128,22 +128,13 @@ export class TableDemoComponent implements OnInit {
   // Ejemplo de personalización parcial del tema
   updateThemeWithCustomColors(): void {
     this.themeService.updateTheme({
-      tableHover: '#1976d2',
-      tableHoverContrast: '#ffffff',
-      tableDataBg: '#f8f9fa',
-      tableLabelBg: '#e9ecef',
-      axisLabelBg: '#ffffff',
-      textColor: '#212529',
-      dataTextColor: '#495057',
-      labelTextColor: '#6c757d',
-      fontSize: '14px',
-      headerFontSize: '16px',
-      lineHeight: '32px',
+      tableDataBg: '#d3d3d3',
+      tableLabelBg: 'black',
       border: {
-        color: '#dee2e6',
+        color: 'red',
         width: '2px',
-        style: 'solid'
-      },
+        style: 'dashed'
+      }
     });
   }
-} 
+}

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { RowData } from '../../types/data.types';
 import { PivotConfiguration } from '../types/table-base';
 import { JQueryService } from './jquery.service';
-import { RowData } from '../../types/data.types';
 
 /**
  * Clase auxiliar para la manipulación y renderizado de tablas pivot
@@ -45,10 +45,16 @@ export class TableHelper {
     const $ = TableHelper.jQueryService.$;
     const pivotConfiguration = TableHelper.configurePivot(config);
     $(element).pivot(data, pivotConfiguration, 'es');
-    $('td').on('mouseenter', function (e: any) {
-      $(e.currentTarget).trigger('click');
-    });
-    $('td').on('click', () => { });
+
+    // Aplicar eventos solo a los elementos td de esta tabla específica
+    $(element)
+      .find('td')
+      .on('mouseenter', function (e: any) {
+        $(e.currentTarget).trigger('click');
+      });
+    $(element)
+      .find('td')
+      .on('click', () => {});
 
     // Agregar el manejo de auto-scroll
     TableHelper.setupAutoScroll(element);
@@ -240,6 +246,7 @@ export class TableHelper {
     const $ = TableHelper.jQueryService.$;
     const currentTarget = $(e.currentTarget);
     const rect = e.currentTarget.getBoundingClientRect();
+    const currentTable = currentTarget.closest('table');
 
     // Obtener las coordenadas relativas al elemento
     const x = rect.left;
@@ -247,9 +254,9 @@ export class TableHelper {
 
     currentTarget.addClass('hovered');
     Object.values(filter).forEach((item) => {
-      const aux = $('th:contains(' + (item as string) + ')').filter(
-        (_i: any, th: any) => $(th).text() === item
-      );
+      const aux = $(currentTable)
+        .find('th:contains(' + (item as string) + ')')
+        .filter((_i: any, th: any) => $(th).text() == item);
       if (aux.length > 1) {
         const parentType = aux[0].parentElement?.parentElement?.tagName;
         // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
@@ -278,18 +285,18 @@ export class TableHelper {
     });
 
     if (currentTarget.hasClass('rowTotal')) {
-      $('.pvtRowTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtRowTotalLabel').addClass('hovered');
     }
     if (currentTarget.hasClass('colTotal')) {
-      $('.pvtColTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtColTotalLabel').addClass('hovered');
     }
     if (currentTarget.hasClass('pvtGrandTotal')) {
-      $('.pvtRowTotalLabel').addClass('hovered');
-      $('.pvtColTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtRowTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtColTotalLabel').addClass('hovered');
     }
 
     currentTarget.on('mouseout', () => {
-      $('th, td').removeClass('hovered');
+      $(currentTable).find('th, td').removeClass('hovered');
     });
   }
 
@@ -298,7 +305,10 @@ export class TableHelper {
    * @param element Elemento HTML al que se aplicarán los estilos
    * @param styles Objeto con los estilos a aplicar
    */
-  private static applyStyles(element: HTMLElement, styles: Record<string, string | number>): void {
+  private static applyStyles(
+    element: HTMLElement,
+    styles: Record<string, string | number>
+  ): void {
     Object.assign(element.style, styles);
   }
 
@@ -318,20 +328,23 @@ export class TableHelper {
     tHead.childNodes.forEach((tr) => {
       tr.childNodes.forEach((th: any) => {
         const top = th.getBoundingClientRect().top - offsetTop;
-        const left = tHead.clientWidth > div.clientWidth ? th.clientLeft + th.offsetLeft : 0;
+        const left =
+          tHead.clientWidth > div.clientWidth
+            ? th.clientLeft + th.offsetLeft
+            : 0;
         const css = th.getAttribute('class');
 
         const baseStyles = {
           position: 'sticky',
           top: `${top}px`,
-          zIndex: '99'
+          zIndex: '99',
         };
 
         if (!css) {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
-            zIndex: '999'
+            zIndex: '999',
           });
           th.setAttribute('class', 'pvtCorner');
         } else if (css === 'pvtColLabel') {
@@ -340,7 +353,7 @@ export class TableHelper {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
-            zIndex: '999'
+            zIndex: '999',
           });
         } else {
           TableHelper.applyStyles(th, baseStyles);

@@ -199,7 +199,33 @@ setBootstrapTheme(): void {{ '{' }}
       <button (click)="updateThemeWithCustomColors()">Personalizar Tema</button>
     </div>
     <div class="table-container">
-      <libTable [dataset]="dataset1" [options]="basicConfig"></libTable>
+      esta es
+      <libTable [dataset]="dataset1" [options]="basicConfig" #tableTheme></libTable>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>7. Prueba de Múltiples Tablas con Temas Independientes</h2>
+    <p>Esta sección demuestra cómo cada tabla puede tener su propio tema independiente.</p>
+    <div class="theme-buttons">
+      <button (click)="setDefaultTheme1()">Tema Default (Tabla 1)</button>
+      <button (click)="setMaterialTheme1()">Tema Material (Tabla 1)</button>
+      <button (click)="setBootstrapTheme1()">Tema Bootstrap (Tabla 1)</button>
+      <button (click)="setDefaultTheme2()">Tema Default (Tabla 2)</button>
+      <button (click)="setMaterialTheme2()">Tema Material (Tabla 2)</button>
+      <button (click)="setBootstrapTheme2()">Tema Bootstrap (Tabla 2)</button>
+    </div>
+    
+    <div class="tables-row">
+      <div class="table-container">
+        <h3>Tabla 1</h3>
+        <libTable [dataset]="dataset1" [options]="basicConfig" #table1></libTable>
+      </div>
+      
+      <div class="table-container">
+        <h3>Tabla 2</h3>
+        <libTable [dataset]="dataset2" [options]="dataset2Config" #table2></libTable>
+      </div>
     </div>
   </section>
 

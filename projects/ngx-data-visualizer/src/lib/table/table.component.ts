@@ -84,6 +84,20 @@ export class TableComponent {
   }
 
   /**
+   * Callback que se ejecuta cuando se aplica un tema a la tabla.
+   * Re-aplica el comportamiento sticky después de que los estilos se hayan aplicado.
+   */
+  public onThemeApplied(): void {
+    // Re-aplicar sticky después de que los estilos se hayan aplicado
+    setTimeout(() => {
+      const tableElement = this.getTableElement();
+      if (tableElement instanceof HTMLDivElement) {
+        TableHelper.stickyTable(tableElement);
+      }
+    }, 5); // Pequeño delay para asegurar que los estilos se hayan aplicado
+  }
+
+  /**
    * Renderiza la tabla con la configuración de pivotado.
    * @param pivotConfig - Configuración para el pivotado de la tabla.
    * @private
@@ -97,7 +111,7 @@ export class TableComponent {
       TableHelper.renderPivot(tableElement, tableData, pivotConfig);
       TableHelper.stickyTable(tableElement);
     } else {
-      console.error('El elemento pivotTable no es un HTMLDivElement');
+      throw new Error('El elemento pivotTable debe ser un HTMLDivElement');
     }
   }
 }

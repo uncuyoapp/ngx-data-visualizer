@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, AfterViewInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { TableDirective, Dataset, PivotConfiguration, Dimension, ThemeService } from 'ngx-data-visualizer';
-import exampleData from '../../assets/data/example-data-2.json';
-import exampleData2 from '../../assets/data/data.json';
+import { Dataset, Dimension, PivotConfiguration, TableDirective, ThemeService } from 'ngx-data-visualizer';
 import dashDimensions from '../../assets/data/dash-dimensions.json';
+import exampleData2 from '../../assets/data/data.json';
 import dimensions from '../../assets/data/dimensions.json';
+import exampleData from '../../assets/data/example-data-2.json';
 
 @Component({
   selector: 'app-table-demo',
@@ -14,7 +14,7 @@ import dimensions from '../../assets/data/dimensions.json';
   templateUrl: './table-demo.component.html',
   styleUrls: ['./table-demo.component.scss']
 })
-export class TableDemoComponent implements OnInit {
+export class TableDemoComponent implements AfterViewInit {
   // Dataset 1: Datos de ejemplo con dimensiones del dashboard
   dataset1 = new Dataset({
     rowData: exampleData,
@@ -105,24 +105,61 @@ export class TableDemoComponent implements OnInit {
     totalCol: true
   };
 
-  constructor(private themeService: ThemeService) { }
+  @ViewChild('tableTheme', { read: TableDirective }) table!: TableDirective;
+  @ViewChild('table1', { read: TableDirective }) table1!: TableDirective;
+  @ViewChild('table2', { read: TableDirective }) table2!: TableDirective;
 
-  ngOnInit(): void {
-    // Establecer el tema por defecto
-    this.themeService.setTheme('default');
+  constructor(private readonly themeService: ThemeService) { }
+
+  ngAfterViewInit(): void {
+    // Establecer el tema por defecto después de que la vista esté inicializada
+    setTimeout(() => {
+      this.themeService.setTheme('default', this.table);
+    }, 100);
   }
 
-  // Métodos para cambiar el tema
+  // Métodos genéricos para cambiar temas
+  private setTheme(themeType: 'default' | 'material' | 'bootstrap', table: TableDirective): void {
+    this.themeService.setTheme(themeType, table);
+  }
+
+  // Métodos para cambiar el tema de la tabla principal
   setDefaultTheme(): void {
-    this.themeService.setTheme('default');
+    this.setTheme('default', this.table);
   }
 
   setMaterialTheme(): void {
-    this.themeService.setTheme('material');
+    this.setTheme('material', this.table);
   }
 
   setBootstrapTheme(): void {
-    this.themeService.setTheme('bootstrap');
+    this.setTheme('bootstrap', this.table);
+  }
+
+  // Métodos para cambiar el tema de la tabla 1
+  setDefaultTheme1(): void {
+    this.setTheme('default', this.table1);
+  }
+
+  setMaterialTheme1(): void {
+    this.setTheme('material', this.table1);
+  }
+
+  setBootstrapTheme1(): void {
+    this.setTheme('bootstrap', this.table1);
+  }
+
+  // Métodos para cambiar el tema de la tabla 2
+  setDefaultTheme2(): void {
+    this.setTheme('default', this.table2);
+  }
+
+  setMaterialTheme2(): void {
+    this.setTheme('material', this.table2);
+  }
+
+  setBootstrapTheme2(): void {
+    this.setTheme('bootstrap', this.table2);
   }
 
   // Ejemplo de personalización parcial del tema
@@ -135,6 +172,6 @@ export class TableDemoComponent implements OnInit {
         width: '2px',
         style: 'dashed'
       }
-    });
+    }, this.table);
   }
 }

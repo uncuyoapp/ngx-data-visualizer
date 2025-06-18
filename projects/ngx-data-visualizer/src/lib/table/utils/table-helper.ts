@@ -139,9 +139,14 @@ export class TableHelper {
   static stickyTable(div: HTMLDivElement) {
     if (div.hasChildNodes()) {
       const table = div.childNodes[0] as HTMLTableElement;
+      
       if (table.offsetHeight === 0) {
-        setTimeout(() => TableHelper.stickyTable(div));
+        requestAnimationFrame(() => TableHelper.stickyTable(div));
+        return;
       } else if (table.tHead) {
+        // Limpiar estilos sticky existentes antes de aplicar nuevos
+        TableHelper.clearStickyStyles(table);
+        
         const offsetTop = table.getBoundingClientRect().top;
         const offsetLeft = TableHelper.getOffsetLeft(table);
 
@@ -160,6 +165,34 @@ export class TableHelper {
         );
       }
     }
+  }
+
+  /**
+   * Limpia los estilos sticky existentes de la tabla
+   * @param table Elemento de la tabla
+   */
+  private static clearStickyStyles(table: HTMLTableElement): void {
+    // Limpiar estilos de todos los elementos th
+    const allThs = table.querySelectorAll('th');
+    allThs.forEach((th) => {
+      (th as HTMLElement).style.position = '';
+      (th as HTMLElement).style.top = '';
+      (th as HTMLElement).style.left = '';
+      (th as HTMLElement).style.zIndex = '';
+    });
+    
+    // Limpiar estilos de elementos td con clases específicas
+    const stickyTds = table.querySelectorAll('.pvtRowLabel, .pvtTotalLabel');
+    stickyTds.forEach((td) => {
+      (td as HTMLElement).style.position = '';
+      (td as HTMLElement).style.left = '';
+      // Remover spans internos con sticky
+      const stickySpans = td.querySelectorAll('span[style*="position: sticky"]');
+      stickySpans.forEach((span) => {
+        (span as HTMLElement).style.position = '';
+        (span as HTMLElement).style.top = '';
+      });
+    });
   }
 
   /**
@@ -350,6 +383,13 @@ export class TableHelper {
         } else if (css === 'pvtColLabel') {
           TableHelper.applyStyles(th, baseStyles);
         } else if (css === 'pvtAxisLabel') {
+          TableHelper.applyStyles(th, {
+            ...baseStyles,
+            left: `${left}px`,
+            zIndex: '999',
+          });
+        } else if (css === 'pvtCorner') {
+          // Manejar elementos pvtCorner existentes
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,

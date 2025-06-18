@@ -39,7 +39,7 @@ export class TableDirective implements OnDestroy {
   tableRenderComponentRef!: ComponentRef<TableComponent>;
 
   /** Instancia del componente de tabla */
-  tableComponent!: TableComponent;
+  public tableComponent!: TableComponent;
 
   /** Suscripción para cambios en los datos */
   subscription!: Subscription;

@@ -13,18 +13,21 @@ import { JQueryService } from './jquery.service';
  * - Configurar ordenamiento y formato de datos
  */
 export class TableHelper {
-  // Instancia estática de jQuery proporcionada por el servicio
+  /** Instancia estática de jQuery proporcionada por el servicio */
   private static jQueryService: JQueryService;
 
-  // Clases de cabecera relevantes para hover (definidas una sola vez)
+  /** Clases de cabecera relevantes para hover (definidas una sola vez) */
   private static readonly HEADER_CLASSES = [
     'pvtColLabel',
     'pvtRowLabel',
     'pvtColTotalLabel',
-    'pvtRowTotalLabel'
+    'pvtRowTotalLabel',
   ];
 
-  // Mapeo de clase a función handler (definido una sola vez)
+  /**
+   * Mapeo de clase a función handler (definido una sola vez)
+   * Permite extender fácilmente el soporte a nuevas cabeceras.
+   */
   private static readonly hoverHandlers: Record<string, (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void> = {
     'pvtColLabel': TableHelper.highlightColHeaders,
     'pvtRowLabel': TableHelper.highlightRowHeaders,
@@ -70,7 +73,7 @@ export class TableHelper {
       });
     $(element)
       .find('td')
-      .on('click', () => {});
+      .on('click', () => { });
 
     // Agregar el manejo de auto-scroll
     TableHelper.setupAutoScroll(element);
@@ -151,7 +154,7 @@ export class TableHelper {
   }
 
   /**
-   * Agrega efecto hover a los th de la tabla
+   * Configura y aplica el efecto hover sobre cabeceras y celdas de datos.
    * @param element Elemento contenedor de la tabla
    */
   private static setupHeaderHover(element: HTMLDivElement): void {
@@ -161,7 +164,6 @@ export class TableHelper {
       .on('mouseenter', function (e: any) {
         const $th = $(e.currentTarget);
         if (!$th || $th.length === 0) {
-          // Log defensivo
           // eslint-disable-next-line no-console
           console.warn('TableHelper: th no encontrado en mouseenter');
           return;
@@ -350,14 +352,14 @@ export class TableHelper {
   static stickyTable(div: HTMLDivElement) {
     if (div.hasChildNodes()) {
       const table = div.childNodes[0] as HTMLTableElement;
-      
+
       if (table.offsetHeight === 0) {
         requestAnimationFrame(() => TableHelper.stickyTable(div));
         return;
       } else if (table.tHead) {
         // Limpiar estilos sticky existentes antes de aplicar nuevos
         TableHelper.clearStickyStyles(table);
-        
+
         const offsetTop = table.getBoundingClientRect().top;
         const offsetLeft = TableHelper.getOffsetLeft(table);
 
@@ -391,7 +393,7 @@ export class TableHelper {
       (th as HTMLElement).style.left = '';
       (th as HTMLElement).style.zIndex = '';
     });
-    
+
     // Limpiar estilos de elementos td con clases específicas
     const stickyTds = table.querySelectorAll('.pvtRowLabel, .pvtTotalLabel');
     stickyTds.forEach((td) => {

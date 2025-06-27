@@ -237,9 +237,6 @@ table.pvtTable {
   .header-hovered {
     background-color: var(--table-header-hover, #e0e7ef);
     color: var(--table-header-hover-contrast, #1a237e);
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 2px 8px 0 rgba(26,35,126,0.08);
     z-index: 2;
   }
 
@@ -251,9 +248,6 @@ table.pvtTable {
   .header-hovered-cell {
     background-color: var(--table-header-hover, #e0e7ef);
     color: var(--table-header-hover-contrast, #1a237e);
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 2px 8px 0 rgba(26,35,126,0.08);
     z-index: 2;
   }
   .header-related-hovered-cell {

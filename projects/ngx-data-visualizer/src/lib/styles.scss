@@ -233,6 +233,40 @@ table.pvtTable {
     background-color: var(--table-hover);
     color: var(--table-hover-contrast);
   }
+
+  .header-hovered {
+    background-color: var(--table-header-hover, #e0e7ef);
+    color: var(--table-header-hover-contrast, #1a237e);
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 8px 0 rgba(26,35,126,0.08);
+    z-index: 2;
+  }
+
+  .header-related-hovered {
+    background-color: var(--table-hover);
+    color: var(--table-hover-contrast);
+  }
+
+  .header-hovered-cell {
+    background-color: var(--table-header-hover, #e0e7ef);
+    color: var(--table-header-hover-contrast, #1a237e);
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 8px 0 rgba(26,35,126,0.08);
+    z-index: 2;
+  }
+  .header-related-hovered-cell {
+    background-color: var(--table-hover, #f5f7fa);
+    color: var(--table-hover-contrast, #263238);
+    z-index: 1;
+  }
+
+  .data-hovered {
+    background-color: var(--table-hover, #0450ff);
+    color: var(--table-hover-contrast, #fff);
+    z-index: 1;
+  }
 }
 
 // Estilos del tooltip

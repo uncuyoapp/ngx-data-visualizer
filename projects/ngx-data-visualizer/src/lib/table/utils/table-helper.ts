@@ -16,6 +16,22 @@ export class TableHelper {
   // Instancia estática de jQuery proporcionada por el servicio
   private static jQueryService: JQueryService;
 
+  // Clases de cabecera relevantes para hover (definidas una sola vez)
+  private static readonly HEADER_CLASSES = [
+    'pvtColLabel',
+    'pvtRowLabel',
+    'pvtColTotalLabel',
+    'pvtRowTotalLabel'
+  ];
+
+  // Mapeo de clase a función handler (definido una sola vez)
+  private static readonly hoverHandlers: Record<string, (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void> = {
+    'pvtColLabel': TableHelper.highlightColHeaders,
+    'pvtRowLabel': TableHelper.highlightRowHeaders,
+    'pvtColTotalLabel': TableHelper.highlightColTotals,
+    'pvtRowTotalLabel': TableHelper.highlightRowTotals,
+  };
+
   /**
    * Inicializa el TableHelper con el servicio de jQuery
    * @param jQueryService Servicio que proporciona jQuery
@@ -58,6 +74,8 @@ export class TableHelper {
 
     // Agregar el manejo de auto-scroll
     TableHelper.setupAutoScroll(element);
+    // Agregar el manejo de hover en cabeceras
+    TableHelper.setupHeaderHover(element);
   }
 
   /**
@@ -130,6 +148,199 @@ export class TableHelper {
         scrollInterval = null;
       }
     });
+  }
+
+  /**
+   * Agrega efecto hover a los th de la tabla
+   * @param element Elemento contenedor de la tabla
+   */
+  private static setupHeaderHover(element: HTMLDivElement): void {
+    const $ = TableHelper.jQueryService.$;
+    $(element)
+      .find(TableHelper.HEADER_CLASSES.map(cls => 'th.' + cls).join(', '))
+      .on('mouseenter', function (e: any) {
+        const $th = $(e.currentTarget);
+        if (!$th || $th.length === 0) {
+          // Log defensivo
+          // eslint-disable-next-line no-console
+          console.warn('TableHelper: th no encontrado en mouseenter');
+          return;
+        }
+        const table = $th.closest('table');
+        if (!table || table.length === 0) {
+          // eslint-disable-next-line no-console
+          console.warn('TableHelper: tabla no encontrada en mouseenter');
+          return;
+        }
+        TableHelper.clearHoverClasses(table);
+        const thClass = TableHelper.HEADER_CLASSES.find(cls => $th.hasClass(cls));
+        if (!thClass) {
+          // eslint-disable-next-line no-console
+          console.warn('TableHelper: clase de cabecera no mapeada', $th.attr('class'));
+          return;
+        }
+        TableHelper.hoverHandlers[thClass]($th, table);
+      })
+      .on('mouseleave', function (e: any) {
+        const $th = $(e.currentTarget);
+        if (!$th || $th.length === 0) return;
+        $th.removeClass('header-hovered');
+        const table = $th.closest('table');
+        if (!table || table.length === 0) return;
+        TableHelper.clearHoverClasses(table);
+      });
+  }
+
+  /**
+   * Limpia todas las clases de hover de cabeceras y celdas de datos.
+   *
+   * Se llama tanto en mouseenter como en mouseleave para garantizar que:
+   * - No queden clases pegadas si el usuario mueve el mouse rápidamente entre cabeceras.
+   * - Se eliminan efectos colaterales en tablas dinámicas o con cambios de DOM.
+   * - La experiencia visual es siempre consistente, incluso ante edge cases.
+   *
+   * Si se desea optimizar, podría limpiarse solo los elementos afectados, pero esta versión prioriza robustez y simplicidad.
+   *
+   * @param table Tabla jQuery
+   */
+  private static clearHoverClasses(table: JQuery<HTMLElement>): void {
+    table.find('th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel').removeClass('header-hovered');
+    table.find('td').removeClass('data-hovered');
+  }
+
+  /**
+   * Resalta todas las cabeceras de columna y celdas de datos relacionadas al hacer hover sobre una cabecera de columna.
+   *
+   * @param $th Cabecera de columna sobre la que se hace hover
+   * @param table Tabla jQuery
+   */
+  private static highlightColHeaders($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+    // Obtener el tr padre
+    const $tr = $th.parent();
+    // Listar todos los th.pvtColLabel en el tr
+    const $allColLabels = $tr.children('th.pvtColLabel');
+    // Sumar los colspan de los hermanos previos para obtener colStart
+    let colStart = 0;
+    $allColLabels.each(function () {
+      if (this === $th[0]) {
+        return false;
+      }
+      colStart += parseInt($(this).attr('colspan') || '1', 10);
+      return undefined;
+    });
+    // Leer colspan del th actual
+    const colspan = parseInt($th.attr('colspan') || '1', 10);
+    // Resaltar todas las columnas correspondientes al colspan
+    for (let i = 0; i < colspan; i++) {
+      const colIndex = colStart + i;
+      const colClass = 'col' + colIndex;
+      // Resaltar celdas de datos
+      table.find('td.pvtVal,td.pvtTotal').filter('.' + colClass).addClass('data-hovered');
+      // Resaltar celdas de total de columna
+      table.find('td.pvtTotal.colTotal[data-for="col' + colIndex + '"]').addClass('data-hovered');
+    }
+    // Resaltar subcabeceras th.pvtColLabel en niveles inferiores
+    const $thead = table.find('thead');
+    const $trs = $thead.find('tr');
+    const currentTrIndex = $tr.index();
+    // Para cada tr debajo del actual
+    for (let t = currentTrIndex + 1; t < $trs.length; t++) {
+      let colCursor = 0;
+      $trs.eq(t).children('th.pvtColLabel').each(function () {
+        const $subTh = $(this);
+        const subColspan = parseInt($subTh.attr('colspan') || '1', 10);
+        // Si el rango de este th se solapa con el rango del hover, colorear
+        const subStart = colCursor;
+        const subEnd = colCursor + subColspan - 1;
+        const hoverStart = colStart;
+        const hoverEnd = colStart + colspan - 1;
+        if (subEnd >= hoverStart && subStart <= hoverEnd) {
+          $subTh.addClass('header-hovered');
+        }
+        colCursor += subColspan;
+        return undefined;
+      });
+    }
+    // Resaltar cabeceras padre en todas las filas superiores (ancestros)
+    let parentTrIndex = currentTrIndex - 1;
+    const parentHoverStart = colStart;
+    const parentHoverEnd = colStart + colspan - 1;
+    while (parentTrIndex >= 0) {
+      let colCursor = 0;
+      const $parentTr = $trs.eq(parentTrIndex);
+      $parentTr.children('th.pvtColLabel').each(function () {
+        const $parentTh = $(this);
+        const parentColspan = parseInt($parentTh.attr('colspan') || '1', 10);
+        const parentStart = colCursor;
+        const parentEnd = colCursor + parentColspan - 1;
+        if (parentEnd >= parentHoverStart && parentStart <= parentHoverEnd) {
+          $parentTh.addClass('header-hovered');
+        }
+        colCursor += parentColspan;
+        return undefined;
+      });
+      parentTrIndex--;
+    }
+    // Resaltar la cabecera activa
+    $th.addClass('header-hovered');
+  }
+
+  /**
+   * Resalta todas las cabeceras de fila y celdas de datos relacionadas al hacer hover sobre una cabecera de fila.
+   * Utiliza coordenadas visuales para detectar solapamientos.
+   *
+   * @param $th Cabecera de fila sobre la que se hace hover
+   * @param table Tabla jQuery
+   */
+  private static highlightRowHeaders($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+    const thRect = $th[0].getBoundingClientRect();
+    const thYStart = thRect.y;
+    const thYEnd = thRect.bottom;
+    const $tbody = table.find('tbody');
+    const $trs = $tbody.find('tr');
+    $trs.each(function () {
+      const trRect = this.getBoundingClientRect();
+      const trYStart = trRect.y;
+      const trYEnd = trRect.bottom;
+      // Colorear th.pvtRowLabel de este tr que se solapen con el rango
+      $(this).find('th.pvtRowLabel').each(function () {
+        const subThRect = this.getBoundingClientRect();
+        if (subThRect.bottom > thYStart && subThRect.y < thYEnd) {
+          $(this).addClass('header-hovered');
+        }
+      });
+      // Si el tr está completamente antes del rango, seguir
+      if (trYEnd <= thYStart) return undefined;
+      // Si el tr está completamente después del rango, cortar el bucle
+      if (trYStart >= thYEnd) return false;
+      // Si el tr está dentro o solapa el rango de la cabecera, colorear los td
+      $(this).find('td.pvtVal,td.pvtTotal').addClass('data-hovered');
+      return undefined;
+    });
+    // Colorear la cabecera activa
+    $th.addClass('header-hovered');
+  }
+
+  /**
+   * Resalta todas las celdas de totales de columna y la cabecera de total al hacer hover.
+   *
+   * @param $th Cabecera de total de columna
+   * @param table Tabla jQuery
+   */
+  private static highlightColTotals($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+    table.find('td.colTotal').addClass('data-hovered');
+    $th.addClass('header-hovered');
+  }
+
+  /**
+   * Resalta todas las celdas de totales de fila y la cabecera de total al hacer hover.
+   *
+   * @param $th Cabecera de total de fila
+   * @param table Tabla jQuery
+   */
+  private static highlightRowTotals($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+    table.find('td.rowTotal').addClass('data-hovered');
+    $th.addClass('header-hovered');
   }
 
   /**

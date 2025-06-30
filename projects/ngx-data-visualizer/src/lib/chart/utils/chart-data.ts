@@ -101,7 +101,7 @@ export class ChartData {
     let palette: Map<string, string> | undefined;
 
     this.dataProvider.dimensions.forEach((dimension) => {
-      if (dimension.selected && (!palette || palette.size === 0)) {
+      if (!palette || palette.size === 0) {
         palette = this.getPalette(dimension);
       }
     });

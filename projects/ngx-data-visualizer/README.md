@@ -48,8 +48,6 @@ const dimensions: Dimension[] = [
     name: 'año',
     nameView: 'Año',
     items: [],
-    selected: false,
-    showItems: false
   },
   {
     id: 2,
@@ -58,10 +56,7 @@ const dimensions: Dimension[] = [
     items: [
       { id: 1, name: 'Electrónica', selected: true, color: '#FF5733' },
       { id: 2, name: 'Ropa', selected: true, color: '#33FF57' }
-    ],
-    selected: true,
-    showItems: true,
-    enableMulti: true
+    ]
   }
 ];
 
@@ -139,7 +134,6 @@ const config = {
       nameView: 'Año',
       items: [],
       selected: false,
-      showItems: false
     }
   ],
   rowData: [

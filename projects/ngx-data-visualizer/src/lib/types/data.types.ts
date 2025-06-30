@@ -28,9 +28,6 @@ export interface Dimension {
   /** Elementos que componen la dimensión */
   items: Item[];
 
-  /** Indica si la dimensión está seleccionada */
-  selected: boolean;
-
   /** Tipo de dimensión (opcional) */
   type?: number;
 }

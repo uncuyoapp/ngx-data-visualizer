@@ -39,10 +39,7 @@ export class Dataset {
    *     id: 1,
    *     name: 'year',
    *     nameView: 'Año',
-   *     items: [{ id: 1, name: '2023', selected: true }],
-   *     selected: true,
-   *     showItems: true,
-   *     enableMulti: false
+   *     items: [{ id: 1, name: '2023', selected: true }]
    *   }],
    *   rowData: [{ 'Año': '2023', 'valor': 100 }],
    *   enableRollUp: true
@@ -86,7 +83,7 @@ export class Dataset {
         throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
       }
 
-      const requiredFields = ['id', 'name', 'nameView', 'items', 'selected'];
+      const requiredFields = ['id', 'name', 'nameView', 'items'];
       const missingFields = requiredFields.filter(field => !(field in dim));
 
       if (missingFields.length > 0) {

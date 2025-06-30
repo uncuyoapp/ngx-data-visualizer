@@ -128,7 +128,6 @@ export class ConfigurationComponent implements OnInit {
     };
 
     filters.rollUp = this.exampleDataset.dimensions
-      .filter((dimension) => !dimension.selected)
       .map((dimension) => dimension.nameView);
 
     filters.filter = this.exampleDataset.dimensions.map((dimension) => ({
@@ -148,7 +147,6 @@ export class ConfigurationComponent implements OnInit {
 
   resetFilters(): void {
     this.exampleDataset.dimensions.forEach((dimension: Dimension) => {
-      dimension.selected = true;
       dimension.items.forEach((item: Item) => (item.selected = true));
     });
     this.exampleDataset.applyFilters(new Filters());

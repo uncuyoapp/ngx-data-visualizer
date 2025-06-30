@@ -21,7 +21,7 @@ export class DataProvider {
    * @param initialData - Datos iniciales opcionales para el proveedor
    * @example
    * const dataProvider = new DataProvider({
-   *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [], selected: false, showItems: false }],
+   *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [] }],
    *   rowData: [{ 'Año': 2023, 'valor': 100 }]
    * });
    */

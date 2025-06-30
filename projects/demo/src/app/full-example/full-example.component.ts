@@ -122,7 +122,6 @@ export class FullExampleComponent implements OnInit {
 
     // Obtener las dimensiones que no están seleccionadas para rollUp
     filters.rollUp = this.dataset.dimensions
-      .filter(dimension => !dimension.selected)
       .map(dimension => dimension.nameView);
 
     // Obtener los filtros para cada dimensión basados en los items seleccionados
@@ -143,7 +142,6 @@ export class FullExampleComponent implements OnInit {
 
   clearFilters() {
     this.dataset.dimensions.forEach((dimension: Dimension) => {
-      dimension.selected = true;
       dimension.items.forEach((item: Item) => (item.selected = true));
     });
     this.dataset.applyFilters(new Filters());

@@ -227,11 +227,11 @@ export class TableHelper {
       if (this === $th[0]) {
         return false;
       }
-      colStart += parseInt($(this).attr('colspan') || '1', 10);
+      colStart += parseInt($(this).attr('colspan') ?? '1', 10);
       return undefined;
     });
     // Leer colspan del th actual
-    const colspan = parseInt($th.attr('colspan') || '1', 10);
+    const colspan = parseInt($th.attr('colspan') ?? '1', 10);
     // Resaltar todas las columnas correspondientes al colspan
     for (let i = 0; i < colspan; i++) {
       const colIndex = colStart + i;
@@ -250,7 +250,7 @@ export class TableHelper {
       let colCursor = 0;
       $trs.eq(t).children('th.pvtColLabel').each(function () {
         const $subTh = $(this);
-        const subColspan = parseInt($subTh.attr('colspan') || '1', 10);
+        const subColspan = parseInt($subTh.attr('colspan') ?? '1', 10);
         // Si el rango de este th se solapa con el rango del hover, colorear
         const subStart = colCursor;
         const subEnd = colCursor + subColspan - 1;
@@ -272,7 +272,7 @@ export class TableHelper {
       const $parentTr = $trs.eq(parentTrIndex);
       $parentTr.children('th.pvtColLabel').each(function () {
         const $parentTh = $(this);
-        const parentColspan = parseInt($parentTh.attr('colspan') || '1', 10);
+        const parentColspan = parseInt($parentTh.attr('colspan') ?? '1', 10);
         const parentStart = colCursor;
         const parentEnd = colCursor + parentColspan - 1;
         if (parentEnd >= parentHoverStart && parentStart <= parentHoverEnd) {

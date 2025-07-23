@@ -75,10 +75,43 @@ export class TableHelper {
       .find('td')
       .on('click', () => { });
 
+    
     // Agregar el manejo de auto-scroll
-    TableHelper.setupAutoScroll(element);
+    // TableHelper.setupAutoScroll(element);
     // Agregar el manejo de hover en cabeceras
     TableHelper.setupHeaderHover(element);
+
+    // setTimeout(() => {
+    //   TableHelper.setupHiddenLayerScroll(element);
+    // }, 100);
+  }
+
+  private static setupHiddenLayerScroll(element: HTMLDivElement): void {
+    const $ = TableHelper.jQueryService.$;
+    // const table = $(element).find('.pvtTable');
+    // const pivots = $(element).find('.pvtCorner');
+    // console.log(pivots);
+
+    $(element).find('th').each((i,th) => {
+      const layerHiddenScroll = document.createElement('div');
+      $(layerHiddenScroll).addClass('layerHiddenScroll');
+      th.append(layerHiddenScroll);
+    })
+
+    
+    // console.log(table.height());
+
+    
+
+    
+    // TableHelper.applyStyles(pvtCornerLayer0,{
+    //   width: pivot1.position().left+'px',
+    //   height: pivot1.position().top+'px',
+    // });
+    // const pvtCornerLayer1 = $('<div class="pvtCornerScroll"></div>');
+
+    // pivot0.append(pvtCornerLayer0);
+    // pivot1.append(pvtCornerLayer1);
   }
 
   /**
@@ -498,51 +531,60 @@ export class TableHelper {
     const x = rect.left;
     const y = rect.top;
 
-    currentTarget.addClass('hovered');
+    // Identificar si el target es un label o una celda de datos
+    const isLabel = currentTarget.is('th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel, th.pvtAxisLabel, th.pvtTotalLabel');
+    const isData = currentTarget.is('td.pvtVal, td.pvtTotal, td.pvtGrandTotal');
+
+    if (isLabel) {
+      currentTarget.addClass('header-hovered');
+    } else if (isData) {
+      currentTarget.addClass('data-hovered');
+    }
+
     Object.values(filter).forEach((item) => {
       const aux = $(currentTable)
         .find('th:contains(' + (item as string) + ')')
         .filter((_i: any, th: any) => $(th).text() == item);
       if (aux.length > 1) {
         const parentType = aux[0].parentElement?.parentElement?.tagName;
-        // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
         if (parentType === 'THEAD') {
-          // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
           aux
             .filter((i: number) => {
-              // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
               const rect = aux[i].getBoundingClientRect();
               return x >= rect.x && x <= rect.x + rect.width;
             })
-            .addClass('hovered');
+            .addClass('header-hovered');
         } else {
-          // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
           aux
             .filter((i: number) => {
-              // @ts-ignore - Ignorar errores de TypeScript para la manipulación de jQuery
               const rect = aux[i].getBoundingClientRect();
               return y >= rect.y && y <= rect.y + rect.height;
             })
-            .addClass('hovered');
+            .addClass('header-hovered');
         }
       } else {
-        aux.addClass('hovered');
+        aux.addClass('header-hovered');
       }
     });
 
     if (currentTarget.hasClass('rowTotal')) {
-      $(currentTable).find('.pvtRowTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtRowTotalLabel').addClass('header-hovered');
     }
     if (currentTarget.hasClass('colTotal')) {
-      $(currentTable).find('.pvtColTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtColTotalLabel').addClass('header-hovered');
     }
     if (currentTarget.hasClass('pvtGrandTotal')) {
-      $(currentTable).find('.pvtRowTotalLabel').addClass('hovered');
-      $(currentTable).find('.pvtColTotalLabel').addClass('hovered');
+      $(currentTable).find('.pvtRowTotalLabel').addClass('header-hovered');
+      $(currentTable).find('.pvtColTotalLabel').addClass('header-hovered');
+    }
+
+    // Si es una celda de datos, resaltar también con data-hovered
+    if (isData) {
+      currentTarget.addClass('data-hovered');
     }
 
     currentTarget.on('mouseout', () => {
-      $(currentTable).find('th, td').removeClass('hovered');
+      $(currentTable).find('th, td').removeClass('header-hovered data-hovered hovered');
     });
   }
 
@@ -583,30 +625,33 @@ export class TableHelper {
         const baseStyles = {
           position: 'sticky',
           top: `${top}px`,
-          zIndex: '99',
+          // zIndex: '1',
         };
 
         if (!css) {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
-            zIndex: '999',
+            // zIndex: '3',
           });
           th.setAttribute('class', 'pvtCorner');
         } else if (css === 'pvtColLabel') {
-          TableHelper.applyStyles(th, baseStyles);
+          TableHelper.applyStyles(th, {
+            ...baseStyles,
+            // zIndex: 2
+          });
         } else if (css === 'pvtAxisLabel') {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
-            zIndex: '999',
+            // zIndex: '3',
           });
         } else if (css === 'pvtCorner') {
           // Manejar elementos pvtCorner existentes
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
-            zIndex: '999',
+            // zIndex: '3',
           });
         } else {
           TableHelper.applyStyles(th, baseStyles);

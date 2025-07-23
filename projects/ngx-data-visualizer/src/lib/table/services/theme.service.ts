@@ -130,13 +130,35 @@ export class ThemeService {
     root.style.setProperty('--table-cell-padding', theme.padding.cell);
     root.style.setProperty('--table-label-padding', theme.padding.label);
 
-    // Aplicar bordes
-    root.style.setProperty('--table-border-color', theme.border.color);
-    root.style.setProperty('--table-border-width', theme.border.width);
-    root.style.setProperty('--table-border-style', theme.border.style);
-
     // Aplicar sombras
     root.style.setProperty('--table-cell-box-shadow', theme.boxShadow);
+    root.style.setProperty('--table-border-spacing', theme.borderSpacing);
+    root.style.setProperty('--table-border-collapse', theme.borderCollapse);
+
+    // Bordes para etiquetas
+    root.style.setProperty('--table-label-border-color', theme.labelBorder.color);
+    root.style.setProperty('--table-label-border-width', theme.labelBorder.width);
+    root.style.setProperty('--table-label-border-style', theme.labelBorder.style);
+    // Bordes para datos
+    root.style.setProperty('--table-data-border-color', theme.dataBorder.color);
+    root.style.setProperty('--table-data-border-width', theme.dataBorder.width);
+    root.style.setProperty('--table-data-border-style', theme.dataBorder.style);
+    // Colores de hover separados
+    root.style.setProperty('--table-label-hover', theme.labelHover);
+    root.style.setProperty('--table-label-hover-contrast', theme.labelHoverContrast);
+    root.style.setProperty('--table-data-hover', theme.dataHover);
+    root.style.setProperty('--table-data-hover-contrast', theme.dataHoverContrast);
+    // Border radius separados
+    root.style.setProperty('--table-label-border-radius', theme.labelBorderRadius);
+    root.style.setProperty('--table-data-border-radius', theme.dataBorderRadius);
+    // Bordes hover para etiquetas
+    root.style.setProperty('--table-label-hover-border-color', theme.labelHoverBorder.color);
+    root.style.setProperty('--table-label-hover-border-width', theme.labelHoverBorder.width);
+    root.style.setProperty('--table-label-hover-border-style', theme.labelHoverBorder.style);
+    // Bordes hover para datos
+    root.style.setProperty('--table-data-hover-border-color', theme.dataHoverBorder.color);
+    root.style.setProperty('--table-data-hover-border-width', theme.dataHoverBorder.width);
+    root.style.setProperty('--table-data-hover-border-style', theme.dataHoverBorder.style);
   }
 
   /**
@@ -158,9 +180,33 @@ export class ThemeService {
     element.style.setProperty('--table-line-height', theme.lineHeight);
     element.style.setProperty('--table-cell-padding', theme.padding.cell);
     element.style.setProperty('--table-label-padding', theme.padding.label);
-    element.style.setProperty('--table-border-color', theme.border.color);
-    element.style.setProperty('--table-border-width', theme.border.width);
-    element.style.setProperty('--table-border-style', theme.border.style);
     element.style.setProperty('--table-cell-box-shadow', theme.boxShadow);
+    element.style.setProperty('--table-border-spacing', theme.borderSpacing);
+    element.style.setProperty('--table-border-collapse', theme.borderCollapse);
+
+    // Bordes para etiquetas
+    element.style.setProperty('--table-label-border-color', theme.labelBorder.color);
+    element.style.setProperty('--table-label-border-width', theme.labelBorder.width);
+    element.style.setProperty('--table-label-border-style', theme.labelBorder.style);
+    // Bordes para datos
+    element.style.setProperty('--table-data-border-color', theme.dataBorder.color);
+    element.style.setProperty('--table-data-border-width', theme.dataBorder.width);
+    element.style.setProperty('--table-data-border-style', theme.dataBorder.style);
+    // Colores de hover separados
+    element.style.setProperty('--table-label-hover', theme.labelHover);
+    element.style.setProperty('--table-label-hover-contrast', theme.labelHoverContrast);
+    element.style.setProperty('--table-data-hover', theme.dataHover);
+    element.style.setProperty('--table-data-hover-contrast', theme.dataHoverContrast);
+    // Border radius separados
+    element.style.setProperty('--table-label-border-radius', theme.labelBorderRadius);
+    element.style.setProperty('--table-data-border-radius', theme.dataBorderRadius);
+    // Bordes hover para etiquetas
+    element.style.setProperty('--table-label-hover-border-color', theme.labelHoverBorder.color);
+    element.style.setProperty('--table-label-hover-border-width', theme.labelHoverBorder.width);
+    element.style.setProperty('--table-label-hover-border-style', theme.labelHoverBorder.style);
+    // Bordes hover para datos
+    element.style.setProperty('--table-data-hover-border-color', theme.dataHoverBorder.color);
+    element.style.setProperty('--table-data-hover-border-width', theme.dataHoverBorder.width);
+    element.style.setProperty('--table-data-hover-border-style', theme.dataHoverBorder.style);
   }
 } 

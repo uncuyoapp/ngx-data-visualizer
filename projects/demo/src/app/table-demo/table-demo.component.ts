@@ -164,14 +164,14 @@ export class TableDemoComponent implements AfterViewInit {
 
   // Ejemplo de personalización parcial del tema
   updateThemeWithCustomColors(): void {
-    this.themeService.updateTheme({
-      tableDataBg: '#d3d3d3',
-      tableLabelBg: 'black',
-      border: {
-        color: 'red',
-        width: '2px',
-        style: 'dashed'
-      }
-    }, this.table);
+    // this.themeService.updateTheme({
+    //   tableDataBg: '#d3d3d3',
+    //   tableLabelBg: 'black',
+    //   border: {
+    //     color: 'red',
+    //     width: '2px',
+    //     style: 'dashed'
+    //   }
+    // }, this.table);
   }
 }

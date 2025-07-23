@@ -285,7 +285,7 @@ export const TableThemes = {
     tableHover: '#0450ff',
     tableHoverContrast: '#ffff',
     tableDataBg: '#ffff',
-    tableLabelBg: '#f2f2f2',
+    tableLabelBg: '#f9f9f9',
     axisLabelBg: '#ffff',
     textColor: '#333333',
     dataTextColor: '#333333',
@@ -298,11 +298,39 @@ export const TableThemes = {
       label: '5px'
     },
     border: {
-      color: 'white',
-      width: '4px',
+      color: '#e6e6e6',
+      width: '1px',
       style: 'solid'
     },
-    boxShadow: 'inset 0px 2px 0px #f2f2f2'
+    boxShadow: 'inset 0px 2px 0px #f2f2f2',
+    borderSpacing: '0.5rem',
+    borderCollapse: 'separate',
+    labelBorder: {
+      color: '#e6e6e6',
+      width: '2px',
+      style: 'solid'
+    },
+    dataBorder: {
+      color: 'white',
+      width: '1px',
+      style: 'solid'
+    },
+    labelHover: '#dfecff',
+    labelHoverContrast: 'black',
+    dataHover: '#dfecff',
+    dataHoverContrast: 'black',
+    labelHoverBorder: {
+      color: '#008bff',
+      width: '2px',
+      style: 'solid'
+    },
+    dataHoverBorder: {
+      color: '#008bff',
+      width: '1px',
+      style: 'solid'
+    },
+    labelBorderRadius: '1rem',
+    dataBorderRadius: '1rem'
   },
 
   /** Tema Material Design */
@@ -327,7 +355,35 @@ export const TableThemes = {
       width: '1px',
       style: 'solid'
     },
-    boxShadow: 'inset 0px 2px 0px #f5f5f5'
+    boxShadow: 'inset 0px 2px 0px #f5f5f5',
+    borderSpacing: '0.5rem',
+    borderCollapse: 'separate',
+    labelBorder: {
+      color: '#e0e0e0',
+      width: '1px',
+      style: 'solid'
+    },
+    dataBorder: {
+      color: '#e0e0e0',
+      width: '1px',
+      style: 'solid'
+    },
+    labelHover: '#1976d2',
+    labelHoverContrast: '#fff',
+    dataHover: '#1976d2',
+    dataHoverContrast: '#fff',
+    labelHoverBorder: {
+      color: '#1976d2',
+      width: '2px',
+      style: 'solid'
+    },
+    dataHoverBorder: {
+      color: '#1976d2',
+      width: '2px',
+      style: 'solid'
+    },
+    labelBorderRadius: '1rem',
+    dataBorderRadius: '1rem'
   },
 
   /** Tema Bootstrap 5 */
@@ -352,7 +408,35 @@ export const TableThemes = {
       width: '1px',
       style: 'solid'
     },
-    boxShadow: 'inset 0px 2px 0px #f8f9fa'
+    boxShadow: 'inset 0px 2px 0px #f8f9fa',
+    borderSpacing: '0.5rem',
+    borderCollapse: 'separate',
+    labelBorder: {
+      color: '#dee2e6',
+      width: '1px',
+      style: 'solid'
+    },
+    dataBorder: {
+      color: '#dee2e6',
+      width: '1px',
+      style: 'solid'
+    },
+    labelHover: '#0d6efd',
+    labelHoverContrast: '#fff',
+    dataHover: '#0d6efd',
+    dataHoverContrast: '#fff',
+    labelHoverBorder: {
+      color: '#0d6efd',
+      width: '2px',
+      style: 'solid'
+    },
+    dataHoverBorder: {
+      color: '#0d6efd',
+      width: '2px',
+      style: 'solid'
+    },
+    labelBorderRadius: '1rem',
+    dataBorderRadius: '1rem'
   }
 } as const;
 

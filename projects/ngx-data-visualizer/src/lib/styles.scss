@@ -12,7 +12,7 @@
 
   // Colores de fondo
   --table-data-bg: #ffff;
-  --table-label-bg: #f2f2f2;
+  --table-label-bg: #f9f9f9;
   --table-axis-label-bg: #ffff;
 
   // Colores de texto
@@ -21,12 +21,39 @@
   --table-label-text-color: #333333;
 
   // Bordes
-  --table-border-color: white;
+  --table-border-color: #e6e6e6;
   --table-border-width: 2px;
   --table-border-style: solid;
+  --table-border-spacing: 0.5rem;
+  --table-border-collapse: separate;
+  // Bordes para etiquetas
+  --table-label-border-color: #e6e6e6;
+  --table-label-border-width: 2px;
+  --table-label-border-style: solid;
+  // Bordes para datos
+  --table-data-border-color: #e6e6e6;
+  --table-data-border-width: 2px;
+  --table-data-border-style: solid;
 
   // Sombras
   --table-cell-box-shadow: inset 0px 2px 0px #f2f2f2;
+  // Bordes hover para etiquetas
+  --table-label-hover-border-color: #0450ff;
+  --table-label-hover-border-width: 2px;
+  --table-label-hover-border-style: solid;
+  // Bordes hover para datos
+  --table-data-hover-border-color: #0450ff;
+  --table-data-hover-border-width: 1px;
+  --table-data-hover-border-style: solid;
+  // Colores de hover separados
+  --table-label-hover: #0450ff;
+  --table-label-hover-contrast: #ffff;
+  --table-data-hover: #0450ff;
+  --table-data-hover-contrast: #ffff;
+
+  // Border radius separados
+  --table-label-border-radius: 1rem;
+  --table-data-border-radius: 1rem;
 }
 
 /*
@@ -134,8 +161,9 @@ table.pvtTable {
   margin: 0 auto;
   padding: 0;
   position: relative;
-  border-spacing: 0;
-  border-collapse: collapse;
+  border-spacing: var(--table-border-spacing);
+  border-collapse: var(--table-border-collapse);
+  background-color: var(--table-data-bg);
   font-size: var(--table-font-size);
   color: var(--table-text-color);
 
@@ -150,7 +178,7 @@ table.pvtTable {
   .pvtTotal,
   .pvtGrandTotal,
   .pvtAxisLabel {
-    border: var(--table-border-width) var(--table-border-style) var(--table-border-color);
+    // border: var(--table-border-width) var(--table-border-style) var(--table-border-color);
   }
 
   // Estilos de encabezado y cuerpo
@@ -179,13 +207,35 @@ table.pvtTable {
   .pvtTotalLabel,
   .pvtRowLabel,
   .pvtAxisLabel {
-    background-color: var(--table-label-bg);
+    &::before {
+      position: absolute;
+      top: calc(0px - (var(--table-border-spacing)/2));
+      left: calc(0px - (var(--table-border-spacing)/2));
+      content: '';
+      width: calc(100% + var(--table-border-spacing));
+      height: calc(100% + var(--table-border-spacing));
+      background: var(--table-data-bg);
+      z-index: -1;
+    }
+    &::after{
+      background-color: var(--table-label-bg);
+      position: absolute;
+      top: 0;
+      left: 0;
+      content: '';
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      border-radius: var(--table-label-border-radius);
+    }
+    
     transform: translateZ(0);
-    outline-offset: calc((var(--table-border-width) / 2) * -1);
-    outline: var(--table-border-width) var(--table-border-style) var(--table-border-color);
+    outline-offset: calc((var(--table-label-border-width) / 2) * -1);
+    outline: var(--table-label-border-width) var(--table-label-border-style) var(--table-label-border-color);
     text-align: center;
-    z-index: 995;
+    // z-index: 995;
     padding: var(--table-label-padding);
+    border-radius: var(--table-label-border-radius);
   }
 
   // Estilos específicos para etiquetas
@@ -205,6 +255,12 @@ table.pvtTable {
     background-color: var(--table-axis-label-bg);
   }
 
+  .pvtCorner {
+    border: white !important;
+    background: white !important;
+    outline: white !important;
+  }
+
   // Estilos para datos
   .pvtVal,
   .pvtTotal,
@@ -213,12 +269,14 @@ table.pvtTable {
     color: var(--table-data-text-color);
     vertical-align: middle;
     padding: var(--table-cell-padding);
-    box-shadow: var(--table-cell-box-shadow);
+    // box-shadow: var(--table-cell-box-shadow);
+    border: var(--table-data-border-width) var(--table-data-border-style) var(--table-data-border-color);
+    border-radius: var(--table-data-border-radius);
   }
 
   .pvtRowLabel,
   .pvtColTotalLabel {
-    box-shadow: var(--table-cell-box-shadow);
+    // box-shadow: var(--table-cell-box-shadow);
   }
 
   // Estilos para totales
@@ -229,20 +287,16 @@ table.pvtTable {
   }
 
   // Estilos para hover
-  .hovered {
-    background-color: var(--table-hover);
-    color: var(--table-hover-contrast);
-  }
-
-  .header-hovered {
-    background-color: var(--table-header-hover, #e0e7ef);
-    color: var(--table-header-hover-contrast, #1a237e);
-    z-index: 2;
-  }
-
+  .header-hovered,
   .header-related-hovered {
-    background-color: var(--table-hover);
-    color: var(--table-hover-contrast);
+    &::after{
+      background-color: var(--table-label-hover);
+    }
+    
+    color: var(--table-label-hover-contrast);
+    z-index: 2;
+    outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style)
+      var(--table-label-hover-border-color);
   }
 
   .header-hovered-cell {
@@ -251,16 +305,36 @@ table.pvtTable {
     z-index: 2;
   }
   .header-related-hovered-cell {
-    background-color: var(--table-hover, #f5f7fa);
-    color: var(--table-hover-contrast, #263238);
+    background-color: var(--table-label-hover, #f5f7fa);
+    color: var(--table-label-hover-contrast, #263238);
     z-index: 1;
   }
 
   .data-hovered {
-    background-color: var(--table-hover, #0450ff);
-    color: var(--table-hover-contrast, #fff);
-    z-index: 1;
+    background-color: var(--table-data-hover);
+    color: var(--table-data-hover-contrast);
+    border: var(--table-data-hover-border-width) var(--table-data-hover-border-style)
+      var(--table-data-hover-border-color);
   }
+
+  .pvtCorner, .pvtAxisLabel {
+    z-index: 4;
+  }
+
+  .pvtColLabel {
+    z-index: 3;
+  }
+
+  .pvtRowLabel{
+    z-index: 2;
+  }
+
+  .pvtCorner{
+    &::after{
+      background: var(--table-data-bg);
+    }
+  }
+
 }
 
 // Estilos del tooltip

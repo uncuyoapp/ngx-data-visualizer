@@ -33,13 +33,50 @@ export interface TableTheme {
     label: string;
   };
 
-  /** Configuración de bordes */
-  border: {
+  /** Configuración de bordes para etiquetas */
+  labelBorder: {
+    color: string;
+    width: string;
+    style: string;
+  };
+  /** Configuración de bordes para datos */
+  dataBorder: {
     color: string;
     width: string;
     style: string;
   };
 
+  /** Configuración de bordes hover para etiquetas */
+  labelHoverBorder: {
+    color: string;
+    width: string;
+    style: string;
+  };
+  /** Configuración de bordes hover para datos */
+  dataHoverBorder: {
+    color: string;
+    width: string;
+    style: string;
+  };
+
+  /** Color de fondo hover para etiquetas */
+  labelHover: string;
+  /** Color de contraste hover para etiquetas */
+  labelHoverContrast: string;
+  /** Color de fondo hover para datos */
+  dataHover: string;
+  /** Color de contraste hover para datos */
+  dataHoverContrast: string;
+
   /** Configuración de sombras */
   boxShadow: string;
+  /** Espaciado entre bordes de celdas */
+  borderSpacing: string;
+  /** Tipo de colapso de bordes */
+  borderCollapse: string;
+
+  /** Border radius para etiquetas */
+  labelBorderRadius: string;
+  /** Border radius para datos */
+  dataBorderRadius: string;
 } 

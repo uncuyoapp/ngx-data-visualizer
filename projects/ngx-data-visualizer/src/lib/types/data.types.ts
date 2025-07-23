@@ -30,6 +30,12 @@ export interface Dimension {
 
   /** Tipo de dimensión (opcional) */
   type?: number;
+
+  /** Indica si la dimensión puede desagregarse en múltiples gráficos (opcional) */
+  enableMulti?: boolean;
+
+  /** Indica si la dimensión está seleccionada (opcional) */
+  selected?: boolean;
 }
 
 /**

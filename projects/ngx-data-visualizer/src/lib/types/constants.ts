@@ -292,10 +292,10 @@ export const TableThemes = {
     labelTextColor: '#333333',
     fontSize: '12pt',
     headerFontSize: '14pt',
-    lineHeight: '30pt',
+    lineHeight: 'auto',
     padding: {
-      cell: '5px 10px',
-      label: '5px'
+      cell: '10px',
+      label: '15px 20px'
     },
     border: {
       color: '#e6e6e6',
@@ -449,4 +449,4 @@ export const MAX_LENGTH = Security.MAX_LENGTH;
 export const DANGEROUS_ATTRS = Security.DANGEROUS_ATTRS;
 export const EC_CHART_CONFIG_PREVIEW = ECharts.CHART_CONFIG_PREVIEW;
 export const EC_AXIS_CONFIG = ECharts.AXIS_CONFIG;
-export const EC_SERIES_CONFIG = ECharts.SERIES_CONFIG; 
+export const EC_SERIES_CONFIG = ECharts.SERIES_CONFIG;

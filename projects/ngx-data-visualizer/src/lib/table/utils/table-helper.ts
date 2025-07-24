@@ -75,9 +75,9 @@ export class TableHelper {
       .find('td')
       .on('click', () => { });
 
-    
+
     // Agregar el manejo de auto-scroll
-    // TableHelper.setupAutoScroll(element);
+    TableHelper.setupAutoScroll(element);
     // Agregar el manejo de hover en cabeceras
     TableHelper.setupHeaderHover(element);
 
@@ -98,12 +98,12 @@ export class TableHelper {
       th.append(layerHiddenScroll);
     })
 
-    
+
     // console.log(table.height());
 
-    
 
-    
+
+
     // TableHelper.applyStyles(pvtCornerLayer0,{
     //   width: pivot1.position().left+'px',
     //   height: pivot1.position().top+'px',

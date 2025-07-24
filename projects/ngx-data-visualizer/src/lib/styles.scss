@@ -187,9 +187,11 @@ table.pvtTable {
     background: var(--table-data-bg);
 
     tr th {
-      line-height: var(--table-line-height);
       font-weight: normal;
       font-size: var(--table-header-font-size);
+    }
+    th {
+      line-height: var(--table-line-height);
     }
   }
 
@@ -209,33 +211,66 @@ table.pvtTable {
   .pvtAxisLabel {
     &::before {
       position: absolute;
-      top: calc(0px - (var(--table-border-spacing)/2));
-      left: calc(0px - (var(--table-border-spacing)/2));
-      content: '';
+      top: calc(0px - (var(--table-border-spacing) / 2));
+      left: calc(0px - (var(--table-border-spacing) / 2));
+      content: "";
       width: calc(100% + var(--table-border-spacing));
       height: calc(100% + var(--table-border-spacing));
       background: var(--table-data-bg);
       z-index: -1;
+      outline: 1px var(--table-data-bg);
     }
-    &::after{
+    &::after {
       background-color: var(--table-label-bg);
       position: absolute;
       top: 0;
       left: 0;
-      content: '';
+      content: "";
       width: 100%;
       height: 100%;
       z-index: -1;
       border-radius: var(--table-label-border-radius);
     }
-    
+
     transform: translateZ(0);
     outline-offset: calc((var(--table-label-border-width) / 2) * -1);
-    outline: var(--table-label-border-width) var(--table-label-border-style) var(--table-label-border-color);
+    outline: var(--table-label-border-width) var(--table-label-border-style)
+      var(--table-label-border-color);
     text-align: center;
     // z-index: 995;
     padding: var(--table-label-padding);
     border-radius: var(--table-label-border-radius);
+  }
+
+  thead {
+    tr:first-of-type {
+      th {
+        &::before {
+          top: calc(-5px - (var(--table-border-spacing) / 2));
+          height: calc(100% + var(--table-border-spacing) + 5px);
+        }
+      }
+    }
+
+    th {
+      &::before {
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        // -webkit-box-shadow: 0px var(--table-border-spacing) var(--table-border-spacing) var(--table-data-bg);
+        // -moz-box-shadow: 0px var(--table-border-spacing) var(--table-border-spacing) var(--table-data-bg);
+      }
+    }
+  }
+
+  tbody {
+    th {
+      &::before {
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        // -webkit-box-shadow: 0px var(--table-border-spacing) var(--table-border-spacing) var(--table-data-bg);
+        // -moz-box-shadow: 0px var(--table-border-spacing) var(--table-border-spacing) var(--table-data-bg);
+      }
+    }
   }
 
   // Estilos específicos para etiquetas
@@ -256,9 +291,9 @@ table.pvtTable {
   }
 
   .pvtCorner {
-    border: white !important;
-    background: white !important;
-    outline: white !important;
+    border: var(--table-data-bg);
+    background: var(--table-data-bg);
+    outline: var(--table-data-bg);
   }
 
   // Estilos para datos
@@ -270,7 +305,8 @@ table.pvtTable {
     vertical-align: middle;
     padding: var(--table-cell-padding);
     // box-shadow: var(--table-cell-box-shadow);
-    border: var(--table-data-border-width) var(--table-data-border-style) var(--table-data-border-color);
+    border: var(--table-data-border-width) var(--table-data-border-style)
+      var(--table-data-border-color);
     border-radius: var(--table-data-border-radius);
   }
 
@@ -289,13 +325,14 @@ table.pvtTable {
   // Estilos para hover
   .header-hovered,
   .header-related-hovered {
-    &::after{
+    &::after {
       background-color: var(--table-label-hover);
     }
-    
+
     color: var(--table-label-hover-contrast);
     z-index: 2;
-    outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style)
+    outline: var(--table-label-hover-border-width)
+      var(--table-label-hover-border-style)
       var(--table-label-hover-border-color);
   }
 
@@ -313,11 +350,12 @@ table.pvtTable {
   .data-hovered {
     background-color: var(--table-data-hover);
     color: var(--table-data-hover-contrast);
-    border: var(--table-data-hover-border-width) var(--table-data-hover-border-style)
-      var(--table-data-hover-border-color);
+    border: var(--table-data-hover-border-width)
+      var(--table-data-hover-border-style) var(--table-data-hover-border-color);
   }
 
-  .pvtCorner, .pvtAxisLabel {
+  .pvtCorner,
+  .pvtAxisLabel {
     z-index: 4;
   }
 
@@ -325,16 +363,15 @@ table.pvtTable {
     z-index: 3;
   }
 
-  .pvtRowLabel{
+  .pvtRowLabel {
     z-index: 2;
   }
 
-  .pvtCorner{
-    &::after{
+  .pvtCorner {
+    &::after {
       background: var(--table-data-bg);
     }
   }
-
 }
 
 // Estilos del tooltip

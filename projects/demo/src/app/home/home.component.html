@@ -1,20 +1,55 @@
 <div class="container my-5">
   <div class="p-5 text-center bg-body-tertiary rounded-3">
-    <h1 class="display-5 fw-bold text-body-emphasis">NGX-DATA-VISUALIZER</h1>  
+    <h1 class="display-5 fw-bold text-body-emphasis">NGX-DATA-VISUALIZER</h1>
+    <p class="col-lg-8 mx-auto fs-5 text-muted mb-3">
+      Este proyecto consiste en una aplicación Angular que incluye una librería de visualización de datos (`ngx-data-visualizer`) y un proyecto demo que muestra su implementación.
+    </p>
     <p class="col-lg-8 mx-auto fs-5 text-muted">
-      ngx-data-visualizer es un juego de directivas para Angular (ver >= 17) que facilitan la visualización de datos.
+      Componentes Principales:
+    </p>
+    <ul class="col-lg-8 mx-auto fs-5 text-muted text-start mb-3">
+      <li><strong>NgxDataVisualizer:</strong> Una librería Angular que proporciona componentes y directivas para la visualización de datos en forma de gráficos y tablas.</li>
+      <li><strong>Proyecto Demo:</strong> Un proyecto de demostración que muestra el uso de la librería NgxDataVisualizer. Incluye ejemplos prácticos y casos de uso.</li>
+    </ul>
+    <p class="col-lg-8 mx-auto fs-5 text-muted mb-3">
+      Desarrollado por el Área de Políticas Públicas de la Universidad Nacional de Cuyo (APP UNCuyo).
+      Este proyecto está licenciado bajo la Licencia MIT y se espera su uso para facilitar la visualización de datos en aplicaciones Angular.
     </p>
     <div class="d-inline-flex gap-2 my-5">
-      <a [routerLink]="'full-example'" class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill" type="button">
-        Ejemplo de Indicador
+      <a
+        [routerLink]="'configuration'"
+        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+        type="button"
+      >
+        Configuración
       </a>
-      <a [routerLink]="'dashboard'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill" type="button">
-        Ejemplo de Dashboard
+      <a
+        [routerLink]="'full-example'"
+        class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill"
+        type="button"
+      >
+        Ejemplo completo
       </a>
-      <a [routerLink]="'table-demo'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill" type="button">
-        Ejemplo de Tabla
+      <a
+        [routerLink]="'dashboard'"
+        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+        type="button"
+      >
+        Ejemplo Escenario
+      </a>
+      <a
+        [routerLink]="'table-demo'"
+        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+        type="button"
+      >
+        Ejemplos de tablas
       </a>
     </div>
-    <img class="d-block mx-auto my-4" src="assets/logo-app.svg" alt="" height="57">
+    <img
+      class="d-block mx-auto my-4"
+      src="assets/logo-app.svg"
+      alt=""
+      height="57"
+    />
   </div>
 </div>

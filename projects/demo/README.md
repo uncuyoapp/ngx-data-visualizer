@@ -15,10 +15,11 @@ Este proyecto demo sirve como ejemplo y banco de pruebas para la librería NgxDa
 ```
 src/
 ├── app/
-│   ├── dashboard/           # Componentes del dashboard principal
-│   ├── chart-examples/      # Ejemplos de diferentes tipos de gráficos
-│   ├── table-examples/      # Ejemplos de tablas
-│   └── shared/             # Componentes compartidos
+│   ├── configuration/       # Componente de configuración
+│   ├── dashboard/           # Componente del dashboard principal
+│   ├── full-example/        # Ejemplo completo de uso
+│   ├── home/                # Componente de inicio
+│   └── table-demo/          # Demostración de tablas
 ├── assets/
 │   └── dash-dimensions.json # Configuración de dimensiones del dashboard
 └── styles/                 # Estilos globales
@@ -33,7 +34,7 @@ npm install
 
 2. Iniciar el servidor de desarrollo:
 ```bash
-ng serve
+ng serve demo
 ```
 
 3. Abrir el navegador en `http://localhost:4200`

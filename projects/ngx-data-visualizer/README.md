@@ -164,6 +164,112 @@ try {
 }
 ```
 
+## Uso de Directivas
+
+### Directiva Chart (`ChartDirective`)
+
+La directiva `libChart` se utiliza para incrustar y configurar gráficos. Requiere un objeto `Dataset` y un objeto `ChartConfigurationOptions` como entradas.
+
+```typescript
+import { ChartConfigurationOptions, Dataset } from 'ngx-data-visualizer';
+
+// Ejemplo de Dataset (como se muestra en el README actual)
+const dimensions = [
+  { id: 1, name: 'year', nameView: 'Año', items: [] },
+  { id: 2, name: 'category', nameView: 'Categoría', items: [] }
+];
+const rowData = [
+  { 'year': '2023', 'category': 'Electronics', 'value': 100 },
+  { 'year': '2024', 'category': 'Electronics', 'value': 120 }
+];
+const myDataset = new Dataset({ dimensions, rowData });
+
+// Opciones de Configuración del Gráfico (ChartConfigurationOptions)
+const chartOptions: ChartConfigurationOptions = {
+  type: 'column', // 'column', 'line', 'pie', etc.
+  title: 'Ventas por Categoría',
+  stacked: 'total', // o null
+  xAxis: {
+    title: 'Año',
+    rotateLabels: 45,
+    firstLevel: 0,
+    secondLevel: null
+  },
+  yAxis: {
+    title: 'Ventas',
+    max: null
+  },
+  tooltip: {
+    shared: true,
+    decimals: 2,
+    suffix: '€',
+    format: null,
+    showTotal: true
+  },
+  legends: {
+    enabled: true,
+    show: true,
+    position: 'bottom'
+  },
+  navigator: {
+    show: false,
+    start: null,
+    end: null
+  },
+  colors: ['#FF5733', '#33FF57'],
+  width: null,
+  height: '400px',
+  filterLastYear: false,
+  showYearsLegend: false,
+  toPercent: false,
+  measureUnit: '€',
+  isPreview: false,
+  disableAutoUpdate: false
+};
+```
+
+**Uso en el Template Angular:**
+
+```html
+<div libChart [dataset]="myDataset" [options]="chartOptions"></div>
+```
+
+### Directiva Table (`TableDirective`)
+
+La directiva `libTable` se utiliza para mostrar datos en formato tabular con capacidades de pivotado. Requiere un objeto `Dataset` y un objeto `PivotConfiguration` como entradas.
+
+```typescript
+import { TableConfiguration, PivotConfiguration, Dataset } from 'ngx-data-visualizer';
+
+// Ejemplo de Dataset (como se muestra en el README actual)
+const dimensions = [
+  { id: 1, name: 'product', nameView: 'Producto', items: [] },
+  { id: 2, name: 'region', nameView: 'Región', items: [] }
+];
+const rowData = [
+  { 'product': 'A', 'region': 'North', 'sales': 100 },
+  { 'product': 'B', 'region': 'South', 'sales': 150 }
+];
+const myTableDataset = new Dataset({ dimensions, rowData });
+
+// Configuración de Pivot (PivotConfiguration)
+const pivotConfig: PivotConfiguration = {
+  digitsAfterDecimal: 2,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+  cols: ['region'],
+  rows: ['product'],
+  suffix: ' units'
+};
+```
+
+**Uso en el Template Angular:**
+
+```html
+<div libTable [dataset]="myTableDataset" [options]="pivotConfig"></div>
+```
+
 ## Desarrollo
 
 ### Generar un nuevo componente

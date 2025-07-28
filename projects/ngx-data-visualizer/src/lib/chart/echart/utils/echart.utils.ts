@@ -1,4 +1,5 @@
 import { EChartsOption } from 'echarts';
+import { Series } from '../types/chart-models';
 
 /**
  * Función para generar una clave única para el cache basada en el estado actual
@@ -6,7 +7,7 @@ import { EChartsOption } from 'echarts';
  * @returns Clave del cache
  */
 export function generateCacheKey(state: {
-  series: any[];
+  series: Series[];
   maxValue: number;
   toPercent: boolean;
   totals: number[];

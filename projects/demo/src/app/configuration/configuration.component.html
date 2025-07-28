@@ -1,229 +1,131 @@
-<div class="configuration-container">
+<div class="container my-5">
   <h1>Guía de Configuración de ngx-data-visualizer</h1>
 
-  <section class="import-section">
-    <h2>Importación de la Librería</h2>
+  <section class="my-4">
+    <h2>1. Importación de la Librería</h2>
     <p>
-      Para comenzar a usar ngx-data-visualizer, debes importar las directivas y
-      tipos necesarios en tu componente:
+      Para comenzar a usar ngx-data-visualizer, debes importar los módulos y directivas necesarios en tu componente o módulo de Angular.
     </p>
-    <pre><code>
-// Importaciones de Angular
-import {{ '{' }} Component, OnInit {{ '}' }} from '&#64;angular/core';
-import {{ '{' }} CommonModule {{ '}' }} from '&#64;angular/common';
-import {{ '{' }} FormsModule, ReactiveFormsModule {{ '}' }} from '&#64;angular/forms';
-
-// Importaciones de ngx-data-visualizer
-import {{ '{' }}
-  ChartDirective,
-  TableDirective,
-  MultipleChartDirective,
-  Dataset,
-  Dimension,
-  Item,
-  RowData,
-  ChartConfigurationOptions,
-  PivotConfiguration,
-  Filters,
-  Goal,
-  Series,
-  ThemeService
-{{ '}' }} from 'ngx-data-visualizer';
-
-// Decorador del componente
-&#64;Component({{ '{' }}
-  selector: 'app-example',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    ChartDirective,
-    TableDirective,
-    MultipleChartDirective
-  ],
-  templateUrl: './example.component.html',
-  styleUrl: './example.component.scss'
-{{ '}' }})
-export class ExampleComponent implements OnInit {{ '{' }}
-  // Implementación del componente
-{{ '}' }}
-    </code></pre>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="importCode"></code></pre>
+      </div>
+    </div>
   </section>
 
-  <section class="directives-section">
-    <h2>Directivas Disponibles</h2>
+  <section class="my-4">
+    <h2>2. Directivas Disponibles</h2>
     <p>
-      La librería proporciona las siguientes directivas que debes importar según
-      tus necesidades:
+      La librería proporciona las siguientes directivas que debes importar y utilizar según tus necesidades:
     </p>
     <ul>
       <li>
-        <code>ChartDirective</code>: Para visualización de datos en gráficos
-        individuales
+        <code>ChartDirective</code>: Para visualización de datos en gráficos individuales.
+        Se utiliza con el selector <code>libChart</code>.
       </li>
       <li>
-        <code>MultipleChartDirective</code>: Para visualización de múltiples
-        gráficos
+        <code>MultipleChartDirective</code>: Para visualización de múltiples gráficos.
+        Se utiliza con el selector <code>libMultipleChart</code>.
       </li>
       <li>
-        <code>TableDirective</code>: Para visualización de datos en tablas
+        <code>TableDirective</code>: Para visualización de datos en tablas.
+        Se utiliza con el selector <code>libTable</code>.
       </li>
     </ul>
   </section>
 
-  <section class="dataset-section">
-    <h2>Configuración del Dataset</h2>
+  <section class="my-4">
+    <h2>3. Configuración del Dataset</h2>
+    <p>
+      El corazón de la visualización de datos en ngx-data-visualizer es el objeto <code>Dataset</code>.
+      Este objeto encapsula las dimensiones y los datos en bruto que serán procesados y visualizados.
+    </p>
 
-    <h3>Estructura del Dataset</h3>
-    <pre><code>
-interface Dataset {{ '{' }}
-  dimensions: Dimension[];
-  rowData: RowData[];
-  enableRollUp?: boolean;
-  id?: number;
-{{ '}' }}
-
-interface Dimension {{ '{' }}
-  id: number;
-  name: string;
-  nameView: string;
-  type: number;
-  selected: boolean;
-  items: Item[];
-{{ '}' }}
-
-interface Item {{ '{' }}
-  id: number;
-  name: string;
-  selected: boolean;
-  color?: string;
-  order?: number;
-{{ '}' }}
-
-interface RowData {{ '{' }}
-  [key: string]: any;
-  value: number;
-{{ '}' }}
-    </code></pre>
-
-    <h3>Ejemplo de Dataset</h3>
-    <pre><code>
-const dimensions: Dimension[] = [
-  {{ '{' }}
-    id: 1,
-    name: 'region',
-    nameView: 'Región',
-    type: 3,
-    selected: true,
-    items: [
-      {{ '{' }} id: 1, name: 'Norte', selected: true {{ '}' }},
-      {{ '{' }} id: 2, name: 'Sur', selected: true {{ '}' }}
-    ]
-  {{ '}' }},
-  {{ '{' }}
-    id: 2,
-    name: 'year',
-    nameView: 'Año',
-    type: 0,
-    selected: true,
-    items: [
-      {{ '{' }} id: 1, name: '2023', selected: true {{ '}' }}
-    ]
-  {{ '}' }}
-];
-
-const rowData: RowData[] = [
-  {{ '{' }} region: 'Norte', year: 2023, value: 100 {{ '}' }},
-  {{ '{' }} region: 'Sur', year: 2023, value: 150 {{ '}' }}
-];
-
-const dataset = new Dataset({{ '{' }}
-  dimensions,
-  rowData,
-  enableRollUp: true,
-  id: 1
-{{ '}' }});
-    </code></pre>
-  </section>
-
-  <section class="filters-section">
-    <h2>Filtrado y Agrupación</h2>
-
-    <h3>Aplicación de Filtros</h3>
-    <pre><code>
-// Configurar filtros
-const filters: Filters = {{ '{' }}
-  filter: [],
-  rollUp: []
-{{ '}' }};
-
-// Obtener dimensiones para rollUp
-filters.rollUp = dataset.dimensions
-  .filter(dimension => !dimension.selected)
-  .map(dimension => dimension.nameView);
-
-// Configurar filtros por dimensión
-filters.filter = dataset.dimensions.map(dimension => ({{ '{' }}
-  name: dimension.nameView,
-  items: dimension.items
-    .filter(item => item.selected)
-    .map(item => item.name)
-{{ '}' }}));
-
-// Aplicar filtros al dataset
-dataset.applyFilters(filters);
-    </code></pre>
-
-    <h3>Limpiar Filtros</h3>
-    <pre><code>
-// Resetear selección de dimensiones e items
-dataset.dimensions.forEach((dimension: Dimension) => {{ '{' }}
-  dimension.selected = true;
-  dimension.items.forEach((item: Item) => (item.selected = true));
-{{ '}' }});
-
-// Aplicar filtros vacíos
-dataset.applyFilters(new Filters());
-    </code></pre>
-  </section>
-
-  <section class="example-section">
-    <h2>Ejemplo Completo</h2>
-
-    <div class="controls">
-      <button (click)="applyFilters()">Aplicar Filtros</button>
-      <button (click)="resetFilters()">Resetear Filtros</button>
-      <button (click)="exportChart()">Descargar Gráfico</button>
-      <button (click)="exportTable()">Descargar Tabla</button>
+    <h3>3.1. Estructura del Dataset</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript (Interfaces)</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="datasetStructureCode"></code></pre>
+      </div>
     </div>
 
-    <div class="visualization">
-      <h3>Dataset Original</h3>
-      <pre>{{ exampleDataset.rowData | json}}</pre>
-
-      <h3>Dataset Filtrado</h3>
-      <pre>{{ filteredDataset?.rowData | json }}</pre>
-
-      <h3>Visualización de Datos</h3>
-
-      <div class="chart-example">
-        <h4>Gráfico de Barras</h4>
-        <!-- <libChart
-          #chartOne="libChart"
-          [dataset]="exampleDataset"
-          [options]="chartOptions"
-          (seriesChange)="onSeriesChange($event)"
-        ></libChart> -->
+    <h3>3.2. Ejemplo de Inicialización del Dataset</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="datasetInitializationCode"></code></pre>
       </div>
+    </div>
+  </section>
 
-      <div class="table-example">
-        <h4>Tabla Pivot</h4>
-        <libTable
-          #tableOne="libTable"
-          [dataset]="exampleDataset"
-          [options]="tableOptions"
-        ></libTable>
+  <section class="my-4">
+    <h2>4. Filtrado y Agrupación</h2>
+    <p>
+      La librería permite aplicar filtros y realizar agrupaciones (rollUp) sobre el <code>Dataset</code>.
+    </p>
+
+    <h3>4.1. Aplicación de Filtros</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="applyFiltersCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>4.2. Limpiar Filtros</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="clearFiltersCode"></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="my-4">
+    <h2>5. Uso de la Directiva Chart</h2>
+    <p>
+      La directiva <code>libChart</code> se utiliza para incrustar y configurar gráficos.
+      Requiere un objeto <code>Dataset</code> y un objeto <code>ChartConfigurationOptions</code> como entradas.
+    </p>
+
+    <h3>5.1. Configuración de Opciones del Gráfico (ChartConfigurationOptions)</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="chartOptionsCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>5.2. Uso en el Template HTML</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">HTML</div>
+      <div class="card-body">
+        <pre><code class="language-html" [textContent]="chartHtmlCode"></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="my-4">
+    <h2>6. Uso de la Directiva Table</h2>
+    <p>
+      La directiva <code>libTable</code> se utiliza para mostrar datos en formato tabular con capacidades de pivotado.
+      Requiere un objeto <code>Dataset</code> y un objeto <code>PivotConfiguration</code> como entradas.
+    </p>
+
+    <h3>6.1. Configuración de Opciones de la Tabla (PivotConfiguration)</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">TypeScript</div>
+      <div class="card-body">
+        <pre><code class="language-typescript" [textContent]="pivotConfigCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>6.2. Uso en el Template HTML</h3>
+    <div class="card bg-light mb-3">
+      <div class="card-header">HTML</div>
+      <div class="card-body">
+        <pre><code class="language-html" [textContent]="tableHtmlCode"></code></pre>
       </div>
     </div>
   </section>

@@ -26,16 +26,41 @@
     }
   }
 
+  .card {
+    background: #282c34; /* Fondo oscuro para simular IDE */
+    border: 1px solid #3b4048;
+    border-radius: 8px;
+    overflow: hidden; /* Para que el border-radius se aplique bien al contenido */
+
+    .card-header {
+      background: #21252b; /* Color de la pestaña del IDE */
+      color: #abb2bf;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #3b4048;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 0.9rem;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .card-body {
+      padding: 0; /* Eliminar padding para que el pre ocupe todo el espacio */
+    }
+  }
+
   pre {
-    background: #2d2d2d;
-    color: #fff;
+    background: #282c34; /* Fondo oscuro para el código */
+    color: #abb2bf; /* Color del texto del código */
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: 0 0 8px 8px; /* Bordes redondeados solo abajo */
     overflow-x: auto;
-    margin: 1rem 0;
+    margin: 0; /* Eliminar margen para que se ajuste al card-body */
+    font-size: 0.875rem;
+    line-height: 1.5;
 
     code {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+      /* Añadir estilos para resaltado de sintaxis si se usa una librería */
     }
   }
 
@@ -68,10 +93,9 @@
   }
 
   code {
-    // background: #f1f1f1;
     padding: 0.2rem 0.4rem;
     border-radius: 3px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
   }
 
   ul {

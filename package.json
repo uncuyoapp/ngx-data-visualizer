@@ -1,6 +1,14 @@
 {
-  "name": "app-uncuyo",
-  "version": "0.0.0",
+  "name": "ngx-data-visualizer-workspace",
+  "version": "0.1.0-alpha.1",
+  "description": "Este es un espacio de trabajo de Angular que contiene una librería de visualización de datos (ngx-data-visualizer) y una aplicación de demostración de uso de la librería (demo).",
+  "author": "Área de Políticas Públicas de la Universidad Nacional de Cuyo <politicaspublicasuncuyo@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uncuyoapp/ngx-data-visualizer"
+  },
+  "homepage": "https://uncuyoapp.github.io/ngx-data-visualizer/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,7 +16,6 @@
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.13",
     "@angular/build": "^18.2.19",
@@ -27,7 +34,7 @@
     "esbuild": "^0.25.4",
     "file-saver": "^2.0.5",
     "jquery": "^3.7.1",
-    "lodash": "^4.17.21",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
     "ngx-echarts": "^17.2.0",
     "pivottable": "^2.23.0",
@@ -47,12 +54,13 @@
     "@angular/compiler-cli": "^18.2.13",
     "@types/file-saver": "^2.0.7",
     "@types/jquery": "^3.5.29",
-    "@types/lodash": "^4.17.5",
+    "@types/lodash.clonedeep": "^4.5.9",
+    "@types/lodash.uniqby": "^4.7.9",
     "@types/prismjs": "^1.26.5",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
     "eslint": "^8.57.0",
-    "ng-packagr": "^19.2.2",
+    "ng-packagr": "^18.0.0",
     "prismjs": "^1.30.0",
     "typescript": "~5.5.4"
   }

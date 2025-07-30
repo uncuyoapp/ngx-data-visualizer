@@ -7,5 +7,15 @@
   "assets": [
     "./src/lib/styles.scss"
   ],
-  "allowedNonPeerDependencies": ["jquery", "tslib"]
+  "allowedNonPeerDependencies": [
+    "jquery",
+    "tslib",
+    "echarts",
+    "file-saver",
+    "lodash.clonedeep",
+    "lodash.uniqby",
+    "ngx-echarts",
+    "pivottable",
+    "xlsx"
+  ]
 }

@@ -1,19 +1,48 @@
 # Demo de NgxDataVisualizer
 
-Este proyecto demo sirve como ejemplo y banco de pruebas para la librería NgxDataVisualizer. Proporciona ejemplos prácticos de implementación y uso de los diferentes componentes y funcionalidades de la librería.
+Este proyecto demo sirve como ejemplo y banco de pruebas para la librería NgxDataVisualizer. Proporciona ejemplos prácticos de implementación y uso de las diferentes directivas y funcionalidades de la librería.
 
-## Características del Demo
+## ✨ Características principales
 
-- Ejemplos de implementación de gráficos
-- Ejemplos de tablas de datos
-- Casos de uso de múltiples gráficos
-- Demostración de personalización de estilos
-- Ejemplos de integración con diferentes tipos de datos
+- App Angular standalone construida con Angular 18
+- Demostración de todas las directivas de `ngx-data-visualizer`
+- Uso y configuración de la librería
+- Ejemplos de gráficos
+- Ejemplos de tablas
+- Ejemplos de múltiples gráficos
 
-## Estructura del Proyecto
+## ▶️ Requisitos previos
 
+- Node.js >= 18
+- Angular CLI >= 17
+- Navegador moderno compatible con ES2022
+
+## 📦 Instalación
+
+Clonar el repositorio raíz:
+
+```bash
+# Clonar el proyecto completo
+git clone https://github.com/uncuyoapp/ngx-data-visualizer.git
+
+# Instalar dependencias
+npm install
 ```
-src/
+
+## 🚀 Ejecución local
+
+Para levantar el servidor local de desarrollo:
+
+```bash
+ng serve
+```
+
+Abrir el navegador en: [http://localhost:4200](http://localhost:4200)
+
+## 🧩 Estructura del proyecto
+
+```bash
+/projects/demo/src/
 ├── app/
 │   ├── configuration/       # Componente de configuración
 │   ├── dashboard/           # Componente del dashboard principal
@@ -25,70 +54,10 @@ src/
 └── styles/                 # Estilos globales
 ```
 
-## Ejecución del Demo
+## 📄 Licencia
 
-1. Instalar dependencias:
-```bash
-npm install
-```
+Este proyecto está licenciado bajo los términos de la MIT License.
 
-2. Iniciar el servidor de desarrollo:
-```bash
-ng serve demo
-```
+---
 
-3. Abrir el navegador en `http://localhost:4200`
-
-## Ejemplos Incluidos
-
-### Gráficos
-- Gráficos de barras
-- Gráficos de líneas
-- Gráficos circulares
-- Gráficos de dispersión
-
-### Tablas
-- Tablas básicas
-- Tablas con ordenamiento
-- Tablas con filtrado
-- Tablas con paginación
-
-### Dashboards
-- Dashboard con múltiples gráficos
-- Dashboard con layout personalizado
-- Dashboard con dimensiones dinámicas
-
-## Desarrollo
-
-### Agregar un nuevo ejemplo
-
-1. Crear un nuevo componente en el directorio apropiado:
-```bash
-ng generate component chart-examples/nuevo-ejemplo
-```
-
-2. Implementar el ejemplo siguiendo los patrones existentes
-3. Agregar la ruta en el módulo principal
-4. Documentar el ejemplo en este README
-
-### Estructura de un ejemplo
-
-Cada ejemplo debe incluir:
-- Componente principal
-- Template HTML
-- Estilos SCSS
-- Datos de ejemplo
-- Documentación del ejemplo
-
-## Contribución
-
-Los ejemplos en este proyecto demo son una excelente manera de contribuir a la librería. Si deseas agregar un nuevo ejemplo:
-
-1. Asegúrate de que el ejemplo sea claro y bien documentado
-2. Sigue las convenciones de código existentes
-3. Incluye datos de ejemplo realistas
-4. Agrega comentarios explicativos en el código
-
-## Recursos Adicionales
-
-- [Documentación de NgxDataVisualizer](../ngx-data-visualizer/README.md)
+Desarrollado con ❤️ por el [Área de Políticas Públicas]([htts](https://www.uncuyo.edu.ar/politicaspublicas/)) - Universidad Nacional de Cuyo

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-  chartOptions,
+  ChartOptions,
   ChartDirective,
   Dataset,
   Dimension,
@@ -39,11 +39,11 @@ import optionsTable from '../../assets/data/table-options.json';
 })
 export class FullExampleComponent implements OnInit {
   dataset!: Dataset;
-  chartOptions: chartOptions =
-    optionsChart as chartOptions;
-  chartOptions2: chartOptions = {
+  chartOptions: ChartOptions =
+    optionsChart as ChartOptions;
+  chartOptions2: ChartOptions = {
     ...optionsChart,
-  } as chartOptions;
+  } as ChartOptions;
   tableOptions: TableOptions = optionsTable as TableOptions;
   goal: Goal = goal as Goal;
 

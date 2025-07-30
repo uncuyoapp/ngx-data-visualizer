@@ -8,9 +8,9 @@
 
 # Node
 /node_modules
-npm-debug.log
+npm-debug.log*
+npm-*.log
 yarn-error.log
-/projects/ngx-data-visualizer/node_modules
 
 # IDEs and editors
 .idea/
@@ -20,8 +20,6 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
-.vscode
-.angular
 
 # Visual Studio Code
 .vscode/*
@@ -29,16 +27,17 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
+.history/
 
 # Miscellaneous
-/.angular/cache
+/.angular/
 .sass-cache/
 /connect.lock
-/coverage
+/coverage/
 /libpeerconnection.log
 testem.log
-/typings
+/typings/
+*.log
 
 # System files
 .DS_Store

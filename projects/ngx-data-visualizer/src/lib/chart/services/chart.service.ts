@@ -1,5 +1,5 @@
 import { Injectable, Type } from "@angular/core";
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import { DataProvider } from "../../services/data-provider";
 import { DIMENSION_YEAR } from "../../types/constants";
 import { Dataset } from "../../services/dataset";

@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "echarts": "^5.5.0",
+    "echarts": "^6.0.0",
     "file-saver": "^2.0.5",
     "lodash.clonedeep": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
-    "ngx-echarts": "^17.2.0",
+    "ngx-echarts": "^18.0.0",
     "pivottable": "^2.23.0",
     "xlsx": "^0.18.5",
     "jquery": "^3.7.1"

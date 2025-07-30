@@ -1,7 +1,7 @@
 import { ChartError } from './chart-base';
 import {
   ChartConfiguration,
-  ChartConfigurationOptions,
+  ChartOptions,
 } from './chart-configuration';
 import { ChartData } from '../utils/chart-data';
 
@@ -28,7 +28,7 @@ export abstract class Chart {
   public libraryOptions: object;
 
   /** Opciones de configuración del gráfico */
-  public chartOptions: ChartConfigurationOptions;
+  public chartOptions: ChartOptions;
 
   /**
    * Constructor de la clase Chart

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import {
-  PivotConfiguration,
+  TableOptions,
   TableConfiguration,
 } from '../types/table-base';
 import { JQueryService } from '../utils/jquery.service';
@@ -32,7 +32,7 @@ export class TableService {
    */
   public getTableConfiguration(
     configuration: TableConfiguration
-  ): PivotConfiguration {
+  ): TableOptions {
     const cols =
       configuration.options.cols?.filter((col) =>
         configuration.dimensions.find((d) => d.nameView === col)

@@ -1,8 +1,15 @@
-# APP UNCuyo - Data Visualizer
+# 📊 APP UNCuyo — Data Visualizer
 
-Este proyecto consiste en una aplicación Angular que incluye una librería de visualización de datos (`ngx-data-visualizer`) y un proyecto demo que muestra su implementación.
+Este proyecto ha sido desarrollado por el **Área de Políticas Públicas de la Universidad Nacional de Cuyo**. Consiste en una aplicación Angular que incluye:
 
-## Estructura del Proyecto
+- **`ngx-data-visualizer`**: una librería open-source diseñada para facilitar la visualización de datos en proyectos Angular, a través de componentes reutilizables, accesibles y adaptables a distintos contextos.
+- **`demo`**: una aplicación de ejemplo que muestra cómo integrar y utilizar la librería en un proyecto Angular real.
+
+El objetivo principal del proyecto es promover el uso de herramientas tecnológicas abiertas para la exploración, presentación y análisis de datos públicos, en el marco de iniciativas de gobierno abierto y políticas basadas en evidencia.
+
+
+
+## 📁 Estructura del Proyecto
 
 ```
 app-uncuyo/
@@ -12,39 +19,43 @@ app-uncuyo/
 └── package.json               # Configuración del proyecto
 ```
 
-## Componentes Principales
+## 🧩 Componentes Principales
 
-### NgxDataVisualizer
-Una librería Angular que proporciona componentes y directivas para la visualización de datos en forma de gráficos y tablas. Para más detalles, consulta el [README de la librería](projects/ngx-data-visualizer/README.md).
+### 📦 NgxDataVisualizer
 
-### Proyecto Demo
-Un proyecto de demostración que muestra el uso de la librería NgxDataVisualizer. Incluye ejemplos prácticos y casos de uso. Para más información, consulta el [README del demo](projects/demo/README.md).
+Una librería Angular que proporciona componentes y directivas para la visualización de datos mediante gráficos, tablas y otros elementos interactivos.
 
-## Requisitos Previos
+👉 Ver más detalles en el [README de la librería](projects/ngx-data-visualizer/README.md).
 
-- Node.js (versión 14 o superior)
-- npm (versión 6 o superior)
-- Angular CLI (versión 17 o superior)
+### 🧪 Proyecto Demo
 
-## Instalación
+Una aplicación de ejemplo que demuestra el uso de los componentes de `NgxDataVisualizer`, incluyendo casos de uso y ejemplos prácticos.
 
-1. Clonar el repositorio:
-```bash
-git clone [URL_DEL_REPOSITORIO]
-cd app-uncuyo
-```
+👉 Ver más información en el [README del demo](projects/demo/README.md).
 
-2. Instalar dependencias:
-```bash
-npm install
-```
+## ⚙️ Requisitos Previos
 
-## Desarrollo
+- Node.js ≥ 14  
+- npm ≥ 6  
+- Angular CLI ≥ 17  
 
-### Ejecutar la aplicación principal
-```bash
-ng serve
-```
+
+
+## 🚀 Instalación
+
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/uncuyoapp/ngx-data-visualizer.git
+   cd app-uncuyo
+   ```
+
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+
+
+## 🛠️ Desarrollo
 
 ### Ejecutar el proyecto demo
 ```bash
@@ -56,35 +67,46 @@ ng serve demo
 ng build ngx-data-visualizer
 ```
 
-## Estructura de Carpetas
 
-### NgxDataVisualizer
-- `projects/ngx-data-visualizer/src/lib`: Código fuente de la librería
-  - `chart/`: Componentes de gráficos
-  - `table/`: Componentes de tablas
-  - `multiple-chart/`: Componentes para múltiples gráficos
-  - `legend/`: Componentes de leyendas
-  - `icons/`: Iconos personalizados
+## 🗂️ Estructura de Carpetas
 
-### Demo
-- `projects/demo/src/app`: Código fuente de la aplicación demo
-  - `dashboard/`: Componentes del dashboard
-  - `chart-examples/`: Ejemplos de gráficos
-  - `table-examples/`: Ejemplos de tablas
-  - `shared/`: Componentes compartidos
+### Librería `ngx-data-visualizer`
 
-## Contribución
+- `projects/ngx-data-visualizer/src/lib/`  
+  - `chart/` — Componentes de gráficos  
+  - `table/` — Componentes de tablas  
+  - `multiple-chart/` — Visualización de múltiples gráficos  
+  - `legend/` — Componentes de leyendas  
+  - `icons/` — Iconos personalizados  
 
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+### Aplicación `demo`
 
-## Licencia
+- `projects/demo/src/app/`  
+  - `configuration/` — Uso y configuración de la librería  
+  - `dashboard/` — Ejemplo de tablero
+  - `full-example/` — Ejemplo completo
+  - `table-demo/` — Ejemplos de uso de tablas    
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
-## Contacto
+## 🤝 Contribuciones
 
-Para más información o soporte, por favor contacta al equipo de desarrollo de la Universidad Nacional de Cuyo.
+¡Las contribuciones son bienvenidas!
+
+1. Haz un fork del repositorio  
+2. Crea una nueva rama (`git checkout -b feature/NuevaFeature`)  
+3. Realiza tus cambios y haz commit (`git commit -m 'Agrega nueva feature'`)  
+4. Push a tu rama (`git push origin feature/NuevaFeature`)  
+5. Abre un Pull Request describiendo tu propuesta  
+
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
+
+
+## 📬 Contacto
+
+Para consultas o soporte, podés comunicarte con el equipo de desarrollo del Área de Políticas Públicas de la Universidad Nacional de Cuyo.
+
+- Coordinación de Proyecto: Gonzalo R. Siman [gonzasiman@gmail.com](mailto:gonzasiman@gmail.com)
+- Área de Políticas Públicas — UNCUYO: [politicaspublicasuncuyo@gmail.com](mailto:politicaspublicasuncuyo@gmail.com)

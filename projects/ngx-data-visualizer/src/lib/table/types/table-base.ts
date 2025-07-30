@@ -10,7 +10,7 @@ import { Dimension } from "../../types/data.types";
  */
 export interface TableConfiguration {
   /** Opciones de configuración del pivot */
-  options: PivotConfiguration;
+  options: TableOptions;
   /** Dimensiones disponibles para la tabla */
   dimensions: Dimension[];
   /** Proveedor de datos para la tabla */
@@ -20,7 +20,7 @@ export interface TableConfiguration {
 /**
  * Interfaz para la configuración del ordenamiento de dimensiones
  */
-export interface PivotSorter {
+export interface TableSorter {
   /** Nombre de la dimensión a ordenar */
   name: string;
   /** Lista de ítems con su orden específico */
@@ -35,11 +35,11 @@ export interface PivotSorter {
 /**
  * Interfaz para la configuración del pivot table
  */
-export interface PivotConfiguration {
+export interface TableOptions {
   /** Número de decimales a mostrar */
   digitsAfterDecimal: number;
   /** Configuración de ordenamiento para cada dimensión */
-  sorters: PivotSorter[];
+  sorters: TableSorter[];
   /** Indica si se debe mostrar la fila de totales */
   totalRow: boolean;
   /** Indica si se debe mostrar la columna de totales */

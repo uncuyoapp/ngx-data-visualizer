@@ -1,55 +1,56 @@
 <div class="container my-5">
-  <div class="p-5 text-center bg-body-tertiary rounded-3">
-    <h1 class="display-5 fw-bold text-body-emphasis">NGX-DATA-VISUALIZER</h1>
-    <p class="col-lg-8 mx-auto fs-5 text-muted mb-3">
-      Este proyecto consiste en una aplicación Angular que incluye una librería de visualización de datos (`ngx-data-visualizer`) y un proyecto demo que muestra su implementación.
+  <div class="p-5 text-center bg-light rounded-4 shadow-sm">
+    <h1 class="display-4 fw-bold text-primary">NGX-DATA-VISUALIZER</h1>
+    <p class="lead text-muted mb-4">
+      Librería open-source desarrollada por el Área de Políticas Públicas de la Universidad Nacional de Cuyo.
     </p>
-    <p class="col-lg-8 mx-auto fs-5 text-muted">
-      Componentes Principales:
+
+    <p class="fs-5 text-muted col-lg-10 mx-auto">
+      Este proyecto consiste en una aplicación Angular que incluye:
     </p>
-    <ul class="col-lg-8 mx-auto fs-5 text-muted text-start mb-3">
-      <li><strong>NgxDataVisualizer:</strong> Una librería Angular que proporciona componentes y directivas para la visualización de datos en forma de gráficos y tablas.</li>
-      <li><strong>Proyecto Demo:</strong> Un proyecto de demostración que muestra el uso de la librería NgxDataVisualizer. Incluye ejemplos prácticos y casos de uso.</li>
-    </ul>
-    <p class="col-lg-8 mx-auto fs-5 text-muted mb-3">
-      Desarrollado por el Área de Políticas Públicas de la Universidad Nacional de Cuyo (APP UNCuyo).
-      Este proyecto está licenciado bajo la Licencia MIT y se espera su uso para facilitar la visualización de datos en aplicaciones Angular.
+
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-5 text-start">
+        <h5 class="text-dark fw-semibold mb-2">📦 NgxDataVisualizer</h5>
+        <p class="text-muted">
+          Librería Angular para la visualización de datos en forma de <strong>gráficos, tablas y componentes interactivos</strong>. Diseñada para ser accesible, modular y reutilizable.
+        </p>
+      </div>
+      <div class="col-md-5 text-start">
+        <h5 class="text-dark fw-semibold mb-2">🧪 Proyecto Demo</h5>
+        <p class="text-muted">
+          Aplicación de ejemplo que muestra el uso de los componentes de la librería con <strong>casos prácticos</strong> y escenarios de visualización reales.
+        </p>
+      </div>
+    </div>
+
+    <p class="fs-5 text-muted col-lg-10 mx-auto">
+      Esta herramienta busca promover el uso de tecnologías abiertas para la exploración y comunicación de datos públicos,
+      fomentando políticas basadas en evidencia y el gobierno abierto.
     </p>
-    <div class="d-inline-flex gap-2 my-5">
-      <a
-        [routerLink]="'configuration'"
-        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
-        type="button"
-      >
+
+    <div class="d-flex flex-wrap justify-content-center gap-3 my-5">
+      <a [routerLink]="'configuration'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
         Configuración
       </a>
-      <a
-        [routerLink]="'full-example'"
-        class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill"
-        type="button"
-      >
+      <a [routerLink]="'full-example'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
         Ejemplo completo
       </a>
-      <a
-        [routerLink]="'dashboard'"
-        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
-        type="button"
-      >
-        Ejemplo Escenario
+      <a [routerLink]="'dashboard'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+        Escenario de uso
       </a>
-      <a
-        [routerLink]="'table-demo'"
-        class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
-        type="button"
-      >
+      <a [routerLink]="'table-demo'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
         Ejemplos de tablas
       </a>
     </div>
-    <img
-      class="d-block mx-auto my-4"
-      src="assets/logo-app.svg"
-      alt=""
-      height="57"
-    />
+
+    <div class="my-4">
+      <img src="assets/logo-app.svg" alt="Logo APP UNCuyo" height="57" class="d-block mx-auto" />
+    </div>
+
+    <p class="text-muted small mt-4">
+      Proyecto desarrollado por el <a href="https://www.uncuyo.edu.ar/politicaspublicas/" target="_blank">Área de Políticas Públicas</a> de la Universidad Nacional de Cuyo. <br />
+      Licenciado bajo la <a href="https://opensource.org/licenses/MIT" target="_blank">Licencia MIT</a>.
+    </p>
   </div>
 </div>

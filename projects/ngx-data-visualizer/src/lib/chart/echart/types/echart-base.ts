@@ -2,7 +2,7 @@
  * Tipos base para ECharts
  */
 import { ECharts, EChartsOption } from 'echarts';
-import { ChartConfiguration, ChartConfigurationOptions } from '../../types/chart-configuration';
+import { ChartConfiguration, ChartOptions } from '../../types/chart-configuration';
 
 /**
  * Interfaz para los datos de una serie
@@ -105,5 +105,5 @@ export interface EChartConfiguration extends ChartConfiguration {
     seriesConfig: Record<string, string | number | boolean>;
   };
   /** Opciones de configuración */
-  options: ChartConfigurationOptions;
+  options: ChartOptions;
 } 

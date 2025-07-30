@@ -19,9 +19,9 @@ dataset1 = new Dataset({{ '{' }}
   <section class="demo-section">
     <h2>1. Configuración Básica</h2>
     <p>Una columna y múltiples filas con totales habilitados.</p>
-    <div class="code-example">
+    <div class="code-example" data-table-config="basicConfig">
       <pre><code>// TypeScript
-basicConfig: PivotConfiguration = {{ '{' }}
+basicConfig: TableOptions = {{ '{' }}
   cols: ['Año'],
   rows: ['Condición', 'Sector de gestión', 'Sexo'],
   digitsAfterDecimal: 0,
@@ -30,10 +30,10 @@ basicConfig: PivotConfiguration = {{ '{' }}
   totalCol: true
 {{ '}' }};</code></pre>
       <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [options]="basicConfig"&gt;&lt;/libTable&gt;</code></pre>
+&lt;libTable [dataset]="dataset1" [tableOptions]="basicConfig"&gt;&lt;/libTable&gt;</code></pre>
     </div>
     <div class="table-container" style="height: 500px;">
-      <libTable [dataset]="dataset1" [options]="basicConfig"></libTable>
+      <libTable [dataset]="dataset1" [tableOptions]="basicConfig"></libTable>
     </div>
   </section>
 
@@ -42,7 +42,7 @@ basicConfig: PivotConfiguration = {{ '{' }}
     <p>Configuración con múltiples columnas y una fila.</p>
     <div class="code-example">
       <pre><code>// TypeScript
-multiColConfig: PivotConfiguration = {{ '{' }}
+multiColConfig: TableOptions = {{ '{' }}
   cols: ['Año', 'Sexo'],
   rows: ['Condición'],
   digitsAfterDecimal: 0,
@@ -51,10 +51,10 @@ multiColConfig: PivotConfiguration = {{ '{' }}
   totalCol: true
 {{ '}' }};</code></pre>
       <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [options]="multiColConfig"&gt;&lt;/libTable&gt;</code></pre>
+&lt;libTable [dataset]="dataset1" [tableOptions]="multiColConfig"&gt;&lt;/libTable&gt;</code></pre>
     </div>
     <div class="table-container">
-      <libTable [dataset]="dataset1" [options]="multiColConfig"></libTable>
+      <libTable [dataset]="dataset1" [tableOptions]="multiColConfig"></libTable>
     </div>
   </section>
 
@@ -63,7 +63,7 @@ multiColConfig: PivotConfiguration = {{ '{' }}
     <p>Tabla con ordenamiento personalizado de años.</p>
     <div class="code-example">
       <pre><code>// TypeScript
-sortedConfig: PivotConfiguration = {{ '{' }}
+sortedConfig: TableOptions = {{ '{' }}
   cols: ['Año'],
   rows: ['Condición', 'Sector de gestión'],
   digitsAfterDecimal: 0,
@@ -87,10 +87,10 @@ sortedConfig: PivotConfiguration = {{ '{' }}
   totalCol: true
 {{ '}' }};</code></pre>
       <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [options]="sortedConfig"&gt;&lt;/libTable&gt;</code></pre>
+&lt;libTable [dataset]="dataset1" [tableOptions]="sortedConfig"&gt;&lt;/libTable&gt;</code></pre>
     </div>
     <div class="table-container">
-      <libTable [dataset]="dataset1" [options]="sortedConfig"></libTable>
+      <libTable [dataset]="dataset1" [tableOptions]="sortedConfig"></libTable>
     </div>
   </section>
 
@@ -99,7 +99,7 @@ sortedConfig: PivotConfiguration = {{ '{' }}
     <p>Tabla con valores que incluyen un sufijo porcentual.</p>
     <div class="code-example">
       <pre><code>// TypeScript
-suffixConfig: PivotConfiguration = {{ '{' }}
+suffixConfig: TableOptions = {{ '{' }}
   cols: ['Año'],
   rows: ['Condición', 'Sector de gestión', 'Sexo'],
   digitsAfterDecimal: 0,
@@ -109,10 +109,10 @@ suffixConfig: PivotConfiguration = {{ '{' }}
   suffix: '%'
 {{ '}' }};</code></pre>
       <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [options]="suffixConfig"&gt;&lt;/libTable&gt;</code></pre>
+&lt;libTable [dataset]="dataset1" [tableOptions]="suffixConfig"&gt;&lt;/libTable&gt;</code></pre>
     </div>
     <div class="table-container">
-      <libTable [dataset]="dataset1" [options]="suffixConfig"></libTable>
+      <libTable [dataset]="dataset1" [tableOptions]="suffixConfig"></libTable>
     </div>
   </section>
 
@@ -130,7 +130,7 @@ dataset2 = new Dataset({{ '{' }}
 {{ '}' }});
 
 // Configuración para el dataset alternativo
-dataset2Config: PivotConfiguration = {{ '{' }}
+dataset2Config: TableOptions = {{ '{' }}
   cols: ['Departamentos'],
   rows: ['Año'],
   digitsAfterDecimal: 0,
@@ -147,10 +147,10 @@ dataset2Config: PivotConfiguration = {{ '{' }}
   totalCol: true
 {{ '}' }};</code></pre>
       <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset2" [options]="dataset2Config"&gt;&lt;/libTable&gt;</code></pre>
+&lt;libTable [dataset]="dataset2" [tableOptions]="dataset2Config"&gt;&lt;/libTable&gt;</code></pre>
     </div>
     <div class="table-container">
-      <libTable [dataset]="dataset2" [options]="dataset2Config"></libTable>
+      <libTable [dataset]="dataset2" [tableOptions]="dataset2Config"></libTable>
     </div>
   </section>
 
@@ -189,7 +189,7 @@ setBootstrapTheme(): void {{ '{' }}
 &lt;/div&gt;
 
 &lt;div class="table-container"&gt;
-  &lt;libTable [dataset]="dataset1" [options]="basicConfig"&gt;&lt;/libTable&gt;
+  &lt;libTable [dataset]="dataset1" [tableOptions]="basicConfig"&gt;&lt;/libTable&gt;
 &lt;/div&gt;</code></pre>
     </div>
     <div class="theme-buttons">
@@ -200,7 +200,7 @@ setBootstrapTheme(): void {{ '{' }}
     </div>
     <div class="table-container">
       esta es
-      <libTable [dataset]="dataset1" [options]="basicConfig" #tableTheme></libTable>
+      <libTable [dataset]="dataset1" [tableOptions]="basicConfig" #tableTheme></libTable>
     </div>
   </section>
 
@@ -219,12 +219,12 @@ setBootstrapTheme(): void {{ '{' }}
     <div class="tables-row">
       <div class="table-container">
         <h3>Tabla 1</h3>
-        <libTable [dataset]="dataset1" [options]="basicConfig" #table1></libTable>
+        <libTable [dataset]="dataset1" [tableOptions]="basicConfig" #table1></libTable>
       </div>
       
       <div class="table-container">
         <h3>Tabla 2</h3>
-        <libTable [dataset]="dataset2" [options]="dataset2Config" #table2></libTable>
+        <libTable [dataset]="dataset2" [tableOptions]="dataset2Config" #table2></libTable>
       </div>
     </div>
   </section>

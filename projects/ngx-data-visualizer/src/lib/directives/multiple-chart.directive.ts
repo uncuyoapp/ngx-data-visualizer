@@ -9,7 +9,7 @@ import {
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import {
   ChartConfiguration,
-  ChartConfigurationOptions,
+  ChartOptions,
 } from '../../public-api';
 import { ChartService } from '../chart/services/chart.service';
 import { Dataset } from '../services/dataset';
@@ -31,7 +31,7 @@ export class MultipleChartDirective implements OnDestroy {
   dataset = input.required<Dataset>();
 
   /** Opciones de configuración para los gráficos */
-  options = input.required<ChartConfigurationOptions>();
+  chartOptions = input.required<ChartOptions>({ alias: 'options' });
 
   /** Dimensión que se utilizará para dividir los datos en múltiples gráficos */
   splitDimension = input.required<Dimension>();
@@ -96,7 +96,7 @@ export class MultipleChartDirective implements OnDestroy {
       }
 
       const dataset = this.dataset();
-      const options = this.options();
+      const options = this.chartOptions();
       const splitDimension = this.splitDimension();
 
       if (!dataset || !options || !splitDimension) {

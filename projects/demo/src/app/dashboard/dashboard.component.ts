@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { cloneDeep } from 'lodash';
-import { ChartConfigurationOptions, ChartDirective, Dataset, Dimension, PivotConfiguration, RowData, TableDirective } from 'ngx-data-visualizer';
+import { chartOptions, ChartDirective, Dataset, Dimension, TableOptions, RowData, TableDirective } from 'ngx-data-visualizer';
 import optionsChart from '../../assets/data/chart-options-dash.json';
 import dimensionsData from '../../assets/data/dash-dimensions.json';
 import data from '../../assets/data/example-data-2.json';
@@ -26,11 +26,11 @@ export class DashboardComponent implements OnInit {
   datasetTwo!: Dataset
   datasetThree!: Dataset
   datasetFour!: Dataset
-  chartOptionsOne: ChartConfigurationOptions = JSON.parse(JSON.stringify(optionsChart)) as ChartConfigurationOptions;
-  chartOptionsTwo: ChartConfigurationOptions = JSON.parse(JSON.stringify(optionsChart)) as ChartConfigurationOptions;
-  chartOptionsThree: ChartConfigurationOptions = JSON.parse(JSON.stringify(optionsChart)) as ChartConfigurationOptions;
-  chartOptionsFour: ChartConfigurationOptions = JSON.parse(JSON.stringify(optionsChart)) as ChartConfigurationOptions;
-  tableOptions: PivotConfiguration = { ...optionsTable } as PivotConfiguration;
+  chartOptionsOne: chartOptions = JSON.parse(JSON.stringify(optionsChart)) as chartOptions;
+  chartOptionsTwo: chartOptions = JSON.parse(JSON.stringify(optionsChart)) as chartOptions;
+  chartOptionsThree: chartOptions = JSON.parse(JSON.stringify(optionsChart)) as chartOptions;
+  chartOptionsFour: chartOptions = JSON.parse(JSON.stringify(optionsChart)) as chartOptions;
+  tableOptions: TableOptions = { ...optionsTable } as TableOptions;
 
 
   dimensions: Dimension[] = dimensionsData as Dimension[];

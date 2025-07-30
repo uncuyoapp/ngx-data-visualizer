@@ -12,7 +12,7 @@ import { ChartComponent } from '../chart/chart.component';
 import { ChartService } from '../chart/services/chart.service';
 import {
   ChartConfiguration,
-  ChartConfigurationOptions,
+  ChartOptions,
 } from '../chart/types/chart-configuration';
 import { Goal, Series } from '../chart/types/chart-models';
 import { Dataset } from '../services/dataset';
@@ -32,7 +32,7 @@ export class ChartDirective implements OnDestroy {
   dataset = input.required<Dataset>();
 
   /** Opciones de configuración del gráfico */
-  options = input.required<ChartConfigurationOptions>();
+  chartOptions = input.required<ChartOptions>();
 
   /** Evento que se emite cuando cambian las series del gráfico */
   seriesChange = output<Series[]>();
@@ -81,7 +81,7 @@ export class ChartDirective implements OnDestroy {
     this.viewContainerRef.clear();
     this.chartConfiguration = this.chartService.getChartConfiguration(
       this.dataset(),
-      this.options()
+      this.chartOptions()
     );
 
     // Crear el componente

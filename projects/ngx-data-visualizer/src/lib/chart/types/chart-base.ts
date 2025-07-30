@@ -178,7 +178,7 @@ export interface BaseNavigatorConfig {
  * 
  * @example
  * ```typescript
- * const config: BaseChartConfigurationOptions = {
+ * const config: BasechartOptions = {
  *   type: 'column',
  *   title: 'Ventas 2024',
  *   stacked: 'total',
@@ -193,7 +193,7 @@ export interface BaseNavigatorConfig {
  * };
  * ```
  */
-export interface BaseChartConfigurationOptions {
+export interface BaseChartOptions {
   /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
   type: string;
   /** Título del gráfico que se muestra en la parte superior */

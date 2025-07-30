@@ -4,7 +4,7 @@ import { DataProvider } from "../../services/data-provider";
 import { DIMENSION_YEAR } from "../../types/constants";
 import { Dataset } from "../../services/dataset";
 import { Dimension, Filters, DimensionFilter } from "../../types/data.types";
-import { ChartConfiguration, ChartConfigurationOptions, DEFAULT_OPTIONS, SeriesConfig } from "../types/chart-configuration";
+import { ChartConfiguration, ChartOptions, DEFAULT_OPTIONS, SeriesConfig } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
@@ -37,7 +37,7 @@ export class ChartService {
    * @returns Configuración completa del gráfico
    * @throws Error si el dataset no está definido
    */
-  public getChartConfiguration(dataset: Dataset, options: ChartConfigurationOptions): ChartConfiguration {
+  public getChartConfiguration(dataset: Dataset, options: ChartOptions): ChartConfiguration {
     if (!dataset) {
       throw new Error('El parámetro dataset es requerido');
     }
@@ -75,7 +75,7 @@ export class ChartService {
    */
   public getSplitConfiguration(
     dataset: Dataset,
-    options: ChartConfigurationOptions,
+    options: ChartOptions,
     dimension: Dimension
   ): ChartConfiguration[] {
     if (!dataset || !dimension) {
@@ -267,7 +267,7 @@ export class ChartService {
    * @param options - Opciones de configuración del gráfico
    * @returns Opciones específicas para la biblioteca de gráficos
    */
-  private getLibraryOptions(options: ChartConfigurationOptions): EChartsOption {
+  private getLibraryOptions(options: ChartOptions): EChartsOption {
     if (!options) {
       throw new Error('El parámetro options es requerido');
     }

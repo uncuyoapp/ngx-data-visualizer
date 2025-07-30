@@ -168,10 +168,10 @@ try {
 
 ### Directiva Chart (`ChartDirective`)
 
-La directiva `libChart` se utiliza para incrustar y configurar gráficos. Requiere un objeto `Dataset` y un objeto `ChartConfigurationOptions` como entradas.
+La directiva `libChart` se utiliza para incrustar y configurar gráficos. Requiere un objeto `Dataset` y un objeto `ChartOptions` como entradas.
 
 ```typescript
-import { ChartConfigurationOptions, Dataset } from 'ngx-data-visualizer';
+import { ChartOptions, Dataset } from 'ngx-data-visualizer';
 
 // Ejemplo de Dataset (como se muestra en el README actual)
 const dimensions = [
@@ -184,8 +184,8 @@ const rowData = [
 ];
 const myDataset = new Dataset({ dimensions, rowData });
 
-// Opciones de Configuración del Gráfico (ChartConfigurationOptions)
-const chartOptions: ChartConfigurationOptions = {
+// Opciones de Configuración del Gráfico (ChartOptions)
+const chartOptions: ChartOptions = {
   type: 'column', // 'column', 'line', 'pie', etc.
   title: 'Ventas por Categoría',
   stacked: 'total', // o null
@@ -231,7 +231,7 @@ const chartOptions: ChartConfigurationOptions = {
 **Uso en el Template Angular:**
 
 ```html
-<div libChart [dataset]="myDataset" [options]="chartOptions"></div>
+<div libChart [dataset]="myDataset" [chartOptions]="chartOptions"></div>
 ```
 
 ### Directiva Table (`TableDirective`)

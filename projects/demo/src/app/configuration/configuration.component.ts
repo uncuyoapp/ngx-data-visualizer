@@ -1,7 +1,8 @@
-import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewInit, Component } from '@angular/core';
 
-declare var Prism: any; // Declara Prism para que TypeScript lo reconozca
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
 
 @Component({
   selector: 'app-configuration',
@@ -13,26 +14,196 @@ declare var Prism: any; // Declara Prism para que TypeScript lo reconozca
 export class ConfigurationComponent implements AfterViewInit {
 
   ngAfterViewInit() {
-    // Llama a Prism.highlightAll() después de que la vista se haya inicializado
-    // para que Prism.js pueda encontrar y procesar los bloques de código.
+    // Usamos Prism para formatear las secciones de código para que se vean bonitas.
     Prism.highlightAll();
   }
 
-  importCode = 'import { Component, OnInit } from \'@angular/core\';\nimport { CommonModule } from \'@angular/common\';\nimport { FormsModule, ReactiveFormsModule } from \'@angular/forms\';\n\n// Importaciones de ngx-data-visualizer\nimport {\n  ChartDirective,\n  TableDirective,\n  MultipleChartDirective,\n  Dataset,\n  Dimension,\n  Item,\n  RowData,\n  ChartConfigurationOptions,\n  PivotConfiguration,\n  Filters,\n  Goal,\n  Series,\n  ThemeService\n} from \'ngx-data-visualizer\';\n\n@Component({selector: \'app-example\',\n  standalone: true,\n  imports: [\n    CommonModule,\n    ReactiveFormsModule,\n    FormsModule,\n    ChartDirective,\n    TableDirective,\n    MultipleChartDirective\n  ],\n  templateUrl: \'./example.component.html\',\n  styleUrl: \'./example.component.scss\'\n})\nexport class ExampleComponent implements OnInit {\n  // ... tu implementación\n}';
+  importCode = `import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-  datasetStructureCode = 'interface Dataset {\n  dimensions: Dimension[];\n  rowData: RowData[];\n  enableRollUp?: boolean;\n  id?: number;\n}\n\ninterface Dimension {\n  id: number;\n  name: string;\n  nameView: string;\n  type: number;\n  selected: boolean;\n  items: Item[];\n}\n\ninterface Item {\n  id: number;\n  name: string;\n  selected: boolean;\n  color?: string;\n  order?: number;\n}\n\ninterface RowData {\n  [key: string]: any;\n  value: number;\n}';
+// Importaciones de ngx-data-visualizer
+import {
+  ChartDirective,
+  TableDirective,
+  MultipleChartDirective,
+  Dataset,
+  Dimension,
+  Item,
+  RowData,
+  ChartOptions,
+  TableOptions,
+  Filters,
+  Goal,
+  Series,
+  ThemeService
+} from 'ngx-data-visualizer';
 
-  datasetInitializationCode = 'const dimensions: Dimension[] = [\n  {\n    id: 1,\n    name: \'region\',\n    nameView: \'Región\',\n    type: 3,\n    selected: true,\n    items: [\n      { id: 1, name: \'Norte\', selected: true },\n      { id: 2, name: \'Sur\', selected: true }\n    ]\n  },\n  {\n    id: 2,\n    name: \'year\',\n    nameView: \'Año\',\n    type: 0,\n    selected: true,\n    items: [\n      { id: 1, name: \'2023\', selected: true }\n    ]\n  }\n];\n\nconst rowData: RowData[] = [\n  { region: \'Norte\', year: 2023, valor: 100 },\n  { region: \'Sur\', year: 2023, valor: 150 },\n  { region: \'Norte\', year: 2024, valor: 100 },\n  { region: \'Sur\', year: 2024, valor: 150 }\n];\n\nconst dataset = new Dataset({\n  dimensions,\n  rowData,\n  enableRollUp: true,\n  id: 1\n});';
+@Component({selector: 'app-example',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    ChartDirective,
+    TableDirective,
+    MultipleChartDirective
+  ],
+  templateUrl: './example.component.html',
+  styleUrl: './example.component.scss'
+})
+export class ExampleComponent implements OnInit {
+  // ... tu implementación
+}`;
 
-  applyFiltersCode = '// Configurar filtros\nconst filters: Filters = {\n  filter: [],\n  rollUp: []\n};\n\n// Obtener dimensiones para rollUp (ejemplo: agrupar por dimensiones no seleccionadas)\nfilters.rollUp = dataset.dimensions\n  .filter(dimension => !dimension.selected)\n  .map(dimension => dimension.nameView);\n\n// Configurar filtros por dimensión (ejemplo: filtrar por items seleccionados)\nfilters.filter = dataset.dimensions.map(dimension => ({\n  name: dimension.nameView,\n  items: dimension.items\n    .filter(item => item.selected)\n    .map(item => item.name)\n}));\n\n// Aplicar filtros al dataset\ndataset.applyFilters(filters);';
+  datasetStructureCode = `interface Dataset {
+  dimensions: Dimension[];
+  rowData: RowData[];
+  enableRollUp?: boolean;
+  id?: number;
+}
 
-  clearFiltersCode = '// Resetear selección de dimensiones e items a su estado original\ndataset.dimensions.forEach((dimension: Dimension) => {\n  dimension.selected = true; // O el estado por defecto que desees\n  dimension.items.forEach((item: Item) => (item.selected = true));\n});\n\n// Aplicar filtros vacíos para resetear el dataset\ndataset.applyFilters(new Filters());';
+interface Dimension {
+  id: number;
+  name: string;
+  nameView: string;
+  selected: boolean;
+  items: Item[];
+}
 
-  chartOptionsCode = 'const chartOptions: ChartConfigurationOptions = {\n  type: \'column\', // \'column\', \'line\', \'pie\', etc.\n  title: \'Ventas por Categoría\',\n  stacked: \'total\', // o null\n  xAxis: {\n    title: \'Año\',\n    rotateLabels: 45,\n    firstLevel: 0,\n    secondLevel: null\n  },\n  yAxis: {\n    title: \'Ventas\',\n    max: null\n  },\n  tooltip: {\n    shared: true,\n    decimals: 2,\n    suffix: \'€\',\n    format: null,\n    showTotal: true\n  },\n  legends: {\n    enabled: true,\n    show: true,\n    position: \'bottom\'\n  },\n  navigator: {\n    show: false,\n    start: null,\n    end: null\n  },\n  colors: [\'#FF5733\', \'#33FF57\'],\n  width: null,\n  height: \'400px\',\n  filterLastYear: false,\n  showYearsLegend: false,\n  toPercent: false,\n  measureUnit: \'€\',\n  isPreview: false,\n  disableAutoUpdate: false\n};';
+interface Item {
+  id: number;
+  name: string;
+  selected: boolean;
+  color?: string;
+  order?: number;
+}
 
-  chartHtmlCode = '<div libChart [dataset]="myDataset" [options]="chartOptions"></div>';
+interface RowData {
+  [key: string]: any;
+  value: number;
+}`;
 
-  pivotConfigCode = 'const pivotConfig: PivotConfiguration = {\n  digitsAfterDecimal: 2,\n  sorters: [],\n  totalRow: true,\n  totalCol: true,\n  cols: [\'region\'],\n  rows: [\'product\'],\n  suffix: \' units\'\n};';
+  datasetInitializationCode = `const dimensions: Dimension[] = [
+  {
+    id: 1,
+    name: 'region',
+    nameView: 'Región',
+    selected: true,
+    items: [
+      { id: 1, name: 'Norte', selected: true },
+      { id: 2, name: 'Sur', selected: true }
+    ]
+  },
+  {
+    id: 2,
+    name: 'year',
+    nameView: 'Año',
+    selected: true,
+    items: [
+      { id: 1, name: '2023', selected: true }
+    ]
+  }
+];
 
-  tableHtmlCode = '<div libTable [dataset]="myTableDataset" [options]="pivotConfig"></div>';
+const rowData: RowData[] = [
+  { region: 'Norte', year: 2023, valor: 100 },
+  { region: 'Sur', year: 2023, valor: 150 },
+  { region: 'Norte', year: 2024, valor: 100 },
+  { region: 'Sur', year: 2024, valor: 150 }
+];
+
+const dataset = new Dataset({
+  dimensions,
+  rowData,
+  enableRollUp: true,
+  id: 1
+});`;
+
+  applyFiltersCode = `// Configurar filtros
+const filters: Filters = {
+  filter: [],
+  rollUp: []
+};
+
+// Obtener dimensiones para rollUp (ejemplo: agrupar por dimensiones no seleccionadas)
+filters.rollUp = dataset.dimensions
+  .filter(dimension => !dimension.selected)
+  .map(dimension => dimension.nameView);
+
+// Configurar filtros por dimensión (ejemplo: filtrar por items seleccionados)
+filters.filter = dataset.dimensions.map(dimension => ({
+  name: dimension.nameView,
+  items: dimension.items
+    .filter(item => item.selected)
+    .map(item => item.name)
+}));
+
+// Aplicar filtros al dataset
+dataset.applyFilters(filters);`;
+
+  clearFiltersCode = `// Resetear selección de dimensiones e items a su estado original
+dataset.dimensions.forEach((dimension: Dimension) => {
+  dimension.selected = true; // O el estado por defecto que desees
+  dimension.items.forEach((item: Item) => (item.selected = true));
+});
+
+// Aplicar filtros vacíos para resetear el dataset
+dataset.applyFilters(new Filters());`;
+
+  chartOptionsCode = `const chartOptions: ChartOptions = {
+  type: 'column', // 'column', 'line', 'pie', etc.
+  title: 'Ventas por Categoría',
+  stacked: 'total', // o null
+  xAxis: {
+    title: 'Año',
+    rotateLabels: 45,
+    firstLevel: 0,
+    secondLevel: null
+  },
+  yAxis: {
+    title: 'Ventas',
+    max: null
+  },
+  tooltip: {
+    shared: true,
+    decimals: 2,
+    suffix: '€',
+    format: null,
+    showTotal: true
+  },
+  legends: {
+    enabled: true,
+    show: true,
+    position: 'bottom'
+  },
+  navigator: {
+    show: false,
+    start: null,
+    end: null
+  },
+  colors: ['#FF5733', '#33FF57'],
+  width: null,
+  height: '400px',
+  filterLastYear: false,
+  showYearsLegend: false,
+  toPercent: false,
+  measureUnit: '€',
+  isPreview: false,
+  disableAutoUpdate: false
+};`;
+
+  chartHtmlCode = `<libChart [dataset]="myDataset" [chartOptions]="chartOptions"></libChart>`;
+
+  tableOptionsCode = `const tableOptions: TableOptions = {
+  digitsAfterDecimal: 2,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+  cols: ['region'],
+  rows: ['product'],
+  suffix: ' units'
+};`;
+
+  tableHtmlCode = `<libTable [dataset]="myTableDataset" [tableOptions]="tableOptions"></libTable>`;
 }

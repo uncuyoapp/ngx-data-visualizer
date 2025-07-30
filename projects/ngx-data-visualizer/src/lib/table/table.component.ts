@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { TableService } from './services/table.service';
-import { PivotConfiguration, TableConfiguration } from './types/table-base';
+import { TableConfiguration, TableOptions } from './types/table-base';
 import { TableHelper } from './utils/table-helper';
 
 /**
@@ -102,7 +102,7 @@ export class TableComponent {
    * @param pivotConfig - Configuración para el pivotado de la tabla.
    * @private
    */
-  private render(pivotConfig: PivotConfiguration): void {
+  private render(pivotConfig: TableOptions): void {
     const tableElement = this.pivotTable.nativeElement;
     const tableData = this.tableConfiguration().data.getData();
 

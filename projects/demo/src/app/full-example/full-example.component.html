@@ -26,12 +26,12 @@
 
 
 <div class="chart my-4 shadow p-4 rounded">
-  <libChart #chartOne="libChart" [dataset]="dataset" [options]="chartOptions" (seriesChange)="onSeriesChange($event)">
+  <libChart #chartOne="libChart" [dataset]="dataset" [chartOptions]="chartOptions" (seriesChange)="onSeriesChange($event)">
   </libChart>
 </div>
 
 <div class="table my-4 shadow p-4 rounded">
-  <libTable #tableOne="libTable" [dataset]="dataset" [options]="tableOptions"></libTable>
+  <libTable #tableOne="libTable" [dataset]="dataset" [tableOptions]="tableOptions"></libTable>
 </div>
 
 <div class="multiChart my-4 shadow p-4 rounded">

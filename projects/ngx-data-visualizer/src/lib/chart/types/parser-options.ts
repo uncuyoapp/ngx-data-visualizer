@@ -1,4 +1,4 @@
-import { ChartConfigurationOptions } from './chart-configuration';
+import { ChartOptions } from './chart-configuration';
 
 /**
  * Interfaz que define las operaciones necesarias para analizar y configurar opciones de gráficos
@@ -9,14 +9,14 @@ export interface ParserOptions {
    * @param config Configuración de opciones del gráfico
    * @returns Objeto con las opciones para la vista previa
    */
-  getPreviewOptions(config: ChartConfigurationOptions): unknown;
+  getPreviewOptions(config: ChartOptions): unknown;
 
   /**
    * Obtiene las opciones completas para el gráfico
    * @param config Configuración de opciones del gráfico
    * @returns Objeto con las opciones completas
    */
-  getFullOptions(config: ChartConfigurationOptions): unknown;
+  getFullOptions(config: ChartOptions): unknown;
 
   /**
    * Aplica configuraciones adicionales al gráfico
@@ -24,5 +24,5 @@ export interface ParserOptions {
    * @param libraryConfig Configuración actual de la biblioteca de gráficos
    * @returns Configuración actualizada de la biblioteca
    */
-  applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: unknown): unknown;
+  applyChartConfigurations(config: ChartOptions, libraryConfig: unknown): unknown;
 } 

@@ -13,7 +13,7 @@ export type EChartsLibraryOptions = EChartsOption;
 /**
  * Interfaz que define las opciones de configuración para un gráfico
  */
-export interface ChartConfigurationOptions {
+export interface ChartOptions {
   /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
   type: string;
   /** Título del gráfico */
@@ -92,7 +92,7 @@ export interface ChartConfigurationOptions {
 /**
  * Opciones por defecto para la configuración del gráfico
  */
-export const DEFAULT_OPTIONS: ChartConfigurationOptions = {
+export const DEFAULT_OPTIONS: ChartOptions = {
   type: 'column',
   title: '',
   stacked: null,
@@ -162,7 +162,7 @@ export interface ChartConfiguration {
   /** Opciones específicas de la librería de gráficos */
   libraryOptions: ChartLibraryOptions;
   /** Opciones de configuración del gráfico */
-  options: ChartConfigurationOptions;
+  options: ChartOptions;
   /** Indica si el gráfico está en modo vista previa */
   preview: boolean;
   /** Configuración de las series del gráfico */

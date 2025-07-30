@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-  ChartConfigurationOptions,
+  chartOptions,
   ChartDirective,
   Dataset,
   Dimension,
@@ -10,7 +10,7 @@ import {
   Goal,
   Item,
   MultipleChartDirective,
-  PivotConfiguration,
+  TableOptions,
   RowData,
   Series,
   TableDirective,
@@ -39,12 +39,12 @@ import optionsTable from '../../assets/data/table-options.json';
 })
 export class FullExampleComponent implements OnInit {
   dataset!: Dataset;
-  chartOptions: ChartConfigurationOptions =
-    optionsChart as ChartConfigurationOptions;
-  chartOptions2: ChartConfigurationOptions = {
+  chartOptions: chartOptions =
+    optionsChart as chartOptions;
+  chartOptions2: chartOptions = {
     ...optionsChart,
-  } as ChartConfigurationOptions;
-  tableOptions: PivotConfiguration = optionsTable as PivotConfiguration;
+  } as chartOptions;
+  tableOptions: TableOptions = optionsTable as TableOptions;
   goal: Goal = goal as Goal;
 
   chartOne!: ChartDirective;

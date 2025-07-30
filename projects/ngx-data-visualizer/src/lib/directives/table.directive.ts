@@ -10,10 +10,7 @@ import { Subscription } from 'rxjs';
 import { Dataset } from '../services/dataset';
 import { ExcelService } from '../table/services/excel.service';
 import { TableComponent } from '../table/table.component';
-import {
-  PivotConfiguration,
-  TableConfiguration,
-} from '../table/types/table-base';
+import { TableConfiguration, TableOptions } from '../table/types/table-base';
 
 /**
  * Directiva que permite incrustar una tabla dinámica en un componente contenedor.
@@ -30,7 +27,7 @@ export class TableDirective implements OnDestroy {
   dataset = input.required<Dataset>();
 
   /** Opciones de configuración de la tabla */
-  options = input.required<PivotConfiguration>();
+  tableOptions = input.required<TableOptions>();
 
   /** Configuración de la tabla */
   tableConfiguration!: TableConfiguration;
@@ -73,7 +70,7 @@ export class TableDirective implements OnDestroy {
     this.tableConfiguration = {
       data: this.dataset().dataProvider,
       dimensions: this.dataset().dimensions,
-      options: this.options(),
+      options: this.tableOptions(),
     };
     // Crear el componente
     this.tableRenderComponentRef =

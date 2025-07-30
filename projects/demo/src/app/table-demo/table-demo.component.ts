@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, AfterViewInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Dataset, Dimension, PivotConfiguration, TableDirective, ThemeService } from 'ngx-data-visualizer';
+import { Dataset, Dimension, TableOptions, TableDirective, ThemeService } from 'ngx-data-visualizer';
 import dashDimensions from '../../assets/data/dash-dimensions.json';
 import exampleData2 from '../../assets/data/data.json';
 import dimensions from '../../assets/data/dimensions.json';
@@ -32,7 +32,7 @@ export class TableDemoComponent implements AfterViewInit {
   });
 
   // Ejemplo 1: Configuración básica con una columna y múltiples filas
-  basicConfig: PivotConfiguration = {
+  basicConfig: TableOptions = {
     cols: ['Año'],
     rows: ['Condición', 'Sector de gestión', 'Sexo'],
     digitsAfterDecimal: 0,
@@ -42,7 +42,7 @@ export class TableDemoComponent implements AfterViewInit {
   };
 
   // Ejemplo 2: Configuración con múltiples columnas y una fila
-  multiColConfig: PivotConfiguration = {
+  multiColConfig: TableOptions = {
     cols: ['Año', 'Sexo'],
     rows: ['Condición'],
     digitsAfterDecimal: 0,
@@ -52,7 +52,7 @@ export class TableDemoComponent implements AfterViewInit {
   };
 
   // Ejemplo 3: Configuración con ordenamiento personalizado
-  sortedConfig: PivotConfiguration = {
+  sortedConfig: TableOptions = {
     cols: ['Año'],
     rows: ['Condición', 'Sector de gestión'],
     digitsAfterDecimal: 0,
@@ -77,7 +77,7 @@ export class TableDemoComponent implements AfterViewInit {
   };
 
   // Ejemplo 4: Configuración con sufijo
-  suffixConfig: PivotConfiguration = {
+  suffixConfig: TableOptions = {
     cols: ['Año'],
     rows: ['Condición', 'Sector de gestión', 'Sexo'],
     digitsAfterDecimal: 0,
@@ -88,7 +88,7 @@ export class TableDemoComponent implements AfterViewInit {
   };
 
   // Ejemplo 5: Configuración para el segundo dataset
-  dataset2Config: PivotConfiguration = {
+  dataset2Config: TableOptions = {
     cols: ['Departamentos'],
     rows: ['Año'],
     digitsAfterDecimal: 0,

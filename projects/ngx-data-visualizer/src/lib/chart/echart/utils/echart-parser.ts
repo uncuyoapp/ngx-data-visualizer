@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from "echarts";
 import { cloneDeep } from 'lodash';
-import { ChartConfigurationOptions } from "../../types/chart-configuration";
+import { chartOptions } from "../../types/chart-configuration";
 import { ParserOptions } from "../../types/parser-options";
 import { EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
 
@@ -17,7 +17,7 @@ export class EChartParser implements ParserOptions {
    * @param config - Configuración de opciones del gráfico
    * @returns Objeto con las opciones para la vista previa
    */
-  getPreviewOptions(config: ChartConfigurationOptions): unknown {
+  getPreviewOptions(config: chartOptions): unknown {
     const options = this.mergeOptions({}, true);
     return this.applyChartConfigurations(config, options);
   }
@@ -27,7 +27,7 @@ export class EChartParser implements ParserOptions {
    * @param config - Configuración de opciones del gráfico
    * @returns Objeto con las opciones completas
    */
-  getFullOptions(config: ChartConfigurationOptions): unknown {
+  getFullOptions(config: chartOptions): unknown {
     const options = this.mergeOptions({}, false);
     return this.applyChartConfigurations(config, options);
   }
@@ -38,7 +38,7 @@ export class EChartParser implements ParserOptions {
    * @param libraryConfig - Configuración actual de la biblioteca de gráficos
    * @returns Configuración actualizada de la biblioteca
    */
-  applyChartConfigurations(config: ChartConfigurationOptions, libraryConfig: unknown): unknown {
+  applyChartConfigurations(config: chartOptions, libraryConfig: unknown): unknown {
     const echartsConfig = libraryConfig as EChartsOption;
     echartsConfig["type"] = config.type;
 

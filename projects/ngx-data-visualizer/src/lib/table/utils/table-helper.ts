@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { RowData } from '../../types/data.types';
-import { PivotConfiguration } from '../types/table-base';
+import { TableOptions } from '../types/table-base';
 import { JQueryService } from './jquery.service';
 
 /**
@@ -53,7 +53,7 @@ export class TableHelper {
   static renderPivot(
     element: HTMLDivElement,
     data: RowData[],
-    config: PivotConfiguration
+    config: TableOptions
   ): void {
     // Asegurarse de que jQuery esté inicializado
     if (!TableHelper.jQueryService) {
@@ -446,7 +446,7 @@ export class TableHelper {
    * @param config Configuración del pivot table
    * @returns Objeto de configuración para el pivot table
    */
-  private static configurePivot(config: PivotConfiguration) {
+  private static configurePivot(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
     const sum = $.pivotUtilities.aggregatorTemplates.sum;
     const numberFormat = $.pivotUtilities.numberFormat;
@@ -463,7 +463,7 @@ export class TableHelper {
    * @param config Configuración del pivot table
    * @returns Objeto con los ordenadores configurados
    */
-  private static configureSorters(config: PivotConfiguration) {
+  private static configureSorters(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
     const sorters: Record<string, (a: string, b: string) => number> = {};
     config.sorters.forEach(
@@ -497,7 +497,7 @@ export class TableHelper {
     aggregator: any,
     numberFormat: any,
     sorters: any,
-    config: PivotConfiguration
+    config: TableOptions
   ) {
     return {
       showDecimals: config.digitsAfterDecimal > 0,

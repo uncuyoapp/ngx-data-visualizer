@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { RowData } from '../../types/data.types';
-import { TableOptions } from '../types/table-base';
-import { JQueryService } from './jquery.service';
+import { RowData } from "../../types/data.types";
+import { TableOptions } from "../types/table-base";
+import { JQueryService } from "./jquery.service";
 
 /**
  * Clase auxiliar para la manipulación y renderizado de tablas pivot
@@ -18,21 +18,24 @@ export class TableHelper {
 
   /** Clases de cabecera relevantes para hover (definidas una sola vez) */
   private static readonly HEADER_CLASSES = [
-    'pvtColLabel',
-    'pvtRowLabel',
-    'pvtColTotalLabel',
-    'pvtRowTotalLabel',
+    "pvtColLabel",
+    "pvtRowLabel",
+    "pvtColTotalLabel",
+    "pvtRowTotalLabel",
   ];
 
   /**
    * Mapeo de clase a función handler (definido una sola vez)
    * Permite extender fácilmente el soporte a nuevas cabeceras.
    */
-  private static readonly hoverHandlers: Record<string, (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void> = {
-    'pvtColLabel': TableHelper.highlightColHeaders,
-    'pvtRowLabel': TableHelper.highlightRowHeaders,
-    'pvtColTotalLabel': TableHelper.highlightColTotals,
-    'pvtRowTotalLabel': TableHelper.highlightRowTotals,
+  private static readonly hoverHandlers: Record<
+    string,
+    (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void
+  > = {
+    pvtColLabel: TableHelper.highlightColHeaders,
+    pvtRowLabel: TableHelper.highlightRowHeaders,
+    pvtColTotalLabel: TableHelper.highlightColTotals,
+    pvtRowTotalLabel: TableHelper.highlightRowTotals,
   };
 
   /**
@@ -53,65 +56,32 @@ export class TableHelper {
   static renderPivot(
     element: HTMLDivElement,
     data: RowData[],
-    config: TableOptions
+    config: TableOptions,
   ): void {
     // Asegurarse de que jQuery esté inicializado
     if (!TableHelper.jQueryService) {
       throw new Error(
-        'TableHelper no ha sido inicializado. Llama a TableHelper.initialize() primero.'
+        "TableHelper no ha sido inicializado. Llama a TableHelper.initialize() primero.",
       );
     }
     const $ = TableHelper.jQueryService.$;
     const pivotConfiguration = TableHelper.configurePivot(config);
-    $(element).pivot(data, pivotConfiguration, 'es');
+    $(element).pivot(data, pivotConfiguration, "es");
 
     // Aplicar eventos solo a los elementos td de esta tabla específica
     $(element)
-      .find('td')
-      .on('mouseenter', function (e: any) {
-        $(e.currentTarget).trigger('click');
+      .find("td")
+      .on("mouseenter", function (e: any) {
+        $(e.currentTarget).trigger("click");
       });
     $(element)
-      .find('td')
-      .on('click', () => { });
-
+      .find("td")
+      .on("click", () => {});
 
     // Agregar el manejo de auto-scroll
     TableHelper.setupAutoScroll(element);
     // Agregar el manejo de hover en cabeceras
     TableHelper.setupHeaderHover(element);
-
-    // setTimeout(() => {
-    //   TableHelper.setupHiddenLayerScroll(element);
-    // }, 100);
-  }
-
-  private static setupHiddenLayerScroll(element: HTMLDivElement): void {
-    const $ = TableHelper.jQueryService.$;
-    // const table = $(element).find('.pvtTable');
-    // const pivots = $(element).find('.pvtCorner');
-    // console.log(pivots);
-
-    $(element).find('th').each((i,th) => {
-      const layerHiddenScroll = document.createElement('div');
-      $(layerHiddenScroll).addClass('layerHiddenScroll');
-      th.append(layerHiddenScroll);
-    })
-
-
-    // console.log(table.height());
-
-
-
-
-    // TableHelper.applyStyles(pvtCornerLayer0,{
-    //   width: pivot1.position().left+'px',
-    //   height: pivot1.position().top+'px',
-    // });
-    // const pvtCornerLayer1 = $('<div class="pvtCornerScroll"></div>');
-
-    // pivot0.append(pvtCornerLayer0);
-    // pivot1.append(pvtCornerLayer1);
   }
 
   /**
@@ -124,12 +94,10 @@ export class TableHelper {
     const scrollSpeed = 10; // Velocidad del scroll en píxeles por frame
     let scrollInterval: number | null = null;
 
-    $(element).on('mousemove', (e: any) => {
+    $(element).on("mousemove", (e: any) => {
       const rect = element.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
       const maxX = rect.width;
-      const maxY = rect.height;
 
       // Detener cualquier scroll anterior
       if (scrollInterval) {
@@ -137,48 +105,44 @@ export class TableHelper {
         scrollInterval = null;
       }
 
-      // Determinar la dirección del scroll
+      // Determinar la dirección del scroll horizontal únicamente
       let scrollX = 0;
-      let scrollY = 0;
 
-      // Verificar si el mouse está sobre un elemento th
       const target = e.target as HTMLElement;
-      const isOverTh = target.tagName === 'TH';
-      const isOverThead = target.closest('thead') !== null;
 
-      // Scroll horizontal
-      if (isOverTh || isOverThead) {
-        // Si está sobre un th o thead, activar scroll hacia la izquierda
-        if (mouseX < maxX / 2) {
-          scrollX = -scrollSpeed;
-        }
-      } else if (mouseX > maxX - scrollThreshold) {
-        // Scroll hacia la derecha solo cuando está cerca del borde derecho
+      // Scroll hacia la derecha: cuando el mouse está sobre el borde derecho de la tabla
+      if (mouseX > maxX - scrollThreshold) {
         scrollX = scrollSpeed;
       }
+      // Scroll hacia la izquierda: cuando el mouse está en una zona centrada en el borde derecho de un th.pvtRowLabel con rowspan=1
+      else {
+        const thElement = target.closest("th.pvtRowLabel");
+        if (thElement && thElement.getAttribute("rowspan") === "1") {
+          const thRect = thElement.getBoundingClientRect();
+          const tableRect = element.getBoundingClientRect();
+          const thRightEdge = thRect.right - tableRect.left;
+          const halfThreshold = scrollThreshold / 2;
 
-      // Scroll vertical
-      if (isOverTh || isOverThead) {
-        // Si está sobre un th o thead, activar scroll hacia arriba
-        if (mouseY < maxY / 2) {
-          scrollY = -scrollSpeed;
+          // Activar scroll hacia la izquierda si está en la zona centrada alrededor del borde derecho
+          if (
+            mouseX >= thRightEdge - halfThreshold &&
+            mouseX <= thRightEdge + halfThreshold
+          ) {
+            scrollX = -scrollSpeed;
+          }
         }
-      } else if (mouseY > maxY - scrollThreshold) {
-        // Scroll hacia abajo solo cuando está cerca del borde inferior
-        scrollY = scrollSpeed;
       }
 
-      // Iniciar el scroll si es necesario
-      if (scrollX !== 0 || scrollY !== 0) {
+      // Iniciar el scroll horizontal si es necesario
+      if (scrollX !== 0) {
         scrollInterval = window.setInterval(() => {
           element.scrollLeft += scrollX;
-          element.scrollTop += scrollY;
         }, 16); // Aproximadamente 60fps
       }
     });
 
     // Detener el scroll cuando el mouse sale del elemento
-    $(element).on('mouseleave', () => {
+    $(element).on("mouseleave", () => {
       if (scrollInterval) {
         window.clearInterval(scrollInterval);
         scrollInterval = null;
@@ -193,34 +157,39 @@ export class TableHelper {
   private static setupHeaderHover(element: HTMLDivElement): void {
     const $ = TableHelper.jQueryService.$;
     $(element)
-      .find(TableHelper.HEADER_CLASSES.map(cls => 'th.' + cls).join(', '))
-      .on('mouseenter', function (e: any) {
+      .find(TableHelper.HEADER_CLASSES.map((cls) => "th." + cls).join(", "))
+      .on("mouseenter", function (e: any) {
         const $th = $(e.currentTarget);
         if (!$th || $th.length === 0) {
           // eslint-disable-next-line no-console
-          console.warn('TableHelper: th no encontrado en mouseenter');
+          console.warn("TableHelper: th no encontrado en mouseenter");
           return;
         }
-        const table = $th.closest('table');
+        const table = $th.closest("table");
         if (!table || table.length === 0) {
           // eslint-disable-next-line no-console
-          console.warn('TableHelper: tabla no encontrada en mouseenter');
+          console.warn("TableHelper: tabla no encontrada en mouseenter");
           return;
         }
         TableHelper.clearHoverClasses(table);
-        const thClass = TableHelper.HEADER_CLASSES.find(cls => $th.hasClass(cls));
+        const thClass = TableHelper.HEADER_CLASSES.find((cls) =>
+          $th.hasClass(cls),
+        );
         if (!thClass) {
           // eslint-disable-next-line no-console
-          console.warn('TableHelper: clase de cabecera no mapeada', $th.attr('class'));
+          console.warn(
+            "TableHelper: clase de cabecera no mapeada",
+            $th.attr("class"),
+          );
           return;
         }
         TableHelper.hoverHandlers[thClass]($th, table);
       })
-      .on('mouseleave', function (e: any) {
+      .on("mouseleave", function (e: any) {
         const $th = $(e.currentTarget);
         if (!$th || $th.length === 0) return;
-        $th.removeClass('header-hovered');
-        const table = $th.closest('table');
+        $th.removeClass("header-hovered");
+        const table = $th.closest("table");
         if (!table || table.length === 0) return;
         TableHelper.clearHoverClasses(table);
       });
@@ -239,8 +208,12 @@ export class TableHelper {
    * @param table Tabla jQuery
    */
   private static clearHoverClasses(table: JQuery<HTMLElement>): void {
-    table.find('th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel').removeClass('header-hovered');
-    table.find('td').removeClass('data-hovered');
+    table
+      .find(
+        "th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel",
+      )
+      .removeClass("header-hovered");
+    table.find("td").removeClass("data-hovered");
   }
 
   /**
@@ -249,52 +222,63 @@ export class TableHelper {
    * @param $th Cabecera de columna sobre la que se hace hover
    * @param table Tabla jQuery
    */
-  private static highlightColHeaders($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+  private static highlightColHeaders(
+    $th: JQuery<HTMLElement>,
+    table: JQuery<HTMLElement>,
+  ): void {
     // Obtener el tr padre
     const $tr = $th.parent();
     // Listar todos los th.pvtColLabel en el tr
-    const $allColLabels = $tr.children('th.pvtColLabel');
+    const $allColLabels = $tr.children("th.pvtColLabel");
     // Sumar los colspan de los hermanos previos para obtener colStart
     let colStart = 0;
     $allColLabels.each(function () {
       if (this === $th[0]) {
         return false;
       }
-      colStart += parseInt($(this).attr('colspan') ?? '1', 10);
+      colStart += parseInt($(this).attr("colspan") ?? "1", 10);
       return undefined;
     });
     // Leer colspan del th actual
-    const colspan = parseInt($th.attr('colspan') ?? '1', 10);
+    const colspan = parseInt($th.attr("colspan") ?? "1", 10);
     // Resaltar todas las columnas correspondientes al colspan
     for (let i = 0; i < colspan; i++) {
       const colIndex = colStart + i;
-      const colClass = 'col' + colIndex;
+      const colClass = "col" + colIndex;
       // Resaltar celdas de datos
-      table.find('td.pvtVal,td.pvtTotal').filter('.' + colClass).addClass('data-hovered');
+      table
+        .find("td.pvtVal,td.pvtTotal")
+        .filter("." + colClass)
+        .addClass("data-hovered");
       // Resaltar celdas de total de columna
-      table.find('td.pvtTotal.colTotal[data-for="col' + colIndex + '"]').addClass('data-hovered');
+      table
+        .find('td.pvtTotal.colTotal[data-for="col' + colIndex + '"]')
+        .addClass("data-hovered");
     }
     // Resaltar subcabeceras th.pvtColLabel en niveles inferiores
-    const $thead = table.find('thead');
-    const $trs = $thead.find('tr');
+    const $thead = table.find("thead");
+    const $trs = $thead.find("tr");
     const currentTrIndex = $tr.index();
     // Para cada tr debajo del actual
     for (let t = currentTrIndex + 1; t < $trs.length; t++) {
       let colCursor = 0;
-      $trs.eq(t).children('th.pvtColLabel').each(function () {
-        const $subTh = $(this);
-        const subColspan = parseInt($subTh.attr('colspan') ?? '1', 10);
-        // Si el rango de este th se solapa con el rango del hover, colorear
-        const subStart = colCursor;
-        const subEnd = colCursor + subColspan - 1;
-        const hoverStart = colStart;
-        const hoverEnd = colStart + colspan - 1;
-        if (subEnd >= hoverStart && subStart <= hoverEnd) {
-          $subTh.addClass('header-hovered');
-        }
-        colCursor += subColspan;
-        return undefined;
-      });
+      $trs
+        .eq(t)
+        .children("th.pvtColLabel")
+        .each(function () {
+          const $subTh = $(this);
+          const subColspan = parseInt($subTh.attr("colspan") ?? "1", 10);
+          // Si el rango de este th se solapa con el rango del hover, colorear
+          const subStart = colCursor;
+          const subEnd = colCursor + subColspan - 1;
+          const hoverStart = colStart;
+          const hoverEnd = colStart + colspan - 1;
+          if (subEnd >= hoverStart && subStart <= hoverEnd) {
+            $subTh.addClass("header-hovered");
+          }
+          colCursor += subColspan;
+          return undefined;
+        });
     }
     // Resaltar cabeceras padre en todas las filas superiores (ancestros)
     let parentTrIndex = currentTrIndex - 1;
@@ -303,13 +287,13 @@ export class TableHelper {
     while (parentTrIndex >= 0) {
       let colCursor = 0;
       const $parentTr = $trs.eq(parentTrIndex);
-      $parentTr.children('th.pvtColLabel').each(function () {
+      $parentTr.children("th.pvtColLabel").each(function () {
         const $parentTh = $(this);
-        const parentColspan = parseInt($parentTh.attr('colspan') ?? '1', 10);
+        const parentColspan = parseInt($parentTh.attr("colspan") ?? "1", 10);
         const parentStart = colCursor;
         const parentEnd = colCursor + parentColspan - 1;
         if (parentEnd >= parentHoverStart && parentStart <= parentHoverEnd) {
-          $parentTh.addClass('header-hovered');
+          $parentTh.addClass("header-hovered");
         }
         colCursor += parentColspan;
         return undefined;
@@ -317,7 +301,7 @@ export class TableHelper {
       parentTrIndex--;
     }
     // Resaltar la cabecera activa
-    $th.addClass('header-hovered');
+    $th.addClass("header-hovered");
   }
 
   /**
@@ -327,33 +311,38 @@ export class TableHelper {
    * @param $th Cabecera de fila sobre la que se hace hover
    * @param table Tabla jQuery
    */
-  private static highlightRowHeaders($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
+  private static highlightRowHeaders(
+    $th: JQuery<HTMLElement>,
+    table: JQuery<HTMLElement>,
+  ): void {
     const thRect = $th[0].getBoundingClientRect();
     const thYStart = thRect.y;
     const thYEnd = thRect.bottom;
-    const $tbody = table.find('tbody');
-    const $trs = $tbody.find('tr');
+    const $tbody = table.find("tbody");
+    const $trs = $tbody.find("tr");
     $trs.each(function () {
       const trRect = this.getBoundingClientRect();
       const trYStart = trRect.y;
       const trYEnd = trRect.bottom;
       // Colorear th.pvtRowLabel de este tr que se solapen con el rango
-      $(this).find('th.pvtRowLabel').each(function () {
-        const subThRect = this.getBoundingClientRect();
-        if (subThRect.bottom > thYStart && subThRect.y < thYEnd) {
-          $(this).addClass('header-hovered');
-        }
-      });
+      $(this)
+        .find("th.pvtRowLabel")
+        .each(function () {
+          const subThRect = this.getBoundingClientRect();
+          if (subThRect.bottom > thYStart && subThRect.y < thYEnd) {
+            $(this).addClass("header-hovered");
+          }
+        });
       // Si el tr está completamente antes del rango, seguir
       if (trYEnd <= thYStart) return undefined;
       // Si el tr está completamente después del rango, cortar el bucle
       if (trYStart >= thYEnd) return false;
       // Si el tr está dentro o solapa el rango de la cabecera, colorear los td
-      $(this).find('td.pvtVal,td.pvtTotal').addClass('data-hovered');
+      $(this).find("td.pvtVal,td.pvtTotal").addClass("data-hovered");
       return undefined;
     });
     // Colorear la cabecera activa
-    $th.addClass('header-hovered');
+    $th.addClass("header-hovered");
   }
 
   /**
@@ -362,9 +351,12 @@ export class TableHelper {
    * @param $th Cabecera de total de columna
    * @param table Tabla jQuery
    */
-  private static highlightColTotals($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
-    table.find('td.colTotal').addClass('data-hovered');
-    $th.addClass('header-hovered');
+  private static highlightColTotals(
+    $th: JQuery<HTMLElement>,
+    table: JQuery<HTMLElement>,
+  ): void {
+    table.find("td.colTotal").addClass("data-hovered");
+    $th.addClass("header-hovered");
   }
 
   /**
@@ -373,9 +365,12 @@ export class TableHelper {
    * @param $th Cabecera de total de fila
    * @param table Tabla jQuery
    */
-  private static highlightRowTotals($th: JQuery<HTMLElement>, table: JQuery<HTMLElement>): void {
-    table.find('td.rowTotal').addClass('data-hovered');
-    $th.addClass('header-hovered');
+  private static highlightRowTotals(
+    $th: JQuery<HTMLElement>,
+    table: JQuery<HTMLElement>,
+  ): void {
+    table.find("td.rowTotal").addClass("data-hovered");
+    $th.addClass("header-hovered");
   }
 
   /**
@@ -401,13 +396,13 @@ export class TableHelper {
           table.tHead.clientHeight,
           offsetLeft,
           table.tBodies[0],
-          'pvtRowLabel'
+          "pvtRowLabel",
         );
         TableHelper.stickyBody(
           table.tHead.clientHeight,
           offsetLeft,
           table.tBodies[0],
-          'pvtTotalLabel'
+          "pvtTotalLabel",
         );
       }
     }
@@ -419,24 +414,26 @@ export class TableHelper {
    */
   private static clearStickyStyles(table: HTMLTableElement): void {
     // Limpiar estilos de todos los elementos th
-    const allThs = table.querySelectorAll('th');
+    const allThs = table.querySelectorAll("th");
     allThs.forEach((th) => {
-      (th as HTMLElement).style.position = '';
-      (th as HTMLElement).style.top = '';
-      (th as HTMLElement).style.left = '';
-      (th as HTMLElement).style.zIndex = '';
+      (th as HTMLElement).style.position = "";
+      (th as HTMLElement).style.top = "";
+      (th as HTMLElement).style.left = "";
+      (th as HTMLElement).style.zIndex = "";
     });
 
     // Limpiar estilos de elementos td con clases específicas
-    const stickyTds = table.querySelectorAll('.pvtRowLabel, .pvtTotalLabel');
+    const stickyTds = table.querySelectorAll(".pvtRowLabel, .pvtTotalLabel");
     stickyTds.forEach((td) => {
-      (td as HTMLElement).style.position = '';
-      (td as HTMLElement).style.left = '';
+      (td as HTMLElement).style.position = "";
+      (td as HTMLElement).style.left = "";
       // Remover spans internos con sticky
-      const stickySpans = td.querySelectorAll('span[style*="position: sticky"]');
+      const stickySpans = td.querySelectorAll(
+        'span[style*="position: sticky"]',
+      );
       stickySpans.forEach((span) => {
-        (span as HTMLElement).style.position = '';
-        (span as HTMLElement).style.top = '';
+        (span as HTMLElement).style.position = "";
+        (span as HTMLElement).style.top = "";
       });
     });
   }
@@ -480,7 +477,7 @@ export class TableHelper {
           enumerable: true,
           configurable: true,
         });
-      }
+      },
     );
     return sorters;
   }
@@ -497,11 +494,11 @@ export class TableHelper {
     aggregator: any,
     numberFormat: any,
     sorters: any,
-    config: TableOptions
+    config: TableOptions,
   ) {
     return {
       showDecimals: config.digitsAfterDecimal > 0,
-      aggregator: aggregator(numberFormat)(['valor']),
+      aggregator: aggregator(numberFormat)(["valor"]),
       cols: config.cols,
       rows: config.rows,
       sorters,
@@ -525,66 +522,70 @@ export class TableHelper {
     const $ = TableHelper.jQueryService.$;
     const currentTarget = $(e.currentTarget);
     const rect = e.currentTarget.getBoundingClientRect();
-    const currentTable = currentTarget.closest('table');
+    const currentTable = currentTarget.closest("table");
 
     // Obtener las coordenadas relativas al elemento
     const x = rect.left;
     const y = rect.top;
 
     // Identificar si el target es un label o una celda de datos
-    const isLabel = currentTarget.is('th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel, th.pvtAxisLabel, th.pvtTotalLabel');
-    const isData = currentTarget.is('td.pvtVal, td.pvtTotal, td.pvtGrandTotal');
+    const isLabel = currentTarget.is(
+      "th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel, th.pvtAxisLabel, th.pvtTotalLabel",
+    );
+    const isData = currentTarget.is("td.pvtVal, td.pvtTotal, td.pvtGrandTotal");
 
     if (isLabel) {
-      currentTarget.addClass('header-hovered');
+      currentTarget.addClass("header-hovered");
     } else if (isData) {
-      currentTarget.addClass('data-hovered');
+      currentTarget.addClass("data-hovered");
     }
 
     Object.values(filter).forEach((item) => {
       const aux = $(currentTable)
-        .find('th:contains(' + (item as string) + ')')
+        .find("th:contains(" + (item as string) + ")")
         .filter((_i: any, th: any) => $(th).text() == item);
       if (aux.length > 1) {
         const parentType = aux[0].parentElement?.parentElement?.tagName;
-        if (parentType === 'THEAD') {
+        if (parentType === "THEAD") {
           aux
             .filter((i: number) => {
               const rect = aux[i].getBoundingClientRect();
               return x >= rect.x && x <= rect.x + rect.width;
             })
-            .addClass('header-hovered');
+            .addClass("header-hovered");
         } else {
           aux
             .filter((i: number) => {
               const rect = aux[i].getBoundingClientRect();
               return y >= rect.y && y <= rect.y + rect.height;
             })
-            .addClass('header-hovered');
+            .addClass("header-hovered");
         }
       } else {
-        aux.addClass('header-hovered');
+        aux.addClass("header-hovered");
       }
     });
 
-    if (currentTarget.hasClass('rowTotal')) {
-      $(currentTable).find('.pvtRowTotalLabel').addClass('header-hovered');
+    if (currentTarget.hasClass("rowTotal")) {
+      $(currentTable).find(".pvtRowTotalLabel").addClass("header-hovered");
     }
-    if (currentTarget.hasClass('colTotal')) {
-      $(currentTable).find('.pvtColTotalLabel').addClass('header-hovered');
+    if (currentTarget.hasClass("colTotal")) {
+      $(currentTable).find(".pvtColTotalLabel").addClass("header-hovered");
     }
-    if (currentTarget.hasClass('pvtGrandTotal')) {
-      $(currentTable).find('.pvtRowTotalLabel').addClass('header-hovered');
-      $(currentTable).find('.pvtColTotalLabel').addClass('header-hovered');
+    if (currentTarget.hasClass("pvtGrandTotal")) {
+      $(currentTable).find(".pvtRowTotalLabel").addClass("header-hovered");
+      $(currentTable).find(".pvtColTotalLabel").addClass("header-hovered");
     }
 
     // Si es una celda de datos, resaltar también con data-hovered
     if (isData) {
-      currentTarget.addClass('data-hovered');
+      currentTarget.addClass("data-hovered");
     }
 
-    currentTarget.on('mouseout', () => {
-      $(currentTable).find('th, td').removeClass('header-hovered data-hovered hovered');
+    currentTarget.on("mouseout", () => {
+      $(currentTable)
+        .find("th, td")
+        .removeClass("header-hovered data-hovered hovered");
     });
   }
 
@@ -595,7 +596,7 @@ export class TableHelper {
    */
   private static applyStyles(
     element: HTMLElement,
-    styles: Record<string, string | number>
+    styles: Record<string, string | number>,
   ): void {
     Object.assign(element.style, styles);
   }
@@ -611,7 +612,7 @@ export class TableHelper {
     div: HTMLDivElement,
     offsetTop: number,
     _offsetLeft: number,
-    tHead: HTMLElement
+    tHead: HTMLElement,
   ) {
     tHead.childNodes.forEach((tr) => {
       tr.childNodes.forEach((th: any) => {
@@ -620,10 +621,10 @@ export class TableHelper {
           tHead.clientWidth > div.clientWidth
             ? th.clientLeft + th.offsetLeft
             : 0;
-        const css = th.getAttribute('class');
+        const css = th.getAttribute("class");
 
         const baseStyles = {
-          position: 'sticky',
+          position: "sticky",
           top: `${top}px`,
           // zIndex: '1',
         };
@@ -634,19 +635,19 @@ export class TableHelper {
             left: `${left}px`,
             // zIndex: '3',
           });
-          th.setAttribute('class', 'pvtCorner');
-        } else if (css === 'pvtColLabel') {
+          th.setAttribute("class", "pvtCorner");
+        } else if (css === "pvtColLabel") {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             // zIndex: 2
           });
-        } else if (css === 'pvtAxisLabel') {
+        } else if (css === "pvtAxisLabel") {
           TableHelper.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
             // zIndex: '3',
           });
-        } else if (css === 'pvtCorner') {
+        } else if (css === "pvtCorner") {
           // Manejar elementos pvtCorner existentes
           TableHelper.applyStyles(th, {
             ...baseStyles,
@@ -671,7 +672,7 @@ export class TableHelper {
     offsetTop: number,
     offsetLeft: number,
     tBody: HTMLElement,
-    className: string
+    className: string,
   ) {
     const trs = tBody.getElementsByClassName(className);
     Array.from(trs).forEach((element) => {
@@ -683,9 +684,9 @@ export class TableHelper {
           offsetTop +
           'px;">' +
           content +
-          '</span>';
+          "</span>";
       }
-      element.setAttribute('style', 'position: sticky; left: ' + left + 'px;');
+      element.setAttribute("style", "position: sticky; left: " + left + "px;");
     });
   }
 

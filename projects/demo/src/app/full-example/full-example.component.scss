@@ -1,3 +1,8 @@
+/* ===========================================
+   ESTILOS GENERALES PARA SECCIONES PRINCIPALES
+   =========================================== */
+
+/* Estilos compartidos para las secciones de acciones y visualizaciones */
 .actions,
 .chart,
 .table,
@@ -10,35 +15,374 @@
     width: 100%;
   }
 }
+
+/* Configuración de altura para gráficos múltiples */
 .multiChart {
   max-height: 100vw;
   height: 82vh;
 }
 
+/* Configuración de altura para la tabla */
 .table {
-  height: 500px;
-  // background-color: beige;
+  height: 82vh;
 }
 
-.dimensions {
+/* Espaciado para etiquetas de formulario */
+label {
+  margin-left: 0.5rem;
+}
+
+/* ===========================================
+   PANEL LATERAL DESLIZANTE (SIDE-MENU)
+   =========================================== */
+
+/* Contenedor principal del panel lateral */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  width: 30vw; /* 30% del viewport width */
+  min-width: 320px; /* Ancho mínimo para pantallas pequeñas */
+  height: 100vh; /* Altura completa de la pantalla */
+  z-index: 99; /* Por encima de otros elementos */
+  overflow-y: auto; /* Scroll vertical cuando sea necesario */
+  overflow-x: hidden; /* Ocultar scroll horizontal */
+  transform: translateX(100%); /* Inicialmente oculto fuera de pantalla */
+  transition: transform 0.3s ease-in-out; /* Animación suave de deslizamiento */
+  border-left: 1px solid #dee2e6; /* Borde sutil en el lado izquierdo */
+
+  /* Estado abierto - panel visible */
+  &.open {
+    transform: translateX(0); /* Panel completamente visible */
+  }
+
+  /* Scrollbar personalizado para el panel principal */
+  &::-webkit-scrollbar {
+    width: 6px; /* Scrollbar delgado */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Fondo del track */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1; /* Color del thumb */
+    border-radius: 3px; /* Bordes redondeados */
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; /* Color más oscuro en hover */
+  }
+}
+
+/* Botón de cerrar panel (X) ubicado en la esquina superior derecha */
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  background: #f0f0f0; /* Fondo gris claro */
+  border-radius: 50%; /* Forma circular */
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  .dimension {
-    width: 100%;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    .items {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100; /* Por encima del contenido del panel */
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #e0e0e0; /* Fondo más oscuro en hover */
+  }
+
+  span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #666; /* Color gris del símbolo X */
+    line-height: 1;
+  }
+}
+
+/* ===========================================
+   BOTÓN FLOTANTE PARA ABRIR EL PANEL
+   =========================================== */
+
+/* Botón circular flotante en la esquina inferior derecha */
+.floating-menu-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: #007bff; /* Color azul Bootstrap */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Forma circular */
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4); /* Sombra con color azul */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000; /* Muy por encima de otros elementos */
+  transition: all 0.3s ease; /* Transición suave para todas las propiedades */
+
+  &:hover {
+    background: #0056b3; /* Azul más oscuro en hover */
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.6); /* Sombra más intensa */
+    transform: scale(1.1); /* Efecto de crecimiento */
+  }
+
+  span {
+    font-size: 24px; /* Tamaño del ícono hamburguesa */
+    font-weight: bold;
+  }
+}
+
+/* ===========================================
+   SECCIÓN DE ACCIONES Y FILTROS
+   =========================================== */
+
+/* Contenedor principal de las acciones del panel */
+.actions {
+  .dimensions {
+    .dimension {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Separador entre dimensiones */
+
       .item {
         margin: 0.3rem 1rem;
+        list-style: ""; /* Sin viñetas en listas */
       }
+    }
+  }
+  /* Lista de acciones para dimensiones y filtros */
+  .actions-list {
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+
+    /* Contenedor de cada dimensión */
+    .action {
+      display: flex;
+      flex-direction: column;
+      margin: 15px 0px;
+      max-width: 100%;
+
+      /* Cabecera de dimensión con checkbox y botón de colapso */
+      .dimension-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; /* Checkbox a la izquierda, botón a la derecha */
+        cursor: pointer;
+
+        .checkboxlabel {
+          flex: 1; /* Ocupa el espacio disponible */
+          display: flex;
+          align-items: center;
+          label {
+            margin-left: 10px;
+            margin-bottom: 0px;
+            font-weight: 500; /* Texto semi-negrita para dimensiones */
+          }
+        }
+
+        /* Botón para expandir/colapsar items de dimensión */
+        .toggle-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 4px;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.05); /* Fondo sutil en hover */
+          }
+
+          span {
+            font-size: 16px;
+            color: #666; /* Color gris para las flechas */
+            font-weight: bold;
+          }
+        }
+      }
+
+      /* Lista anidada de items de cada dimensión */
+      .actions-list {
+        width: 100%;
+        margin-left: 20px; /* Indentación para items anidados */
+        margin-top: 10px;
+        max-height: 200px; /* Altura máxima antes de scroll */
+        overflow-y: auto; /* Scroll cuando hay muchos items */
+        transition: all 0.3s ease; /* Animación suave para colapso */
+
+        /* Estado colapsado - oculta los items */
+        &.collapsed {
+          max-height: 0; /* Altura 0 para ocultar */
+          overflow: hidden; /* Esconder contenido desbordado */
+          margin-top: 0; /* Sin margen superior cuando está colapsado */
+        }
+
+        /* Scrollbar personalizado para listas de items */
+        &::-webkit-scrollbar {
+          width: 4px; /* Scrollbar muy delgado */
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #f8f9fa; /* Fondo del track más claro */
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #dee2e6; /* Color del thumb más sutil */
+          border-radius: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+          background: #adb5bd; /* Color en hover */
+        }
+      }
+    }
+    /* Items individuales dentro de cada dimensión */
+    .action-item {
+      margin: 5px 0px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .checkboxlabel {
+        display: flex;
+        align-items: center;
+        label {
+          margin-left: 10px;
+          margin-bottom: 0px;
+          font-size: 0.9em; /* Texto ligeramente más pequeño para items */
+        }
+      }
+
+      /* Estilo especial para la opción "Todos" (primer elemento) */
+      &:first-of-type {
+        margin-top: 10px;
+        border-bottom: 1px solid #e9ecef; /* Borde sutil */
+
+        .checkboxlabel label {
+          font-weight: 600; /* Texto en negrita */
+          color: #495057; /* Color más oscuro */
+        }
+      }
+    }
+  }
+
+  /* Botón de reset con colores distintivos amarillo/dorado */
+  .reset-btn {
+    margin-top: 15px;
+    background: #fff3cd; /* Fondo amarillo claro */
+    border-color: #ffeaa7; /* Borde amarillo */
+
+    &:hover {
+      background: #ffeaa7; /* Fondo amarillo más intenso en hover */
+      border-color: #fdcb6e; /* Borde dorado en hover */
+    }
+
+    .action-icon {
+      color: #856404; /* Icono en color marrón/dorado */
+    }
+
+    .action-text {
+      color: #856404; /* Texto en color marrón/dorado */
+    }
+  }
+
+  /* ===========================================
+     ESTILOS BASE PARA BOTONES DE ACCIÓN
+     =========================================== */
+
+  /* Estilo base compartido por todos los botones de acción */
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Espacio entre icono y texto */
+    padding: 12px 16px; /* Padding interno generoso */
+    background: #f8f9fa; /* Fondo gris muy claro */
+    border: 1px solid #dee2e6; /* Borde gris claro */
+    border-radius: 8px; /* Bordes redondeados */
+    cursor: pointer;
+    transition: all 0.2s ease; /* Transición suave para efectos */
+    text-align: left;
+
+    &:hover {
+      background: #e9ecef; /* Fondo más oscuro en hover */
+      border-color: #adb5bd; /* Borde más oscuro en hover */
+      transform: translateY(-1px); /* Efecto de elevación */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    }
+
+    .action-icon {
+      font-size: 18px; /* Tamaño de iconos emoji */
+      width: 24px; /* Ancho fijo para alineación */
+      text-align: center; /* Centrar icono */
+    }
+
+    .action-text {
+      font-size: 14px; /* Tamaño de texto */
+      font-weight: 500; /* Peso medio */
+      color: #495057; /* Color de texto Bootstrap */
+    }
+  }
+
+  /* Contenedor para los botones de la sección "Acciones" */
+  .actions-buttons {
+    display: flex;
+    flex-direction: column; /* Botones apilados verticalmente */
+    gap: 12px; /* Espaciado uniforme entre botones */
+  }
+
+  /* ===========================================
+     SECCIÓN DE GRÁFICOS MÚLTIPLES
+     =========================================== */
+
+  /* Configuración de gráficos múltiples */
+  .multiple-charts-config {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+  }
+
+  /* ===========================================
+     ESTADOS ACTIVOS PARA BOTONES TOGGLE
+     =========================================== */
+
+  /* Estado activo para botones de toggle */
+  .action-btn.active {
+    background: #d4edda; /* Fondo verde claro */
+    border-color: #c3e6cb; /* Borde verde claro */
+    color: #155724; /* Texto verde oscuro */
+
+    &:hover {
+      background: #c3e6cb; /* Verde ligeramente más oscuro en hover */
+      border-color: #b8dabc;
+    }
+
+    .action-icon {
+      color: #155724; /* Icono verde oscuro */
+    }
+
+    .action-text {
+      color: #155724; /* Texto verde oscuro */
+      font-weight: 600; /* Texto más bold cuando está activo */
     }
   }
 }
 
-label {
-  margin-left: 0.5rem;
-}
+/* ===========================================
+   FIN DE ESTILOS DEL COMPONENTE
+   =========================================== */

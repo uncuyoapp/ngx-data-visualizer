@@ -1,21 +1,39 @@
 <main>
-  <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <span class="fs-4">ngx-data-visualizer</span>
-      </a>
+  <nav class="navbar navbar-expand-lg border-bottom mb-4">
+    <div class="container">
+      <a class="navbar-brand fs-4" routerLink="/">ngx-data-visualizer</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
+        aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="configuration" routerLinkActive="active">Configuración</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="full-example" routerLinkActive="active">Ejemplo completo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="dashboard" routerLinkActive="active">Ejemplo Escenario</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="table-demo" routerLinkActive="active">Ejemplos de tablas</a>
+          </li>
+          <li class="nav-item">
+            <a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank" class="nav-link">
+              <img src="assets/github-mark.svg" alt="GitHub" height="24" class="d-inline-block align-text-top">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-      <ul class="nav nav-pills">
-        <li class="nav-item"><a routerLink="/" class="nav-link" [class.active]="">Inicio</a></li>
-        <li class="nav-item"><a routerLink="configuration" class="nav-link">Configuración</a></li>
-        <li class="nav-item"><a routerLink="full-example" class="nav-link">Ejemplo completo</a></li>
-        <li class="nav-item"><a routerLink="dashboard" class="nav-link">Ejemplo Escenario</a></li>
-        <li class="nav-item"><a routerLink="table-demo" class="nav-link">Ejemplos de tablas</a></li>
-        <li class="nav-item"><a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank"
-            class="nav-link"><img src="assets/github-mark.svg" alt="GitHub" height="30"></a></li>
-      </ul>
-    </header>
-  </div>
   <div class="container">
     <router-outlet></router-outlet>
   </div>

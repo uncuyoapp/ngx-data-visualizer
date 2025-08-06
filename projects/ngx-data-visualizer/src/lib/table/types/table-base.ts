@@ -33,7 +33,7 @@ export interface TableSorter {
 }
 
 /**
- * Interfaz para la configuración del pivot table
+ * Interfaz para la configuración de una tabla
  */
 export interface TableOptions {
   /** Número de decimales a mostrar */

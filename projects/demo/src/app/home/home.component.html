@@ -1,47 +1,131 @@
 <div class="container my-5">
   <div class="p-5 text-center bg-light rounded-4 shadow-sm">
     <h1 class="display-4 fw-bold text-primary">NGX-DATA-VISUALIZER</h1>
-    <p class="lead text-muted mb-4">
-      Librería open-source desarrollada por el Área de Políticas Públicas de la Universidad Nacional de Cuyo.
+    <p class="text-muted mb-4">
+      Librería open-source desarrollada por el <strong>Área de Políticas Públicas de la Universidad Nacional de
+        Cuyo</strong>.
     </p>
 
     <p class="fs-5 text-muted col-lg-10 mx-auto">
-      Este proyecto consiste en una aplicación Angular que incluye:
+      Este repositorio incluye:
     </p>
 
     <div class="row justify-content-center mb-4">
       <div class="col-md-5 text-start">
-        <h5 class="text-dark fw-semibold mb-2">📦 NgxDataVisualizer</h5>
-        <p class="text-muted">
-          Librería Angular para la visualización de datos en forma de <strong>gráficos, tablas y componentes interactivos</strong>. Diseñada para ser accesible, modular y reutilizable.
+        <h5 class="text-dark fw-semibold mb-2 text-center">📦 NgxDataVisualizer</h5>
+        <p class="text-muted text-center">
+          Librería Angular para la visualización de datos en forma de <strong>gráficos, tablas y componentes
+            interactivos</strong>. Diseñada para ser accesible, modular y reutilizable.
         </p>
       </div>
       <div class="col-md-5 text-start">
-        <h5 class="text-dark fw-semibold mb-2">🧪 Proyecto Demo</h5>
-        <p class="text-muted">
-          Aplicación de ejemplo que muestra el uso de los componentes de la librería con <strong>casos prácticos</strong> y escenarios de visualización reales.
+        <h5 class="text-dark fw-semibold mb-2 text-center">🧪 Proyecto Demo</h5>
+        <p class="text-muted text-center">
+          Aplicación de ejemplo que muestra el uso de los componentes de la librería con <strong>casos
+            prácticos</strong> y escenarios de visualización reales.
         </p>
       </div>
     </div>
 
-    <p class="fs-5 text-muted col-lg-10 mx-auto">
-      Esta herramienta busca promover el uso de tecnologías abiertas para la exploración y comunicación de datos públicos,
-      fomentando políticas basadas en evidencia y el gobierno abierto.
-    </p>
+    <div class="col-lg-10 mx-auto">
+      <blockquote class="blockquote p-4 bg-primary-subtle border-start border-primary border-4 rounded-3 fst-italic">
+        <p class="mb-0 fs-5">
+          “Esta herramienta busca promover el uso de tecnologías abiertas para la exploración y comunicación de datos
+          públicos, fomentando políticas basadas en evidencia y el gobierno abierto.”
+        </p>
+      </blockquote>
+    </div>
 
-    <div class="d-flex flex-wrap justify-content-center gap-3 my-5">
-      <a [routerLink]="'configuration'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
-        Configuración
-      </a>
-      <a [routerLink]="'full-example'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
-        Ejemplo completo
-      </a>
-      <a [routerLink]="'dashboard'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
-        Escenario de uso
-      </a>
-      <a [routerLink]="'table-demo'" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
-        Ejemplos de tablas
-      </a>
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <div class="card h-100 shadow-sm rounded-4">
+            <div class="card-body">
+              <h2 class="card-title fw-bold text-primary">Características Principales</h2>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">Completamente standalone (sin NgModules)</li>
+                <li class="list-group-item">Integración con ECharts y PivotTable.js</li>
+                <li class="list-group-item">Exportación a Excel y descarga de archivos png y jpg</li>
+                <li class="list-group-item">Configuraciones personalizables mediante inputs simples</li>
+                <li class="list-group-item">Agrupamiento y filtrado de datos</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100 shadow-sm rounded-4">
+            <div class="card-body">
+              <h2 class="card-title fw-bold text-primary">Tecnologías y Librerías</h2>
+              <p class="card-text text-muted">
+                La librería funciona como un <em>wrapper</em> que simplifica el uso combinado de las siguientes
+                dependencias clave:
+              </p>
+              <ul class="list-group list-group-flush small">
+                <li class="list-group-item"><strong>ECharts</strong> y <strong>ngx-echarts</strong> para gráficos.</li>
+                <li class="list-group-item"><strong>PivotTable.js</strong> para tablas dinámicas.</li>
+                <li class="list-group-item"><strong>XLSX</strong> para exportación a Excel.</li>
+                <li class="list-group-item"><strong>FileSaver.js</strong> para la descarga de archivos.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container my-5">
+      <div class="card shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h2 class="card-title fw-bold text-primary text-center mb-4">Instalación y Desarrollo</h2>
+          <p class="text-center text-muted mb-4">
+            Comenzá a utilizar el proyecto en tu entorno local con estos simples pasos.
+          </p>
+          <div class="bg-dark text-light text-start p-3 rounded-3">
+            <pre class="mb-0"><code  class="language-bash"><span class="text-secondary"># 1. Clonar el repositorio</span>
+git clone https://github.com/uncuyoapp/ngx-data-visualizer.git
+
+<span class="text-secondary"># 2. Instalar dependencias</span>
+npm install
+
+<span class="text-secondary"># 3. Ejecutar el proyecto demo</span>
+ng serve demo</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container my-5">
+      <div class="card shadow-sm rounded-4">
+        <div class="card-body">
+          <h2 class="card-title fw-bold text-primary text-center mb-4">Comenzá a explorar</h2>
+          <div class="d-flex flex-wrap justify-content-center gap-3 my-5">
+            <a [routerLink]="'configuration'" class="btn btn-outline-dark btn-lg px-4">
+              Configuración
+            </a>
+            <a [routerLink]="'full-example'" class="btn btn-outline-dark btn-lg px-4">
+              Ejemplo completo
+            </a>
+            <a [routerLink]="'dashboard'" class="btn btn-outline-dark btn-lg px-4">
+              Escenario
+            </a>
+            <a [routerLink]="'table-demo'" class="btn btn-outline-dark btn-lg px-4">
+              Ejemplos de tablas
+            </a>
+          </div>
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank"
+              class="btn btn-dark btn-lg px-4 d-flex align-items-center gap-2">            
+              <img src="assets/github-mark.svg" alt="GitHub" height="24" class="svg-white" />
+              Ver en GitHub
+            </a>
+            <a href="https://www.npmjs.com/package/ngx-data-visualizer" target="_blank"
+              class="btn btn-secondary btn-lg px-4 d-flex align-items-center gap-2">
+              <img src="assets/npm-logo.svg" alt="NPM" height="16" class="npm-logo-white" />
+              Ver en NPM
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="my-4">
@@ -49,8 +133,10 @@
     </div>
 
     <p class="text-muted small mt-4">
-      Proyecto desarrollado por el <a href="https://www.uncuyo.edu.ar/politicaspublicas/" target="_blank">Área de Políticas Públicas</a> de la Universidad Nacional de Cuyo. <br />
+      Desarrollado con ❤️ por el <a href="https://www.uncuyo.edu.ar/politicaspublicas/" target="_blank">Área de
+        Políticas Públicas</a> de la Universidad Nacional de Cuyo. <br />
       Licenciado bajo la <a href="https://opensource.org/licenses/MIT" target="_blank">Licencia MIT</a>.
     </p>
+
   </div>
 </div>

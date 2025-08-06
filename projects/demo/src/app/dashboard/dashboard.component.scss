@@ -1,62 +1,508 @@
-.wrapper {
+/* ===========================================
+   DASHBOARD - CONTENEDOR PRINCIPAL
+   =========================================== */
+
+/* Contenedor principal que ocupa el espacio disponible menos el nav */
+.dashboard-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 80px); /* Descontar altura del nav superior */
+  /* overflow: hidden; */
+  margin-top: -1rem;
+}
+
+/* ===========================================
+   GRID DEL DASHBOARD
+   =========================================== */
+
+.dashboard {
+  height: 100%; /* Ya no hay filtros superiores que restar */
   display: flex;
   flex-direction: column;
-}
-.actions {
-  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
-  border-radius: 0.5rem;
-  background-color: white;
-  margin-bottom: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  .dimension {
+  gap: 15px;
+
+  /* Elementos base */
+  .element {
+    padding: 0.5rem;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 0.75rem;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition:
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Gráfico principal - ocupa todo el ancho, altura destacada */
+  .four {
+    flex: 0 0 45%;
+    width: 100%;
+  }
+
+  /* Tabla principal - ocupa todo el ancho, altura media */
+  .five {
+    flex: 0 0 35%;
+    width: 100%;
+  }
+
+  /* Contenedor de gráficos secundarios - altura menor para ser contextuales */
+  .secondary-charts {
+    flex: 0 0 20%;
     display: flex;
-    span, input {
-      margin-left: 1rem;
-      margin-right: 0.2rem;
+    gap: 15px;
+    min-height: 180px;
+
+    /* Gráficos secundarios - se reparten el ancho en partes iguales */
+    .one,
+    .two,
+    .three {
+      flex: 1;
+      min-width: 0; /* Permite que flexbox funcione correctamente */
+    }
+  }
+}
+
+/* ===========================================
+   PANEL LATERAL DESLIZANTE (SIDE-MENU)
+   =========================================== */
+
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  width: 400px;
+  max-width: 90vw;
+  height: 100vh;
+  z-index: 1050;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-left: 1px solid #dee2e6;
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f8f9fa;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+  }
+}
+
+.side-menu-content {
+  padding: 70px 25px 25px 25px;
+}
+
+.side-menu-title {
+  color: #495057;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Botón de cerrar panel */
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    transform: rotate(90deg);
+  }
+
+  span {
+    font-size: 24px;
+    font-weight: bold;
+    color: #6c757d;
+    line-height: 1;
+  }
+}
+
+/* ===========================================
+   SECCIONES DEL PANEL LATERAL
+   =========================================== */
+
+.filter-section {
+  margin-bottom: 35px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+
+  h4 {
+    color: #495057;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
+/* Grupo de filtros por dimensión */
+.filter-group {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Header de cada dimensión */
+.dimension-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  .form-check {
+    flex: 1;
+
+    .form-check-label {
+      font-weight: 600;
+      color: #495057;
+      font-size: 1rem;
+    }
+  }
+
+  .toggle-button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+
+    span {
+      font-size: 12px;
       font-weight: bold;
     }
-    .items{
-      display: flex;
-    }
-    
   }
 }
-.dashboard {
-  height: calc(100vh - 72px);
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  grid-gap: 10px;
-  grid-template-rows: repeat(3, 1fr);
-  // grid-auto-rows: minmax(auto, auto);
 
-  .element {
-    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
-    border-radius: 0.5rem;
-    background-color: white;
+/* Lista de items de dimensión */
+.dimension-items {
+  max-height: 200px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  padding-top: 10px;
+
+  &.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding-top: 0;
   }
 
-  .one {
-    grid-column: 1;
-    grid-row: 1;
+  &::-webkit-scrollbar {
+    width: 4px;
   }
-  .two {
-    grid-column: 1;
-    grid-row: 2;
+
+  &::-webkit-scrollbar-track {
+    background: #f8f9fa;
   }
-  .three {
-    grid-column: 1;
-    grid-row: 3;
+
+  &::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 2px;
   }
-  .four {
-    grid-column: 2/4;
-    grid-row: 1/3;
+
+  .form-check {
+    margin-bottom: 8px;
+    padding: 5px 0;
+
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.05);
+      border-radius: 4px;
+      padding-left: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .form-check-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+      cursor: pointer;
+    }
   }
-  .five {
-    grid-column: 2/4;
-    grid-row: 3;
+}
+
+/* ===========================================
+   BOTÓN FLOTANTE
+   =========================================== */
+
+.floating-menu-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1040;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea584 100%);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  span {
+    font-size: 28px;
+    font-weight: bold;
+  }
+}
+
+/* Botón de resetear filtros */
+.btn-warning {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+
+  &:hover {
+    background: #ffeaa7;
+    border-color: #fdcb6e;
+  }
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .dashboard-container {
+    height: calc(100vh - 70px);
+    padding: 10px;
+  }
+
+  .dashboard {
+    gap: 10px;
+
+    /* Ajustar proporciones para tablet */
+    .four {
+      flex: 0 0 40%;
+    }
+
+    .five {
+      flex: 0 0 35%;
+    }
+
+    /* Los gráficos secundarios más compactos en tablet */
+    .secondary-charts {
+      flex: 0 0 25%;
+      min-height: 200px;
+    }
+  }
+
+  .side-menu {
+    width: 350px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+  .dashboard-container {
+    height: calc(100vh - 60px);
+    padding: 8px;
+  }
+
+  .dashboard {
+    height: calc(100% - 120px);
+    gap: 8px;
+
+    /* En móvil destacar más el gráfico principal */
+    .four {
+      flex: 0 0 35%;
+    }
+
+    .five {
+      flex: 0 0 30%;
+    }
+
+    /* Gráficos secundarios en columna en móviles, altura reducida */
+    .secondary-charts {
+      flex: 0 0 35%;
+      flex-direction: column;
+      min-height: auto;
+
+      .one,
+      .two,
+      .three {
+        flex: 1;
+        min-height: 120px;
+      }
+    }
+  }
+
+  .side-menu {
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .side-menu-content {
+    padding: 60px 20px 20px 20px;
+  }
+
+  .floating-menu-button {
+    width: 55px;
+    height: 55px;
+    bottom: 20px;
+    right: 20px;
+
+    span {
+      font-size: 24px;
+    }
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 5px;
+  }
+
+  .dashboard {
+    gap: 5px;
+
+    .secondary-charts {
+      gap: 5px;
+
+      .one,
+      .two,
+      .three {
+        min-height: 100px;
+      }
+    }
+  }
+
+  .floating-menu-button {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+
+    span {
+      font-size: 22px;
+    }
+  }
+}
+
+/* ===========================================
+   ANIMACIONES
+   =========================================== */
+
+.element {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.one {
+  animation-delay: 0.1s;
+}
+
+.two {
+  animation-delay: 0.2s;
+}
+
+.three {
+  animation-delay: 0.3s;
+}
+
+.four {
+  animation-delay: 0.4s;
+}
+
+.five {
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   MEJORAS DE BOOTSTRAP
+   =========================================== */
+
+.btn {
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border-radius: 8px;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.form-check-input {
+  cursor: pointer;
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+  }
+}
+
+.form-check-label {
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #007bff;
   }
 }

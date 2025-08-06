@@ -1,40 +1,139 @@
-<div class="wrapper">
-  <div class="actions shadow p-2">
-    @for (dimension of dimensions; track $index) {
-      <div class="dimension">
-        
-        <span>{{dimension.nameView}}</span>
-  
-        <div class="items">
-          @for (item of dimension.items; track $index) {
-          <div class="item">
-            <input [id]="'item'+item.id" type="checkbox" [(ngModel)]="item.selected" (change)="filter()">
-            <label [for]="'item'+item.id">{{item.name}}</label>
-          </div>
-          }
-        </div>
-      </div>
-      }
-  </div>
+<!-- Dashboard principal que ocupa el espacio disponible menos el nav -->
+<div class="dashboard-container">
+
+
+
+  <!-- Dashboard con nuevo layout -->
   <div class="dashboard">
-    <div class="element one">
-      
-      <libChart [dataset]="datasetOne" [chartOptions]="chartOptionsOne"></libChart>
-    </div>
-    <div class="element two">
-      
-      <libChart [dataset]="datasetTwo" [chartOptions]="chartOptionsTwo"></libChart>
-    </div>
-    <div class="element three">
-      
-      <libChart [dataset]="datasetThree" [chartOptions]="chartOptionsThree"></libChart>
-    </div>
+
+    <!-- Gráfico principal - ocupa todo el ancho -->
     <div class="element four">
-      <libChart [dataset]="datasetFour" [chartOptions]="chartOptionsFour"></libChart>
+      <libChart #chartFull [dataset]="datasetFour" [chartOptions]="chartOptionsFour"></libChart>
     </div>
+
+    <!-- Tabla principal - ocupa todo el ancho -->
     <div class="element five">
-      <libTable [dataset]="datasetFour" [tableOptions]="tableOptions"></libTable>
+      <libTable #tableFull [dataset]="datasetFour" [tableOptions]="tableOptions"></libTable>
     </div>
+
+    <!-- Gráficos secundarios - se reparten el ancho en partes iguales -->
+    <div class="secondary-charts">
+      <!-- Gráfico secundario 1 -->
+      <div class="element one">
+        <libChart #chartOne [dataset]="datasetOne" [chartOptions]="chartOptionsOne"></libChart>
+      </div>
+
+      <!-- Gráfico secundario 2 -->
+      <div class="element two">
+        <libChart #chartTwo [dataset]="datasetTwo" [chartOptions]="chartOptionsTwo"></libChart>
+      </div>
+
+      <!-- Gráfico secundario 3 -->
+      <div class="element three">
+        <libChart #chartThree [dataset]="datasetThree" [chartOptions]="chartOptionsThree"></libChart>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<!-- Panel lateral deslizante para controles adicionales -->
+<div class="side-menu shadow-lg" [class.open]="isSidePanelOpen">
+
+  <!-- Botón para cerrar el panel -->
+  <div class="close-button" (click)="closeSidePanel()" (keydown.enter)="closeSidePanel()" (keydown.space)="closeSidePanel()" tabindex="0" role="button" aria-label="Cerrar panel">
+    <span>&times;</span>
+  </div>
+
+  <div class="side-menu-content">
+
+    <!-- Título del panel -->
+    <h3 class="side-menu-title">Configuración Avanzada</h3>
+
+    <!-- Sección de filtros avanzados -->
+    <div class="filter-section my-4">
+      <h4>Filtros Detallados</h4>
+
+      <!-- Iteración sobre dimensiones para filtrado avanzado -->
+      @for (dimension of dimensions; track dimension.id) {
+        <div class="filter-group">
+
+          <!-- Cabecera de dimensión -->
+          <div class="dimension-header">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [(ngModel)]="dimension.selected"
+                (ngModelChange)="onDimensionChange()"
+                [id]="'dimension' + dimension.id"
+              />
+              <label class="form-check-label" [for]="'dimension' + dimension.id">
+                {{ dimension.nameView }}
+              </label>
+            </div>
+
+            <!-- Botón para expandir/colapsar -->
+            <button
+              class="btn btn-sm btn-outline-secondary toggle-button"
+              (click)="toggleDimensionItems(dimension)"
+              type="button"
+            >
+              <span [innerHTML]="isDimensionCollapsed(dimension.id.toString()) ? '▶' : '▼'"></span>
+            </button>
+          </div>
+
+          <!-- Lista de items de la dimensión -->
+          <div class="dimension-items" [class.collapsed]="isDimensionCollapsed(dimension.id.toString())">
+
+            <!-- Opción "Todos" -->
+            <div class="form-check ms-3">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                #allCheckbox
+                [checked]="areAllItemsSelected(dimension)"
+                [id]="'all' + dimension.id"
+                (change)="toggleAllItems(dimension, $any($event.target).checked)"
+              />
+              <label class="form-check-label fw-bold" [for]="'all' + dimension.id">
+                Todos
+              </label>
+            </div>
+
+            <!-- Items individuales -->
+            @for (item of dimension.items; track item.id) {
+              <div class="form-check ms-4">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  [(ngModel)]="item.selected"
+                  [id]="'item' + item.id"
+                  (ngModelChange)="onItemChange()"
+                />
+                <label class="form-check-label" [for]="'item' + item.id">
+                  {{ item.name }}
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Botón para resetear filtros -->
+      <button class="btn btn-warning w-100 mt-3" (click)="clearFilters()">
+        🔄 Resetear Filtros
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Botón flotante para abrir el panel lateral -->
+<button
+  class="floating-menu-button btn btn-primary rounded-circle shadow-lg"
+  (click)="toggleSidePanel()"
+  *ngIf="!isSidePanelOpen"
+>
+  <span>⚙</span>
+</button>

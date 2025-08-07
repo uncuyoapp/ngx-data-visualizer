@@ -1,102 +1,138 @@
 <!-- Dashboard principal que ocupa el espacio disponible menos el nav -->
 <div class="dashboard-container">
-
-
-
   <!-- Dashboard con nuevo layout -->
   <div class="dashboard">
-
-    <!-- Gráfico principal - ocupa todo el ancho -->
-    <div class="element four">
-      <libChart #chartFull [dataset]="datasetFour" [chartOptions]="chartOptionsFour"></libChart>
-    </div>
-
-    <!-- Tabla principal - ocupa todo el ancho -->
-    <div class="element five">
-      <libTable #tableFull [dataset]="datasetFour" [tableOptions]="tableOptions"></libTable>
-    </div>
-
     <!-- Gráficos secundarios - se reparten el ancho en partes iguales -->
     <div class="secondary-charts">
       <!-- Gráfico secundario 1 -->
       <div class="element one">
-        <libChart #chartOne [dataset]="datasetOne" [chartOptions]="chartOptionsOne"></libChart>
+        <div class="chart">
+          <libChart
+            #chartOne
+            [dataset]="datasetOne"
+            [chartOptions]="chartOptionsOne"
+          ></libChart>
+        </div>
+        <p class="text-center my-1 text-muted">Condición</p>
       </div>
 
       <!-- Gráfico secundario 2 -->
       <div class="element two">
-        <libChart #chartTwo [dataset]="datasetTwo" [chartOptions]="chartOptionsTwo"></libChart>
+        <div class="chart">
+          <libChart
+            #chartTwo
+            [dataset]="datasetTwo"
+            [chartOptions]="chartOptionsTwo"
+          ></libChart>
+        </div>
+        <p class="text-center my-1 text-muted">Sector de gestión</p>
       </div>
 
       <!-- Gráfico secundario 3 -->
       <div class="element three">
-        <libChart #chartThree [dataset]="datasetThree" [chartOptions]="chartOptionsThree"></libChart>
+        <div class="chart">
+          <libChart
+            #chartThree
+            [dataset]="datasetThree"
+            [chartOptions]="chartOptionsThree"
+          ></libChart>
+        </div>
+        <p class="text-center my-1 text-muted">Sexo</p>
       </div>
     </div>
 
+    <!-- Gráfico principal - ocupa todo el ancho -->
+    <div class="element four">
+      <libChart
+        #chartFull
+        [dataset]="datasetFour"
+        [chartOptions]="chartOptionsFour"
+      ></libChart>
+    </div>
+
+    <!-- Tabla principal - ocupa todo el ancho -->
+    <div class="element five">
+      <libTable
+        #tableFull
+        [dataset]="datasetFour"
+        [tableOptions]="tableOptions"
+      ></libTable>
+    </div>
   </div>
 </div>
 
 <!-- Panel lateral deslizante para controles adicionales -->
 <div class="side-menu shadow-lg" [class.open]="isSidePanelOpen">
-
   <!-- Botón para cerrar el panel -->
-  <div class="close-button" (click)="closeSidePanel()" (keydown.enter)="closeSidePanel()" (keydown.space)="closeSidePanel()" tabindex="0" role="button" aria-label="Cerrar panel">
+  <div
+    class="close-button"
+    (click)="closeSidePanel()"
+    (keydown.enter)="closeSidePanel()"
+    (keydown.space)="closeSidePanel()"
+    tabindex="0"
+    role="button"
+    aria-label="Cerrar panel"
+  >
     <span>&times;</span>
   </div>
 
   <div class="side-menu-content">
-
     <!-- Título del panel -->
     <h3 class="side-menu-title">Configuración Avanzada</h3>
 
     <!-- Sección de filtros avanzados -->
     <div class="filter-section my-4">
-      <h4>Filtros Detallados</h4>
+      <h4>Filtros</h4>
 
       <!-- Iteración sobre dimensiones para filtrado avanzado -->
       @for (dimension of dimensions; track dimension.id) {
         <div class="filter-group">
-
           <!-- Cabecera de dimensión -->
           <div class="dimension-header">
             <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                [(ngModel)]="dimension.selected"
-                (ngModelChange)="onDimensionChange()"
-                [id]="'dimension' + dimension.id"
-              />
-              <label class="form-check-label" [for]="'dimension' + dimension.id">
+              <label
+                class="form-check-label"
+                [for]="'dimension' + dimension.id"
+              >
                 {{ dimension.nameView }}
               </label>
             </div>
 
             <!-- Botón para expandir/colapsar -->
             <button
-              class="btn btn-sm btn-outline-secondary toggle-button"
+              class="toggle-button"
               (click)="toggleDimensionItems(dimension)"
               type="button"
             >
-              <span [innerHTML]="isDimensionCollapsed(dimension.id.toString()) ? '▶' : '▼'"></span>
+              <span
+                [innerHTML]="
+                  isDimensionCollapsed(dimension.id.toString()) ? '→' : '↓'
+                "
+              ></span>
             </button>
           </div>
 
           <!-- Lista de items de la dimensión -->
-          <div class="dimension-items" [class.collapsed]="isDimensionCollapsed(dimension.id.toString())">
-
+          <div
+            class="dimension-items"
+            [class.collapsed]="isDimensionCollapsed(dimension.id.toString())"
+          >
             <!-- Opción "Todos" -->
-            <div class="form-check ms-3">
+            <div class="form-check ms-4">
               <input
                 type="checkbox"
                 class="form-check-input"
                 #allCheckbox
                 [checked]="areAllItemsSelected(dimension)"
                 [id]="'all' + dimension.id"
-                (change)="toggleAllItems(dimension, $any($event.target).checked)"
+                (change)="
+                  toggleAllItems(dimension, $any($event.target).checked)
+                "
               />
-              <label class="form-check-label fw-bold" [for]="'all' + dimension.id">
+              <label
+                class="form-check-label fw-bold"
+                [for]="'all' + dimension.id"
+              >
                 Todos
               </label>
             </div>
@@ -121,19 +157,20 @@
       }
 
       <!-- Botón para resetear filtros -->
-      <button class="btn btn-warning w-100 mt-3" (click)="clearFilters()">
-        🔄 Resetear Filtros
+      <button class="action-btn reset-btn w-100" (click)="clearFilters()">
+        <span class="action-icon">🔄</span>
+        <span class="action-text">Reestablecer filtros</span>
       </button>
     </div>
-
   </div>
 </div>
 
 <!-- Botón flotante para abrir el panel lateral -->
+<!-- Solo se muestra cuando el panel está cerrado -->
 <button
-  class="floating-menu-button btn btn-primary rounded-circle shadow-lg"
+  class="floating-menu-button"
   (click)="toggleSidePanel()"
   *ngIf="!isSidePanelOpen"
 >
-  <span>⚙</span>
+  <span>☰</span>
 </button>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,22 +9,22 @@ import {
   inject,
   input,
   output,
-} from '@angular/core';
-import { ECharts, EChartsOption } from 'echarts';
-import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from 'ngx-echarts';
-import { Series } from '../types/chart-models';
-import { Chart } from '../types/chart';
-import { ChartConfiguration } from '../types/chart-configuration';
-import { ChartData } from '../utils/chart-data';
-import { EChart } from './echarts';
-import { EC_SERIES_CONFIG } from '../../types/constants';
+} from "@angular/core";
+import { ECharts, EChartsOption } from "echarts";
+import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from "ngx-echarts";
+import { Series } from "../types/chart-models";
+import { Chart } from "../types/chart";
+import { ChartConfiguration } from "../types/chart-configuration";
+import { ChartData } from "../utils/chart-data";
+import { EChart } from "./echarts";
+import { EC_SERIES_CONFIG } from "../../types/constants";
 
 /**
  * Interfaz para las opciones de inicialización de ECharts
  */
 interface EChartsInitOptions extends EChartsOption {
   locale?: string;
-  renderer?: 'canvas' | 'svg';
+  renderer?: "canvas" | "svg";
   width?: number | string;
   height?: number | string;
 }
@@ -44,16 +44,16 @@ interface EChartsInitOptions extends EChartsOption {
  */
 @Component({
   standalone: true,
-  selector: 'lib-app-echarts',
-  templateUrl: './echarts.component.html',
-  styleUrls: ['./echarts.component.scss'],
+  selector: "lib-app-echarts",
+  templateUrl: "./echarts.component.html",
+  styleUrls: ["./echarts.component.scss"],
   imports: [NgxEchartsModule, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NGX_ECHARTS_CONFIG,
       useFactory: () => ({
-        echarts: () => import('echarts').then((m) => m),
+        echarts: () => import("echarts").then((m) => m),
       }),
     },
   ],
@@ -82,11 +82,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
   /** Opciones de inicialización de ECharts */
   protected initOptions: EChartsInitOptions = {
-    locale: 'es',
-    renderer: 'canvas', // Usar canvas en lugar de SVG para mejor rendimiento
-    useDirtyRect: true, // Habilitar renderizado sucio para mejor rendimiento
+    locale: "es",
+    renderer: "svg", // Usar canvas en lugar de SVG para mejor rendimiento
+    useDirtyRect: false, // Habilitar renderizado sucio para mejor rendimiento
     devicePixelRatio:
-      typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
+      typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
   };
 
   /** Referencia a NgZone */
@@ -119,7 +119,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       this.createChart();
       this.setupResizeListener();
     } catch (error) {
-      console.error('Error al inicializar el componente de gráficos:', error);
+      console.error("Error al inicializar el componente de gráficos:", error);
       // Considerar emitir un evento de error aquí si es necesario
     }
   }
@@ -138,7 +138,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
           this.mainChart.instance.dispose();
         });
       } catch (error) {
-        console.warn('Error al destruir la instancia de ECharts:', error);
+        console.warn("Error al destruir la instancia de ECharts:", error);
       } finally {
         this.mainChart = null as unknown as EChart;
       }
@@ -162,10 +162,10 @@ export class EchartsComponent implements OnInit, OnDestroy {
       }
 
       // Asegurar que el locale siempre esté definido
-      this.initOptions.locale = this.initOptions.locale ?? 'es';
+      this.initOptions.locale = this.initOptions.locale ?? "es";
     } catch (error) {
-      console.error('Error al configurar las opciones del gráfico:', error);
-      throw new Error('No se pudo configurar las opciones del gráfico');
+      console.error("Error al configurar las opciones del gráfico:", error);
+      throw new Error("No se pudo configurar las opciones del gráfico");
     }
   }
 
@@ -178,7 +178,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       const config = this.chartConfiguration();
 
       if (!config) {
-        throw new Error('La configuración del gráfico no está definida');
+        throw new Error("La configuración del gráfico no está definida");
       }
 
       this.mainChart = new EChart(config);
@@ -188,8 +188,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
         this.chartCreated.emit(this.mainChart);
       });
     } catch (error) {
-      console.error('Error al crear el gráfico:', error);
-      throw new Error('No se pudo crear el gráfico');
+      console.error("Error al crear el gráfico:", error);
+      throw new Error("No se pudo crear el gráfico");
     }
   }
 
@@ -199,7 +199,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
    */
   public setChartInstance(instance: ECharts): void {
     if (!instance) {
-      console.warn('Se intentó establecer una instancia de ECharts nula');
+      console.warn("Se intentó establecer una instancia de ECharts nula");
       return;
     }
 
@@ -215,7 +215,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       // Programar la emisión inicial de series
       this.scheduleSeriesEmission(100);
     } catch (error) {
-      console.error('Error al establecer la instancia de ECharts:', error);
+      console.error("Error al establecer la instancia de ECharts:", error);
     }
   }
 
@@ -226,7 +226,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
   public updateChart(): void {
     if (!this.mainChart) {
       console.warn(
-        'No se puede actualizar el gráfico: la instancia no está inicializada'
+        "No se puede actualizar el gráfico: la instancia no está inicializada",
       );
       return;
     }
@@ -234,7 +234,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
     // Evitar actualizaciones si es el renderizado inicial
     if (!this.mainChart.hasRendered) {
       console.warn(
-        'Esperando al renderizado inicial, se omite la actualización'
+        "Esperando al renderizado inicial, se omite la actualización",
       );
       return;
     }
@@ -244,7 +244,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
       // Remover cualquier listener previo del evento finished
       if (this.mainChart?.instance) {
-        this.mainChart.instance.off('finished');
+        this.mainChart.instance.off("finished");
       }
 
       this.mainChart.render();
@@ -255,7 +255,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
         if (this.mainChart?.instance) {
           // Usar requestAnimationFrame para asegurar que el renderizado principal haya terminado
           requestAnimationFrame(() => {
-            this.mainChart.instance.on('finished', () => {
+            this.mainChart.instance.on("finished", () => {
               this.ngZone.run(() => {
                 this.chartUpdated.emit();
                 this.mainChart.isRendering = false;
@@ -265,7 +265,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
         }
       });
     } catch (error) {
-      console.error('Error al actualizar el gráfico:', error);
+      console.error("Error al actualizar el gráfico:", error);
       this.mainChart.isRendering = false;
     }
   }
@@ -310,9 +310,9 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @private
    */
   private setupResizeListener(): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       this.ngZone.runOutsideAngular(() => {
-        window.addEventListener('resize', this.handleResize);
+        window.addEventListener("resize", this.handleResize);
       });
     }
   }
@@ -322,8 +322,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @private
    */
   private cleanupResizeListener(): void {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.handleResize);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.handleResize);
     }
     this.cleanupResizeTimer();
   }
@@ -382,8 +382,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
       if (Array.isArray(series) && series.length > 0) {
         const typedSeries: Series[] = series.map((s) => ({
-          name: s.name || '',
-          color: s.color ?? '#000000',
+          name: s.name || "",
+          color: s.color ?? "#000000",
           visible: s.visible ?? true,
           data: s.data || [],
         }));
@@ -395,7 +395,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
         });
       }
     } catch (error) {
-      console.error('Error al obtener series del gráfico:', error);
+      console.error("Error al obtener series del gráfico:", error);
     }
   }
 
@@ -407,7 +407,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
    */
   public getGoalSeries(chartData: ChartData, chartType: string): Series {
     if (!chartData) {
-      throw new Error('El parámetro chartData es requerido');
+      throw new Error("El parámetro chartData es requerido");
     }
 
     try {
@@ -416,28 +416,28 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
       // Extraer los valores de la meta
       const goalData = data.map((row) => {
-        const value = row['valor'];
-        return typeof value === 'number' ? value : 0;
+        const value = row["valor"];
+        return typeof value === "number" ? value : 0;
       });
 
       // Asegurarnos de que el tipo de serie coincida con el tipo de gráfico
-      const seriesType = chartType === 'column' ? 'bar' : chartType;
+      const seriesType = chartType === "column" ? "bar" : chartType;
 
       // Crear la serie de meta con la configuración correcta
       const goalSeries: Series = {
-        name: 'Meta',
-        color: 'black',
+        name: "Meta",
+        color: "black",
         visible: true,
         data: goalData,
         smooth: true,
         stacking: undefined,
         chartType: chartType,
         type: seriesType,
-        symbol: 'circle',
+        symbol: "circle",
         symbolSize: 6,
         lineStyle: {
           width: 2,
-          type: 'dashed',
+          type: "dashed",
         },
       };
 
@@ -449,8 +449,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
       return goalSeries;
     } catch (error) {
-      console.error('Error al generar la serie de meta:', error);
-      throw new Error('No se pudo generar la serie de meta');
+      console.error("Error al generar la serie de meta:", error);
+      throw new Error("No se pudo generar la serie de meta");
     }
   }
 }

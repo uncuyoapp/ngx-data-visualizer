@@ -1,5 +1,5 @@
-import { EChartsOption } from 'echarts';
-import { Series } from '../types/chart-models';
+import { EChartsOption } from "echarts";
+import { Series } from "../../types/chart-models";
 
 /**
  * Función para generar una clave única para el cache basada en el estado actual
@@ -22,7 +22,11 @@ export function generateCacheKey(state: {
  * @param suffix - Sufijo opcional
  * @returns Valor formateado
  */
-export function formatValue(value: number, decimals: number = 0, suffix: string = ''): string {
+export function formatValue(
+  value: number,
+  decimals: number = 0,
+  suffix: string = "",
+): string {
   return `${value.toFixed(decimals)}${suffix}`;
 }
 
@@ -41,6 +45,9 @@ export function calculateNameGap(maxLength: number): number {
  * @param customOptions - Opciones personalizadas
  * @returns Opciones combinadas
  */
-export function mergeOptions(defaultOptions: EChartsOption, customOptions: Partial<EChartsOption>): EChartsOption {
+export function mergeOptions(
+  defaultOptions: EChartsOption,
+  customOptions: Partial<EChartsOption>,
+): EChartsOption {
   return { ...defaultOptions, ...customOptions };
-} 
+}

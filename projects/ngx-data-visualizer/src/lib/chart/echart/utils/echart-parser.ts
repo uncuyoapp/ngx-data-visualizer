@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from "echarts";
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from "lodash.clonedeep";
 import { ChartOptions } from "../../types/chart-configuration";
 import { ParserOptions } from "../../types/parser-options";
 import { EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
@@ -11,7 +11,6 @@ import { EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
  * configuración tanto para vista previa como para visualización completa.
  */
 export class EChartParser implements ParserOptions {
-
   /**
    * Obtiene las opciones para la vista previa del gráfico
    * @param config - Configuración de opciones del gráfico
@@ -38,7 +37,10 @@ export class EChartParser implements ParserOptions {
    * @param libraryConfig - Configuración actual de la biblioteca de gráficos
    * @returns Configuración actualizada de la biblioteca
    */
-  applyChartConfigurations(config: ChartOptions, libraryConfig: unknown): unknown {
+  applyChartConfigurations(
+    config: ChartOptions,
+    libraryConfig: unknown,
+  ): unknown {
     const echartsConfig = libraryConfig as EChartsOption;
     echartsConfig["type"] = config.type;
 
@@ -46,15 +48,18 @@ export class EChartParser implements ParserOptions {
       echartsConfig.color = config.colors;
     }
 
-    (echartsConfig.tooltip as any).trigger = config.tooltip.shared ? 'axis' : 'item';
+    (echartsConfig.tooltip as any).trigger = config.tooltip.shared
+      ? "axis"
+      : "item";
 
-    if (typeof config.title === 'string') {
+    if (typeof config.title === "string") {
       echartsConfig.title = {
         text: config.title,
         show: true,
-        left: 'center'
+        left: "center",
       };
     }
+    //(echartsConfig["labels"] as any).show = false;/
     (echartsConfig.dataZoom as any).show = config.navigator.show;
     (echartsConfig.tooltip as any).showTotal = config.tooltip.showTotal;
     return echartsConfig;
@@ -68,8 +73,13 @@ export class EChartParser implements ParserOptions {
    * @private
    */
   private mergeOptions(config: any, preview?: boolean) {
-    const defaultOptions = preview ? EC_CHART_CONFIG_PREVIEW : EC_CHART_CONFIG_PREVIEW;
-    const renderOptions: EChartsOption = { ...cloneDeep(defaultOptions), ...config };
+    const defaultOptions = preview
+      ? EC_CHART_CONFIG_PREVIEW
+      : EC_CHART_CONFIG_PREVIEW;
+    const renderOptions: EChartsOption = {
+      ...cloneDeep(defaultOptions),
+      ...config,
+    };
     return renderOptions;
   }
 }

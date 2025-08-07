@@ -6,6 +6,8 @@ import {
   QueryList,
   ElementRef,
   HostListener,
+  ViewChild,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -18,6 +20,7 @@ import {
   TableOptions,
   RowData,
   TableDirective,
+  ThemeService,
 } from "ngx-data-visualizer";
 import optionsChart from "../../assets/data/chart-options-dash.json";
 import dimensionsData from "../../assets/data/dash-dimensions.json";
@@ -77,6 +80,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   /** Dimensiones para filtros */
   dimensions: Dimension[] = dimensionsData as Dimension[];
 
+  /** Configurador de temas */
+  themeService = inject(ThemeService);
+
   // ============================================
   // CONTROL DEL PANEL LATERAL
   // ============================================
@@ -90,6 +96,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   /** Referencias a los checkboxes "Todos" del side-menu */
   @ViewChildren("allCheckbox") allCheckboxes!: QueryList<ElementRef>;
 
+  /** Referencias a los elementos de librería */
+  @ViewChild("tableFull", { read: TableDirective }) tableFull!: TableDirective;
+
   // ============================================
   // INICIALIZACIÓN
   // ============================================
@@ -98,10 +107,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const dimensions = dimensionsData as Dimension[];
     const rowData = data as RowData[];
 
+    // Configuración de estilos para la tabla
+    this.themeService.updateTheme(
+      {
+        tableDataBg: "#eeeff1",
+      },
+      this.tableFull,
+    );
+
     // Configuración del gráfico 1 (pie chart por sectores)
     this.chartOptionsOne.filterLastYear = true;
     this.chartOptionsOne.type = "pie";
     this.chartOptionsOne.xAxis.firstLevel = 117;
+    this.chartOptionsOne.legends.show = false;
 
     this.datasetOne = new Dataset({
       dimensions,
@@ -118,6 +136,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.chartOptionsTwo.filterLastYear = true;
     this.chartOptionsTwo.type = "pie";
     this.chartOptionsTwo.xAxis.firstLevel = 54;
+    this.chartOptionsTwo.legends.show = false;
 
     this.datasetTwo = new Dataset({
       dimensions,
@@ -135,6 +154,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.chartOptionsThree.type = "pie";
     this.chartOptionsThree.xAxis.firstLevel = 12;
     this.chartOptionsThree.tooltip.shared = false;
+    this.chartOptionsThree.legends.show = false;
 
     this.datasetThree = new Dataset({
       dimensions,

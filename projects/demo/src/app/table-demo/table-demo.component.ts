@@ -1,18 +1,40 @@
-import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { Dataset, Dimension, TableOptions, TableDirective, ThemeService } from 'ngx-data-visualizer';
-import dashDimensions from '../../assets/data/dash-dimensions.json';
-import exampleData2 from '../../assets/data/data.json';
-import dimensions from '../../assets/data/dimensions.json';
-import exampleData from '../../assets/data/example-data-2.json';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from "@angular/core";
+import { RouterModule } from "@angular/router";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatButtonModule } from "@angular/material/button";
+import {
+  Dataset,
+  Dimension,
+  TableDirective,
+  TableOptions,
+  ThemeService,
+} from "ngx-data-visualizer";
+import dashDimensions from "../../assets/data/dash-dimensions.json";
+import exampleData2 from "../../assets/data/data.json";
+import dimensions from "../../assets/data/dimensions.json";
+import exampleData from "../../assets/data/example-data-2.json";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
 
 @Component({
-  selector: 'app-table-demo',
+  selector: "app-table-demo",
   standalone: true,
-  imports: [CommonModule, RouterModule, TableDirective],
-  templateUrl: './table-demo.component.html',
-  styleUrls: ['./table-demo.component.scss']
+  imports: [
+    CommonModule,
+    RouterModule,
+    TableDirective,
+    MatTabsModule,
+    MatButtonModule,
+  ],
+  templateUrl: "./table-demo.component.html",
+  styleUrls: ["./table-demo.component.scss"],
 })
 export class TableDemoComponent implements AfterViewInit {
   // Dataset 1: Datos de ejemplo con dimensiones del dashboard
@@ -20,7 +42,7 @@ export class TableDemoComponent implements AfterViewInit {
     rowData: exampleData,
     id: 1,
     dimensions: dashDimensions as Dimension[],
-    enableRollUp: true
+    enableRollUp: true,
   });
 
   // Dataset 2: Datos de ejemplo con dimensiones de departamentos
@@ -28,150 +50,199 @@ export class TableDemoComponent implements AfterViewInit {
     rowData: exampleData2,
     id: 2,
     dimensions: dimensions as Dimension[],
-    enableRollUp: true
+    enableRollUp: true,
   });
 
-  // Ejemplo 1: Configuración básica con una columna y múltiples filas
-  basicConfig: TableOptions = {
-    cols: ['Año'],
-    rows: ['Condición', 'Sector de gestión', 'Sexo'],
-    digitsAfterDecimal: 0,
-    sorters: [],
-    totalRow: true,
-    totalCol: true
-  };
-
-  // Ejemplo 2: Configuración con múltiples columnas y una fila
-  multiColConfig: TableOptions = {
-    cols: ['Año', 'Sexo'],
-    rows: ['Condición'],
-    digitsAfterDecimal: 0,
-    sorters: [],
-    totalRow: true,
-    totalCol: true
-  };
-
-  // Ejemplo 3: Configuración con ordenamiento personalizado
-  sortedConfig: TableOptions = {
-    cols: ['Año'],
-    rows: ['Condición', 'Sector de gestión'],
-    digitsAfterDecimal: 0,
-    sorters: [
-      {
-        name: 'Año',
-        items: [
-          { name: '2012', order: 0 },
-          { name: '2011', order: 1 },
-          { name: '2010', order: 2 },
-          { name: '2013', order: 3 },
-          { name: '2014', order: 4 },
-          { name: '2015', order: 5 },
-          { name: '2016', order: 6 },
-          { name: '2017', order: 7 },
-          { name: '2018', order: 8 },
-        ]
-      }
-    ],
-    totalRow: true,
-    totalCol: true
-  };
-
-  // Ejemplo 4: Configuración con sufijo
-  suffixConfig: TableOptions = {
-    cols: ['Año'],
-    rows: ['Condición', 'Sector de gestión', 'Sexo'],
+  // Configuración básica con una columna y múltiples filas
+  tableConfig1: TableOptions = {
+    cols: ["Año"],
+    rows: ["Condición", "Sexo", "Sector de gestión"],
     digitsAfterDecimal: 0,
     sorters: [],
     totalRow: true,
     totalCol: true,
-    suffix: '%'
   };
 
-  // Ejemplo 5: Configuración para el segundo dataset
-  dataset2Config: TableOptions = {
-    cols: ['Departamentos'],
-    rows: ['Año'],
+  // Ejemplo 2: Configuración con múltiples columnas y una fila. Agregando sexo.
+  tableConfig2: TableOptions = {
+    cols: ["Sector de gestión", "Condición"],
+    rows: ["Año"],
     digitsAfterDecimal: 0,
+    sorters: [],
+    totalRow: true,
+    totalCol: true,
+  };
+
+  // Ejemplo 3: Configuración con ordenamiento personalizado
+  tableConfig3: TableOptions = {
+    cols: ["Sector de gestión", "Condición"],
+    rows: ["Año"],
+    digitsAfterDecimal: 0,
+    totalRow: true,
+    totalCol: true,
     sorters: [
       {
-        name: 'Departamentos de Mendoza',
-        items: dimensions[0].items.map((item, index) => ({
-          name: item.name,
-          order: index
-        }))
-      }
+        name: "Condición",
+        items: [
+          { name: "Nuevo inscripto", order: 0 },
+          { name: "Estudiante", order: 1 },
+          { name: "Egresado", order: 2 },
+        ],
+      },
     ],
-    totalRow: true,
-    totalCol: true
   };
 
-  @ViewChild('tableTheme', { read: TableDirective }) table!: TableDirective;
-  @ViewChild('table1', { read: TableDirective }) table1!: TableDirective;
-  @ViewChild('table2', { read: TableDirective }) table2!: TableDirective;
+  @ViewChild("tableTheme", { read: TableDirective }) table!: TableDirective;
 
-  constructor(private readonly themeService: ThemeService) { }
+  // Código TypeScript para mostrar en las tabs
+  example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
+dataset1 = new Dataset({
+  rowData: exampleData,
+  id: 1,
+  dimensions: dashDimensions as Dimension[],
+  enableRollUp: true,
+});
+
+// Configuración básica con una columna y múltiples filas
+tableConfig1: TableOptions = {
+  cols: ["Año"],
+  rows: ["Condición", "Sexo", "Sector de gestión"],
+  digitsAfterDecimal: 0,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+};`;
+
+  example2TypeScript = `// Configuración con múltiples columnas y una fila
+tableConfig2: TableOptions = {
+  cols: ['Sector de gestión', 'Condición'],
+  rows: ['Año'],
+  digitsAfterDecimal: 0,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+};
+};`;
+
+  example3TypeScript = `// Configuración con ordenamiento personalizado
+tableConfig3: TableOptions = {
+  cols: ['Sector de gestión', 'Condición'],
+  rows: ['Año'],
+  digitsAfterDecimal: 0,
+  totalRow: true,
+  totalCol: true,
+  sorters: [
+    {
+      name: 'Condición',
+      items: [
+        { name: 'Nuevo inscripto', order: 0 },
+        { name: 'Estudiante', order: 1 },
+        { name: 'Egresado', order: 2 },
+      ],
+    },
+  ],
+};
+};`;
+
+  example4TypeScript = `// Métodos para cambiar el tema de la tabla
+@ViewChild('tableTheme', { read: TableDirective }) table!: TableDirective;
+
+constructor(private readonly themeService: ThemeService) {}
+
+setDefaultTheme(): void {
+  this.themeService.setTheme('default', this.table);
+}
+
+setMaterialTheme(): void {
+  this.themeService.setTheme('material', this.table);
+}
+
+setBootstrapTheme(): void {
+  this.themeService.setTheme('bootstrap', this.table);
+}
+
+// Ejemplo de personalización parcial del tema
+updateThemeWithCustomColors(): void {
+  this.themeService.updateTheme(
+    {
+      tableDataBg: '#d3d3d3',
+      tableLabelBg: '#0ec244',
+    },
+    this.table,
+  );
+}
+}`;
+
+  // Código HTML para mostrar en las tabs
+  example1HTML = `<div class="table-container" style="height: 500px;">
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1"></libTable>
+</div>`;
+
+  example2HTML = `<div class="table-container">
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig2"></libTable>
+</div>`;
+
+  example3HTML = `<div class="table-container">
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig3"></libTable>
+</div>`;
+
+  example4HTML = `<div class="theme-buttons">
+  <button mat-raised-button color="primary" (click)="setDefaultTheme()">Tema por Defecto</button>
+  <button mat-raised-button color="accent" (click)="setMaterialTheme()">Tema Material</button>
+  <button mat-raised-button color="warn" (click)="setBootstrapTheme()">Tema Bootstrap</button>
+  <button mat-raised-button (click)="updateThemeWithCustomColors()">Personalizar Tema</button>
+</div>
+<div class="table-container">
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" #tableTheme></libTable>
+</div>`;
+
+  constructor(
+    private readonly themeService: ThemeService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngAfterViewInit(): void {
-    // Establecer el tema por defecto después de que la vista esté inicializada
+    // Timeout para asegurar que el DOM esté completamente renderizado
     setTimeout(() => {
-      this.themeService.setTheme('default', this.table);
+      this.highlightCode();
     }, 100);
   }
 
-  // Métodos genéricos para cambiar temas
-  private setTheme(themeType: 'default' | 'material' | 'bootstrap', table: TableDirective): void {
-    this.themeService.setTheme(themeType, table);
+  onTabChange(): void {
+    // Pequeño delay para asegurar que el contenido del tab se haya renderizado
+    setTimeout(() => {
+      this.highlightCode();
+    }, 50);
+  }
+
+  private highlightCode(): void {
+    if (typeof Prism !== "undefined") {
+      // Re-procesar todos los bloques de código
+      Prism.highlightAll();
+    }
   }
 
   // Métodos para cambiar el tema de la tabla principal
   setDefaultTheme(): void {
-    this.setTheme('default', this.table);
+    this.themeService.setTheme("default", this.table);
   }
 
   setMaterialTheme(): void {
-    this.setTheme('material', this.table);
+    this.themeService.setTheme("material", this.table);
   }
 
   setBootstrapTheme(): void {
-    this.setTheme('bootstrap', this.table);
-  }
-
-  // Métodos para cambiar el tema de la tabla 1
-  setDefaultTheme1(): void {
-    this.setTheme('default', this.table1);
-  }
-
-  setMaterialTheme1(): void {
-    this.setTheme('material', this.table1);
-  }
-
-  setBootstrapTheme1(): void {
-    this.setTheme('bootstrap', this.table1);
-  }
-
-  // Métodos para cambiar el tema de la tabla 2
-  setDefaultTheme2(): void {
-    this.setTheme('default', this.table2);
-  }
-
-  setMaterialTheme2(): void {
-    this.setTheme('material', this.table2);
-  }
-
-  setBootstrapTheme2(): void {
-    this.setTheme('bootstrap', this.table2);
+    this.themeService.setTheme("bootstrap", this.table);
   }
 
   // Ejemplo de personalización parcial del tema
   updateThemeWithCustomColors(): void {
-    // this.themeService.updateTheme({
-    //   tableDataBg: '#d3d3d3',
-    //   tableLabelBg: 'black',
-    //   border: {
-    //     color: 'red',
-    //     width: '2px',
-    //     style: 'dashed'
-    //   }
-    // }, this.table);
+    this.themeService.updateTheme(
+      {
+        tableDataBg: "#d3d3d3",
+        tableLabelBg: "#0ec244",
+      },
+      this.table,
+    );
   }
 }

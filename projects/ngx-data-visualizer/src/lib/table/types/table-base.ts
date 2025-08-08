@@ -67,7 +67,11 @@ export type PivotFormatter = (value: number) => string;
 /**
  * Tipo para el agregador de valores del pivot table
  */
-export type PivotAggregator = (data: PivotData[], rowKey: string[], colKey: string[]) => unknown;
+export type PivotAggregator = (
+  data: PivotData[],
+  rowKey: string[],
+  colKey: string[],
+) => unknown;
 
 /**
  * Tipo para el renderizador del pivot table
@@ -114,7 +118,7 @@ export interface PivotOptions {
       clickCallback?: (
         e: JQuery.ClickEvent,
         value: unknown,
-        filters: Record<string, unknown>
+        filters: Record<string, unknown>,
       ) => void;
     };
   };
@@ -131,9 +135,13 @@ export interface PivotUtilities {
     /** Agregador de suma */
     sum: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
     /** Agregador de conteo */
-    count: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
+    count: (
+      formatter?: PivotFormatter,
+    ) => (fields: string[]) => PivotAggregator;
     /** Agregador de promedio */
-    average: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
+    average: (
+      formatter?: PivotFormatter,
+    ) => (fields: string[]) => PivotAggregator;
   };
   /** Renderizadores disponibles */
   renderers: Record<string, PivotRenderer>;
@@ -148,7 +156,7 @@ export interface PivotUtilities {
     digitsAfterDecimal?: number;
     scaler?: number;
     prefix?: string;
-    suffix?: string
+    suffix?: string;
   }) => PivotFormatter;
   /** Función de ordenamiento personalizado */
   sortAs: (orderValues: string[]) => (a: string, b: string) => number;

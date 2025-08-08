@@ -1,10 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import {
-  TableOptions,
-  TableConfiguration,
-} from '../types/table-base';
-import { JQueryService } from '../utils/jquery.service';
-import { TableHelper } from '../utils/table-helper';
+import { inject, Injectable } from "@angular/core";
+import { TableOptions, TableConfiguration } from "../types/table-base";
+import { JQueryService } from "../utils/jquery.service";
+import { TableHelper } from "../utils/table-helper";
 
 /**
  * Servicio para la configuración y gestión de tablas dinámicas.
@@ -12,7 +9,7 @@ import { TableHelper } from '../utils/table-helper';
  * por los componentes de visualización de datos.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TableService {
   private readonly jQueryService = inject(JQueryService);
@@ -31,16 +28,39 @@ export class TableService {
    * @returns Configuración de tabla dinámica lista para ser utilizada por los componentes de visualización.
    */
   public getTableConfiguration(
-    configuration: TableConfiguration
+    configuration: TableConfiguration,
   ): TableOptions {
     const cols =
       configuration.options.cols?.filter((col) =>
-        configuration.dimensions.find((d) => d.nameView === col)
+        configuration.dimensions.find((d) => d.nameView === col),
       ) || [];
     const rows =
       configuration.options.rows?.filter((row) =>
-        configuration.dimensions.find((d) => d.nameView === row)
+        configuration.dimensions.find((d) => d.nameView === row),
       ) || [];
+
+    const sorters = configuration.dimensions.map((dimension) => {
+      // Buscar si hay un sorter configurado que sobreescriba esta dimensión
+      const configSorter = configuration.options.sorters?.find(
+        (sorter) => sorter.name === dimension.nameView,
+      );
+
+      if (configSorter) {
+        // Si hay un sorter configurado, usar ese en lugar del de la dimensión
+        return configSorter;
+      }
+
+      // Si no hay sorter configurado, usar el orden de la dimensión
+      return {
+        name: dimension.nameView,
+        items: dimension.items.map(
+          (item: { name: string; order?: number }, index: number) => ({
+            name: item.name,
+            order: item.order ?? index,
+          }),
+        ),
+      };
+    });
 
     return {
       cols: cols,
@@ -48,14 +68,8 @@ export class TableService {
       digitsAfterDecimal: configuration.options.digitsAfterDecimal,
       totalCol: configuration.options.totalCol,
       totalRow: configuration.options.totalRow,
-      sorters: configuration.dimensions.map((dimension) => ({
-        name: dimension.nameView,
-        items: dimension.items.map((item: { name: string; order?: number }, index: number) => ({
-          name: item.name,
-          order: item.order ?? index,
-        })),
-      })),
-      suffix: configuration.options.suffix ?? '',
+      sorters: sorters,
+      suffix: configuration.options.suffix ?? "",
     };
   }
 }

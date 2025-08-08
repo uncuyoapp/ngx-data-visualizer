@@ -1,344 +1,181 @@
 <div class="container">
-  <h1>Ejemplos de Tabla</h1>
+  <h1>Ejemplos de Tabla - Directiva libTable</h1>
+  <p class="introduction">
+    Esta página presenta diversos ejemplos de uso de la directiva <code>libTable</code> de la librería ngx-data-visualizer.
+    Cada ejemplo está organizado en tabs que permiten ver el resultado, el código TypeScript de configuración y el HTML utilizado.
+  </p>
 
   <section class="demo-section">
-    <h2>Configuración del Dataset</h2>
-    <p>El Dataset es el contenedor principal de los datos y sus dimensiones. Aquí se muestra cómo configurarlo:</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-// Dataset con dimensiones predefinidas
-dataset1 = new Dataset({{ '{' }}
-  rowData: exampleData,  // Datos de ejemplo
-  id: 1,                // Identificador único
-  dimensions: dashDimensions,  // Dimensiones importadas del archivo JSON
-  enableRollUp: true    // Habilita la agrupación de datos
-{{ '}' }});</code></pre>
-    </div>
-  </section>
-  
-  <section class="demo-section">
     <h2>1. Configuración Básica</h2>
-    <p>Una columna y múltiples filas con totales habilitados.</p>
-    <div class="code-example" data-table-config="basicConfig">
-      <pre><code>// TypeScript
-basicConfig: TableOptions = {{ '{' }}
-  cols: ['Año'],
-  rows: ['Condición', 'Sector de gestión', 'Sexo'],
-  digitsAfterDecimal: 0,
-  sorters: [],
-  totalRow: true,
-  totalCol: true
-{{ '}' }};</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [tableOptions]="basicConfig"&gt;&lt;/libTable&gt;</code></pre>
-    </div>
-    <div class="table-container" style="height: 500px;">
-      <libTable [dataset]="dataset1" [tableOptions]="basicConfig"></libTable>
-    </div>
+    <p class="section-description">
+      Este ejemplo demuestra una configuración básica de tabla con una sola columna ("Año") y múltiples filas
+      ("Condición", "Sexo", "Sector de gestión"). Se muestran los totales tanto por fila como por columna,
+      proporcionando un resumen completo de los datos. Esta configuración es ideal para análisis temporales
+      donde se desea ver la evolución de diferentes categorías a lo largo del tiempo.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container" style="height: 500px;">
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig1"></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example1TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example1HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </section>
 
   <section class="demo-section">
     <h2>2. Múltiples Columnas</h2>
-    <p>Configuración con múltiples columnas y una fila.</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-multiColConfig: TableOptions = {{ '{' }}
-  cols: ['Año', 'Sexo'],
-  rows: ['Condición'],
-  digitsAfterDecimal: 0,
-  sorters: [],
-  totalRow: true,
-  totalCol: true
-{{ '}' }};</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [tableOptions]="multiColConfig"&gt;&lt;/libTable&gt;</code></pre>
-    </div>
-    <div class="table-container">
-      <libTable [dataset]="dataset1" [tableOptions]="multiColConfig"></libTable>
-    </div>
+    <p class="section-description">
+      Esta configuración presenta múltiples columnas ("Sector de gestión" y "Condición") con una sola fila ("Año").
+      Este diseño es especialmente útil para comparar diferentes categorías lado a lado, permitiendo un análisis
+      transversal de los datos. Los totales por fila y columna facilitan la comprensión de los agregados por cada
+      dimensión, siendo ideal para reportes comparativos entre sectores y condiciones.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container">
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig2"></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example2TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example2HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </section>
 
   <section class="demo-section">
     <h2>3. Ordenamiento Personalizado</h2>
-    <p>Tabla con ordenamiento personalizado de años.</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-sortedConfig: TableOptions = {{ '{' }}
-  cols: ['Año'],
-  rows: ['Condición', 'Sector de gestión'],
-  digitsAfterDecimal: 0,
-  sorters: [
-    {{ '{' }}
-      name: 'Año',
-      items: [
-        {{ '{' }} name: '2012', order: 0 {{ '}' }},
-        {{ '{' }} name: '2011', order: 1 {{ '}' }},
-        {{ '{' }} name: '2010', order: 2 {{ '}' }},
-        {{ '{' }} name: '2013', order: 3 {{ '}' }},
-        {{ '{' }} name: '2014', order: 4 {{ '}' }},
-        {{ '{' }} name: '2015', order: 5 {{ '}' }},
-        {{ '{' }} name: '2016', order: 6 {{ '}' }},
-        {{ '{' }} name: '2017', order: 7 {{ '}' }},
-        {{ '{' }} name: '2018', order: 8 {{ '}' }}
-      ]
-    {{ '}' }}
-  ],
-  totalRow: true,
-  totalCol: true
-{{ '}' }};</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [tableOptions]="sortedConfig"&gt;&lt;/libTable&gt;</code></pre>
-    </div>
-    <div class="table-container">
-      <libTable [dataset]="dataset1" [tableOptions]="sortedConfig"></libTable>
-    </div>
+    <p class="section-description">
+      Este ejemplo avanzado demuestra cómo implementar ordenamiento personalizado mediante la configuración de sorters.
+      Se define un orden específico para la dimensión "Condición": primero "Nuevo inscripto", luego "Estudiante" y
+      finalmente "Egresado". Esta funcionalidad es crucial para presentar datos educativos en un orden lógico que
+      refleje el flujo académico natural, mejorando significativamente la legibilidad y comprensión de los resultados.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container">
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3"></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example3TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example3HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </section>
 
   <section class="demo-section">
-    <h2>4. Valores con Sufijo</h2>
-    <p>Tabla con valores que incluyen un sufijo porcentual.</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-suffixConfig: TableOptions = {{ '{' }}
-  cols: ['Año'],
-  rows: ['Condición', 'Sector de gestión', 'Sexo'],
-  digitsAfterDecimal: 0,
-  sorters: [],
-  totalRow: true,
-  totalCol: true,
-  suffix: '%'
-{{ '}' }};</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset1" [tableOptions]="suffixConfig"&gt;&lt;/libTable&gt;</code></pre>
-    </div>
-    <div class="table-container">
-      <libTable [dataset]="dataset1" [tableOptions]="suffixConfig"></libTable>
-    </div>
+    <h2>4. Configuración de Temas</h2>
+    <p class="section-description">
+      Esta sección demuestra las capacidades de personalización visual de la directiva libTable a través del ThemeService.
+      Se pueden aplicar temas predefinidos (Default, Material, Bootstrap) o crear personalizaciones específicas modificando
+      colores individuales. Los botones interactivos permiten cambiar dinámicamente la apariencia de la tabla,
+      demostrando la flexibilidad del sistema de temas para adaptarse a diferentes estilos de interfaz y requisitos de marca.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="theme-buttons">
+            <button mat-raised-button color="primary" (click)="setDefaultTheme()">Tema por Defecto</button>
+            <button mat-raised-button color="accent" (click)="setMaterialTheme()">Tema Material</button>
+            <button mat-raised-button color="warn" (click)="setBootstrapTheme()">Tema Bootstrap</button>
+            <button mat-raised-button (click)="updateThemeWithCustomColors()">Personalizar Tema</button>
+          </div>
+          <div class="table-container">
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" #tableTheme></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example4TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example4HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </section>
-
-  <section class="demo-section">
-    <h2>5. Dataset Alternativo</h2>
-    <p>Ejemplo usando un conjunto de datos diferente con dimensiones de departamentos.</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-// Dataset alternativo
-dataset2 = new Dataset({{ '{' }}
-  rowData: exampleData2,
-  id: 2,
-  dimensions: dimensions,  // Dimensiones importadas del archivo JSON
-  enableRollUp: true
-{{ '}' }});
-
-// Configuración para el dataset alternativo
-dataset2Config: TableOptions = {{ '{' }}
-  cols: ['Departamentos'],
-  rows: ['Año'],
-  digitsAfterDecimal: 0,
-  sorters: [
-    {{ '{' }}
-      name: 'Departamentos de Mendoza',
-      items: dimensions[0].items.map((item, index) => ({{ '{' }}
-        name: item.name,
-        order: index
-      {{ '}' }}))
-    {{ '}' }}
-  ],
-  totalRow: true,
-  totalCol: true
-{{ '}' }};</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;libTable [dataset]="dataset2" [tableOptions]="dataset2Config"&gt;&lt;/libTable&gt;</code></pre>
-    </div>
-    <div class="table-container">
-      <libTable [dataset]="dataset2" [tableOptions]="dataset2Config"></libTable>
-    </div>
-  </section>
-
-  <section class="demo-section">
-    <h2>6. Configuración de Temas</h2>
-    <p>Ejemplo de cómo configurar y cambiar el tema de la tabla usando ThemeService.</p>
-    <div class="code-example">
-      <pre><code>// TypeScript
-// Inyectar el servicio en el constructor
-constructor(private themeService: ThemeService) {{ '{' }} {{ '}' }}
-
-// Configurar los temas disponibles
-ngOnInit(): void {{ '{' }}
-  // Establecer el tema por defecto
-  this.themeService.setTheme('default');
-{{ '}' }}
-
-// Métodos para cambiar el tema
-setDefaultTheme(): void {{ '{' }}
-  this.themeService.setTheme('default');
-{{ '}' }}
-
-setMaterialTheme(): void {{ '{' }}
-  this.themeService.setTheme('material');
-{{ '}' }}
-
-setBootstrapTheme(): void {{ '{' }}
-  this.themeService.setTheme('bootstrap');
-{{ '}' }}</code></pre>
-      <pre><code>&lt;!-- HTML --&gt;
-&lt;div class="theme-buttons"&gt;
-  &lt;button (click)="setDefaultTheme()"&gt;Tema por Defecto&lt;/button&gt;
-  &lt;button (click)="setMaterialTheme()"&gt;Tema Material&lt;/button&gt;
-  &lt;button (click)="setBootstrapTheme()"&gt;Tema Bootstrap&lt;/button&gt;
-  &lt;button (click)="updateThemeWithCustomColors()"&gt;Personalizar Tema&lt;/button&gt;
-&lt;/div&gt;
-
-&lt;div class="table-container"&gt;
-  &lt;libTable [dataset]="dataset1" [tableOptions]="basicConfig"&gt;&lt;/libTable&gt;
-&lt;/div&gt;</code></pre>
-    </div>
-    <div class="theme-buttons">
-      <button (click)="setDefaultTheme()">Tema por Defecto</button>
-      <button (click)="setMaterialTheme()">Tema Material</button>
-      <button (click)="setBootstrapTheme()">Tema Bootstrap</button>
-      <button (click)="updateThemeWithCustomColors()">Personalizar Tema</button>
-    </div>
-    <div class="table-container">
-      esta es
-      <libTable [dataset]="dataset1" [tableOptions]="basicConfig" #tableTheme></libTable>
-    </div>
-  </section>
-
-  <section class="demo-section">
-    <h2>7. Prueba de Múltiples Tablas con Temas Independientes</h2>
-    <p>Esta sección demuestra cómo cada tabla puede tener su propio tema independiente.</p>
-    <div class="theme-buttons">
-      <button (click)="setDefaultTheme1()">Tema Default (Tabla 1)</button>
-      <button (click)="setMaterialTheme1()">Tema Material (Tabla 1)</button>
-      <button (click)="setBootstrapTheme1()">Tema Bootstrap (Tabla 1)</button>
-      <button (click)="setDefaultTheme2()">Tema Default (Tabla 2)</button>
-      <button (click)="setMaterialTheme2()">Tema Material (Tabla 2)</button>
-      <button (click)="setBootstrapTheme2()">Tema Bootstrap (Tabla 2)</button>
-    </div>
-    
-    <div class="tables-row">
-      <div class="table-container">
-        <h3>Tabla 1</h3>
-        <libTable [dataset]="dataset1" [tableOptions]="basicConfig" #table1></libTable>
-      </div>
-      
-      <div class="table-container">
-        <h3>Tabla 2</h3>
-        <libTable [dataset]="dataset2" [tableOptions]="dataset2Config" #table2></libTable>
-      </div>
-    </div>
-  </section>
-
-  <section class="documentation">
-    <h2>Documentación</h2>
-    
-    <h3>Configuración del Dataset</h3>
-    <p>El Dataset es el contenedor principal de los datos y sus dimensiones:</p>
-    <ul>
-      <li><code>rowData</code>: Array con los datos de ejemplo</li>
-      <li><code>id</code>: Identificador único del dataset</li>
-      <li><code>dimensions</code>: Array de dimensiones disponibles
-        <ul>
-          <li><code>id</code>: Identificador de la dimensión</li>
-          <li><code>name</code>: Nombre interno de la dimensión</li>
-          <li><code>nameView</code>: Nombre mostrado en la interfaz</li>
-          <li><code>items</code>: Lista de valores posibles</li>
-          <li><code>selected</code>: Indica si la dimensión está seleccionada</li>
-        </ul>
-      </li>
-      <li><code>enableRollUp</code>: Habilita la agrupación de datos</li>
-    </ul>
-
-    <h3>Configuración de Columnas y Filas</h3>
-    <p>Las columnas y filas se configuran a través de las opciones de la tabla:</p>
-    <ul>
-      <li><code>cols</code>: Array de nombres de columnas para el eje horizontal (usar nameView)</li>
-      <li><code>rows</code>: Array de nombres de columnas para el eje vertical (usar nameView)</li>
-      <li><code>digitsAfterDecimal</code>: Número de decimales a mostrar</li>
-      <li><code>totalRow</code>: Mostrar fila de totales</li>
-      <li><code>totalCol</code>: Mostrar columna de totales</li>
-    </ul>
-
-    <h3>Ordenamiento Personalizado</h3>
-    <p>Puedes definir el orden específico de los valores usando la propiedad <code>sorters</code>:</p>
-    <ul>
-      <li><code>name</code>: Nombre de la dimensión a ordenar</li>
-      <li><code>items</code>: Lista de ítems con su orden específico
-        <ul>
-          <li><code>name</code>: Nombre del ítem</li>
-          <li><code>order</code>: Posición en el orden (0 es el primero)</li>
-        </ul>
-      </li>
-    </ul>
-
-    <h3>Formato de Valores</h3>
-    <p>Puedes personalizar el formato de los valores numéricos:</p>
-    <ul>
-      <li><code>digitsAfterDecimal</code>: Número de decimales a mostrar</li>
-      <li><code>suffix</code>: Sufijo opcional para los valores (ej: '%', '€', etc.)</li>
-    </ul>
-
-    <h3>Configuración de Temas</h3>
-    <p>Puedes personalizar la apariencia de la tabla usando ThemeService. El servicio proporciona tres temas predefinidos:</p>
-    <ul>
-      <li><code>default</code>: Tema por defecto con colores neutros y diseño limpio</li>
-      <li><code>material</code>: Tema basado en Material Design con colores y estilos de Material UI</li>
-      <li><code>bootstrap</code>: Tema basado en Bootstrap 5 con colores y estilos de Bootstrap</li>
-    </ul>
-    <p>Para cambiar el tema, simplemente llama al método <code>setTheme</code> del servicio:</p>
-    <pre><code>// TypeScript
-constructor(private themeService: ThemeService) {{ '{' }} {{ '}' }}
-
-// Cambiar al tema por defecto
-this.themeService.setTheme('default');
-
-// Cambiar al tema Material
-this.themeService.setTheme('material');
-
-// Cambiar al tema Bootstrap
-this.themeService.setTheme('bootstrap');</code></pre>
-
-    <p>También puedes personalizar parcialmente el tema actual usando el método <code>updateTheme</code>:</p>
-    <pre><code>// TypeScript
-// Personalizar colores del tema actual
-this.themeService.updateTheme({{ '{' }}
-  tableHover: '#1976d2',
-  tableHoverContrast: '#ffffff',
-  tableDataBg: '#f8f9fa',
-  tableLabelBg: '#e9ecef',
-  axisLabelBg: '#ffffff',
-  textColor: '#212529',
-  dataTextColor: '#495057',
-  labelTextColor: '#6c757d'
-{{ '}' }});
-
-// Personalizar fuentes y espaciado
-this.themeService.updateTheme({{ '{' }}
-  fontSize: '14px',
-  headerFontSize: '16px',
-  lineHeight: '1.5',
-  padding: {{ '{' }}
-    cell: '12px',
-    label: '8px'
-  {{ '}' }}
-{{ '}' }});
-
-// Personalizar bordes y sombras
-this.themeService.updateTheme({{ '{' }}
-  border: {{ '{' }}
-    color: '#dee2e6',
-    width: '1px',
-    style: 'solid'
-  {{ '}' }},
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-{{ '}' }});</code></pre>
-
-    <p>El método <code>updateTheme</code> permite modificar solo las propiedades que desees, manteniendo el resto de la configuración del tema actual. Esto es útil para:</p>
-    <ul>
-      <li>Ajustar colores específicos sin cambiar todo el tema</li>
-      <li>Modificar tamaños de fuente o espaciado</li>
-      <li>Personalizar bordes y sombras</li>
-      <li>Crear variaciones de un tema base</li>
-    </ul>
-  </section>
-</div> 
+</div>

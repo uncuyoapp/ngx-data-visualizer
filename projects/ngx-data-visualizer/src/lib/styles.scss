@@ -20,6 +20,9 @@
   --table-data-text-color: #333333;
   --table-label-text-color: #333333;
 
+  // Alineación de texto
+  --table-data-text-align: right;
+
   // Bordes
   --table-border-color: #e6e6e6;
   --table-border-width: 2px;
@@ -167,20 +170,6 @@ table.pvtTable {
   font-size: var(--table-font-size);
   color: var(--table-text-color);
 
-  // Estilos comunes para bordes
-  th,
-  td,
-  .pvtCorner,
-  .pvtColLabel,
-  .pvtTotalLabel,
-  .pvtRowLabel,
-  .pvtVal,
-  .pvtTotal,
-  .pvtGrandTotal,
-  .pvtAxisLabel {
-    // border: var(--table-border-width) var(--table-border-style) var(--table-border-color);
-  }
-
   // Estilos de encabezado y cuerpo
   thead,
   tbody {
@@ -198,8 +187,7 @@ table.pvtTable {
   tbody {
     tr,
     td {
-      text-align: right;
-      vertical-align: top;
+      text-align: var(--table-data-text-align);
     }
   }
 
@@ -319,7 +307,8 @@ table.pvtTable {
   }
 
   .pvtCorner {
-    border: var(--table-data-bg);
+    border: var(--table-border-width) var(--table-border-style)
+      var(--table-border-color) !important;
     background: var(--table-data-bg);
     outline: var(--table-data-bg);
   }
@@ -330,6 +319,7 @@ table.pvtTable {
   .pvtGrandTotal {
     background-color: var(--table-data-bg);
     color: var(--table-data-text-color);
+    text-align: var(--table-data-text-align);
     vertical-align: middle;
     padding: var(--table-cell-padding);
     // box-shadow: var(--table-cell-box-shadow);

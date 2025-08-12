@@ -33,6 +33,12 @@ export interface TableTheme {
     label: string;
   };
 
+  /** Configuración de bordes generales */
+  border: {
+    color: string;
+    width: string;
+    style: string;
+  };
   /** Configuración de bordes para etiquetas */
   labelBorder: {
     color: string;
@@ -67,6 +73,10 @@ export interface TableTheme {
   dataHover: string;
   /** Color de contraste hover para datos */
   dataHoverContrast: string;
+  /** Color de fondo hover para encabezados */
+  headerHover: string;
+  /** Color de contraste hover para encabezados */
+  headerHoverContrast: string;
 
   /** Configuración de sombras */
   boxShadow: string;
@@ -79,4 +89,7 @@ export interface TableTheme {
   labelBorderRadius: string;
   /** Border radius para datos */
   dataBorderRadius: string;
-} 
+
+  /** Alineación del texto para los datos del tbody */
+  dataTextAlign: "left" | "right" | "center" | "justify" | "inherit";
+}

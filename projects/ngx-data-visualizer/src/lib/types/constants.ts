@@ -322,6 +322,8 @@ export const TableThemes = {
     labelHoverContrast: "black",
     dataHover: "#dfecff",
     dataHoverContrast: "black",
+    headerHover: "#e0e7ef",
+    headerHoverContrast: "#1a237e",
     labelHoverBorder: {
       color: "#008bff",
       width: "2px",
@@ -334,6 +336,7 @@ export const TableThemes = {
     },
     labelBorderRadius: "1rem",
     dataBorderRadius: "1rem",
+    dataTextAlign: "right",
   },
 
   /** Tema Material Design */
@@ -375,6 +378,8 @@ export const TableThemes = {
     labelHoverContrast: "#fff",
     dataHover: "#1976d2",
     dataHoverContrast: "#fff",
+    headerHover: "#e3f2fd",
+    headerHoverContrast: "#0d47a1",
     labelHoverBorder: {
       color: "#1976d2",
       width: "2px",
@@ -387,13 +392,14 @@ export const TableThemes = {
     },
     labelBorderRadius: "1rem",
     dataBorderRadius: "1rem",
+    dataTextAlign: "center",
   },
 
   /** Tema Bootstrap 5 */
   BOOTSTRAP: {
     tableHover: "#0d6efd",
     tableHoverContrast: "#ffffff",
-    tableDataBg: "#ffffff",
+    tableDataBg: "#ffff",
     tableLabelBg: "#f8f9fa",
     axisLabelBg: "#f8f9fa",
     textColor: "#0d6efd",
@@ -411,9 +417,9 @@ export const TableThemes = {
       width: "1px",
       style: "solid",
     },
-    boxShadow: "inset 0px 2px 0px #f8f9fa",
-    borderSpacing: "0.5rem",
-    borderCollapse: "separate",
+    boxShadow: "none",
+    borderSpacing: "0",
+    borderCollapse: "collapse",
     labelBorder: {
       color: "#dee2e6",
       width: "1px",
@@ -428,18 +434,21 @@ export const TableThemes = {
     labelHoverContrast: "#fff",
     dataHover: "#0d6efd",
     dataHoverContrast: "#fff",
+    headerHover: "#cfe2ff",
+    headerHoverContrast: "#052c65",
     labelHoverBorder: {
-      color: "#0d6efd",
-      width: "2px",
+      color: "#f8f9fa",
+      width: "1px",
       style: "solid",
     },
     dataHoverBorder: {
-      color: "#0d6efd",
-      width: "2px",
+      color: "#f8f9fa",
+      width: "1px",
       style: "solid",
     },
-    labelBorderRadius: "1rem",
-    dataBorderRadius: "1rem",
+    labelBorderRadius: "0",
+    dataBorderRadius: "0",
+    dataTextAlign: "right",
   },
 } as const;
 

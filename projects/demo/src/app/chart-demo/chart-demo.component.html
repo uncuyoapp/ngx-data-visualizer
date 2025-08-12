@@ -1,0 +1,222 @@
+<div class="container">
+  <h1>Usos y configuraciones de la directiva libChart</h1>
+  <p class="introduction">
+    Esta página presenta diversos ejemplos de uso de la directiva <code>libChart</code> de la librería ngx-data-visualizer.
+  </p>
+
+  <section class="demo-section">
+    <h2>1. Gráfico de Columnas Básico</h2>
+    <p class="section-description">
+      Este ejemplo demuestra una configuración básica de gráfico de columnas que muestra la distribución de estudiantes
+      por año y condición. El gráfico incluye leyendas en la parte inferior, colores personalizados para cada serie
+      y tooltips informativos. Esta configuración es ideal para visualizar datos categóricos a lo largo del tiempo,
+      permitiendo comparaciones claras entre diferentes grupos.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="chart-container">
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1"></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example1TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example1HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>2. Gráfico de Líneas con Series Múltiples</h2>
+    <p class="section-description">
+      Esta configuración presenta un gráfico de líneas que muestra la evolución temporal de diferentes series de datos.
+      El tooltip compartido permite comparar valores de múltiples series en un mismo punto temporal, mientras que las
+      leyendas posicionadas a la derecha facilitan la identificación de cada línea. Este tipo de visualización es
+      especialmente útil para análisis de tendencias y patrones temporales en datos continuos.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="chart-container">
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example2TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example2HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>3. Gráfico de Columnas Apiladas</h2>
+    <p class="section-description">
+      Este ejemplo avanzado muestra un gráfico de columnas apiladas que permite visualizar la composición total
+      de cada categoría. La configuración de apilamiento ("stacked") agrupa las series relacionadas, mientras que
+      el tooltip compartido muestra tanto los valores individuales como el total acumulado. Esta visualización es
+      perfecta para mostrar partes de un todo y cómo cambian las proporciones a lo largo del tiempo.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="chart-container">
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example3TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example3HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>4. Gráfico de Columnas con eje x doble nivel</h2>
+    <p class="section-description">
+      Este ejemplo avanzado muestra un gráfico de columnas con doble nivel en el eje x, y permite visualizar el año y el sector.
+
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="chart-container">
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example4TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example4HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>5. Funcionalidades Interactivas</h2>
+    <p class="section-description">
+      Esta sección demuestra las capacidades interactivas de la directiva libChart. Incluye métodos para alternar
+      entre vista normal y porcentual, así como opciones de exportación en formatos SVG y JPG. Los botones interactivos
+      permiten cambiar dinámicamente el modo de visualización y descargar el gráfico en diferentes formatos,
+      proporcionando flexibilidad para presentaciones y reportes.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="interactive-buttons">
+            <button mat-raised-button color="primary" (click)="togglePercentage()">
+              Alternar Porcentaje
+            </button>
+          </div>
+          <div class="chart-container">
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre class="language-typescript"><code [textContent]="example5TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre class="language-html"><code [textContent]="example5HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <h4>Configuraciones disponibles:</h4>
+    <pre class="language-typescript"><code [textContent]="example6HTML"></code></pre>
+  </section>
+</div>

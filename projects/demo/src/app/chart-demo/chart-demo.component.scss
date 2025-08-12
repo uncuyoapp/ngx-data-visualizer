@@ -1,0 +1,280 @@
+.container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.introduction {
+  text-align: justify;
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+
+  code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", monospace;
+    color: #e91e63;
+    font-size: 14px;
+  }
+}
+
+.demo-section {
+  margin-bottom: 50px;
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: 500;
+    border-bottom: 3px solid #1976d2;
+    padding-bottom: 10px;
+    display: inline-block;
+  }
+
+  .section-description {
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.7;
+    font-size: 16px;
+    text-align: justify;
+  }
+}
+
+.tab-content {
+  padding: 20px;
+
+  .chart-container {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+    min-height: 400px;
+  }
+
+  .card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+
+    .card-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+      padding: 0.75rem 1.25rem;
+      font-size: 14px;
+      color: #495057;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 0;
+      background-color: #272822 !important;
+
+      pre {
+        margin: 0;
+        padding: 1.25rem;
+        background-color: #272822 !important;
+        color: #f8f8f2;
+        font-family:
+          "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-x: auto;
+
+        code {
+          background: transparent !important;
+          color: inherit !important;
+          padding: 0 !important;
+          font-family: inherit;
+        }
+      }
+    }
+  }
+}
+
+.interactive-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  button {
+    font-weight: 500;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Estilos específicos para diferentes tipos de gráficos
+.chart-container {
+  &.pie-chart {
+    .chart-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  &.line-chart {
+    padding: 10px;
+
+    .chart-wrapper {
+      border: 2px solid #f0f0f0;
+      border-radius: 8px;
+    }
+  }
+
+  &.column-chart {
+    padding: 5px;
+
+    .chart-wrapper {
+      background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .demo-section {
+    padding: 20px;
+    margin-bottom: 30px;
+
+    h2 {
+      font-size: 24px;
+    }
+  }
+
+  .tab-content {
+    padding: 15px;
+
+    .chart-container {
+      min-height: 300px;
+    }
+  }
+
+  .interactive-buttons {
+    flex-direction: column;
+    gap: 10px;
+
+    button {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 26px;
+  }
+
+  .demo-section {
+    h2 {
+      font-size: 20px;
+    }
+
+    .section-description {
+      font-size: 14px;
+    }
+  }
+
+  .tab-content {
+    .chart-container {
+      min-height: 250px;
+    }
+  }
+}
+
+// Utilidades adicionales
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.fw-semibold {
+  font-weight: 600 !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+// Animaciones para los gráficos
+.chart-container {
+  opacity: 0;
+  animation: fadeInChart 0.6s ease-out forwards;
+}
+
+@keyframes fadeInChart {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estilos para mejorar la accesibilidad
+button:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+// Mejoras visuales para el tema oscuro en código
+pre[class*="language-"] {
+  background: #272822 !important;
+  border-radius: 6px;
+}
+
+code[class*="language-"] {
+  color: #f8f8f2 !important;
+  text-shadow: none !important;
+}

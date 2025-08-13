@@ -115,7 +115,7 @@
     }
 
     h2 {
-      border-bottom: 3px solid #007bff;
+      border-bottom: 3px solid #ffc107;
       padding-bottom: 0.5rem;
       display: inline-block;
       margin-bottom: 1rem;
@@ -133,7 +133,7 @@
   .mat-mdc-tab {
     &.mdc-tab--active {
       .mdc-tab__text-label {
-        color: #007bff;
+        color: #ffc107;
         font-weight: 600;
       }
     }
@@ -143,13 +143,48 @@
 .tab-content {
   padding: 1.5rem;
 
-  .chart-container {
+  .multichart-container {
     width: 100%;
-    min-height: 400px;
+    min-height: 500px;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     background: #ffffff;
     padding: 1rem;
+    display: grid;
+    gap: 1rem;
+
+    // Grid layout for multiple charts
+    &.grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    &.grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    // Individual chart styling
+    .individual-chart {
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      padding: 0.5rem;
+      background: #fafafa;
+      min-height: 250px;
+
+      .chart-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #495057;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+    }
   }
 }
 
@@ -158,7 +193,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
   border-radius: 10px;
   justify-content: center;
   flex-wrap: wrap;
@@ -238,6 +273,15 @@
       }
     }
 
+    &.btn-primary {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      border-color: #007bff;
+
+      &:hover {
+        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+      }
+    }
+
     &.btn-success {
       background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
       border-color: #28a745;
@@ -246,25 +290,24 @@
         background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
       }
     }
+  }
+}
 
-    &.btn-warning {
-      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-      border-color: #ffc107;
-      color: #212529;
-
-      &:hover {
-        background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
-        color: #212529;
+// Responsive design
+@media (max-width: 1200px) {
+  .tab-content {
+    .multichart-container {
+      &.grid-3 {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .btn-subtitle {
-        color: #6c5e00;
+      &.grid-4 {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -285,9 +328,19 @@
   .tab-content {
     padding: 1rem;
 
-    .chart-container {
-      min-height: 300px;
+    .multichart-container {
+      min-height: 400px;
       padding: 0.5rem;
+
+      &.grid-2,
+      &.grid-3,
+      &.grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .individual-chart {
+        min-height: 200px;
+      }
     }
   }
 
@@ -321,16 +374,59 @@
   }
 }
 
-// Animaciones
-.chart-container {
-  opacity: 0;
-  animation: fadeInChart 0.6s ease-out forwards;
+@media (max-width: 480px) {
+  .tab-content {
+    .multichart-container {
+      min-height: 300px;
+      gap: 0.5rem;
+
+      .individual-chart {
+        min-height: 150px;
+        padding: 0.25rem;
+
+        .chart-title {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
 }
 
-@keyframes fadeInChart {
+// Animaciones específicas para múltiples gráficos
+.multichart-container {
+  opacity: 0;
+  animation: fadeInMultiChart 0.8s ease-out forwards;
+
+  .individual-chart {
+    opacity: 0;
+    transform: scale(0.95);
+    animation: fadeInChart 0.6s ease-out forwards;
+
+    &:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    &:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+    &:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+    &:nth-child(6) {
+      animation-delay: 0.6s;
+    }
+  }
+}
+
+@keyframes fadeInMultiChart {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -338,10 +434,79 @@
   }
 }
 
+@keyframes fadeInChart {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Estados de carga para múltiples gráficos
+.multichart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #6c757d;
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #ffc107;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 1rem;
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 // Mejoras de accesibilidad
 button:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid #ffc107;
   outline-offset: 2px;
+}
+
+// Utilidades específicas para múltiples gráficos
+.chart-sync-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background: #28a745;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(40, 167, 69, 0.1);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+  }
 }
 
 // Utilidades

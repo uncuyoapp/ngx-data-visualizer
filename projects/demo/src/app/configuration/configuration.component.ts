@@ -1,21 +1,35 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { AfterViewInit, Component } from "@angular/core";
+import { Router } from "@angular/router";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
 
 @Component({
-  selector: 'app-configuration',
+  selector: "app-configuration",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './configuration.component.html',
-  styleUrl: './configuration.component.scss',
+  templateUrl: "./configuration.component.html",
+  styleUrl: "./configuration.component.scss",
 })
 export class ConfigurationComponent implements AfterViewInit {
+  constructor(private router: Router) {}
 
   ngAfterViewInit() {
     // Usamos Prism para formatear las secciones de código para que se vean bonitas.
     Prism.highlightAll();
+  }
+
+  navigateToChartDemo(): void {
+    this.router.navigate(["/chart-demo"]);
+  }
+
+  navigateToTableDemo(): void {
+    this.router.navigate(["/table-demo"]);
+  }
+
+  navigateToMultichartDemo(): void {
+    this.router.navigate(["/multichart-demo"]);
   }
 
   importCode = `import { Component, OnInit } from '@angular/core';
@@ -252,125 +266,4 @@ dataset.dimensions.forEach((dimension: Dimension) => {
 
 // Aplicar filtros vacíos para resetear el dataset
 dataset.applyFilters(new Filters());`;
-
-  chartOptionsCode =
-    `/**
- * Interfaz que define las opciones de configuración para un gráfico
- */
-interface ChartOptions {
-  /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
-  type: string;
-  /** Título del gráfico */
-  title?: string;
-  /** Indica si el gráfico está apilado y el valor debe corresponder al nombre de una de las dimensiones del conjunto de datos */
-  stacked: string | null;
-  /** Configuración del eje X */
-  xAxis: {
-    /** Título del eje X */
-    title: string,
-    /** Ángulo de rotación de las etiquetas en grados */
-    rotateLabels: number | null,
-    /** Nivel de agrupación primario (id de una de las dimensiones del conjunto de datos) */
-    firstLevel: number,
-    /** Nivel de agrupación secundario (id de una de las dimensiones del conjunto de datos) (opcional) */
-    secondLevel: number | null
-  },
-  /** Configuración del eje Y */
-  yAxis: {
-    /** Título del eje Y */
-    title: string,
-    /** Valor máximo del eje Y */
-    max: number | null
-  },
-  /** Configuración del tooltip */
-  tooltip: {
-    /** Indica si el tooltip es compartido entre series */
-    shared: boolean,
-    /** Número de decimales a mostrar */
-    decimals: number | null,
-    /** Sufijo para los valores */
-    suffix: string | null,
-    /** Formato personalizado para los valores */
-    format: string | null,
-    /** Indica si se muestra el total en el tooltip */
-    showTotal: boolean
-  },
-  /** Configuración de las leyendas */
-  legends: {
-    /** Indica si las leyendas están habilitadas */
-    enabled: boolean,
-    /** Indica si se muestran las leyendas */
-    show: boolean,
-    /** Posición de las leyendas */
-    position: string
-  },
-  /** Configuración del navegador */
-  navigator: {
-    /** Indica si se muestra el navegador */
-    show: boolean,
-    /** Valor inicial del navegador */
-    start: number | null,
-    /** Valor final del navegador */
-    end: number | null
-  },
-  /** Array de colores personalizados para las series */
-  colors?: string[],
-  /** Ancho del gráfico */
-  width: number | null,
-  /** Alto del gráfico */
-  height: number | string | null,
-  /** Indica si se filtra el último año */
-  filterLastYear: boolean,
-  /** Indica si se muestra la leyenda de años */
-  showYearsLegend: boolean,
-  /** Indica si los valores se muestran en porcentaje */
-  toPercent: boolean,
-  /** Unidad de medida para los valores */
-  measureUnit: string;
-  /** Indica si el gráfico está en modo vista previa */
-  isPreview: boolean;
-  /** Indica si se deshabilita la actualización automática */
-  disableAutoUpdate: boolean;
-}`;
-
-  chartHtmlCode = `<libChart [dataset]="myDataset" [chartOptions]="chartOptions"></libChart>`;
-
-  tableOptionsCode =
-    `/**
-  * Interfaz para la configuración de una tabla
-  */
-interface TableOptions {
-  /** Número de decimales a mostrar */
-  digitsAfterDecimal: number;
-  /** Configuración de ordenamiento para cada dimensión */
-  sorters: TableSorter[];
-  /** Indica si se debe mostrar la fila de totales */
-  totalRow: boolean;
-  /** Indica si se debe mostrar la columna de totales */
-  totalCol: boolean;
-  /** Lista de nombres de columnas */
-  cols: string[];
-  /** Lista de nombres de filas */
-  rows: string[];
-  /** Sufijo opcional para los valores numéricos */
-  suffix?: string;
-}
-
-/**
-* Interfaz para la configuración del ordenamiento de dimensiones
-*/
-interface TableSorter {
-  /** Nombre de la dimensión a ordenar */
-  name: string;
-  /** Lista de ítems con su orden específico */
-  items: {
-    /** Nombre del ítem */
-    name: string;
-    /** Orden del ítem */
-    order: number;
-  }[];
-}
-  `;
-
-  tableHtmlCode = `<libTable [dataset]="dataset" [tableOptions]="tableOptions"></libTable>`;
 }

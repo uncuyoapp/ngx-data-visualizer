@@ -5,7 +5,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
 } from "@angular/core";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatButtonModule } from "@angular/material/button";
 import {
@@ -291,7 +291,44 @@ interface TableTheme {
   constructor(
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
+
+  // Documentación de TableOptions
+  tableOptionsDocumentation = `/**
+  * Interfaz para la configuración de una tabla
+  */
+interface TableOptions {
+  /** Número de decimales a mostrar */
+  digitsAfterDecimal: number;
+  /** Configuración de ordenamiento para cada dimensión */
+  sorters: TableSorter[];
+  /** Indica si se debe mostrar la fila de totales */
+  totalRow: boolean;
+  /** Indica si se debe mostrar la columna de totales */
+  totalCol: boolean;
+  /** Lista de nombres de columnas */
+  cols: string[];
+  /** Lista de nombres de filas */
+  rows: string[];
+  /** Sufijo opcional para los valores numéricos */
+  suffix?: string;
+}
+
+/**
+* Interfaz para la configuración del ordenamiento de dimensiones
+*/
+interface TableSorter {
+  /** Nombre de la dimensión a ordenar */
+  name: string;
+  /** Lista de ítems con su orden específico */
+  items: {
+    /** Nombre del ítem */
+    name: string;
+    /** Orden del ítem */
+    order: number;
+  }[];
+}`;
 
   ngAfterViewInit(): void {
     // Timeout para asegurar que el DOM esté completamente renderizado
@@ -336,5 +373,18 @@ interface TableTheme {
       },
       this.table,
     );
+  }
+
+  // Métodos de navegación
+  navigateToConfiguration(): void {
+    this.router.navigate(["/configuration"]);
+  }
+
+  navigateToChartDemo(): void {
+    this.router.navigate(["/chart-demo"]);
+  }
+
+  navigateToMultichartDemo(): void {
+    this.router.navigate(["/multichart-demo"]);
   }
 }

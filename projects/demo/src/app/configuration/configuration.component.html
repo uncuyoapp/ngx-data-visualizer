@@ -1,16 +1,22 @@
 <div class="container my-5">
-  <h1 class="mb-4">Guía de configuración de <code>ngx-data-visualizer</code></h1>
+  <h1 class="mb-4">
+    Guía de configuración de <code>ngx-data-visualizer</code>
+  </h1>
   <p class="col-lg-12 fs-5 text-muted mb-4">
-    Esta sección explica cómo configurar e integrar la librería <code>ngx-data-visualizer</code> dentro de una
-    aplicación Angular. Abarca desde la instalación del paquete, la importación de módulos necesarios, hasta las configuraciones 
-    necesarias para utilizar las directivas disponibles. Si estás comenzando, este es el primer paso para incorporar
+    Esta sección explica cómo configurar e integrar la librería
+    <code>ngx-data-visualizer</code> dentro de una aplicación Angular. Abarca
+    desde la instalación del paquete, la importación de módulos necesarios,
+    hasta las configuraciones necesarias para utilizar las directivas
+    disponibles. Si estás comenzando, este es el primer paso para incorporar
     nuestros componentes a tu proyecto.
   </p>
-  <hr>
+  <hr />
   <section class="my-5">
     <h2>Instalación de la librería</h2>
-    <p>Para utilizar <code>ngx-data-visualizer</code> en tu proyecto Angular, en primer lugar debes instalar la librería
-      desde NPM:</p>
+    <p>
+      Para utilizar <code>ngx-data-visualizer</code> en tu proyecto Angular, en
+      primer lugar debes instalar la librería desde NPM:
+    </p>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">Bash</div>
       <div class="card-body bg-dark">
@@ -18,12 +24,12 @@
       </div>
     </div>
   </section>
-  <hr>
+  <hr />
   <section class="my-5">
     <h2>Importación de la librería</h2>
     <p>
-      Para comenzar a usar <code>ngx-data-visualizer</code>, debes importar los módulos y directivas necesarios en tu
-      componente o módulo Angular.
+      Para comenzar a usar <code>ngx-data-visualizer</code>, debes importar los
+      módulos y directivas necesarios en tu componente o módulo Angular.
     </p>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">TypeScript</div>
@@ -32,31 +38,35 @@
       </div>
     </div>
   </section>
-  <hr>
+  <hr />
   <section class="my-5">
     <h2>Directivas disponibles</h2>
     <p>
-      La librería proporciona las siguientes directivas, que debes importar y usar según tus necesidades:
+      La librería proporciona las siguientes directivas, que debes importar y
+      usar según tus necesidades:
     </p>
     <ul>
       <li>
-        <code>ChartDirective</code>: para visualización de gráficos individuales, con selector <code>libChart</code>.
+        <code>ChartDirective</code>: para visualización de gráficos
+        individuales, con selector <code>libChart</code>.
       </li>
       <li>
-        <code>MultipleChartDirective</code>: para visualizar múltiples gráficos simultáneamente, con selector
-        <code>libMultipleChart</code>.
+        <code>MultipleChartDirective</code>: para visualizar múltiples gráficos
+        simultáneamente, con selector <code>libMultipleChart</code>.
       </li>
       <li>
-        <code>TableDirective</code>: para mostrar datos en formato tabular, con selector <code>libTable</code>.
+        <code>TableDirective</code>: para mostrar datos en formato tabular, con
+        selector <code>libTable</code>.
       </li>
     </ul>
   </section>
-  <hr>
+  <hr />
   <section class="my-5">
     <h2>Configuración del Dataset</h2>
     <p>
-      El objeto <code>Dataset</code> es el núcleo de la visualización de datos en <code>ngx-data-visualizer</code>.
-      Contiene las dimensiones y los datos en bruto que serán procesados y visualizados.
+      El objeto <code>Dataset</code> es el núcleo de la visualización de datos
+      en <code>ngx-data-visualizer</code>. Contiene las dimensiones y los datos
+      en bruto que serán procesados y visualizados.
     </p>
 
     <h3>Estructura del Dataset</h3>
@@ -75,11 +85,12 @@
       </div>
     </div>
   </section>
-  <hr>
+  <hr />
   <section class="my-5">
     <h2>Filtrado y agrupación</h2>
     <p>
-      La librería permite aplicar filtros y realizar agrupaciones (rollUp) sobre el <code>Dataset</code>.
+      La librería permite aplicar filtros y realizar agrupaciones (rollUp) sobre
+      el <code>Dataset</code>.
     </p>
 
     <h3>Aplicación de filtros</h3>
@@ -98,51 +109,56 @@
       </div>
     </div>
   </section>
-  <hr>
+  <hr />
   <section class="my-5">
-    <h2>Uso de la directiva <code>libChart</code></h2>
-    <p>
-      La directiva <code>libChart</code> se utiliza para incrustar y configurar gráficos.
-      Requiere un objeto <code>Dataset</code> y un objeto <code>ChartOptions</code> como entradas.
+    <h2>Ejemplos prácticos de uso</h2>
+    <p class="section-description">
+      Una vez configurado el dataset, puedes explorar ejemplos detallados de uso
+      de cada directiva. Cada sección incluye documentación específica,
+      configuraciones disponibles y ejemplos prácticos con código fuente
+      completo.
     </p>
 
-    <h3>Configuración de opciones del gráfico (<code>ChartOptions</code>)</h3>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">TypeScript</div>
-      <div class="card-body bg-dark">
-        <pre><code class="language-typescript" [textContent]="chartOptionsCode"></code></pre>
-      </div>
-    </div>
+    <div class="navigation-buttons">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <button
+            class="btn btn-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToChartDemo()"
+          >
+            <i class="fas fa-chart-bar me-2"></i>
+            <div>
+              <div class="btn-title">Gráficos</div>
+              <small class="btn-subtitle">Directiva libChart</small>
+            </div>
+          </button>
+        </div>
 
-    <h3>Uso en el template HTML</h3>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">HTML</div>
-      <div class="card-body bg-dark">
-        <pre><code class="language-html">&lt;libChart [dataset]="dataset" [chartOptions]="chartOptions"&gt;&lt;/libChart&gt;</code></pre>
-      </div>
-    </div>
-  </section>
-  <hr>
-  <section class="my-5">
-    <h2>Uso de la directiva <code>libTable</code></h2>
-    <p>
-      La directiva <code>libTable</code> se utiliza para mostrar datos en formato tabular con capacidades de pivotado.
-      Requiere un objeto <code>Dataset</code> y un objeto <code>TableOptions</code> como entradas.
-    </p>
+        <div class="col-md-4">
+          <button
+            class="btn btn-success btn-lg w-100 navigation-btn"
+            (click)="navigateToTableDemo()"
+          >
+            <i class="fas fa-table me-2"></i>
+            <div>
+              <div class="btn-title">Tablas</div>
+              <small class="btn-subtitle">Directiva libTable</small>
+            </div>
+          </button>
+        </div>
 
-    <h3>Configuración de opciones de la tabla (<code>TableOptions</code>)</h3>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">TypeScript</div>
-      <div class="card-body bg-dark">
-        <pre><code class="language-typescript" [textContent]="tableOptionsCode"></code></pre>
-      </div>
-    </div>
-
-    <h3>Uso en el template HTML</h3>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">HTML</div>
-      <div class="card-body bg-dark">
-        <pre><code class="language-html" [textContent]="tableHtmlCode"></code></pre>
+        <div class="col-md-4">
+          <button
+            class="btn btn-warning btn-lg w-100 navigation-btn"
+            (click)="navigateToMultichartDemo()"
+          >
+            <i class="fas fa-chart-line me-2"></i>
+            <div>
+              <div class="btn-title">Múltiples Gráficos</div>
+              <small class="btn-subtitle">Directiva libMultipleChart</small>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </section>

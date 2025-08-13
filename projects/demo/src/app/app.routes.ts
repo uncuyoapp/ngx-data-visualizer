@@ -5,6 +5,7 @@ import { HomeComponent } from "./home/home.component";
 import { TableDemoComponent } from "./table-demo/table-demo.component";
 import { ChartDemoComponent } from "./chart-demo/chart-demo.component";
 import { ConfigurationComponent } from "./configuration/configuration.component";
+import { MultichartDemoComponent } from "./multichart-demo/multichart-demo.component";
 
 export const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -13,4 +14,5 @@ export const routes: Routes = [
   { path: "table-demo", component: TableDemoComponent },
   { path: "chart-demo", component: ChartDemoComponent },
   { path: "configuration", component: ConfigurationComponent },
+  { path: "multichart-demo", component: MultichartDemoComponent },
 ];

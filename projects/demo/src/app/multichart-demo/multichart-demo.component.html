@@ -142,20 +142,35 @@
   </section>
 
   <section class="demo-section">
-    <h2>3. Funcionalidades Interactivas Avanzadas</h2>
+    <h2>3. Funcionalidades Interactivas</h2>
     <p class="section-description">
       Esta sección demuestra las capacidades interactivas avanzadas de la
       directiva libMultipleChart para cambiar de dimensión por la que se generan los gráficos.
+      El selector permite cambiar dinámicamente la dimensión utilizada para separar los datos en múltiples gráficos.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
       <mat-tab label="Ejemplo">
         <div class="tab-content">
-          <div class="interactive-buttons">
-
+          <div class="interactive-controls mb-3">
+            <mat-form-field appearance="outline" style="min-width: 250px;">
+              <mat-label>Dimensión para separar gráficos</mat-label>
+              <mat-select
+                [value]="selectedDimensionId"
+                (selectionChange)="onDimensionChange($event.value)">
+                <mat-option *ngFor="let dimension of availableDimensions" [value]="dimension.id">
+                  {{dimension.nameView}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
           <div class="multichart-container">
-
+            <libMultipleChart
+              [dataset]="dataset1"
+              [options]="multichartConfig1"
+              [splitDimension]="selectedDimension"
+              #multichartInteractive>
+            </libMultipleChart>
           </div>
         </div>
       </mat-tab>
@@ -167,7 +182,7 @@
             <div class="card-body bg-dark">
               <pre
                 class="language-typescript"
-              ><code [textContent]="example5TypeScript"></code></pre>
+              ><code [textContent]="example3TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -180,7 +195,7 @@
             <div class="card-body bg-dark">
               <pre
                 class="language-html"
-              ><code [textContent]="example5HTML"></code></pre>
+              ><code [textContent]="example3HTML"></code></pre>
             </div>
           </div>
         </div>

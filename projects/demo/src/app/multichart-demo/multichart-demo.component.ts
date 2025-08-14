@@ -16,9 +16,9 @@ import {
   ThemeService,
   Filters,
 } from "ngx-data-visualizer";
+import { MatSelectModule } from "@angular/material/select";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import dashDimensions from "../../assets/data/dash-dimensions.json";
-import exampleData2 from "../../assets/data/data.json";
-import dimensions from "../../assets/data/dimensions.json";
 import exampleData from "../../assets/data/example-data-2.json";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +33,8 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
     MultipleChartDirective,
     MatTabsModule,
     MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
   templateUrl: "./multichart-demo.component.html",
   styleUrls: ["./multichart-demo.component.scss"],
@@ -46,13 +48,18 @@ export class MultichartDemoComponent implements AfterViewInit {
     enableRollUp: true,
   });
 
-  // Dataset 2: Datos de ejemplo con dimensiones de departamentos
-  dataset2 = new Dataset({
-    rowData: exampleData2,
-    id: 2,
-    dimensions: dimensions as Dimension[],
+  // Dataset 1 con filtros aplicados para el ejemplo 2
+  dataset1Rolled = new Dataset({
+    rowData: exampleData,
+    id: 1,
+    dimensions: dashDimensions as Dimension[],
     enableRollUp: true,
   });
+
+  filters: Filters = {
+    rollUp: ["Sexo"],
+    filter: [],
+  };
 
   // Configuración 1: Múltiples gráficos de columnas por año
   multichartConfig1: ChartOptions = {
@@ -95,19 +102,6 @@ export class MultichartDemoComponent implements AfterViewInit {
     measureUnit: "estudiantes",
     isPreview: false,
     disableAutoUpdate: false,
-  };
-
-  // Dataset 1: Datos de ejemplo con dimensiones del dashboard
-  dataset1Rolled = new Dataset({
-    rowData: exampleData,
-    id: 1,
-    dimensions: dashDimensions as Dimension[],
-    enableRollUp: true,
-  });
-
-  filters: Filters = {
-    rollUp: ["Sexo"],
-    filter: [],
   };
 
   // Configuración 2: Múltiples gráficos de líneas por sector
@@ -156,12 +150,44 @@ export class MultichartDemoComponent implements AfterViewInit {
   @ViewChild("multichartInteractive", { read: MultipleChartDirective })
   multiChart!: MultipleChartDirective;
 
+  // Variables para funcionalidad interactiva
+  selectedDimensionId: number = 0; // Año por defecto
+  selectedDimension: Dimension = this.dataset1.dimensions[3]; // Año por defecto
+
+  // Dimensiones disponibles para el selector (solo las que tienen enableMulti)
+  availableDimensions: Dimension[] = [];
+
   constructor(
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
     private router: Router,
   ) {
     this.dataset1Rolled.applyFilters(this.filters);
+    this.initializeAvailableDimensions();
+  }
+
+  private initializeAvailableDimensions(): void {
+    // Filtrar dimensiones que tienen más de un elemento (para que tenga sentido crear múltiples gráficos)
+    this.availableDimensions = this.dataset1.dimensions.filter(
+      (dim) => dim.items && dim.items.length > 1,
+    );
+
+    // Establecer la dimensión inicial
+    this.selectedDimension =
+      this.dataset1.dimensions.find(
+        (dim) => dim.id === this.selectedDimensionId,
+      ) || this.dataset1.dimensions[3];
+  }
+
+  // Función para cambiar la dimensión seleccionada
+  onDimensionChange(dimensionId: number): void {
+    this.selectedDimensionId = dimensionId;
+    const newDimension = this.dataset1.dimensions.find(
+      (dim) => dim.id === dimensionId,
+    );
+    if (newDimension) {
+      this.selectedDimension = newDimension;
+    }
   }
 
   // Documentación de MultipleChartDirective
@@ -310,31 +336,35 @@ multichartConfig1: ChartOptions = {
     disableAutoUpdate: false,
   };`;
 
-  example5TypeScript = `// Métodos interactivos para múltiples gráficos
+  example3TypeScript = `// Variables para funcionalidad interactiva
+selectedDimensionId: number = 0; // Año por defecto
+selectedDimension: Dimension = this.dataset1.dimensions[3]; // Año por defecto
+
+// Dimensiones disponibles para el selector (solo las que tienen enableMulti)
+availableDimensions: Dimension[] = [];
+
+// Inicialización de dimensiones disponibles
+private initializeAvailableDimensions(): void {
+  // Filtrar dimensiones que tienen más de un elemento (para que tenga sentido crear múltiples gráficos)
+  this.availableDimensions = this.dataset1.dimensions.filter(
+    dim => dim.items && dim.items.length > 1
+  );
+
+  // Establecer la dimensión inicial
+  this.selectedDimension = this.dataset1.dimensions.find(dim => dim.id === this.selectedDimensionId) || this.dataset1.dimensions[3];
+}
+
+// Función para cambiar la dimensión seleccionada
+onDimensionChange(dimensionId: number): void {
+  this.selectedDimensionId = dimensionId;
+  const newDimension = this.dataset1.dimensions.find(dim => dim.id === dimensionId);
+  if (newDimension) {
+    this.selectedDimension = newDimension;
+  }
+}
+
 @ViewChild('multichartInteractive', { read: MultipleChartDirective })
-multiChart!: MultipleChartDirective;
-
-// Exportar todos los gráficos como imagen
-exportAllChartsAsJPG(): void {
-  console.log('Exportando todos los gráficos como JPG...');
-}
-
-// Exportar todos los gráficos como SVG
-exportAllChartsAsSVG(): void {
-  console.log('Exportando todos los gráficos como SVG...');
-}
-
-// Cambiar tema de todos los gráficos
-changeTheme(theme: string): void {
-  // Nota: El ThemeService está diseñado específicamente para tablas
-  // Para múltiples gráficos, se podría implementar un servicio similar
-  console.log('Cambio de tema solicitado: ' + theme);
-}
-
-// Actualizar configuración de todos los gráficos
-updateAllCharts(newConfig: Partial<ChartOptions>): void {
-  console.log('Actualizando configuración de todos los gráficos...');
-}`;
+multiChart!: MultipleChartDirective;`;
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="multichart-container">
@@ -353,22 +383,23 @@ updateAllCharts(newConfig: Partial<ChartOptions>): void {
   </libMultipleChart>
 </div>`;
 
-  example5HTML = `<div class="interactive-buttons">
-  <button mat-raised-button color="primary" (click)="exportAllChartsAsJPG()">
-    Exportar Todos como JPG
-  </button>
-  <button mat-raised-button color="accent" (click)="exportAllChartsAsSVG()">
-    Exportar Todos como SVG
-  </button>
-  <button mat-raised-button color="warn" (click)="changeTheme('material')">
-    Cambiar Tema (Demo)
-  </button>
+  example3HTML = `<div class="interactive-controls">
+  <mat-form-field appearance="outline" style="min-width: 200px;">
+    <mat-label>Dimensión para separar gráficos</mat-label>
+    <mat-select
+      [value]="selectedDimensionId"
+      (selectionChange)="onDimensionChange($event.value)">
+      <mat-option *ngFor="let dimension of availableDimensions" [value]="dimension.id">
+        {{dimension.nameView}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>
 <div class="multichart-container">
   <libMultipleChart
     [dataset]="dataset1"
-    [options]="multichartConfig4"
-    [splitDimension]="dataset1.dimensions[3]"
+    [options]="multichartConfig1"
+    [splitDimension]="selectedDimension"
     #multichartInteractive>
   </libMultipleChart>
 </div>`;
@@ -392,27 +423,6 @@ updateAllCharts(newConfig: Partial<ChartOptions>): void {
       // Re-procesar todos los bloques de código
       Prism.highlightAll();
     }
-  }
-
-  // Métodos interactivos para múltiples gráficos
-  exportAllChartsAsJPG(): void {
-    if (this.multiChart) {
-      // Método hipotético para exportar todos los gráficos
-      console.log("Exportando todos los gráficos como JPG...");
-    }
-  }
-
-  exportAllChartsAsSVG(): void {
-    if (this.multiChart) {
-      // Método hipotético para exportar todos los gráficos
-      console.log("Exportando todos los gráficos como SVG...");
-    }
-  }
-
-  changeTheme(theme: "default" | "material" | "bootstrap"): void {
-    // Nota: El ThemeService está diseñado específicamente para tablas
-    // Para múltiples gráficos, se podría implementar un servicio similar
-    console.log("Cambio de tema solicitado: " + theme);
   }
 
   // Métodos de navegación

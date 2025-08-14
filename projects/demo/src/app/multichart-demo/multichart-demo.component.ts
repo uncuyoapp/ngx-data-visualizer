@@ -14,6 +14,7 @@ import {
   MultipleChartDirective,
   ChartOptions,
   ThemeService,
+  Filters,
 } from "ngx-data-visualizer";
 import dashDimensions from "../../assets/data/dash-dimensions.json";
 import exampleData2 from "../../assets/data/data.json";
@@ -57,11 +58,11 @@ export class MultichartDemoComponent implements AfterViewInit {
   multichartConfig1: ChartOptions = {
     type: "column",
     title: "Distribución por Año",
-    stacked: null,
+    stacked: "Sexo",
     xAxis: {
       title: "Condición",
-      rotateLabels: -45,
-      firstLevel: 1, // Condición
+      rotateLabels: 0,
+      firstLevel: 117, // Condición
       secondLevel: null,
     },
     yAxis: {
@@ -85,7 +86,7 @@ export class MultichartDemoComponent implements AfterViewInit {
       start: null,
       end: null,
     },
-    colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"],
+    colors: ["#1976d2", "#388e3c"],
     width: null,
     height: 300,
     filterLastYear: false,
@@ -94,6 +95,19 @@ export class MultichartDemoComponent implements AfterViewInit {
     measureUnit: "estudiantes",
     isPreview: false,
     disableAutoUpdate: false,
+  };
+
+  // Dataset 1: Datos de ejemplo con dimensiones del dashboard
+  dataset1Rolled = new Dataset({
+    rowData: exampleData,
+    id: 1,
+    dimensions: dashDimensions as Dimension[],
+    enableRollUp: true,
+  });
+
+  filters: Filters = {
+    rollUp: ["Sexo"],
+    filter: [],
   };
 
   // Configuración 2: Múltiples gráficos de líneas por sector
@@ -128,99 +142,13 @@ export class MultichartDemoComponent implements AfterViewInit {
       start: null,
       end: null,
     },
-    colors: ["#2196f3", "#4caf50", "#ff9800", "#e91e63"],
+    colors: ["#2196f3", "#4caf50", "#ff9800"],
     width: null,
     height: 320,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
     measureUnit: "unidades",
-    isPreview: false,
-    disableAutoUpdate: false,
-  };
-
-  // Configuración 3: Múltiples gráficos circulares por condición
-  multichartConfig3: ChartOptions = {
-    type: "pie",
-    title: "Distribución por Sector",
-    stacked: null,
-    xAxis: {
-      title: "",
-      rotateLabels: null,
-      firstLevel: 2, // Sector de gestión
-      secondLevel: null,
-    },
-    yAxis: {
-      title: "",
-      max: null,
-    },
-    tooltip: {
-      shared: false,
-      decimals: 1,
-      suffix: "%",
-      format: null,
-      showTotal: false,
-    },
-    legends: {
-      enabled: true,
-      show: true,
-      position: "right",
-    },
-    navigator: {
-      show: false,
-      start: null,
-      end: null,
-    },
-    colors: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#feca57"],
-    width: null,
-    height: 280,
-    filterLastYear: false,
-    showYearsLegend: false,
-    toPercent: true,
-    measureUnit: "porcentaje",
-    isPreview: false,
-    disableAutoUpdate: false,
-  };
-
-  // Configuración 4: Múltiples gráficos apilados por sexo
-  multichartConfig4: ChartOptions = {
-    type: "column",
-    title: "Distribución Apilada",
-    stacked: "all",
-    xAxis: {
-      title: "Año",
-      rotateLabels: null,
-      firstLevel: 0, // Año
-      secondLevel: null,
-    },
-    yAxis: {
-      title: "Total Acumulado",
-      max: null,
-    },
-    tooltip: {
-      shared: true,
-      decimals: 0,
-      suffix: null,
-      format: null,
-      showTotal: true,
-    },
-    legends: {
-      enabled: true,
-      show: true,
-      position: "bottom",
-    },
-    navigator: {
-      show: false,
-      start: null,
-      end: null,
-    },
-    colors: ["#9c27b0", "#673ab7", "#3f51b5", "#2196f3"],
-    width: null,
-    height: 300,
-    filterLastYear: false,
-    showYearsLegend: false,
-    toPercent: false,
-    measureUnit: "total",
     isPreview: false,
     disableAutoUpdate: false,
   };
@@ -232,7 +160,9 @@ export class MultichartDemoComponent implements AfterViewInit {
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) {
+    this.dataset1Rolled.applyFilters(this.filters);
+  }
 
   // Documentación de MultipleChartDirective
   multichartOptionsDocumentation = `/**
@@ -281,119 +211,104 @@ dataset1 = new Dataset({
 
 // Configuración: Múltiples gráficos de columnas por año
 multichartConfig1: ChartOptions = {
-  type: 'column',
-  title: 'Distribución por Año',
-  stacked: null,
+  type: "column",
+  title: "Distribución por Año",
+  stacked: "Sexo",
   xAxis: {
-    title: 'Condición',
-    rotateLabels: -45,
-    firstLevel: 1, // Condición
-    secondLevel: null
+    title: "Condición",
+    rotateLabels: 0,
+    firstLevel: 117, // Condición
+    secondLevel: null,
   },
   yAxis: {
-    title: 'Cantidad de Estudiantes',
-    max: null
+    title: "Cantidad de Estudiantes",
+    max: null,
   },
   tooltip: {
     shared: false,
     decimals: 0,
     suffix: null,
     format: null,
-    showTotal: false
+    showTotal: false,
   },
   legends: {
     enabled: true,
     show: true,
-    position: 'bottom'
+    position: "bottom",
   },
-  colors: ['#1976d2', '#388e3c', '#f57c00', '#d32f2f'],
+  navigator: {
+    show: false,
+    start: null,
+    end: null,
+  },
+  colors: ["#1976d2", "#388e3c"],
+  width: null,
   height: 300,
-  measureUnit: 'estudiantes'
+  filterLastYear: false,
+  showYearsLegend: false,
+  toPercent: false,
+  measureUnit: "estudiantes",
+  isPreview: false,
+  disableAutoUpdate: false,
 };`;
 
   example2TypeScript = `// Configuración: Múltiples gráficos de líneas por sector
-multichartConfig2: ChartOptions = {
-  type: 'line',
-  title: 'Evolución Temporal',
-  stacked: null,
-  xAxis: {
-    title: 'Año',
-    firstLevel: 0, // Año
-    secondLevel: null
-  },
-  yAxis: {
-    title: 'Cantidad',
-    max: null
-  },
-  tooltip: {
-    shared: true,
-    decimals: 0,
-    showTotal: true
-  },
-  legends: {
-    enabled: true,
-    show: true,
-    position: 'right'
-  },
-  colors: ['#2196f3', '#4caf50', '#ff9800', '#e91e63'],
-  height: 320,
-  measureUnit: 'unidades'
-};`;
 
-  example3TypeScript = `// Configuración: Múltiples gráficos circulares por condición
-multichartConfig3: ChartOptions = {
-  type: 'pie',
-  title: 'Distribución por Sector',
-  stacked: null,
-  xAxis: {
-    title: '',
-    firstLevel: 2, // Sector de gestión
-    secondLevel: null
-  },
-  tooltip: {
-    shared: false,
-    decimals: 1,
-    suffix: '%'
-  },
-  legends: {
-    enabled: true,
-    show: true,
-    position: 'right'
-  },
-  colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'],
-  height: 280,
-  toPercent: true,
-  measureUnit: 'porcentaje'
-};`;
+  dataset1Rolled = new Dataset({
+    rowData: exampleData,
+    id: 1,
+    dimensions: dashDimensions as Dimension[],
+    enableRollUp: true,
+  });
 
-  example4TypeScript = `// Configuración: Múltiples gráficos apilados por sexo
-multichartConfig4: ChartOptions = {
-  type: 'column',
-  title: 'Distribución Apilada',
-  stacked: 'all',
-  xAxis: {
-    title: 'Año',
-    firstLevel: 0, // Año
-    secondLevel: null
-  },
-  yAxis: {
-    title: 'Total Acumulado',
-    max: null
-  },
-  tooltip: {
-    shared: true,
-    decimals: 0,
-    showTotal: true
-  },
-  legends: {
-    enabled: true,
-    show: true,
-    position: 'bottom'
-  },
-  colors: ['#9c27b0', '#673ab7', '#3f51b5', '#2196f3'],
-  height: 300,
-  measureUnit: 'total'
-};`;
+  filters: Filters = {
+    rollUp: ["Sexo"],
+    filter: [],
+  };
+
+  this.dataset1Rolled.applyFilters(this.filters);
+
+  multichartConfig2: ChartOptions = {
+    type: "line",
+    title: "Evolución Temporal",
+    stacked: null,
+    xAxis: {
+      title: "Año",
+      rotateLabels: null,
+      firstLevel: 0, // Año
+      secondLevel: null,
+    },
+    yAxis: {
+      title: "Cantidad",
+      max: null,
+    },
+    tooltip: {
+      shared: true,
+      decimals: 0,
+      suffix: null,
+      format: null,
+      showTotal: true,
+    },
+    legends: {
+      enabled: true,
+      show: true,
+      position: "right",
+    },
+    navigator: {
+      show: false,
+      start: null,
+      end: null,
+    },
+    colors: ["#2196f3", "#4caf50", "#ff9800"],
+    width: null,
+    height: 320,
+    filterLastYear: false,
+    showYearsLegend: false,
+    toPercent: false,
+    measureUnit: "unidades",
+    isPreview: false,
+    disableAutoUpdate: false,
+  };`;
 
   example5TypeScript = `// Métodos interactivos para múltiples gráficos
 @ViewChild('multichartInteractive', { read: MultipleChartDirective })
@@ -432,25 +347,9 @@ updateAllCharts(newConfig: Partial<ChartOptions>): void {
 
   example2HTML = `<div class="multichart-container">
   <libMultipleChart
-    [dataset]="dataset1"
+    [dataset]="dataset1Rolled"
     [options]="multichartConfig2"
     [splitDimension]="dataset1.dimensions[2]">
-  </libMultipleChart>
-</div>`;
-
-  example3HTML = `<div class="multichart-container">
-  <libMultipleChart
-    [dataset]="dataset1"
-    [options]="multichartConfig3"
-    [splitDimension]="dataset1.dimensions[1]">
-  </libMultipleChart>
-</div>`;
-
-  example4HTML = `<div class="multichart-container">
-  <libMultipleChart
-    [dataset]="dataset1"
-    [options]="multichartConfig4"
-    [splitDimension]="dataset1.dimensions[3]">
   </libMultipleChart>
 </div>`;
 
@@ -473,46 +372,6 @@ updateAllCharts(newConfig: Partial<ChartOptions>): void {
     #multichartInteractive>
   </libMultipleChart>
 </div>`;
-
-  example6HTML = `
-/**
- * Configuración avanzada para múltiples gráficos
- */
-interface AdvancedMultiChartConfig {
-  /** Configuración base del gráfico (hereda de ChartOptions) */
-  baseConfig: ChartOptions;
-
-  /** Configuraciones específicas por dimensión */
-  dimensionConfigs?: {
-    [dimensionName: string]: Partial<ChartOptions>;
-  };
-
-  /** Layout de los múltiples gráficos */
-  layout: {
-    /** Número de columnas en el grid */
-    columns: number;
-    /** Espaciado entre gráficos */
-    spacing: {
-      horizontal: number;
-      vertical: number;
-    };
-    /** Configuración responsiva */
-    responsive: {
-      breakpoint: number;
-      columns: number;
-    }[];
-  };
-
-  /** Configuración de sincronización entre gráficos */
-  synchronization?: {
-    /** Sincronizar escalas del eje Y */
-    syncYAxis: boolean;
-    /** Sincronizar zoom */
-    syncZoom: boolean;
-    /** Sincronizar selección */
-    syncSelection: boolean;
-  };
-}`;
 
   ngAfterViewInit(): void {
     // Timeout para asegurar que el DOM esté completamente renderizado

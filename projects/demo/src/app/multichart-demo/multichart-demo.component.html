@@ -16,18 +16,10 @@
     <p>
       La directiva <code>libMultipleChart</code> se utiliza para generar
       múltiples gráficos automáticamente basados en una dimensión específica del
-      dataset. Cada valor único de la dimensión seleccionada genera un gráfico
+      dataset. Cada ítem de la dimensión seleccionada genera un gráfico
       individual con sus propios datos filtrados. Requiere un objeto
-      <code>Dataset</code> y un objeto <code>ChartOptions</code> como entradas.
+      <code>Dataset</code>, un objeto <code>ChartOptions</code> y un objeto <code>Dimension</code> como entradas.
     </p>
-
-    <h3>Configuración especial para múltiples gráficos</h3>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">TypeScript</div>
-      <div class="card-body bg-dark">
-        <pre><code class="language-typescript" [textContent]="multichartOptionsDocumentation"></code></pre>
-      </div>
-    </div>
 
     <h3>Uso en el template HTML</h3>
     <div class="card bg-light mb-3 shadow-sm">
@@ -54,8 +46,7 @@
       Este ejemplo demuestra cómo crear múltiples gráficos de columnas, uno para
       cada año disponible en los datos. Cada gráfico muestra la distribución por
       condición para un año específico, permitiendo comparaciones temporales
-      efectivas. La configuración utiliza rotación de etiquetas para mejorar la
-      legibilidad y colores personalizados para cada serie.
+      efectivas. La configuración utiliza colores personalizados para cada serie.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
@@ -65,7 +56,7 @@
             <libMultipleChart
               [dataset]="dataset1"
               [options]="multichartConfig1"
-              [splitDimension]="dataset1.dimensions[0]"
+              [splitDimension]="dataset1.dimensions[3]"
             ></libMultipleChart>
           </div>
         </div>
@@ -104,10 +95,9 @@
     <p class="section-description">
       Esta configuración presenta múltiples gráficos de líneas que muestran la
       evolución temporal para cada sector de gestión. Los tooltips compartidos
-      facilitan la comparación de valores en puntos temporales específicos,
-      mientras que las leyendas posicionadas a la derecha mantienen la
-      identificación clara de cada serie. Este enfoque es ideal para análisis
-      comparativos de tendencias entre diferentes categorías.
+      facilitan la comparación de valores en puntos temporales específicos. Ademas se configuró un filtrado
+      al dataset para agrupar la dimensión "Sexo" logrando una mejor visualización de los datos.
+      Este enfoque es ideal para análisis comparativos de tendencias entre diferentes categorías.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
@@ -115,9 +105,9 @@
         <div class="tab-content">
           <div class="multichart-container">
             <libMultipleChart
-              [dataset]="dataset1"
+              [dataset]="dataset1Rolled"
               [options]="multichartConfig2"
-              [splitDimension]="dataset1.dimensions[2]"
+              [splitDimension]="dataset1.dimensions[1]"
             ></libMultipleChart>
           </div>
         </div>
@@ -152,152 +142,20 @@
   </section>
 
   <section class="demo-section">
-    <h2>3. Múltiples Gráficos Circulares por Condición</h2>
-    <p class="section-description">
-      Este ejemplo avanzado muestra múltiples gráficos circulares (pie charts),
-      uno para cada condición estudiantil. Cada gráfico circular muestra la
-      distribución porcentual por sector de gestión, proporcionando una vista
-      clara de las proporciones dentro de cada condición. La configuración en
-      porcentajes y los colores vibrantes mejoran la interpretación visual de
-      los datos categóricos.
-    </p>
-
-    <mat-tab-group (selectedTabChange)="onTabChange()">
-      <mat-tab label="Ejemplo">
-        <div class="tab-content">
-          <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1"
-              [options]="multichartConfig3"
-              [splitDimension]="dataset1.dimensions[1]"
-            ></libMultipleChart>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Código TypeScript">
-        <div class="tab-content">
-          <div class="card bg-light mb-3 shadow-sm">
-            <div class="card-header fw-semibold">TypeScript</div>
-            <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example3TypeScript"></code></pre>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Código HTML">
-        <div class="tab-content">
-          <div class="card bg-light mb-3 shadow-sm">
-            <div class="card-header fw-semibold">HTML</div>
-            <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example3HTML"></code></pre>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </section>
-
-  <section class="demo-section">
-    <h2>4. Múltiples Gráficos Apilados por Sexo</h2>
-    <p class="section-description">
-      Esta configuración demuestra múltiples gráficos de columnas apiladas
-      separados por sexo. Cada gráfico muestra la evolución temporal con
-      apilamiento completo, permitiendo visualizar tanto la composición interna
-      como las tendencias totales para cada grupo demográfico. Los tooltips
-      compartidos muestran información detallada incluyendo totales acumulados.
-    </p>
-
-    <mat-tab-group (selectedTabChange)="onTabChange()">
-      <mat-tab label="Ejemplo">
-        <div class="tab-content">
-          <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1"
-              [options]="multichartConfig4"
-              [splitDimension]="dataset1.dimensions[3]"
-            ></libMultipleChart>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Código TypeScript">
-        <div class="tab-content">
-          <div class="card bg-light mb-3 shadow-sm">
-            <div class="card-header fw-semibold">TypeScript</div>
-            <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example4TypeScript"></code></pre>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Código HTML">
-        <div class="tab-content">
-          <div class="card bg-light mb-3 shadow-sm">
-            <div class="card-header fw-semibold">HTML</div>
-            <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example4HTML"></code></pre>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </section>
-
-  <section class="demo-section">
-    <h2>5. Funcionalidades Interactivas Avanzadas</h2>
+    <h2>3. Funcionalidades Interactivas Avanzadas</h2>
     <p class="section-description">
       Esta sección demuestra las capacidades interactivas avanzadas de la
-      directiva libMultipleChart. Incluye métodos para exportar todos los
-      gráficos simultáneamente, cambiar temas globalmente y sincronizar
-      configuraciones entre múltiples visualizaciones. Los controles
-      interactivos proporcionan flexibilidad para presentaciones y análisis
-      comparativos detallados.
+      directiva libMultipleChart para cambiar de dimensión por la que se generan los gráficos.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="interactive-buttons">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="exportAllChartsAsJPG()"
-            >
-              Exportar Todos como JPG
-            </button>
-            <button
-              mat-raised-button
-              color="accent"
-              (click)="exportAllChartsAsSVG()"
-            >
-              Exportar Todos como SVG
-            </button>
-            <button
-              mat-raised-button
-              color="warn"
-              (click)="changeTheme('material')"
-            >
-              Cambiar Tema Material
-            </button>
+
           </div>
           <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1"
-              [options]="multichartConfig4"
-              [splitDimension]="dataset1.dimensions[3]"
-              #multichartInteractive
-            ></libMultipleChart>
+
           </div>
         </div>
       </mat-tab>
@@ -328,11 +186,6 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-
-    <h4>Configuraciones avanzadas disponibles:</h4>
-    <pre
-      class="language-typescript"
-    ><code [textContent]="example6HTML"></code></pre>
   </section>
 
   <!-- Botones de navegación -->

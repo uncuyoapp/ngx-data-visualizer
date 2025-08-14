@@ -9,6 +9,13 @@ import { ExpandComponent } from "../icons/expand/expand.component";
 import { ForwardComponent } from "../icons/forward/forward.component";
 
 /**
+ * Genera un ID único para evitar colisiones entre instancias
+ */
+function generateUniqueId(): string {
+  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+/**
  * Componente que muestra múltiples gráficos en un contenedor con navegación
  * Permite expandir/contraer y navegar entre los gráficos
  */
@@ -33,6 +40,12 @@ export class MultipleChartComponent {
   /** Referencia al componente de gráfico que se renderizará */
   chartComponent = ChartComponent;
 
+  /** ID único de la instancia del componente para evitar colisiones */
+  private readonly instanceId = generateUniqueId();
+
+  /** Mapa de IDs únicos para cada chart item */
+  private chartItemIds = new Map<number, string>();
+
   /**
    * Efecto que se ejecuta cuando cambian las configuraciones de los gráficos
    * Asegura que todas las configuraciones tengan la propiedad expanded definida
@@ -41,11 +54,27 @@ export class MultipleChartComponent {
     const configs = this.chartConfigurations();
 
     if (configs) {
-      configs.forEach((config) => {
+      // Limpiar IDs previos
+      this.chartItemIds.clear();
+
+      configs.forEach((config, index) => {
         config.expanded ??= false;
+        // Generar ID único para cada chart item
+        this.chartItemIds.set(index, `chartItem-${this.instanceId}-${index}`);
       });
     }
   });
+
+  /**
+   * Obtiene el ID único para un chart item específico
+   * @param index Índice del chart item
+   * @returns ID único del chart item
+   */
+  getChartItemId(index: number): string {
+    return (
+      this.chartItemIds.get(index) || `chartItem-${this.instanceId}-${index}`
+    );
+  }
 
   /**
    * Expande o contrae un elemento de gráfico
@@ -53,7 +82,9 @@ export class MultipleChartComponent {
    * @param config Configuración del gráfico que se está expandiendo/contrayendo
    */
   expandChartItem(element: HTMLDivElement, config: ChartConfiguration): void {
-    if (element.classList.contains("expanded")) {
+    const wasExpanded = element.classList.contains("expanded");
+
+    if (wasExpanded) {
       element.classList.remove("expanded");
       config.expanded = false;
     } else {
@@ -61,10 +92,13 @@ export class MultipleChartComponent {
       config.expanded = true;
     }
 
-    setTimeout(() => {
-      console.log(element.id);
-      this.moveToChartItem(element.id);
-    }, 300);
+    // Scroll mejorado con timing apropiado para las transiciones CSS
+    setTimeout(
+      () => {
+        this.scrollToElement(element, !wasExpanded);
+      },
+      wasExpanded ? 350 : 350,
+    );
   }
 
   /**
@@ -72,6 +106,35 @@ export class MultipleChartComponent {
    * @param id Identificador del elemento al que se debe desplazar la vista
    */
   moveToChartItem(id: string): void {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const element = document.getElementById(id);
+    if (element) {
+      this.scrollToElement(element, false);
+    }
+  }
+
+  /**
+   * Realiza scroll suave a un elemento con opciones optimizadas
+   * @param element Elemento al que hacer scroll
+   * @param isExpanding Si el elemento se está expandiendo
+   */
+  private scrollToElement(element: HTMLElement, isExpanding: boolean): void {
+    const isMobile =
+      window.matchMedia("(max-width: 576px)").matches ||
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+    if (isMobile || isExpanding) {
+      // En mobile o al expandir, centrar el elemento
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    } else {
+      // En desktop normal, scroll suave al inicio
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   }
 }

@@ -1,13 +1,13 @@
 <div class="charts-container">
   @if (chartConfigurations()) { @for (chartConfiguration of
   chartConfigurations(); track $index) {
-  <div #chartItem [id]="'chartItem' + $index" class="chart-item">
+  <div #chartItem [id]="getChartItemId($index)" class="chart-item" [attr.data-index]="$index">
     <!-- Botón de navegación hacia atrás (solo si no es el primer elemento) -->
     @if ($index !== 0) {
     <button
       class="icon-nav back"
-      (click)="moveToChartItem('chartItem' + ($index - 1))"
-      (keypress)="moveToChartItem('chartItem' + ($index - 1))"
+      (click)="moveToChartItem(getChartItemId($index - 1))"
+      (keypress)="moveToChartItem(getChartItemId($index - 1))"
       [attr.aria-label]="'Ir al gráfico anterior'"
     >
       <lib-icon-back></lib-icon-back>
@@ -26,8 +26,8 @@
     @if ($index !== chartConfigurations().length - 1) {
     <button
       class="icon-nav forward"
-      (click)="moveToChartItem('chartItem' + ($index + 1))"
-      (keypress)="moveToChartItem('chartItem' + ($index + 1))"
+      (click)="moveToChartItem(getChartItemId($index + 1))"
+      (keypress)="moveToChartItem(getChartItemId($index + 1))"
       [attr.aria-label]="'Ir al siguiente gráfico'"
     >
       <lib-icon-forward></lib-icon-forward>

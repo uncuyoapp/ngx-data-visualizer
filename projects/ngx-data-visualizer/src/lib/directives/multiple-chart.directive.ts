@@ -5,25 +5,22 @@ import {
   ViewContainerRef,
   effect,
   input,
-} from '@angular/core';
-import { Subject, Subscription, takeUntil } from 'rxjs';
-import {
-  ChartConfiguration,
-  ChartOptions,
-} from '../../public-api';
-import { ChartService } from '../chart/services/chart.service';
-import { Dataset } from '../services/dataset';
-import { MultipleChartComponent } from '../multiple-chart/multiple-chart.component';
-import { Dimension } from '../types/data.types';
+} from "@angular/core";
+import { Subject, Subscription, takeUntil } from "rxjs";
+import { ChartConfiguration, ChartOptions } from "../../public-api";
+import { ChartService } from "../chart/services/chart.service";
+import { Dataset } from "../services/dataset";
+import { MultipleChartComponent } from "../multiple-chart/multiple-chart.component";
+import { Dimension } from "../types/data.types";
 
 /**
  * Directiva que permite mostrar múltiples gráficos basados en una dimensión de división.
  * Crea un gráfico separado para cada valor único en la dimensión especificada.
  */
 @Directive({
-  selector: 'libMultipleChart, [libMultipleChart]',
+  selector: "libMultipleChart, [libMultipleChart]",
   standalone: true,
-  exportAs: 'libMultipleChart',
+  exportAs: "libMultipleChart",
 })
 export class MultipleChartDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
@@ -31,7 +28,7 @@ export class MultipleChartDirective implements OnDestroy {
   dataset = input.required<Dataset>();
 
   /** Opciones de configuración para los gráficos */
-  chartOptions = input.required<ChartOptions>({ alias: 'options' });
+  options = input.required<ChartOptions>();
 
   /** Dimensión que se utilizará para dividir los datos en múltiples gráficos */
   splitDimension = input.required<Dimension>();
@@ -47,7 +44,7 @@ export class MultipleChartDirective implements OnDestroy {
 
   constructor(
     private readonly viewContainerRef: ViewContainerRef,
-    private readonly chartService: ChartService
+    private readonly chartService: ChartService,
   ) {
     this.initializeMultipleCharts();
   }
@@ -92,16 +89,16 @@ export class MultipleChartDirective implements OnDestroy {
       try {
         this.viewContainerRef.clear();
       } catch (error) {
-        console.warn('Error al limpiar el contenedor:', error);
+        console.warn("Error al limpiar el contenedor:", error);
       }
 
       const dataset = this.dataset();
-      const options = this.chartOptions();
+      const options = this.options();
       const splitDimension = this.splitDimension();
 
       if (!dataset || !options || !splitDimension) {
         console.warn(
-          'No se pueden crear los gráficos: datos de entrada incompletos'
+          "No se pueden crear los gráficos: datos de entrada incompletos",
         );
         return;
       }
@@ -109,7 +106,7 @@ export class MultipleChartDirective implements OnDestroy {
       // Crear el componente
       this.multipleChartRenderComponentRef =
         this.viewContainerRef.createComponent<MultipleChartComponent>(
-          MultipleChartComponent
+          MultipleChartComponent,
         );
 
       this.multipleChartComponent =
@@ -119,23 +116,23 @@ export class MultipleChartDirective implements OnDestroy {
       this.multipleChartConfiguration = this.chartService.getSplitConfiguration(
         dataset,
         options,
-        splitDimension
+        splitDimension,
       );
 
       // Configurar la entrada usando setInput
       this.multipleChartRenderComponentRef.setInput(
-        'chartConfigurations',
-        this.multipleChartConfiguration
+        "chartConfigurations",
+        this.multipleChartConfiguration,
       );
     } catch (error) {
-      console.error('Error al crear los gráficos múltiples:', error);
+      console.error("Error al crear los gráficos múltiples:", error);
       // Intentar limpiar el contenedor de manera segura
       try {
         this.viewContainerRef.clear();
       } catch (cleanupError) {
         console.warn(
-          'Error al limpiar el contenedor después del error:',
-          cleanupError
+          "Error al limpiar el contenedor después del error:",
+          cleanupError,
         );
       }
     }

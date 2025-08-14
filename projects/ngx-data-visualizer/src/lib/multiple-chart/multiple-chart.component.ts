@@ -1,19 +1,19 @@
-import { CommonModule, NgComponentOutlet } from '@angular/common';
-import { Component, effect, input } from '@angular/core';
+import { CommonModule, NgComponentOutlet } from "@angular/common";
+import { Component, effect, input } from "@angular/core";
 
-import { ChartConfiguration } from '../chart/types/chart-configuration';
-import { ChartComponent } from '../chart/chart.component';
-import { BackComponent } from '../icons/back/back.component';
-import { ContractComponent } from '../icons/contract/contract.component';
-import { ExpandComponent } from '../icons/expand/expand.component';
-import { ForwardComponent } from '../icons/forward/forward.component';
+import { ChartConfiguration } from "../chart/types/chart-configuration";
+import { ChartComponent } from "../chart/chart.component";
+import { BackComponent } from "../icons/back/back.component";
+import { ContractComponent } from "../icons/contract/contract.component";
+import { ExpandComponent } from "../icons/expand/expand.component";
+import { ForwardComponent } from "../icons/forward/forward.component";
 
 /**
  * Componente que muestra múltiples gráficos en un contenedor con navegación
  * Permite expandir/contraer y navegar entre los gráficos
  */
 @Component({
-  selector: 'lib-multiple-chart',
+  selector: "lib-multiple-chart",
   standalone: true,
   imports: [
     CommonModule,
@@ -23,8 +23,8 @@ import { ForwardComponent } from '../icons/forward/forward.component';
     ExpandComponent,
     ContractComponent,
   ],
-  templateUrl: './multiple-chart.component.html',
-  styleUrl: './multiple-chart.component.scss',
+  templateUrl: "./multiple-chart.component.html",
+  styleUrl: "./multiple-chart.component.scss",
 })
 export class MultipleChartComponent {
   /** Configuraciones de los gráficos a mostrar */
@@ -53,15 +53,16 @@ export class MultipleChartComponent {
    * @param config Configuración del gráfico que se está expandiendo/contrayendo
    */
   expandChartItem(element: HTMLDivElement, config: ChartConfiguration): void {
-    if (element.classList.contains('expanded')) {
-      element.classList.remove('expanded');
+    if (element.classList.contains("expanded")) {
+      element.classList.remove("expanded");
       config.expanded = false;
     } else {
-      element.classList.add('expanded');
+      element.classList.add("expanded");
       config.expanded = true;
     }
 
     setTimeout(() => {
+      console.log(element.id);
       this.moveToChartItem(element.id);
     }, 300);
   }
@@ -71,6 +72,6 @@ export class MultipleChartComponent {
    * @param id Identificador del elemento al que se debe desplazar la vista
    */
   moveToChartItem(id: string): void {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }
 }

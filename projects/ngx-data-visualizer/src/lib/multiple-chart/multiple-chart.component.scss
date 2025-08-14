@@ -1,4 +1,4 @@
-@use '../styles.scss' as styles;
+@use "../styles.scss" as styles;
 
 button {
   border: none;
@@ -71,10 +71,10 @@ button {
 
   /* Elemento individual del gráfico */
   .chart-item {
-    width: calc((100% / 3) - 32px);
+    width: 100%;
     min-height: 300px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin: 8px;
+    /* margin: 8px; */
     padding: 16px;
     position: relative;
     background: #fff;
@@ -83,13 +83,12 @@ button {
     scroll-snap-align: start;
     flex-shrink: 0;
 
-    @include styles.max-md {
-      width: calc(50% - 24px);
+    @include styles.min-lg {
+      width: calc((100% / 2) - (32px / 2));
     }
 
-    @include styles.max-sm {
-      width: calc(100% - 32px);
-      margin: 8px 16px;
+    @include styles.min-xl {
+      width: calc((100% / 3) - (32px / 3));
     }
 
     /* Estilos para pantallas móviles */

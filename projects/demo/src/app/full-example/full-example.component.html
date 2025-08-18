@@ -50,7 +50,7 @@
 <div class="side-menu shadow p-4" [class.open]="isSidePanelOpen">
 
   <!-- Botón para cerrar el panel desde dentro -->
-  <div class="close-button" (click)="closeSidePanel()">
+  <div class="close-button" (click)="closeSidePanel()" (keyup.enter)="closeSidePanel()" tabindex="0" role="button" aria-label="Cerrar panel lateral">
     <span>&times;</span>
   </div>
 

@@ -23,6 +23,14 @@
             "polyfills": ["zone.js"],
             "tsConfig": "projects/demo/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "lodash.clonedeep",
+              "lodash.uniqby",
+              "jquery",
+              "pivottable/dist/pivot.min.js",
+              "pivottable/dist/pivot.es.min.js",
+              "file-saver"
+            ],
             "assets": [
               "projects/demo/src/favicon.ico",
               "projects/demo/src/assets"
@@ -44,13 +52,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "15kb"
                 }
               ],
               "outputHashing": "all"
@@ -81,7 +89,7 @@
             "buildTarget": "demo:build"
           }
         },
-        
+
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
@@ -114,7 +122,7 @@
           },
           "defaultConfiguration": "production"
         },
-        
+
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {

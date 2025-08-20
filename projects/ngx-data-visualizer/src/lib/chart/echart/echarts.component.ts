@@ -233,9 +233,9 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
     // Evitar actualizaciones si es el renderizado inicial
     if (!this.mainChart.hasRendered) {
-      console.warn(
-        "Esperando al renderizado inicial, se omite la actualización",
-      );
+      // console.warn(
+      //   "Esperando al renderizado inicial, se omite la actualización",
+      // );
       return;
     }
 

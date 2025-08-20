@@ -145,76 +145,9 @@
 
   .multichart-container {
     width: 100%;
-    min-height: 500px;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     background: #ffffff;
-    padding: 1rem;
-    display: grid;
-    gap: 1rem;
-
-    // Grid layout for multiple charts
-    &.grid-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    &.grid-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    &.grid-4 {
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-    }
-
-    // Individual chart styling
-    .individual-chart {
-      border: 1px solid #e9ecef;
-      border-radius: 6px;
-      padding: 0.5rem;
-      background: #fafafa;
-      min-height: 250px;
-
-      .chart-title {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #495057;
-        text-align: center;
-        margin-bottom: 0.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #dee2e6;
-      }
-    }
-  }
-}
-
-.interactive-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  border-radius: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  button {
-    border-radius: 25px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
   }
 }
 
@@ -352,21 +285,6 @@
   }
 }
 
-// Responsive design
-@media (max-width: 1200px) {
-  .tab-content {
-    .multichart-container {
-      &.grid-3 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      &.grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  }
-}
-
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -386,32 +304,6 @@
 
   .tab-content {
     padding: 1rem;
-
-    .multichart-container {
-      min-height: 400px;
-      padding: 0.5rem;
-
-      &.grid-2,
-      &.grid-3,
-      &.grid-4 {
-        grid-template-columns: 1fr;
-      }
-
-      .individual-chart {
-        min-height: 200px;
-      }
-    }
-  }
-
-  .interactive-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
-
-    button {
-      width: 100%;
-      max-width: 250px;
-      margin: 0 auto;
-    }
   }
 
   .navigation-buttons {
@@ -433,53 +325,10 @@
   }
 }
 
-@media (max-width: 480px) {
-  .tab-content {
-    .multichart-container {
-      min-height: 300px;
-      gap: 0.5rem;
-
-      .individual-chart {
-        min-height: 150px;
-        padding: 0.25rem;
-
-        .chart-title {
-          font-size: 0.8rem;
-        }
-      }
-    }
-  }
-}
-
 // Animaciones específicas para múltiples gráficos
 .multichart-container {
   opacity: 0;
   animation: fadeInMultiChart 0.8s ease-out forwards;
-
-  .individual-chart {
-    opacity: 0;
-    transform: scale(0.95);
-    animation: fadeInChart 0.6s ease-out forwards;
-
-    &:nth-child(1) {
-      animation-delay: 0.1s;
-    }
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    &:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-    &:nth-child(4) {
-      animation-delay: 0.4s;
-    }
-    &:nth-child(5) {
-      animation-delay: 0.5s;
-    }
-    &:nth-child(6) {
-      animation-delay: 0.6s;
-    }
-  }
 }
 
 @keyframes fadeInMultiChart {
@@ -504,30 +353,6 @@
   }
 }
 
-// Estados de carga para múltiples gráficos
-.multichart-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: #6c757d;
-
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #ffc107;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 1rem;
-  }
-
-  .loading-text {
-    font-size: 1.1rem;
-    font-weight: 500;
-  }
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -541,19 +366,6 @@
 button:focus {
   outline: 2px solid #ffc107;
   outline-offset: 2px;
-}
-
-// Utilidades específicas para múltiples gráficos
-.chart-sync-indicator {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  background: #28a745;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
-  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {

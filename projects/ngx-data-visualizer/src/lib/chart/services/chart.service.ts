@@ -1,14 +1,19 @@
 import { Injectable, Type } from "@angular/core";
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from "lodash.clonedeep";
 import { DataProvider } from "../../services/data-provider";
 import { DIMENSION_YEAR } from "../../types/constants";
 import { Dataset } from "../../services/dataset";
 import { Dimension, Filters, DimensionFilter } from "../../types/data.types";
-import { ChartConfiguration, ChartOptions, DEFAULT_OPTIONS, SeriesConfig } from "../types/chart-configuration";
+import {
+  ChartConfiguration,
+  ChartOptions,
+  DEFAULT_OPTIONS,
+  SeriesConfig,
+} from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from "echarts";
 import { ParserOptions } from "../types/parser-options";
 
 /**
@@ -16,7 +21,7 @@ import { ParserOptions } from "../types/parser-options";
  * Maneja la creación de configuraciones, división por dimensiones y actualización de opciones.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ChartService {
   /** Opciones de análisis para los gráficos */
@@ -37,9 +42,12 @@ export class ChartService {
    * @returns Configuración completa del gráfico
    * @throws Error si el dataset no está definido
    */
-  public getChartConfiguration(dataset: Dataset, options: ChartOptions): ChartConfiguration {
+  public getChartConfiguration(
+    dataset: Dataset,
+    options: ChartOptions,
+  ): ChartConfiguration {
     if (!dataset) {
-      throw new Error('El parámetro dataset es requerido');
+      throw new Error("El parámetro dataset es requerido");
     }
 
     // Crear configuración base con todas las propiedades requeridas
@@ -52,15 +60,17 @@ export class ChartService {
       libraryOptions: {},
       preview: false, // Propiedad faltante
       seriesConfig: {
-        x1: '',
-        measure: '',
-        stack: null // Propiedad faltante
-      }
+        x1: "",
+        measure: "",
+        stack: null, // Propiedad faltante
+      },
     };
 
     // Configurar datos y opciones
     this.configureFiltersAndData(chartConfiguration);
-    chartConfiguration.libraryOptions = this.getLibraryOptions(chartConfiguration.options);
+    chartConfiguration.libraryOptions = this.getLibraryOptions(
+      chartConfiguration.options,
+    );
 
     return chartConfiguration;
   }
@@ -76,19 +86,23 @@ export class ChartService {
   public getSplitConfiguration(
     dataset: Dataset,
     options: ChartOptions,
-    dimension: Dimension
+    dimension: Dimension,
   ): ChartConfiguration[] {
     if (!dataset || !dimension) {
-      throw new Error('Los parámetros dataset y dimension son requeridos');
+      throw new Error("Los parámetros dataset y dimension son requeridos");
     }
 
     // Filtrar solo los ítems seleccionados y mapear a configuraciones
     return dimension.items
-      .filter(item => item.selected)
-      .map(item => {
+      .filter((item) => item.selected)
+      .map((item) => {
         // Crear una copia profunda del dataset
         const datasetCopy = new Dataset(dataset);
-        datasetCopy.dataProvider.filters = JSON.parse(JSON.stringify(dataset.dataProvider.filters || { rollUp: [], filter: [] }));
+        datasetCopy.dataProvider.filters = JSON.parse(
+          JSON.stringify(
+            dataset.dataProvider.filters || { rollUp: [], filter: [] },
+          ),
+        );
 
         // Configuración básica del gráfico con todas las propiedades requeridas
         const chartConfig: ChartConfiguration = {
@@ -96,9 +110,8 @@ export class ChartService {
           options: {
             ...cloneDeep(DEFAULT_OPTIONS),
             ...options,
-            height: 400, // Altura fija para gráficos divididos
             title: item.name,
-            legends: { ...options.legends, show: false }
+            legends: { ...options.legends, show: false },
           },
           chartData: {} as ChartData,
           chartRenderType: this.chartRenderEngine,
@@ -106,10 +119,10 @@ export class ChartService {
           libraryOptions: {},
           preview: false, // Propiedad faltante
           seriesConfig: {
-            x1: '',
-            measure: '',
-            stack: null // Propiedad faltante
-          }
+            x1: "",
+            measure: "",
+            stack: null, // Propiedad faltante
+          },
         };
 
         // Asegurar que existan los arrays de filtros
@@ -122,16 +135,19 @@ export class ChartService {
             const filters = new Filters();
 
             // Usar type assertion para acceder a las propiedades
-            const filtersAny = existingFilters as { rollUp?: unknown[]; filter?: unknown[] };
+            const filtersAny = existingFilters as {
+              rollUp?: unknown[];
+              filter?: unknown[];
+            };
 
             // Verificar y copiar rollUp
             if (filtersAny.rollUp && Array.isArray(filtersAny.rollUp)) {
-              filters.rollUp = [...filtersAny.rollUp as string[]];
+              filters.rollUp = [...(filtersAny.rollUp as string[])];
             }
 
             // Verificar y copiar filter
             if (filtersAny.filter && Array.isArray(filtersAny.filter)) {
-              filters.filter = [...filtersAny.filter as DimensionFilter[]];
+              filters.filter = [...(filtersAny.filter as DimensionFilter[])];
             }
 
             chartConfig.dataset.dataProvider.filters = filters;
@@ -139,15 +155,19 @@ export class ChartService {
         }
 
         // Aplicar filtros para el ítem actual
-        chartConfig.dataset.dataProvider.filters.rollUp.push(dimension.nameView);
+        chartConfig.dataset.dataProvider.filters.rollUp.push(
+          dimension.nameView,
+        );
         chartConfig.dataset.dataProvider.filters.filter.push({
           name: dimension.nameView,
-          items: [item.name]
+          items: [item.name],
         });
 
         // Configurar datos y opciones de la biblioteca
         this.configureFiltersAndData(chartConfig);
-        chartConfig.libraryOptions = this.getLibraryOptions(chartConfig.options);
+        chartConfig.libraryOptions = this.getLibraryOptions(
+          chartConfig.options,
+        );
 
         return chartConfig;
       });
@@ -159,12 +179,13 @@ export class ChartService {
    */
   public updateLibraryConfig(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration) {
-      throw new Error('El parámetro chartConfiguration es requerido');
+      throw new Error("El parámetro chartConfiguration es requerido");
     }
-    chartConfiguration.libraryOptions = this.parserOptions.applyChartConfigurations(
-      chartConfiguration.options,
-      chartConfiguration.libraryOptions
-    ) as EChartsOption;
+    chartConfiguration.libraryOptions =
+      this.parserOptions.applyChartConfigurations(
+        chartConfiguration.options,
+        chartConfiguration.libraryOptions,
+      ) as EChartsOption;
   }
 
   /**
@@ -176,7 +197,7 @@ export class ChartService {
    */
   public updateSeriesConfig(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration) {
-      throw new Error('El parámetro chartConfiguration es requerido');
+      throw new Error("El parámetro chartConfiguration es requerido");
     }
 
     const { chartData, seriesConfig, options, dataset } = chartConfiguration;
@@ -184,7 +205,9 @@ export class ChartService {
 
     // Validar que al menos un eje esté definido
     if (!seriesConfig.x1 && !seriesConfig.x2) {
-      throw new Error('Se requiere al menos un eje (x1 o x2) en la configuración de series.');
+      throw new Error(
+        "Se requiere al menos un eje (x1 o x2) en la configuración de series.",
+      );
     }
 
     // Aplicar filtro de último período si está habilitado
@@ -215,12 +238,17 @@ export class ChartService {
     }
     // Caso 4: Buscar cualquier otra dimensión disponible
     else {
-      const availableDimension = this.findAvailableDimension(dataset.dimensions, rollUp);
+      const availableDimension = this.findAvailableDimension(
+        dataset.dimensions,
+        rollUp,
+      );
       if (availableDimension) {
         chartData.seriesConfig.x1 = availableDimension;
         chartData.seriesConfig.x2 = undefined;
       } else {
-        throw new Error('No se pudo encontrar una dimensión disponible para el eje X.');
+        throw new Error(
+          "No se pudo encontrar una dimensión disponible para el eje X.",
+        );
       }
     }
   }
@@ -232,10 +260,10 @@ export class ChartService {
    */
   private initializeSeriesConfig(seriesConfig: SeriesConfig): SeriesConfig {
     return {
-      x1: '',
+      x1: "",
       x2: undefined,
       stack: seriesConfig.stack,
-      measure: seriesConfig.measure
+      measure: seriesConfig.measure,
     };
   }
 
@@ -255,9 +283,13 @@ export class ChartService {
    * @param rollUp - Lista de dimensiones que están en rollUp
    * @returns Nombre de la primera dimensión disponible o null si no hay ninguna
    */
-  private findAvailableDimension(dimensions: Dimension[], rollUp: string[]): string | null {
-    const availableDimension = dimensions.find(dimension =>
-      dimension.nameView && rollUp.indexOf(dimension.nameView) === -1
+  private findAvailableDimension(
+    dimensions: Dimension[],
+    rollUp: string[],
+  ): string | null {
+    const availableDimension = dimensions.find(
+      (dimension) =>
+        dimension.nameView && rollUp.indexOf(dimension.nameView) === -1,
     );
     return availableDimension?.nameView ?? null;
   }
@@ -269,11 +301,11 @@ export class ChartService {
    */
   private getLibraryOptions(options: ChartOptions): EChartsOption {
     if (!options) {
-      throw new Error('El parámetro options es requerido');
+      throw new Error("El parámetro options es requerido");
     }
     return options.isPreview
-      ? this.parserOptions.getPreviewOptions(options) as EChartsOption
-      : this.parserOptions.getFullOptions(options) as EChartsOption;
+      ? (this.parserOptions.getPreviewOptions(options) as EChartsOption)
+      : (this.parserOptions.getFullOptions(options) as EChartsOption);
   }
 
   private resetFilters(arrayData: DataProvider) {
@@ -291,12 +323,16 @@ export class ChartService {
 
     try {
       // Obtener el último período disponible
-      const lastPeriods = chartConfiguration.dataset.dataProvider.getItems(DIMENSION_YEAR).slice(-1);
+      const lastPeriods = chartConfiguration.dataset.dataProvider
+        .getItems(DIMENSION_YEAR)
+        .slice(-1);
 
       if (lastPeriods.length > 0) {
         const lastPeriod = lastPeriods[0];
-        const yearFilter = chartConfiguration.dataset.dataProvider.filters.filter
-          .find(f => f.name === DIMENSION_YEAR);
+        const yearFilter =
+          chartConfiguration.dataset.dataProvider.filters.filter.find(
+            (f) => f.name === DIMENSION_YEAR,
+          );
 
         // Actualizar o crear el filtro para el último período
         if (yearFilter) {
@@ -304,12 +340,12 @@ export class ChartService {
         } else {
           chartConfiguration.dataset.dataProvider.filters.filter.push({
             name: DIMENSION_YEAR,
-            items: [lastPeriod]
+            items: [lastPeriod],
           });
         }
       }
     } catch (error) {
-      console.error('Error al filtrar el último período:', error);
+      console.error("Error al filtrar el último período:", error);
       // No lanzamos error para no interrumpir el flujo, pero podríamos hacerlo si es crítico
     }
   }
@@ -318,24 +354,32 @@ export class ChartService {
    * Configura los filtros y datos iniciales para el gráfico
    * @param chartConfiguration - Configuración del gráfico a configurar
    */
-  private configureFiltersAndData(chartConfiguration: ChartConfiguration): void {
+  private configureFiltersAndData(
+    chartConfiguration: ChartConfiguration,
+  ): void {
     if (!chartConfiguration?.dataset?.dataProvider) {
-      throw new Error('El dataset o dataProvider no está definido');
+      throw new Error("El dataset o dataProvider no está definido");
     }
 
     // Configuración predeterminada de series
     const seriesConfig: SeriesConfig = {
-      x1: chartConfiguration.dataset.dataProvider.dimensions
-        .find(d => d.id === chartConfiguration.options?.xAxis?.firstLevel)?.nameView ?? '',
-      x2: chartConfiguration.dataset.dataProvider.dimensions
-        .find(d => d.id === chartConfiguration.options?.xAxis?.secondLevel)?.nameView,
+      x1:
+        chartConfiguration.dataset.dataProvider.dimensions.find(
+          (d) => d.id === chartConfiguration.options?.xAxis?.firstLevel,
+        )?.nameView ?? "",
+      x2: chartConfiguration.dataset.dataProvider.dimensions.find(
+        (d) => d.id === chartConfiguration.options?.xAxis?.secondLevel,
+      )?.nameView,
       measure: chartConfiguration.options.measureUnit,
-      stack: chartConfiguration.options.stacked ?? null
+      stack: chartConfiguration.options.stacked ?? null,
     };
 
     try {
       // Crear instancia de ChartData con la configuración
-      const chartData = new ChartData(chartConfiguration.dataset.dataProvider, seriesConfig);
+      const chartData = new ChartData(
+        chartConfiguration.dataset.dataProvider,
+        seriesConfig,
+      );
 
       // Actualizar la configuración del gráfico
       chartConfiguration.seriesConfig = cloneDeep(seriesConfig);
@@ -344,9 +388,8 @@ export class ChartService {
       // Actualizar la configuración de series
       this.updateSeriesConfig(chartConfiguration);
     } catch (error) {
-      console.error('Error al configurar los datos del gráfico:', error);
-      throw new Error('No se pudo configurar los datos del gráfico');
+      console.error("Error al configurar los datos del gráfico:", error);
+      throw new Error("No se pudo configurar los datos del gráfico");
     }
   }
-
 }

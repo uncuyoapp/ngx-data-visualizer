@@ -11,7 +11,6 @@ import { Subject } from 'rxjs';
 import { ChartComponent } from '../chart/chart.component';
 import { ChartService } from '../chart/services/chart.service';
 import {
-  ChartConfiguration,
   ChartOptions,
 } from '../chart/types/chart-configuration';
 import { Goal, Series } from '../chart/types/chart-models';
@@ -38,7 +37,6 @@ export class ChartDirective implements OnDestroy {
   seriesChange = output<Series[]>();
 
   private chartRenderComponentRef!: ComponentRef<ChartComponent>;
-  private chartConfiguration!: ChartConfiguration;
 
   /** Referencia al componente de gráfico creado */
   chartComponent!: ChartComponent;
@@ -47,17 +45,12 @@ export class ChartDirective implements OnDestroy {
     private readonly viewContainerRef: ViewContainerRef,
     private readonly chartService: ChartService
   ) {
-    this.initializeChart();
-    this.initializeSeriesEffect();
-  }
+    // 1. Crear el componente UNA SOLA VEZ al inicio.
+    this.createChartComponent();
 
-  /**
-   * Inicializa el gráfico y configura las suscripciones necesarias
-   */
-  private initializeChart(): void {
-    effect(() => {
-      this.createChartComponent();
-    });
+    // 2. Reaccionar a los cambios para ACTUALIZAR el componente.
+    this.initializeChartUpdates();
+    this.initializeSeriesEffect();
   }
 
   /**
@@ -77,23 +70,28 @@ export class ChartDirective implements OnDestroy {
   /**
    * Crea y configura el componente de gráfico con la configuración actual
    */
-  createChartComponent() {
+  private createChartComponent(): void {
     this.viewContainerRef.clear();
-    this.chartConfiguration = this.chartService.getChartConfiguration(
-      this.dataset(),
-      this.chartOptions()
-    );
-
-    // Crear el componente
     this.chartRenderComponentRef =
       this.viewContainerRef.createComponent<ChartComponent>(ChartComponent);
     this.chartComponent = this.chartRenderComponentRef.instance;
+  }
 
-    // Configurar la entrada usando setInput
-    this.chartRenderComponentRef.setInput(
-      'chartConfiguration',
-      this.chartConfiguration
-    );
+  private initializeChartUpdates(): void {
+    effect(() => {
+      // Recalcular la configuración cuando las entradas cambien
+      const chartConfiguration = this.chartService.getChartConfiguration(
+        this.dataset(),
+        this.chartOptions()
+      );
+
+      // Actualizar el input del componente existente en lugar de recrearlo.
+      // Esto es mucho más eficiente.
+      this.chartRenderComponentRef.setInput(
+        'chartConfiguration',
+        chartConfiguration
+      );
+    });
   }
 
   /**

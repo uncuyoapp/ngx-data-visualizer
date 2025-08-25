@@ -93,7 +93,7 @@ export class EChart extends Chart {
 
   // Cache para memoización
   private readonly optionsCache: Map<string, EChartsOption> = new Map();
-  private readonly seriesDataCache: Map<string, any[]> = new Map();
+  
   private lastRenderTime: number = 0;
   private renderDebounceTimeout: number | null = null;
   private readonly RENDER_DEBOUNCE_MS = 100;
@@ -169,7 +169,6 @@ export class EChart extends Chart {
       window.clearTimeout(this.renderDebounceTimeout);
     }
     this.optionsCache.clear();
-    this.seriesDataCache.clear();
     this.chartInstance.dispose();
   }
 
@@ -264,7 +263,6 @@ export class EChart extends Chart {
    */
   private invalidateCache(): void {
     this.optionsCache.clear();
-    this.seriesDataCache.clear();
   }
 
   /**
@@ -465,12 +463,6 @@ export class EChart extends Chart {
   }
 
   private configureSeries(series: Array<any>) {
-    const cacheKey = JSON.stringify(series);
-    if (this.seriesDataCache.has(cacheKey)) {
-      this.libraryOptions.series = this.seriesDataCache.get(cacheKey);
-      return;
-    }
-
     const processedSeries = series.map((s, index) => {
       s.type = this.getChartType(this.libraryOptions['type'] as string);
       this.assignSeriesConfig(s);
@@ -481,7 +473,6 @@ export class EChart extends Chart {
       return s;
     });
 
-    this.seriesDataCache.set(cacheKey, processedSeries);
     this.libraryOptions.series = processedSeries;
   }
 

@@ -67,7 +67,7 @@ export class ChartService {
     };
 
     // Configurar datos y opciones
-    this.configureFiltersAndData(chartConfiguration);
+    this.updateChartData(chartConfiguration);
     chartConfiguration.libraryOptions = this.getLibraryOptions(
       chartConfiguration.options,
     );
@@ -164,7 +164,7 @@ export class ChartService {
         });
 
         // Configurar datos y opciones de la biblioteca
-        this.configureFiltersAndData(chartConfig);
+        this.updateChartData(chartConfig);
         chartConfig.libraryOptions = this.getLibraryOptions(
           chartConfig.options,
         );
@@ -354,7 +354,7 @@ export class ChartService {
    * Configura los filtros y datos iniciales para el gráfico
    * @param chartConfiguration - Configuración del gráfico a configurar
    */
-  private configureFiltersAndData(
+  public updateChartData(
     chartConfiguration: ChartConfiguration,
   ): void {
     if (!chartConfiguration?.dataset?.dataProvider) {

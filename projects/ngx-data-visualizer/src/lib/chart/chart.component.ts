@@ -6,7 +6,6 @@ import {
   DestroyRef,
   ElementRef,
   OnDestroy,
-  OnInit,
   ViewChild,
   effect,
   inject,
@@ -16,11 +15,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LegendComponent } from '../legend/legend.component';
 import { Filters } from '../types/data.types';
-import { Goal, Series } from './types/chart-models';
 import { EchartsComponent } from './echart/echarts.component';
 import { ChartService } from './services/chart.service';
 import { Chart } from './types/chart';
 import { ChartConfiguration } from './types/chart-configuration';
+import { Goal, Series } from './types/chart-models';
 import { GoalChartHelper } from './utils/goal-chart.helper';
 
 /**
@@ -34,7 +33,7 @@ import { GoalChartHelper } from './utils/goal-chart.helper';
   imports: [CommonModule, EchartsComponent, LegendComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent implements OnInit, OnDestroy {
+export class ChartComponent implements OnDestroy {
   // Inyección de dependencias
   private readonly chartService = inject(ChartService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -43,7 +42,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   private goalChartHelper!: GoalChartHelper;
 
   // Inputs y referencias
-  chartConfiguration = input.required<ChartConfiguration>();
+  chartConfiguration = input<ChartConfiguration | null>(null);
   series = signal<Series[]>([]);
 
   @ViewChild(EchartsComponent, { static: true })
@@ -54,6 +53,7 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   // Estado interno
   private resizeObserver: ResizeObserver | null = null;
+  private isInitialized = false;
 
   /**
    * Efecto reactivo que se dispara cuando cambia la configuración del gráfico
@@ -61,25 +61,20 @@ export class ChartComponent implements OnInit, OnDestroy {
   private readonly configEffect = effect(() => {
     const config = this.chartConfiguration();
     if (config && this.echart) {
+      if (!this.isInitialized) {
+        this.setupAutoUpdate(config);
+        this.setupResizeObserver();
+        this.isInitialized = true;
+      }
       this.ngOnConfigChange(config);
     }
   });
 
   /**
-   * Inicialización del componente
-   */
-  public ngOnInit(): void {
-    this.setupAutoUpdate();
-    this.setupResizeObserver();
-  }
-
-  /**
    * Configura la actualización automática del gráfico cuando cambian los datos
    * @private
    */
-  private setupAutoUpdate(): void {
-    const config = this.chartConfiguration();
-
+  private setupAutoUpdate(config: ChartConfiguration): void {
     if (!config.options.disableAutoUpdate) {
       config.dataset.dataUpdated
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -127,7 +122,8 @@ export class ChartComponent implements OnInit, OnDestroy {
    */
   private handleDataUpdate(): void {
     const config = this.chartConfiguration();
-    this.chartService.updateSeriesConfig(config);
+    if (!config) return; // Guard against null config
+    this.chartService.updateChartData(config);
 
     // Usar requestAnimationFrame para agrupar actualizaciones
     requestAnimationFrame(() => {
@@ -233,6 +229,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   private hideGoal() {
     const { savedSeriesConfig, savedFilters } = this.goalChartHelper.hideGoal();
     const config = this.chartConfiguration();
+    if (!config) return; // Guard against null config
 
     // Restaurar la configuración de series guardada
     config.seriesConfig = { ...savedSeriesConfig };

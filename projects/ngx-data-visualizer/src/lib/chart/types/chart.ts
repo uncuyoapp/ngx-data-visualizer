@@ -22,7 +22,9 @@ export abstract class Chart {
   protected abstract series: object[];
 
   /** Datos del gráfico */
-  public chartData: ChartData;
+  public get chartData(): ChartData {
+    return this.configuration.chartData;
+  }
 
   /** Opciones específicas de la biblioteca de gráficos utilizada */
   public libraryOptions: object;
@@ -35,7 +37,6 @@ export abstract class Chart {
    * @param configuration - Configuración inicial del gráfico
    */
   constructor(public configuration: ChartConfiguration) {
-    this.chartData = configuration.chartData;
     this.libraryOptions = configuration.libraryOptions;
     this.chartOptions = configuration.options;
   }

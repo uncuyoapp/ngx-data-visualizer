@@ -156,6 +156,7 @@ export class Dataset {
    * });
    */
   public applyFilters(filters: Filters): void {
+    console.log('[Debug] 1. applyFilters en Dataset: Notificando suscriptores...');
     this.dataProvider.filters = filters;
     this.dataUpdated.next(true);
   }

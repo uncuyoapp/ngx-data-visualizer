@@ -22,6 +22,10 @@ import { ChartConfiguration } from "./types/chart-configuration";
 import { Goal, Series } from "./types/chart-models";
 import { GoalChartHelper } from "./utils/goal-chart.helper";
 
+/**
+ * Componente principal de gráficos que encapsula la lógica de visualización
+ * y manejo de datos para diferentes tipos de gráficos.
+ */
 @Component({
   standalone: true,
   templateUrl: "./chart.component.html",
@@ -38,6 +42,12 @@ export class ChartComponent implements OnDestroy {
 
   chartConfiguration = input<ChartConfiguration | null>(null);
   series = signal<Series[]>([]);
+
+  /**
+   * Referencia al componente hijo EchartsComponent, obtenida de forma reactiva.
+   * `viewChild` devuelve una señal, permitiendo que los `effect` reaccionen
+   * cuando el componente hijo está disponible en la vista.
+   */
   echart = viewChild(EchartsComponent);
 
   mainChart: Chart | null = null;
@@ -46,17 +56,22 @@ export class ChartComponent implements OnDestroy {
   private resizeObserver: ResizeObserver | null = null;
   private isInitialized = false;
 
+  /**
+   * Efecto reactivo que se dispara cuando las dependencias (señales) cambian.
+   * Se ejecuta cuando `chartConfiguration` o `echart` (el componente hijo) reciben un valor.
+   * Este `effect` se ejecuta múltiples veces en la inicialización:
+   * 1. Una vez al crear el componente (con valores `undefined`).
+   * 2. Otra vez cuando `chartConfiguration` llega desde el input.
+   * 3. Una tercera vez cuando `echart` está disponible en el DOM.
+   * Esta es la forma declarativa de esperar a que todas las dependencias estén listas.
+   */
   private readonly configEffect = effect(() => {
     const config = this.chartConfiguration();
     const echart = this.echart();
-    console.log(
-      "[Debug X] configEffect: Disparado. Estado ->",
-      {
-        config: !!config,
-        echart: !!echart
-      }
-    );
+
+    // Solo proceder cuando ambas dependencias están listas.
     if (config && echart) {
+      // La lógica de inicialización se ejecuta una sola vez.
       if (!this.isInitialized) {
         this.setupAutoUpdate(config);
         this.setupResizeObserver();
@@ -66,15 +81,12 @@ export class ChartComponent implements OnDestroy {
     }
   });
 
+  /**
+   * Configura la suscripción a los cambios de datos del dataset.
+   * Cuando el dataset notifica una actualización (ej. por un filtro), se actualiza el gráfico.
+   */
   private setupAutoUpdate(config: ChartConfiguration): void {
-    console.log(
-      "[Debug A] setupAutoUpdate: Verificando config.options.disableAutoUpdate. Valor:",
-      config.options.disableAutoUpdate
-    );
     if (!config.options.disableAutoUpdate) {
-      console.log(
-        "[Debug B] setupAutoUpdate: Condición superada. Suscribiendo a dataUpdated..."
-      );
       config.dataset.dataUpdated
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
@@ -108,9 +120,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   private handleDataUpdate(): void {
-    console.log(
-      "[Debug 3] handleDataUpdate en ChartComponent: Iniciando actualización."
-    );
     const config = this.chartConfiguration();
     if (!config) return;
     this.chartService.updateChartData(config);

@@ -5,24 +5,24 @@ import {
   ViewContainerRef,
   effect,
   input,
-} from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Dataset } from '../services/dataset';
-import { ExcelService } from '../table/services/excel.service';
-import { TableComponent } from '../table/table.component';
-import { TableConfiguration, TableOptions } from '../table/types/table-base';
+} from "@angular/core";
+import { Subscription, debounceTime } from "rxjs";
+import { Dataset } from "../services/dataset";
+import { ExcelService } from "../table/services/excel.service";
+import { TableComponent } from "../table/table.component";
+import { TableConfiguration, TableOptions } from "../table/types/table-base";
 
 /**
  * Directiva que permite incrustar una tabla dinámica en un componente contenedor.
  * Maneja la creación, configuración y exportación de tablas con datos dinámicos.
  */
 @Directive({
-  selector: 'libTable, [libTable]',
+  selector: "libTable, [libTable]",
   standalone: true,
-  exportAs: 'libTable',
+  exportAs: "libTable",
 })
 export class TableDirective implements OnDestroy {
-  private readonly DEFAULT_EXPORT_NAME = 'tabla';
+  private readonly DEFAULT_EXPORT_NAME = "tabla";
   /** Conjunto de datos para la tabla */
   dataset = input.required<Dataset>();
 
@@ -43,7 +43,7 @@ export class TableDirective implements OnDestroy {
 
   constructor(
     private readonly viewContainerRef: ViewContainerRef,
-    private readonly excelService: ExcelService
+    private readonly excelService: ExcelService,
   ) {
     this.initializeTable();
   }
@@ -79,8 +79,8 @@ export class TableDirective implements OnDestroy {
 
     // Configurar la entrada usando setInput
     this.tableRenderComponentRef.setInput(
-      'tableConfiguration',
-      this.tableConfiguration
+      "tableConfiguration",
+      this.tableConfiguration,
     );
   }
 
@@ -97,9 +97,28 @@ export class TableDirective implements OnDestroy {
    * Suscribe los cambios en los datos para actualizar la tabla automáticamente
    */
   private subscribeDataChanges() {
-    this.subscription = this.dataset().dataUpdated.subscribe(() => {
-      this.updateTable();
-    });
+    this.subscription?.unsubscribe(); // Cancelar suscripción anterior
+    this.subscription = this.dataset()
+      .dataUpdated.pipe(debounceTime(200))
+      .subscribe(() => {
+        this.updateTable();
+      });
+  }
+
+  /**
+   * Cambia el modo de visualización de los valores de la tabla.
+   * @param mode El modo de visualización: 'nominal', 'percentOfTotal', 'percentOfRow', o 'percentOfColumn'.
+   */
+  public setValueDisplay(
+    mode: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn",
+  ): void {
+    if (this.tableConfiguration) {
+      // 1. Actualizar la configuración interna con el nuevo modo.
+      this.tableConfiguration.options.valueDisplay = mode;
+
+      // 2. Forzar una re-configuración y re-renderizado de la tabla.
+      this.tableComponent.configure();
+    }
   }
 
   /**
@@ -109,21 +128,21 @@ export class TableDirective implements OnDestroy {
    * @returns Dependiendo del tipo, puede devolver el HTML o el resultado de la exportación
    * @throws {Error} Si no se puede acceder al elemento de la tabla para la exportación
    */
-  export(type: 'html' | 'xlsx', name: string = this.DEFAULT_EXPORT_NAME) {
+  export(type: "html" | "xlsx", name: string = this.DEFAULT_EXPORT_NAME) {
     if (!this.tableComponent) {
-      console.warn('El componente de tabla no está inicializado');
+      console.warn("El componente de tabla no está inicializado");
       return null;
     }
 
     try {
       switch (type) {
-        case 'html':
+        case "html":
           return this.tableComponent.getHtmlTable();
 
-        case 'xlsx': {
+        case "xlsx": {
           const tableElement = this.tableComponent.getTableElement();
           if (!tableElement) {
-            throw new Error('No se pudo acceder al elemento de la tabla');
+            throw new Error("No se pudo acceder al elemento de la tabla");
           }
           return this.excelService.exportAsExcelFile(tableElement, name);
         }
@@ -133,7 +152,7 @@ export class TableDirective implements OnDestroy {
           return null;
       }
     } catch (error) {
-      console.error('Error al exportar la tabla:', error);
+      console.error("Error al exportar la tabla:", error);
       throw error;
     }
   }

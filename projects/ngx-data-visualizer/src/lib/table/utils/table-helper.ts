@@ -445,14 +445,42 @@ export class TableHelper {
    */
   private static configurePivot(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
-    const sum = $.pivotUtilities.aggregatorTemplates.sum;
-    const numberFormat = $.pivotUtilities.numberFormat;
-    const intFormat = numberFormat({
-      digitsAfterDecimal: config.digitsAfterDecimal ?? undefined,
-      suffix: config.suffix,
-    });
+    const aggregators = $.pivotUtilities.aggregators;
+
+    let aggregator;
+    switch (config.valueDisplay) {
+      case "percentOfTotal":
+        aggregator = aggregators["Sum as Fraction of Total"];
+        break;
+      case "percentOfRow":
+        aggregator = aggregators["Sum as Fraction of Rows"];
+        break;
+      case "percentOfColumn":
+        aggregator = aggregators["Sum as Fraction of Columns"];
+        break;
+      default: // 'nominal' o indefinido
+        aggregator = aggregators["Sum"];
+        break;
+    }
+
     const sorters = TableHelper.configureSorters(config);
-    return TableHelper.getPivotObject(sum, intFormat, sorters, config);
+
+    return {
+      aggregator: aggregator([
+        "valor",
+      ]),
+      cols: config.cols,
+      rows: config.rows,
+      sorters,
+      rendererOptions: {
+        table: {
+          rowTotals: config.cols.length > 0 ? config.totalRow : true,
+          colTotals: config.rows.length > 0 ? config.totalCol : true,
+          clickCallback: (e: any, _value: any, filter: any) =>
+            TableHelper.hoverFunction(e, filter),
+        },
+      },
+    };
   }
 
   /**
@@ -480,37 +508,6 @@ export class TableHelper {
       },
     );
     return sorters;
-  }
-
-  /**
-   * Genera el objeto de configuración final para el pivot table
-   * @param aggregator Función agregadora para los valores
-   * @param numberFormat Formateador de números
-   * @param sorters Ordenadores configurados
-   * @param config Configuración del pivot table
-   * @returns Objeto de configuración completo para el pivot table
-   */
-  private static getPivotObject(
-    aggregator: any,
-    numberFormat: any,
-    sorters: any,
-    config: TableOptions,
-  ) {
-    return {
-      showDecimals: config.digitsAfterDecimal > 0,
-      aggregator: aggregator(numberFormat)(["valor"]),
-      cols: config.cols,
-      rows: config.rows,
-      sorters,
-      rendererOptions: {
-        table: {
-          rowTotals: config.cols.length > 0 ? config.totalRow : true,
-          colTotals: config.rows.length > 0 ? config.totalCol : true,
-          clickCallback: (e: any, _value: any, filter: any) =>
-            TableHelper.hoverFunction(e, filter),
-        },
-      },
-    };
   }
 
   /**

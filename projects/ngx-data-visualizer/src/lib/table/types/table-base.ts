@@ -50,6 +50,8 @@ export interface TableOptions {
   rows: string[];
   /** Sufijo opcional para los valores numéricos */
   suffix?: string;
+  /** Define el modo de visualización de los valores en la tabla */
+  valueDisplay?: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn';
 }
 
 /**
@@ -126,38 +128,4 @@ export interface PivotOptions {
   [key: string]: unknown;
 }
 
-/**
- * Interfaz para las utilidades del pivot table
- */
-export interface PivotUtilities {
-  /** Plantillas de agregadores disponibles */
-  aggregatorTemplates: {
-    /** Agregador de suma */
-    sum: (formatter?: PivotFormatter) => (fields: string[]) => PivotAggregator;
-    /** Agregador de conteo */
-    count: (
-      formatter?: PivotFormatter,
-    ) => (fields: string[]) => PivotAggregator;
-    /** Agregador de promedio */
-    average: (
-      formatter?: PivotFormatter,
-    ) => (fields: string[]) => PivotAggregator;
-  };
-  /** Renderizadores disponibles */
-  renderers: Record<string, PivotRenderer>;
-  /** Derivadores disponibles */
-  derivers: Record<string, PivotDeriver>;
-  /** Localizaciones disponibles */
-  locales: Record<string, PivotLocale>;
-  /** Función de ordenamiento natural */
-  naturalSort: (a: string | number, b: string | number) => number;
-  /** Función de formateo de números */
-  numberFormat: (opts?: {
-    digitsAfterDecimal?: number;
-    scaler?: number;
-    prefix?: string;
-    suffix?: string;
-  }) => PivotFormatter;
-  /** Función de ordenamiento personalizado */
-  sortAs: (orderValues: string[]) => (a: string, b: string) => number;
-}
+

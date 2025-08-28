@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,24 +6,24 @@ import {
   ViewChild,
   effect,
   inject,
-  input
-} from '@angular/core';
+  input,
+} from "@angular/core";
 
-import { TableService } from './services/table.service';
-import { TableConfiguration, TableOptions } from './types/table-base';
-import { TableHelper } from './utils/table-helper';
+import { TableService } from "./services/table.service";
+import { TableConfiguration, TableOptions } from "./types/table-base";
+import { TableHelper } from "./utils/table-helper";
 
 /**
  * Componente de tabla que muestra datos en formato tabular con capacidad de pivotado.
  * Soporta características como tablas fijas (sticky) y configuración dinámica.
  */
 @Component({
-  selector: 'lib-table',
+  selector: "lib-table",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: "./table.component.html",
+  styleUrls: ["./table.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent {
   // Servicios
@@ -34,7 +34,7 @@ export class TableComponent {
   protected readonly tableConfiguration = input.required<TableConfiguration>();
 
   // Referencias a elementos del DOM
-  @ViewChild('pivotTable', { static: true })
+  @ViewChild("pivotTable", { static: true })
   private readonly pivotTable!: ElementRef<HTMLDivElement>;
 
   /**
@@ -54,7 +54,7 @@ export class TableComponent {
    */
   public configure(): void {
     const pivotConfig = this.tableService.getTableConfiguration(
-      this.tableConfiguration()
+      this.tableConfiguration(),
     );
     this.render(pivotConfig);
   }
@@ -68,7 +68,7 @@ export class TableComponent {
     const firstChild = tableElement.firstElementChild;
 
     if (firstChild) {
-      firstChild.classList.add('table', 'table-bordered');
+      firstChild.classList.add("table", "table-bordered");
     }
 
     return tableElement.innerHTML;
@@ -111,7 +111,7 @@ export class TableComponent {
       TableHelper.renderPivot(tableElement, tableData, pivotConfig);
       TableHelper.stickyTable(tableElement);
     } else {
-      throw new Error('El elemento pivotTable debe ser un HTMLDivElement');
+      throw new Error("El elemento pivotTable debe ser un HTMLDivElement");
     }
   }
 }

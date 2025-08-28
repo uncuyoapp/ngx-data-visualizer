@@ -39,6 +39,7 @@ declare global {
           formatter?: PivotFormatter
         ) => (fields: string[]) => PivotAggregator;
       };
+      aggregators: Record<string, (fields: string[]) => PivotAggregator>;
       renderers: Record<string, PivotRenderer>;
       derivers: Record<string, PivotDeriver>;
       locales: Record<string, PivotLocale>;

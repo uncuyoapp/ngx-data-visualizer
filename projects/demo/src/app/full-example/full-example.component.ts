@@ -79,7 +79,10 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
   } as ChartOptions;
 
   /** Configuración para la tabla de datos */
-  tableOptions: TableOptions = optionsTable as TableOptions;
+  tableOptions: TableOptions = {
+    ...optionsTable,
+    valueDisplay: "nominal",
+  } as TableOptions;
 
   /** Configuración de meta/objetivo para mostrar en gráficos */
   goal: Goal = goal as Goal;

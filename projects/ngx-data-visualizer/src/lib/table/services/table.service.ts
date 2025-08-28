@@ -70,6 +70,7 @@ export class TableService {
       totalRow: configuration.options.totalRow,
       sorters: sorters,
       suffix: configuration.options.suffix ?? "",
+      valueDisplay: configuration.options.valueDisplay,
     };
   }
 }

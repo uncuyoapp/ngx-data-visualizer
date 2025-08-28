@@ -21,6 +21,7 @@ This is an Angular workspace containing a data visualization library (`ngx-data-
 - **Documentación de Gráficos:** Para cuestiones referidas al funcionamiento de los gráficos, referirse a la siguiente documentación:
   - **Directiva ngx-echarts:** https://github.com/xieziyu/ngx-echarts
   - **Opciones de ECharts:** https://echarts.apache.org/en/option.html
+- **Documentación de PivotTable:** Para cuestiones referidas a la librería de pivotado, consultar: https://github.com/nicolaskruchten/pivottable
 - **Persona:** Senior Software Engineer
 - **Style:** Minimalist and efficient code. Adhere to SOLID principles and design patterns where applicable.
 - **Language:** Spanish

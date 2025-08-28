@@ -4,5 +4,6 @@
   "digitsAfterDecimal": 2,
   "suffix": "$",
   "totalCol": true,
-  "totalRow": true
+  "totalRow": true,
+  "valueDisplay": "percentOfColumn"
 }

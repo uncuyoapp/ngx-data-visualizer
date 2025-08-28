@@ -19,6 +19,10 @@ import { ChartData } from "../utils/chart-data";
 import { EChart } from "./echarts";
 import { EC_SERIES_CONFIG } from "../../types/constants";
 
+/**
+ * @description
+ * Opciones de inicialización para la instancia de ECharts.
+ */
 interface EChartsInitOptions extends EChartsOption {
   locale?: string;
   renderer?: "canvas" | "svg";
@@ -26,6 +30,12 @@ interface EChartsInitOptions extends EChartsOption {
   height?: number | string;
 }
 
+/**
+ * @description
+ * Componente wrapper para la librería `ngx-echarts`.
+ * Se encarga de la inicialización, renderizado y actualización de un gráfico ECharts.
+ * Actúa como un puente entre la lógica de negocio de la librería y la renderización real del gráfico.
+ */
 @Component({
   standalone: true,
   selector: "lib-app-echarts",
@@ -44,11 +54,24 @@ interface EChartsInitOptions extends EChartsOption {
 })
 export class EchartsComponent implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly ngZone = inject(NgZone);
+
+  /** Configuración del gráfico que se va a renderizar. */
   public readonly chartConfiguration = input.required<ChartConfiguration>();
+
+  /** Evento emitido cuando las series del gráfico cambian. */
   public readonly seriesChange = output<Series[]>();
+
+  /** Evento emitido cuando la instancia del gráfico ha sido creada. */
   public readonly chartCreated = output<Chart>();
+
+  /** Evento emitido después de que el gráfico se ha actualizado y renderizado. */
   public readonly chartUpdated = output<void>();
+
+  /** Instancia principal del gráfico, encapsulada en la clase `EChart`. */
   protected mainChart!: EChart;
+
+  /** Opciones de inicialización para el componente `ngx-echarts`. */
   protected initOptions: EChartsInitOptions = {
     locale: "es",
     renderer: "svg",
@@ -56,14 +79,21 @@ export class EchartsComponent implements OnInit, OnDestroy {
     devicePixelRatio:
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
   };
-  private readonly ngZone = inject(NgZone);
+
+  /** ID único para el elemento del DOM del gráfico. */
   public id: string = `echart-${Math.floor(Math.random() * 10000)}`;
+
   private isDestroyed = false;
   private seriesEmissionTimer: ReturnType<typeof setTimeout> | null = null;
+  private resizeTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly EMIT_DEBOUNCE = 100;
   private readonly RESIZE_DEBOUNCE = 150;
-  private resizeTimer: ReturnType<typeof setTimeout> | null = null;
 
+  /**
+   * @description
+   * Ciclo de vida de Angular. Se ejecuta al inicializar el componente.
+   * Configura las opciones, crea el gráfico y establece listeners para el redimensionamiento.
+   */
   public ngOnInit(): void {
     try {
       this.configInitOptions();
@@ -74,6 +104,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Ciclo de vida de Angular. Se ejecuta al destruir el componente.
+   * Limpia timers, listeners y destruye la instancia de ECharts para liberar memoria.
+   */
   public ngOnDestroy(): void {
     this.isDestroyed = true;
     this.cleanupSeriesEmissionTimer();
@@ -91,6 +126,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Configura las opciones de inicialización del gráfico (dimensiones, locale) basándose
+   * en la configuración de entrada.
+   */
   private configInitOptions(): void {
     try {
       const config = this.chartConfiguration();
@@ -107,6 +147,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Crea la instancia principal del gráfico (`EChart`) y emite el evento `chartCreated`.
+   * @throws {Error} Si la configuración del gráfico no está disponible.
+   */
   protected createChart(): void {
     try {
       const config = this.chartConfiguration();
@@ -123,6 +168,12 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Asigna la instancia de ECharts creada por `ngx-echarts` a la clase `EChart`.
+   * Renderiza el gráfico por primera vez y programa la emisión de las series.
+   * @param instance La instancia de ECharts creada por la directiva.
+   */
   public setChartInstance(instance: ECharts): void {
     if (!instance) {
       console.warn("Se intentó establecer una instancia de ECharts nula");
@@ -140,28 +191,24 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Actualiza y redibuja el gráfico. Se asegura de que la instancia exista y
+   * gestiona el estado de renderizado para evitar llamadas concurrentes.
+   */
   public updateChart(): void {
-    console.log(
-      "[Debug 5] updateChart en EchartsComponent: Redibujando el gráfico."
-    );
-    if (!this.mainChart) {
-      console.warn(
-        "No se puede actualizar el gráfico: la instancia no está inicializada"
-      );
-      return;
-    }
-    if (!this.mainChart.hasRendered) {
+    if (!this.mainChart || !this.mainChart.hasRendered) {
       return;
     }
     try {
       this.mainChart.isRendering = true;
-      if (this.mainChart?.instance) {
+      if (this.mainChart.instance) {
         this.mainChart.instance.off("finished");
       }
       this.mainChart.render();
       this.scheduleSeriesEmission();
       this.ngZone.runOutsideAngular(() => {
-        if (this.mainChart?.instance) {
+        if (this.mainChart.instance) {
           requestAnimationFrame(() => {
             this.mainChart.instance.on("finished", () => {
               this.ngZone.run(() => {
@@ -178,6 +225,12 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Programa la emisión de las series del gráfico con un debounce para evitar
+   * emisiones excesivas durante actualizaciones rápidas.
+   * @param delay El tiempo de espera en milisegundos.
+   */
   private scheduleSeriesEmission(delay: number = this.EMIT_DEBOUNCE): void {
     if (this.isDestroyed) {
       return;
@@ -192,6 +245,10 @@ export class EchartsComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * @description
+   * Limpia el temporizador de emisión de series si existe.
+   */
   private cleanupSeriesEmissionTimer(): void {
     if (this.seriesEmissionTimer) {
       clearTimeout(this.seriesEmissionTimer);
@@ -199,6 +256,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Añade un listener al evento `resize` de la ventana para redimensionar el gráfico.
+   * Se ejecuta fuera de la zona de Angular para mejorar el rendimiento.
+   */
   private setupResizeListener(): void {
     if (typeof window !== "undefined") {
       this.ngZone.runOutsideAngular(() => {
@@ -207,6 +269,10 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Limpia el listener de `resize` y el temporizador asociado.
+   */
   private cleanupResizeListener(): void {
     if (typeof window !== "undefined") {
       window.removeEventListener("resize", this.handleResize);
@@ -214,6 +280,10 @@ export class EchartsComponent implements OnInit, OnDestroy {
     this.cleanupResizeTimer();
   }
 
+  /**
+   * @description
+   * Limpia el temporizador de redimensionamiento si existe.
+   */
   private cleanupResizeTimer(): void {
     if (this.resizeTimer) {
       clearTimeout(this.resizeTimer);
@@ -221,6 +291,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Manejador del evento `resize`. Redimensiona el gráfico con un debounce
+   * para evitar llamadas excesivas.
+   */
   private readonly handleResize = (): void => {
     if (this.isDestroyed || !this.mainChart?.instance) {
       return;
@@ -239,11 +314,12 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }, this.RESIZE_DEBOUNCE);
   };
 
+  /**
+   * @description
+   * Obtiene las series actuales del gráfico, las formatea y emite el evento `seriesChange`.
+   */
   public emitSeries(): void {
-    if (this.isDestroyed) {
-      return;
-    }
-    if (!this.mainChart?.instance) {
+    if (this.isDestroyed || !this.mainChart?.instance) {
       return;
     }
     try {
@@ -266,6 +342,14 @@ export class EchartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Genera una serie especial para representar una "meta" en el gráfico.
+   * @param chartData Los datos específicos para la serie de meta.
+   * @param chartType El tipo de gráfico a usar para la meta (ej. 'line', 'bar').
+   * @returns Un objeto de tipo `Series` configurado para la meta.
+   * @throws {Error} Si `chartData` no se proporciona.
+   */
   public getGoalSeries(chartData: ChartData, chartType: string): Series {
     if (!chartData) {
       throw new Error("El parámetro chartData es requerido");

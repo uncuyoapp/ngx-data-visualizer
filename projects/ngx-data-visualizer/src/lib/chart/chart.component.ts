@@ -23,8 +23,10 @@ import { Goal, Series } from "./types/chart-models";
 import { GoalChartHelper } from "./utils/goal-chart.helper";
 
 /**
+ * @description
  * Componente principal de gráficos que encapsula la lógica de visualización
- * y manejo de datos para diferentes tipos de gráficos.
+ * y manejo de datos para diferentes tipos de gráficos. Actúa como orquestador
+ * entre la configuración, los datos y el componente de renderizado de ECharts.
  */
 @Component({
   standalone: true,
@@ -40,23 +42,31 @@ export class ChartComponent implements OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private goalChartHelper!: GoalChartHelper;
 
+  /** Configuración completa del gráfico, incluyendo datos, opciones y dimensiones. */
   chartConfiguration = input<ChartConfiguration | null>(null);
+
+  /** Señal que contiene las series actuales del gráfico para comunicación externa. */
   series = signal<Series[]>([]);
 
   /**
-   * Referencia al componente hijo EchartsComponent, obtenida de forma reactiva.
+   * @description
+   * Referencia al componente hijo `EchartsComponent`, obtenida de forma reactiva.
    * `viewChild` devuelve una señal, permitiendo que los `effect` reaccionen
    * cuando el componente hijo está disponible en la vista.
    */
   echart = viewChild(EchartsComponent);
 
+  /** Instancia principal del gráfico, gestionada por el `ChartService`. */
   mainChart: Chart | null = null;
+
+  /** Estado que indica si una meta está siendo visualizada actualmente. */
   showingGoal = false;
 
   private resizeObserver: ResizeObserver | null = null;
   private isInitialized = false;
 
   /**
+   * @description
    * Efecto reactivo que se dispara cuando las dependencias (señales) cambian.
    * Se ejecuta cuando `chartConfiguration` o `echart` (el componente hijo) reciben un valor.
    * Este `effect` se ejecuta múltiples veces en la inicialización:
@@ -82,8 +92,10 @@ export class ChartComponent implements OnDestroy {
   });
 
   /**
+   * @description
    * Configura la suscripción a los cambios de datos del dataset.
    * Cuando el dataset notifica una actualización (ej. por un filtro), se actualiza el gráfico.
+   * @param config La configuración del gráfico que contiene el dataset.
    */
   private setupAutoUpdate(config: ChartConfiguration): void {
     if (!config.options.disableAutoUpdate) {
@@ -95,6 +107,11 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Inicializa un `ResizeObserver` para detectar cambios en el tamaño del contenedor
+   * del gráfico y notificar al componente ECharts para que se redibuje.
+   */
   private setupResizeObserver(): void {
     if (typeof ResizeObserver !== "undefined") {
       this.resizeObserver = new ResizeObserver(() => {
@@ -107,6 +124,12 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Se ejecuta cuando la configuración del gráfico cambia.
+   * Actualiza la configuración de las series y el helper de metas.
+   * @param config La nueva configuración del gráfico.
+   */
   private ngOnConfigChange(config: ChartConfiguration): void {
     this.chartService.updateSeriesConfig(config);
     this.goalChartHelper = new GoalChartHelper(config);
@@ -119,6 +142,11 @@ export class ChartComponent implements OnDestroy {
     });
   }
 
+  /**
+   * @description
+   * Maneja las actualizaciones de datos, actualizando la data del gráfico
+   * y solicitando un redibujado.
+   */
   private handleDataUpdate(): void {
     const config = this.chartConfiguration();
     if (!config) return;
@@ -132,6 +160,11 @@ export class ChartComponent implements OnDestroy {
     });
   }
 
+  /**
+   * @description
+   * Limpia los recursos al destruir el componente, como el `ResizeObserver`
+   * y la instancia del gráfico principal.
+   */
   public ngOnDestroy(): void {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
@@ -143,22 +176,42 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Propaga la selección de una serie al `mainChart`.
+   * @param seriesElement La serie que ha sido seleccionada.
+   */
   public onSelectSeries(seriesElement: Series): void {
     if (this.mainChart) {
       this.mainChart.selectSeries(seriesElement);
     }
   }
 
+  /**
+   * @description
+   * Propaga el evento de hover sobre una serie al `mainChart`.
+   * @param seriesElement La serie sobre la que se ha hecho hover.
+   */
   public onHoverSeries(seriesElement: Series): void {
     if (this.mainChart) {
       this.mainChart.hoverSeries(seriesElement);
     }
   }
 
+  /**
+   * @description
+   * Se ejecuta cuando las series del gráfico cambian, actualizando la señal `series`.
+   * @param series El nuevo array de series.
+   */
   public onSeriesChange(series: Series[]) {
     this.series.set(series);
   }
 
+  /**
+   * @description
+   * Alterna la visibilidad de una meta en el gráfico.
+   * @param goal La meta a mostrar u ocultar.
+   */
   public toggleShowGoal(goal: Goal) {
     this.showingGoal = !this.showingGoal;
     if (this.showingGoal) {
@@ -168,6 +221,11 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Muestra una meta en el gráfico, añadiendo una nueva serie para representarla.
+   * @param goal La meta a visualizar.
+   */
   private showGoal(goal: Goal): void {
     const goalChartData = this.goalChartHelper.showGoal(goal);
     const echart = this.echart();
@@ -191,6 +249,11 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Oculta la meta previamente mostrada, restaurando la configuración
+   * de series y los filtros originales.
+   */
   private hideGoal(): void {
     const { savedSeriesConfig, savedFilters } = this.goalChartHelper.hideGoal();
     const config = this.chartConfiguration();

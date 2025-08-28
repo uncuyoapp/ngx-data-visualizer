@@ -14,7 +14,10 @@ import {
 } from "@angular/core";
 import { Subscription } from "rxjs";
 
-import { ChartConfiguration, ChartOptions } from "../chart/types/chart-configuration";
+import {
+  ChartConfiguration,
+  ChartOptions,
+} from "../chart/types/chart-configuration";
 import { ChartService } from "../chart/services/chart.service";
 import { Dataset } from "../services/dataset";
 import { Dimension } from "../types/data.types";
@@ -55,7 +58,10 @@ export class MultipleChartComponent implements OnDestroy {
    * La clave es el título del gráfico (asumido único) y el valor es la referencia al componente.
    * Este Map es la fuente de la verdad para saber qué está renderizado.
    */
-  private activeChartComponents = new Map<string, ComponentRef<ChartWrapperComponent>>();
+  private activeChartComponents = new Map<
+    string,
+    ComponentRef<ChartWrapperComponent>
+  >();
   private dataSubscription?: Subscription;
   private navSubscriptions: { unsubscribe: () => void }[] = [];
 
@@ -77,7 +83,7 @@ export class MultipleChartComponent implements OnDestroy {
    */
   ngOnDestroy(): void {
     this.dataSubscription?.unsubscribe();
-    this.navSubscriptions.forEach(s => s.unsubscribe());
+    this.navSubscriptions.forEach((s) => s.unsubscribe());
     this.clearAllCharts();
   }
 
@@ -99,14 +105,14 @@ export class MultipleChartComponent implements OnDestroy {
    * mínimas necesarias (añadir, actualizar, eliminar) para optimizar el rendimiento.
    */
   private updateCharts(): void {
-    // Guardar si el host aún no está disponible (ej. en la primera ejecución del efecto).
+    // Salir si el host aún no está disponible (ej. en la primera ejecución del efecto).
     if (!this.chartHost) return;
 
     const dataset = this.dataset();
     const options = this.options();
     const splitDimension = this.splitDimension();
 
-    // Guardar si algún input esencial aún no tiene valor.
+    // Salir si algún input esencial aún no tiene valor.
     if (!dataset || !options || !splitDimension) {
       this.clearAllCharts();
       return;
@@ -116,14 +122,16 @@ export class MultipleChartComponent implements OnDestroy {
     const newConfigurations = this.chartService.getSplitConfiguration(
       dataset,
       options,
-      splitDimension
+      splitDimension,
     );
 
     // Crear Sets para facilitar la comparación de claves (títulos de gráficos).
-    const newChartKeys = new Set(newConfigurations.map(c => c.options.title!));
+    const newChartKeys = new Set(
+      newConfigurations.map((c) => c.options.title!),
+    );
     const currentChartKeys = new Set(this.activeChartComponents.keys());
 
-    // --- PASO 1: ELIMINAR --- 
+    // --- PASO 1: ELIMINAR ---
     // Iterar sobre los componentes actualmente renderizados y destruir aquellos
     // cuyas claves no se encuentran en la nueva configuración.
     for (const key of currentChartKeys) {
@@ -135,7 +143,7 @@ export class MultipleChartComponent implements OnDestroy {
 
     // Limpiar suscripciones de navegación de componentes que podrían ser destruidos
     // o actualizados, para evitar fugas de memoria.
-    this.navSubscriptions.forEach(s => s.unsubscribe());
+    this.navSubscriptions.forEach((s) => s.unsubscribe());
     this.navSubscriptions = [];
 
     // --- PASO 2: AÑADIR Y ACTUALIZAR ---
@@ -152,7 +160,10 @@ export class MultipleChartComponent implements OnDestroy {
         existingComponentRef.setInput("total", newConfigurations.length);
       } else {
         // Si es un gráfico nuevo, se crea dinámicamente en el host.
-        const newComponentRef = this.chartHost.createComponent(ChartWrapperComponent, { index });
+        const newComponentRef = this.chartHost.createComponent(
+          ChartWrapperComponent,
+          { index },
+        );
         newComponentRef.setInput("chartConfiguration", config);
         newComponentRef.setInput("index", index);
         newComponentRef.setInput("total", newConfigurations.length);
@@ -175,9 +186,14 @@ export class MultipleChartComponent implements OnDestroy {
    * @param currentIndex El índice del gráfico que disparó la navegación.
    * @param direction La dirección de la navegación ('previous' o 'next').
    */
-  private handleNavigation(configs: ChartConfiguration[], currentIndex: number, direction: "previous" | "next"): void {
-    const targetIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
-    // Guardar si el índice de destino está fuera de los límites.
+  private handleNavigation(
+    configs: ChartConfiguration[],
+    currentIndex: number,
+    direction: "previous" | "next",
+  ): void {
+    const targetIndex =
+      direction === "next" ? currentIndex + 1 : currentIndex - 1;
+    // Salir si el índice de destino está fuera de los límites.
     if (targetIndex < 0 || targetIndex >= configs.length) return;
 
     // Obtener la clave del gráfico de destino para buscar su referencia de componente.
@@ -186,11 +202,12 @@ export class MultipleChartComponent implements OnDestroy {
 
     if (targetComponentRef) {
       // Realizar scroll al elemento nativo del componente de destino.
-      const targetElement = targetComponentRef.location.nativeElement as HTMLElement;
+      const targetElement = targetComponentRef.location
+        .nativeElement as HTMLElement;
       targetElement.scrollIntoView({
         behavior: "smooth",
-        block: "nearest",
-        inline: "start",
+        block: "center",
+        inline: "center",
       });
     }
   }

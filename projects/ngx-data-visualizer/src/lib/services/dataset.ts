@@ -1,7 +1,7 @@
-import { Subject } from 'rxjs';
-import { DataProvider } from './data-provider';
-import { Dimension, Filters, RowData } from '../types/data.types';
-import { TimeSeries } from '../chart/types/chart-models';
+import { Subject } from "rxjs";
+import { DataProvider } from "./data-provider";
+import { Dimension, Filters, RowData } from "../types/data.types";
+import { TimeSeries } from "../chart/types/chart-models";
 
 /**
  * Clase que representa un conjunto de datos para visualización
@@ -52,14 +52,17 @@ export class Dataset {
     rowData: RowData[];
   }) {
     if (!config) {
-      throw new Error('La configuración del dataset es requerida');
+      throw new Error("La configuración del dataset es requerida");
     }
 
     this.id = config.id;
     this.dimensions = this.validateDimensions(config.dimensions);
     this.rowData = this.validateRowData(config.rowData);
     this.enableRollUp = Boolean(config.enableRollUp);
-    this.dataProvider = new DataProvider({ dimensions: this.dimensions, rowData: this.rowData });
+    this.dataProvider = new DataProvider({
+      dimensions: this.dimensions,
+      rowData: this.rowData,
+    });
 
     // Validar que las dimensiones en los datos coincidan con las dimensiones definidas
     this.validateDataAgainstDimensions();
@@ -73,22 +76,26 @@ export class Dataset {
    */
   private validateDimensions(dimensions: Dimension[] = []): Dimension[] {
     if (!Array.isArray(dimensions)) {
-      console.warn('Las dimensiones deben ser un arreglo, se usará un arreglo vacío');
+      console.warn(
+        "Las dimensiones deben ser un arreglo, se usará un arreglo vacío",
+      );
       return [];
     }
 
     // Validar que cada dimensión tenga los campos requeridos
     return dimensions.map((dim, index) => {
-      if (!dim || typeof dim !== 'object') {
-        throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
+      if (!dim || typeof dim !== "object") {
+        throw new Error(
+          `Dimensión en posición ${index} no es un objeto válido`,
+        );
       }
 
-      const requiredFields = ['id', 'name', 'nameView', 'items'];
-      const missingFields = requiredFields.filter(field => !(field in dim));
+      const requiredFields = ["id", "name", "nameView", "items"];
+      const missingFields = requiredFields.filter((field) => !(field in dim));
 
       if (missingFields.length > 0) {
         throw new Error(
-          `Dimensión '${dim.name || 'sin nombre'}' falta(n) campo(s) requerido(s): ${missingFields.join(', ')}`
+          `Dimensión '${dim.name || "sin nombre"}' falta(n) campo(s) requerido(s): ${missingFields.join(", ")}`,
         );
       }
 
@@ -104,12 +111,14 @@ export class Dataset {
    */
   private validateRowData(rowData: RowData[] = []): RowData[] {
     if (!Array.isArray(rowData)) {
-      console.warn('Los datos de fila deben ser un arreglo, se usará un arreglo vacío');
+      console.warn(
+        "Los datos de fila deben ser un arreglo, se usará un arreglo vacío",
+      );
       return [];
     }
 
     return rowData.map((row, index) => {
-      if (!row || typeof row !== 'object' || Array.isArray(row)) {
+      if (!row || typeof row !== "object" || Array.isArray(row)) {
         throw new Error(`Fila en posición ${index} no es un objeto válido`);
       }
       return { ...row };
@@ -126,19 +135,21 @@ export class Dataset {
       return; // No hay datos o dimensiones para validar
     }
 
-    const dimensionNames = new Set(this.dimensions.map(d => d.nameView));
+    const dimensionNames = new Set(this.dimensions.map((d) => d.nameView));
     const dataKeys = new Set<string>();
 
     // Recolectar todas las claves de los datos
-    this.rowData.forEach(row => {
-      Object.keys(row).forEach(key => dataKeys.add(key));
+    this.rowData.forEach((row) => {
+      Object.keys(row).forEach((key) => dataKeys.add(key));
     });
 
     // Verificar que todas las dimensiones estén en los datos
-    const missingDimensions = [...dimensionNames].filter(name => !dataKeys.has(name));
+    const missingDimensions = [...dimensionNames].filter(
+      (name) => !dataKeys.has(name),
+    );
     if (missingDimensions.length > 0) {
       console.warn(
-        `Las siguientes dimensiones no están presentes en los datos: ${missingDimensions.join(', ')}`
+        `Las siguientes dimensiones no están presentes en los datos: ${missingDimensions.join(", ")}`,
       );
     }
   }
@@ -156,7 +167,6 @@ export class Dataset {
    * });
    */
   public applyFilters(filters: Filters): void {
-    console.log('[Debug] 1. applyFilters en Dataset: Notificando suscriptores...');
     this.dataProvider.filters = filters;
     this.dataUpdated.next(true);
   }
@@ -169,7 +179,7 @@ export class Dataset {
    * console.log('Datos actuales:', currentData);
    */
   public getData(): RowData[] {
-    return this.rowData.map(row => ({ ...row }));
+    return this.rowData.map((row) => ({ ...row }));
   }
 
   /**
@@ -180,6 +190,6 @@ export class Dataset {
    * console.log('Dimensiones:', dimensions.map(d => d.nameView));
    */
   public getDimensions(): Dimension[] {
-    return this.dimensions.map(dim => ({ ...dim }));
+    return this.dimensions.map((dim) => ({ ...dim }));
   }
 }

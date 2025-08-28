@@ -16,6 +16,13 @@ import { EChartParser } from "../echart/utils/echart-parser";
 import { EChartsOption } from "echarts";
 import { ParserOptions } from "../types/parser-options";
 
+/**
+ * @description
+ * Servicio encargado de la creación y gestión de configuraciones de gráficos.
+ * Actúa como una factoría para `ChartConfiguration`, proveyendo métodos para
+ * generar configuraciones para gráficos individuales y múltiples, así como para
+ * actualizar su estado y datos.
+ */
 @Injectable({
   providedIn: "root",
 })
@@ -28,6 +35,14 @@ export class ChartService {
     this.chartRenderEngine = EchartsComponent;
   }
 
+  /**
+   * @description
+   * Crea y devuelve una configuración de gráfico completa para un único gráfico.
+   * @param dataset El conjunto de datos para el gráfico.
+   * @param options Las opciones de visualización y comportamiento del gráfico.
+   * @returns Una instancia de `ChartConfiguration` completamente inicializada.
+   * @throws {Error} Si el `dataset` no se proporciona.
+   */
   public getChartConfiguration(
     dataset: Dataset,
     options: ChartOptions
@@ -56,6 +71,16 @@ export class ChartService {
     return chartConfiguration;
   }
 
+  /**
+   * @description
+   * Genera múltiples configuraciones de gráfico a partir de un único dataset,
+   * dividiendo los datos según una dimensión específica.
+   * @param dataset El conjunto de datos original.
+   * @param options Las opciones base para cada gráfico generado.
+   * @param dimension La dimensión utilizada para dividir los datos.
+   * @returns Un array de `ChartConfiguration`, una para cada item seleccionado de la dimensión.
+   * @throws {Error} Si `dataset` o `dimension` no se proporcionan.
+   */
   public getSplitConfiguration(
     dataset: Dataset,
     options: ChartOptions,
@@ -126,6 +151,12 @@ export class ChartService {
       });
   }
 
+  /**
+   * @description
+   * Actualiza las opciones de la librería de gráficos (ECharts) basadas en la configuración general.
+   * @param chartConfiguration La configuración del gráfico a actualizar.
+   * @throws {Error} Si `chartConfiguration` no se proporciona.
+   */
   public updateLibraryConfig(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration) {
       throw new Error("El parámetro chartConfiguration es requerido");
@@ -137,6 +168,13 @@ export class ChartService {
       ) as EChartsOption;
   }
 
+  /**
+   * @description
+   * Actualiza la configuración de las series (ejes, apilamiento) del gráfico.
+   * Determina automáticamente los ejes a utilizar si no se especifican.
+   * @param chartConfiguration La configuración del gráfico a actualizar.
+   * @throws {Error} Si `chartConfiguration` no se proporciona o si falta configuración de ejes.
+   */
   public updateSeriesConfig(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration) {
       throw new Error("El parámetro chartConfiguration es requerido");
@@ -178,6 +216,12 @@ export class ChartService {
     }
   }
 
+  /**
+   * @description
+   * Inicializa y devuelve un objeto `SeriesConfig` limpio.
+   * @param seriesConfig La configuración de series original.
+   * @returns Un nuevo objeto `SeriesConfig` con valores iniciales.
+   */
   private initializeSeriesConfig(seriesConfig: SeriesConfig): SeriesConfig {
     return {
       x1: "",
@@ -187,10 +231,24 @@ export class ChartService {
     };
   }
 
+  /**
+   * @description
+   * Verifica si un eje puede ser utilizado (no está ya en `rollUp`).
+   * @param axis El nombre del eje a verificar.
+   * @param rollUp El array de dimensiones actualmente en uso.
+   * @returns `true` si el eje puede ser utilizado, `false` en caso contrario.
+   */
   private canUseAxis(axis: string | undefined, rollUp: string[]): boolean {
     return axis ? rollUp.indexOf(axis) === -1 : false;
   }
 
+  /**
+   * @description
+   * Busca una dimensión disponible que no esté siendo utilizada en `rollUp`.
+   * @param dimensions Array de todas las dimensiones disponibles.
+   * @param rollUp Array de dimensiones en uso.
+   * @returns El nombre de la dimensión disponible o `null` si no se encuentra ninguna.
+   */
   private findAvailableDimension(
     dimensions: Dimension[],
     rollUp: string[]
@@ -202,6 +260,13 @@ export class ChartService {
     return availableDimension?.nameView ?? null;
   }
 
+  /**
+   * @description
+   * Obtiene las opciones específicas de la librería de gráficos (ECharts) según el modo (preview o completo).
+   * @param options Las opciones generales del gráfico.
+   * @returns Las opciones de ECharts correspondientes.
+   * @throws {Error} Si `options` no se proporciona.
+   */
   private getLibraryOptions(options: ChartOptions): EChartsOption {
     if (!options) {
       throw new Error("El parámetro options es requerido");
@@ -211,10 +276,20 @@ export class ChartService {
       : (this.parserOptions.getFullOptions(options) as EChartsOption);
   }
 
+  /**
+   * @description
+   * Resetea los filtros de un `DataProvider` a un estado vacío.
+   * @param arrayData El `DataProvider` cuyos filtros se van a resetear.
+   */
   private resetFilters(arrayData: DataProvider) {
     arrayData.filters = new Filters();
   }
 
+  /**
+   * @description
+   * Filtra los datos para mostrar únicamente el último período (año).
+   * @param chartConfiguration La configuración del gráfico a modificar.
+   */
   private filterLastPeriod(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration?.dataset?.dataProvider) {
       return;
@@ -243,10 +318,14 @@ export class ChartService {
     }
   }
 
+  /**
+   * @description
+   * Actualiza el objeto `chartData` dentro de la configuración del gráfico.
+   * Procesa los datos del `dataProvider` basándose en la configuración de series.
+   * @param chartConfiguration La configuración del gráfico a actualizar.
+   * @throws {Error} Si el `dataProvider` no está definido o si hay un error al procesar los datos.
+   */
   public updateChartData(chartConfiguration: ChartConfiguration): void {
-    console.log(
-      "[Debug 4] updateChartData en ChartService: Procesando nuevos datos."
-    );
     if (!chartConfiguration?.dataset?.dataProvider) {
       throw new Error("El dataset o dataProvider no está definido");
     }

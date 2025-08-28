@@ -8,8 +8,10 @@
   box-sizing: border-box;
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   padding: 8px;
   gap: 10px;
+  overflow: auto;
 
   /* Desktop - grid */
   @include styles.min-md {

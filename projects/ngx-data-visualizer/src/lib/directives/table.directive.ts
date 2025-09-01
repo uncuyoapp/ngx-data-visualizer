@@ -89,7 +89,7 @@ export class TableDirective implements OnDestroy {
    */
   updateTable() {
     this.tableConfiguration.dimensions =
-      this.dataset().dataProvider.getDimensions();
+      this.dataset().dataProvider.getActiveDimensions();
     this.tableComponent.configure();
   }
 

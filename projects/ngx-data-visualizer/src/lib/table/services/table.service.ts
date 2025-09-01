@@ -30,15 +30,6 @@ export class TableService {
   public getTableConfiguration(
     configuration: TableConfiguration,
   ): TableOptions {
-    const cols =
-      configuration.options.cols?.filter((col) =>
-        configuration.dimensions.find((d) => d.nameView === col),
-      ) || [];
-    const rows =
-      configuration.options.rows?.filter((row) =>
-        configuration.dimensions.find((d) => d.nameView === row),
-      ) || [];
-
     const sorters = configuration.dimensions.map((dimension) => {
       // Buscar si hay un sorter configurado que sobreescriba esta dimensión
       const configSorter = configuration.options.sorters?.find(
@@ -63,14 +54,15 @@ export class TableService {
     });
 
     return {
-      cols: cols,
-      rows: rows,
+      cols: configuration.options.cols,
+      rows: configuration.options.rows,
       digitsAfterDecimal: configuration.options.digitsAfterDecimal,
       totalCol: configuration.options.totalCol,
       totalRow: configuration.options.totalRow,
       sorters: sorters,
       suffix: configuration.options.suffix ?? "",
       valueDisplay: configuration.options.valueDisplay,
+      derivedAttributes: configuration.options.derivedAttributes,
     };
   }
 }

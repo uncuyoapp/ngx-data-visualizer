@@ -469,9 +469,10 @@ export class TableHelper {
       aggregator: aggregator([
         "valor",
       ]),
-      cols: config.cols,
-      rows: config.rows,
+      cols: config.cols as string[],
+      rows: config.rows as string[],
       sorters,
+      derivedAttributes: config.derivedAttributes,
       rendererOptions: {
         table: {
           rowTotals: config.cols.length > 0 ? config.totalRow : true,

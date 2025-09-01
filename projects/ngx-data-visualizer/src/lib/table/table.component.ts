@@ -10,13 +10,12 @@ import {
 } from "@angular/core";
 
 import { TableService } from "./services/table.service";
-import { TableConfiguration, TableOptions } from "./types/table-base";
+import {
+  TableConfiguration,
+  TableOptions,
+} from "./types/table-base";
 import { TableHelper } from "./utils/table-helper";
 
-/**
- * Componente de tabla que muestra datos en formato tabular con capacidad de pivotado.
- * Soporta características como tablas fijas (sticky) y configuración dinámica.
- */
 @Component({
   selector: "lib-table",
   standalone: true,
@@ -26,21 +25,13 @@ import { TableHelper } from "./utils/table-helper";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent {
-  // Servicios
   private readonly tableService = inject(TableService);
 
-  // Inputs
-  /** Configuración de la tabla */
   protected readonly tableConfiguration = input.required<TableConfiguration>();
 
-  // Referencias a elementos del DOM
   @ViewChild("pivotTable", { static: true })
   private readonly pivotTable!: ElementRef<HTMLDivElement>;
 
-  /**
-   * Efecto que se activa cuando cambia la configuración de la tabla.
-   * @private
-   */
   private readonly configEffect = effect(() => {
     const config = this.tableConfiguration();
     if (config) {
@@ -48,21 +39,36 @@ export class TableComponent {
     }
   });
 
-  /**
-   * Configura la tabla con la configuración proporcionada.
-   * Obtiene la configuración del servicio y renderiza la tabla.
-   */
   public configure(): void {
-    const pivotConfig = this.tableService.getTableConfiguration(
-      this.tableConfiguration(),
-    );
+    const config = this.tableConfiguration();
+
+    const aliasMap: Record<string | number, string> = {};
+    const derivedAttributes: Record<string, (record: Record<string, unknown>) => unknown> = {};
+
+    for (const dim of config.dimensions) {
+      aliasMap[dim.id] = dim.nameView;
+      aliasMap[dim.name] = dim.nameView;
+      aliasMap[dim.nameView] = dim.nameView;
+      derivedAttributes[dim.nameView] = (record) => record[dim.name];
+    }
+
+    const translatedCols = config.options.cols.map(idOrName => aliasMap[idOrName]).filter(Boolean);
+    const translatedRows = config.options.rows.map(idOrName => aliasMap[idOrName]).filter(Boolean);
+
+    const enrichedConfig: TableConfiguration = {
+      ...config,
+      options: {
+        ...config.options,
+        cols: translatedCols,
+        rows: translatedRows,
+        derivedAttributes: derivedAttributes,
+      },
+    };
+
+    const pivotConfig = this.tableService.getTableConfiguration(enrichedConfig);
     this.render(pivotConfig);
   }
 
-  /**
-   * Obtiene el HTML de la tabla generada.
-   * @returns El HTML de la tabla como cadena.
-   */
   public getHtmlTable(): string {
     const tableElement = this.pivotTable.nativeElement;
     const firstChild = tableElement.firstElementChild;
@@ -74,39 +80,23 @@ export class TableComponent {
     return tableElement.innerHTML;
   }
 
-  /**
-   * Obtiene el elemento nativo de la tabla.
-   * @returns El elemento HTML de la tabla.
-   * @internal
-   */
   public getTableElement(): HTMLElement | null {
     return this.pivotTable?.nativeElement || null;
   }
 
-  /**
-   * Callback que se ejecuta cuando se aplica un tema a la tabla.
-   * Re-aplica el comportamiento sticky después de que los estilos se hayan aplicado.
-   */
   public onThemeApplied(): void {
-    // Re-aplicar sticky después de que los estilos se hayan aplicado
     setTimeout(() => {
       const tableElement = this.getTableElement();
       if (tableElement instanceof HTMLDivElement) {
         TableHelper.stickyTable(tableElement);
       }
-    }, 5); // Pequeño delay para asegurar que los estilos se hayan aplicado
+    }, 5);
   }
 
-  /**
-   * Renderiza la tabla con la configuración de pivotado.
-   * @param pivotConfig - Configuración para el pivotado de la tabla.
-   * @private
-   */
   private render(pivotConfig: TableOptions): void {
     const tableElement = this.pivotTable.nativeElement;
     const tableData = this.tableConfiguration().data.getData();
 
-    // Asegurar que el elemento es un HTMLDivElement
     if (tableElement instanceof HTMLDivElement) {
       TableHelper.renderPivot(tableElement, tableData, pivotConfig);
       TableHelper.stickyTable(tableElement);

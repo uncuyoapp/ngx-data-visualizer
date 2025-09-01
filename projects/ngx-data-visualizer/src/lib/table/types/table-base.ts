@@ -44,14 +44,16 @@ export interface TableOptions {
   totalRow: boolean;
   /** Indica si se debe mostrar la columna de totales */
   totalCol: boolean;
-  /** Lista de nombres de columnas */
-  cols: string[];
-  /** Lista de nombres de filas */
-  rows: string[];
+  /** Lista de nombres o IDs de columnas */
+  cols: (string | number)[];
+  /** Lista de nombres o IDs de filas */
+  rows: (string | number)[];
   /** Sufijo opcional para los valores numéricos */
   suffix?: string;
   /** Define el modo de visualización de los valores en la tabla */
   valueDisplay?: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn';
+  /** Atributos derivados para la tabla pivot */
+  derivedAttributes?: Record<string, (record: Record<string, unknown>) => unknown>;
 }
 
 /**

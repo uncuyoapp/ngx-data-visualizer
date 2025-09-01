@@ -3,22 +3,48 @@ import { Dimension, Filters, RowData } from '../types/data.types';
 import { DIMENSION_YEAR, DIMENSION_VALUE } from '../types/constants';
 
 /**
- * Proporciona funcionalidades para el manejo y procesamiento de datos en visualizaciones.
- * Permite filtrar, agrupar y acceder a dimensiones y valores de los datos.
+ * Proporciona funcionalidades para el manejo y procesamiento de datos.
+ * Esta clase es el motor interno que realiza filtrado, agrupación (roll up),
+ * y otras manipulaciones de datos.
  */
 export class DataProvider {
-  /** Filtros actuales aplicados a los datos */
-  public filters: Filters;
+  /**
+   * Almacena la configuración de filtros actual.
+   * @private
+   */
+  private _filters: Filters;
 
-  /** Dimensiones disponibles en los datos */
+  /**
+   * Almacena las dimensiones con las que opera el proveedor.
+   * @public
+   */
   public dimensions: Dimension[];
 
-  /** Datos crudos sin procesar */
+  /**
+   * Almacena el conjunto de datos crudos original.
+   * @private
+   */
   private rowData: RowData[];
 
   /**
-   * Crea una nueva instancia de DataProvider
-   * @param initialData - Datos iniciales opcionales para el proveedor
+   * Obtiene los filtros actuales.
+   * @returns La configuración de filtros actual.
+   */
+  public get filters(): Filters {
+    return this._filters;
+  }
+
+  /**
+   * Establece los filtros actuales.
+   * @param value - La nueva configuración de filtros a aplicar.
+   */
+  public set filters(value: Filters) {
+    this._filters = value;
+  }
+
+  /**
+   * Crea una nueva instancia de DataProvider.
+   * @param initialData - Datos iniciales para el proveedor (dimensiones y datos de fila).
    * @example
    * const dataProvider = new DataProvider({
    *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [] }],
@@ -26,13 +52,13 @@ export class DataProvider {
    * });
    */
   constructor(initialData?: { dimensions?: Dimension[]; rowData?: RowData[] }) {
-    this.filters = new Filters();
+    this._filters = new Filters();
     this.dimensions = [];
     this.rowData = [];
 
     if (initialData) {
       if (initialData.dimensions) {
-        this.dimensions = this.validateDimensions(initialData.dimensions);
+        this.dimensions = initialData.dimensions;
       }
       if (initialData.rowData) {
         this.setData(initialData.rowData);
@@ -41,62 +67,21 @@ export class DataProvider {
   }
 
   /**
-   * Valida un arreglo de dimensiones
-   * @param dimensions - Dimensiones a validar
-   * @returns Arreglo de dimensiones validadas
-   * @throws {Error} Si alguna dimensión no es válida
-   * @private
-   */
-  private validateDimensions(dimensions: Dimension[]): Dimension[] {
-    if (!Array.isArray(dimensions)) {
-      throw new Error('Las dimensiones deben ser un arreglo');
-    }
-
-    const uniqueIds = new Set<number>();
-    const uniqueNames = new Set<string>();
-    const uniqueNameViews = new Set<string>();
-
-    return dimensions.map((dim, index) => {
-      if (!dim || typeof dim !== 'object') {
-        throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
-      }
-
-      if (uniqueIds.has(dim.id)) {
-        throw new Error(`ID duplicado encontrado: ${dim.id}`);
-      }
-      uniqueIds.add(dim.id);
-
-      if (uniqueNames.has(dim.name)) {
-        throw new Error(`Nombre de dimensión duplicado: ${dim.name}`);
-      }
-      uniqueNames.add(dim.name);
-
-      if (uniqueNameViews.has(dim.nameView)) {
-        throw new Error(`Nombre para mostrar de dimensión duplicado: ${dim.nameView}`);
-      }
-      uniqueNameViews.add(dim.nameView);
-
-      return { ...dim };
-    });
-  }
-
-  /**
-   * Obtiene las dimensiones que no están siendo agrupadas (rollUp)
-   * @returns Arreglo de dimensiones visibles
+   * Obtiene las dimensiones activas (que no están siendo agrupadas por rollUp).
+   * @returns Un arreglo de las dimensiones visibles.
    * @example
-   * const dimensionsVisibles = dataProvider.getDimensions();
-   * console.log(dimensionsVisibles.map(d => d.nameView));
+   * const activeDimensions = dataProvider.getActiveDimensions();
    */
-  public getDimensions(): Dimension[] {
+  public getActiveDimensions(): Dimension[] {
     return this.dimensions.filter(
-      dimension => !this.filters.rollUp.includes(dimension.nameView)
+      dimension => !this._filters.rollUp.includes(dimension.nameView)
     );
   }
 
   /**
-   * Establece los datos a procesar
-   * @param data - Arreglo de datos a procesar
-   * @throws {Error} Si los datos no son válidos
+   * Establece y valida el conjunto de datos a procesar.
+   * @param data - El arreglo de datos de fila.
+   * @throws {Error} Si los datos no son un arreglo o si las filas tienen estructuras inconsistentes.
    * @example
    * dataProvider.setData([
    *   { año: 2023, valor: 100 },
@@ -108,7 +93,6 @@ export class DataProvider {
       throw new Error('Los datos deben ser un arreglo');
     }
 
-    // Validar que cada fila tenga la misma estructura
     if (data.length > 0) {
       const firstRowKeys = Object.keys(data[0] || {});
       const invalidRow = data.find(row => {
@@ -126,16 +110,16 @@ export class DataProvider {
   }
 
   /**
-   * Obtiene los datos procesados con los filtros actuales
-   * @returns Arreglo de datos procesados
+   * Obtiene los datos procesados después de aplicar filtros y agrupaciones.
+   * @returns Un arreglo de datos procesados.
    */
   public getData(): RowData[] {
     return this.processConfig();
   }
 
   /**
-   * Obtiene los nombres de las dimensiones de los datos actuales
-   * @returns Arreglo con los nombres de las dimensiones
+   * Obtiene los nombres de las columnas de los datos procesados.
+   * @returns Un arreglo con los nombres de las columnas.
    */
   public getDimensionsNames(): string[] {
     const row = this.processConfig()[0] || {};
@@ -143,9 +127,10 @@ export class DataProvider {
   }
 
   /**
-   * Obtiene todos los valores únicos de una dimensión específica
-   * @param dimensionName - Nombre de la dimensión
-   * @returns Arreglo de valores únicos de la dimensión
+   * Obtiene todos los valores únicos para una dimensión específica de los datos procesados.
+   * Los resultados son ordenados según la propiedad 'order' de los items de la dimensión.
+   * @param dimensionName - El nombre de la dimensión a consultar.
+   * @returns Un arreglo de valores únicos (string) para la dimensión.
    */
   public getItems(dimensionName: string): string[] {
     const processedConfig = this.processConfig();
@@ -169,9 +154,8 @@ export class DataProvider {
   }
 
   /**
-   * Procesa la configuración actual y aplica los filtros
-   * @returns Datos procesados con los filtros aplicados
-   * @throws {Error} Si hay un error al procesar los datos
+   * Procesa los datos crudos aplicando la configuración de filtros y rollUp.
+   * @returns Datos procesados.
    * @private
    */
   private processConfig(): RowData[] {
@@ -192,47 +176,43 @@ export class DataProvider {
   }
 
   /**
-   * Verifica si una fila debe ser filtrada según los filtros actuales
-   * @param row - Fila a verificar
-   * @returns true si la fila debe ser filtrada, false en caso contrario
+   * Verifica si una fila debe ser excluida según los filtros actuales.
+   * @param row - La fila a verificar.
+   * @returns `true` si la fila debe ser filtrada (excluida), `false` en caso contrario.
    * @private
    */
   private isFiltered(row: RowData): boolean {
-    if (!this.filters?.filter) {
+    if (!this._filters?.filter) {
       return false;
     }
 
-    return this.filters.filter.some(filter => {
+    return this._filters.filter.some(filter => {
       const value = row[filter.name];
-      // Verificar que el valor no sea null, undefined y que sea del tipo correcto
       if (value === null || value === undefined) {
-        return true; // Filtrar valores nulos o indefinidos
+        return true;
       }
-      // Asegurarse de que el valor sea compatible con los items del filtro
       return !filter.items.some(item => item === value || String(item) === String(value));
     });
   }
 
   /**
-   * Realiza la operación de agrupación (roll up) de los datos
-   * @param row - Fila de datos a procesar
-   * @param mapFilter - Mapa para almacenar los resultados agrupados
+   * Agrupa una fila de datos en el mapa de resultados según la configuración de rollUp.
+   * Si no hay rollUp, la fila se agrega directamente. Si hay, se agrupa y se suma el valor.
+   * @param row - La fila a procesar.
+   * @param mapFilter - El mapa que acumula los resultados.
    * @private
    */
   private rollUp(row: RowData, mapFilter: Map<string, RowData>): void {
-    if (this.filters.rollUp.length === 0) {
-      // Si no hay agrupación, simplemente agregar la fila
+    if (this._filters.rollUp.length === 0) {
       mapFilter.set(Object.values(row).toString(), { ...row });
       return;
     }
 
-    // Realizar la operación de agrupación
     const value = row[DIMENSION_VALUE];
     const rowCopy = { ...row };
 
-    // Eliminar la columna de valor y las columnas a agrupar
     delete rowCopy[DIMENSION_VALUE];
-    this.filters.rollUp.forEach(key => {
+    this._filters.rollUp.forEach(key => {
       delete rowCopy[key];
     });
 
@@ -240,20 +220,18 @@ export class DataProvider {
     const existingRow = mapFilter.get(rowKey);
 
     if (existingRow) {
-      // Sumar al valor existente
       existingRow[DIMENSION_VALUE] = this.sumValues(
         existingRow[DIMENSION_VALUE],
         value
       );
     } else {
-      // Crear nueva entrada
       rowCopy[DIMENSION_VALUE] = this.parseValue(value);
       mapFilter.set(rowKey, rowCopy);
     }
   }
 
   /**
-   * Suma dos valores numéricos, manejando valores no definidos
+   * Suma dos valores de forma segura, convirtiéndolos a número.
    * @private
    */
   private sumValues(a: unknown, b: unknown): number {
@@ -261,14 +239,10 @@ export class DataProvider {
   }
 
   /**
-   * Convierte un valor a número, manejando valores no definidos
+   * Convierte un valor a número de forma segura.
    * @private
    */
   private parseValue(value: unknown): number {
     return Number(value) || 0;
-  }
-
-  public setFilters(filters: Filters): void {
-    this.filters = filters;
   }
 }

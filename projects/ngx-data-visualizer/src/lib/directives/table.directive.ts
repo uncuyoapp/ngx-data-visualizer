@@ -68,8 +68,7 @@ export class TableDirective implements OnDestroy {
   createTableComponent() {
     this.viewContainerRef.clear();
     this.tableConfiguration = {
-      data: this.dataset().dataProvider,
-      dimensions: this.dataset().dimensions,
+      dataset: this.dataset(),
       options: this.tableOptions(),
     };
     // Crear el componente
@@ -88,8 +87,6 @@ export class TableDirective implements OnDestroy {
    * Actualiza las dimensiones de la tabla cuando cambian los datos
    */
   updateTable() {
-    this.tableConfiguration.dimensions =
-      this.dataset().dataProvider.getActiveDimensions();
     this.tableComponent.configure();
   }
 

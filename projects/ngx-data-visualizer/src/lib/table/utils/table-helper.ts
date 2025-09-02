@@ -492,11 +492,8 @@ export class TableHelper {
   private static configureSorters(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
     const sorters: Record<string, (a: string, b: string) => number> = {};
-    config.sorters.forEach(
-      (sorter: {
-        name: string;
-        items: Array<{ name: string; order: number }>;
-      }) => {
+    (config.sorters as { name: string; items: { name: string; order: number }[] }[]).forEach(
+      (sorter) => {
         const items = [...sorter.items]
           .sort((a, b) => a.order - b.order)
           .map((a) => a.name);

@@ -19,7 +19,7 @@ import {
   ChartDirective, // Directiva para componente de gráfico
   Dataset, // Clase principal para manejo de datos
   Dimension, // Modelo para dimensiones del dataset
-  Filters, // Modelo para filtros aplicados
+  FiltersConfig, // Modelo para filtros aplicados
   Goal, // Modelo para metas/objetivos en gráficos
   Item, // Modelo para items individuales de dimensiones
   MultipleChartDirective, // Directiva para múltiples gráficos
@@ -157,6 +157,13 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     // Establecer tema por defecto de la librería
     this.themeService.setTheme("default");
 
+    this.tableOptions.sorters = [
+      {
+        name: 13,
+        items: [],
+      },
+    ];
+
     // Cargar datos desde archivos JSON
     const dimensions = dimensionsData as Dimension[];
     const rowData = data as RowData[];
@@ -221,29 +228,19 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Se ejecuta cuando cambia cualquier checkbox de dimensión o item
    */
   filter() {
-    const filters: Filters = {
-      filter: [], // Filtros por items específicos
-      rollUp: [], // Dimensiones a agrupar (rollup)
+    const filtersConfig: FiltersConfig = {
+      rollUp: this.dataset.dimensions
+        .filter((dimension) => !dimension.selected)
+        .map((dimension) => dimension.id), // Use ID for rollUp
+      filter: this.dataset.dimensions.map((dimension) => ({
+        name: dimension.id, // Use ID for filter name
+        items: dimension.items
+          .filter((item) => item.selected)
+          .map((item) => item.name),
+      })),
     };
 
-    // Obtener las dimensiones que NO están seleccionadas para aplicar rollUp
-    // RollUp agrupa/resume datos eliminando la granularidad de esas dimensiones
-    filters.rollUp = this.dataset.dimensions
-      .filter((dimension) => !dimension.selected)
-      .map((dimension) => dimension.nameView);
-
-    // Crear filtros para cada dimensión basados en los items seleccionados
-    // Solo se incluyen en el resultado los items marcados como seleccionados
-    filters.filter = this.dataset.dimensions.map((dimension) => ({
-      name: dimension.nameView,
-      items: dimension.items
-        .filter((item) => item.selected) // Solo items marcados
-        .map((item) => item.name), // Extraer nombres de items
-    }));
-
-    // Aplicar los filtros construidos al dataset
-    // Esto actualiza automáticamente todos los componentes que usan el dataset
-    this.dataset.applyFilters(filters);
+    this.dataset.applyFilters(filtersConfig);
   }
 
   // ============================================
@@ -272,7 +269,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     });
 
     // Aplicar filtros vacíos (sin restricciones)
-    this.dataset.applyFilters(new Filters());
+    this.dataset.applyFilters({});
 
     // Actualizar estados indeterminados de checkboxes
     this.updateIndeterminateStates();

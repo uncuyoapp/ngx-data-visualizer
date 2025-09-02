@@ -2,8 +2,7 @@
  * Tipos base para las tablas de la librería
  */
 
-import { DataProvider } from "../../services/data-provider";
-import { Dimension } from "../../types/data.types";
+import { Dataset } from "../../services/dataset";
 
 /**
  * Interfaz base para la configuración de tablas
@@ -11,18 +10,16 @@ import { Dimension } from "../../types/data.types";
 export interface TableConfiguration {
   /** Opciones de configuración del pivot */
   options: TableOptions;
-  /** Dimensiones disponibles para la tabla */
-  dimensions: Dimension[];
-  /** Proveedor de datos para la tabla */
-  data: DataProvider;
+  /** Conjunto de datos para la tabla */
+  dataset: Dataset;
 }
 
 /**
  * Interfaz para la configuración del ordenamiento de dimensiones
  */
 export interface TableSorter {
-  /** Nombre de la dimensión a ordenar */
-  name: string;
+  /** Nombre o ID de la dimensión a ordenar */
+  name: string | number;
   /** Lista de ítems con su orden específico */
   items: {
     /** Nombre del ítem */

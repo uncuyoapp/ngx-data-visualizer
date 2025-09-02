@@ -41,24 +41,28 @@ export class TableComponent {
 
   public configure(): void {
     const config = this.tableConfiguration();
+    const { dataset, options } = config;
 
     const aliasMap: Record<string | number, string> = {};
     const derivedAttributes: Record<string, (record: Record<string, unknown>) => unknown> = {};
 
-    for (const dim of config.dimensions) {
-      aliasMap[dim.id] = dim.nameView;
-      aliasMap[dim.name] = dim.nameView;
-      aliasMap[dim.nameView] = dim.nameView;
-      derivedAttributes[dim.nameView] = (record) => record[dim.name];
+    for (const dim of dataset.getAllDimensions()) {
+      const dataKey = dataset.getDimensionKey(dim.id);
+      if (dataKey) {
+        aliasMap[dim.id] = dim.nameView;
+        aliasMap[dim.name] = dim.nameView;
+        aliasMap[dim.nameView] = dim.nameView;
+        derivedAttributes[dim.nameView] = (record) => record[dataKey];
+      }
     }
 
-    const translatedCols = config.options.cols.map(idOrName => aliasMap[idOrName]).filter(Boolean);
-    const translatedRows = config.options.rows.map(idOrName => aliasMap[idOrName]).filter(Boolean);
+    const translatedCols = options.cols.map(idOrName => aliasMap[idOrName]).filter(Boolean);
+    const translatedRows = options.rows.map(idOrName => aliasMap[idOrName]).filter(Boolean);
 
     const enrichedConfig: TableConfiguration = {
       ...config,
       options: {
-        ...config.options,
+        ...options,
         cols: translatedCols,
         rows: translatedRows,
         derivedAttributes: derivedAttributes,
@@ -95,7 +99,7 @@ export class TableComponent {
 
   private render(pivotConfig: TableOptions): void {
     const tableElement = this.pivotTable.nativeElement;
-    const tableData = this.tableConfiguration().data.getData();
+    const tableData = this.tableConfiguration().dataset.dataProvider.getData();
 
     if (tableElement instanceof HTMLDivElement) {
       TableHelper.renderPivot(tableElement, tableData, pivotConfig);

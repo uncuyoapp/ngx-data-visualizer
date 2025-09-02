@@ -30,39 +30,43 @@ export class TableService {
   public getTableConfiguration(
     configuration: TableConfiguration,
   ): TableOptions {
-    const sorters = configuration.dimensions.map((dimension) => {
-      // Buscar si hay un sorter configurado que sobreescriba esta dimensión
-      const configSorter = configuration.options.sorters?.find(
-        (sorter) => sorter.name === dimension.nameView,
-      );
+    const { dataset, options } = configuration;
 
-      if (configSorter) {
-        // Si hay un sorter configurado, usar ese en lugar del de la dimensión
-        return configSorter;
+    const pivotSorters: { name: string; items: { name: string; order: number }[] }[] = [];
+    const configuredDimensions = new Set<string>();
+
+    if (options.sorters) {
+      for (const configSorter of options.sorters) {
+        const dimension = dataset.getAllDimensions().find(
+          (d) => d.id === configSorter.name || d.name === configSorter.name || d.nameView === configSorter.name
+        );
+
+        if (dimension) {
+          const sorterName = dimension.nameView;
+          pivotSorters.push({
+            name: sorterName,
+            items: configSorter.items,
+          });
+          configuredDimensions.add(sorterName);
+        }
       }
+    }
 
-      // Si no hay sorter configurado, usar el orden de la dimensión
-      return {
-        name: dimension.nameView,
-        items: dimension.items.map(
-          (item: { name: string; order?: number }, index: number) => ({
+    for (const dim of dataset.getAllDimensions()) {
+      if (!configuredDimensions.has(dim.nameView)) {
+        pivotSorters.push({
+          name: dim.nameView,
+          items: dim.items.map((item: { name: string; order?: number }, index: number) => ({
             name: item.name,
             order: item.order ?? index,
-          }),
-        ),
-      };
-    });
+          })),
+        });
+      }
+    }
 
     return {
-      cols: configuration.options.cols,
-      rows: configuration.options.rows,
-      digitsAfterDecimal: configuration.options.digitsAfterDecimal,
-      totalCol: configuration.options.totalCol,
-      totalRow: configuration.options.totalRow,
-      sorters: sorters,
-      suffix: configuration.options.suffix ?? "",
-      valueDisplay: configuration.options.valueDisplay,
-      derivedAttributes: configuration.options.derivedAttributes,
+      ...options,
+      sorters: pivotSorters,
     };
   }
 }

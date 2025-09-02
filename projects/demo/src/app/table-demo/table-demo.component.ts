@@ -82,7 +82,7 @@ export class TableDemoComponent implements AfterViewInit {
     totalCol: true,
     sorters: [
       {
-        name: "Condición",
+        name: 117, // Usando el ID de la dimensión 'Condición'
         items: [
           { name: "Nuevo inscripto", order: 0 },
           { name: "Estudiante", order: 1 },

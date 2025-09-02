@@ -1,8 +1,8 @@
 [
   {
     "id": 13,
-    "name": "Departamentos de Mendoza",
-    "nameView": "Departamentos",
+    "name": "Departamentos",
+    "nameView": "Departamentos de Mendoza",
     "type": 3,
     "selected": true,
     "enableMulti": true,

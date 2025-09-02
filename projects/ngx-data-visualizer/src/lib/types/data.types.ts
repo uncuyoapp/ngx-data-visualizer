@@ -79,3 +79,19 @@ export interface DimensionFilter {
   /** Valores seleccionados para el filtro */
   items: Array<string | number>;
 }
+
+/**
+ * Configuración para un filtro de dimensión. Permite usar el id o el nombre de la dimensión.
+ */
+export interface DimensionFilterConfig {
+  name: string | number;
+  items: (string | number)[];
+}
+
+/**
+ * Objeto para la configuración de filtros y agrupaciones (roll-up).
+ */
+export interface FiltersConfig {
+  rollUp?: (string | number)[];
+  filter?: DimensionFilterConfig[];
+}

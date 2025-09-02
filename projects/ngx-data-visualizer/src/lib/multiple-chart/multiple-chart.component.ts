@@ -14,11 +14,11 @@ import {
 } from "@angular/core";
 import { Subscription } from "rxjs";
 
+import { ChartService } from "../chart/services/chart.service";
 import {
   ChartConfiguration,
   ChartOptions,
 } from "../chart/types/chart-configuration";
-import { ChartService } from "../chart/services/chart.service";
 import { Dataset } from "../services/dataset";
 import { Dimension } from "../types/data.types";
 import { ChartWrapperComponent } from "./components/chart-wrapper/chart-wrapper.component";
@@ -32,7 +32,7 @@ import { ChartWrapperComponent } from "./components/chart-wrapper/chart-wrapper.
 @Component({
   selector: "lib-multiple-chart",
   standalone: true,
-  imports: [CommonModule, ChartWrapperComponent],
+  imports: [CommonModule],
   templateUrl: "./multiple-chart.component.html",
   styleUrl: "./multiple-chart.component.scss",
 })

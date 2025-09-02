@@ -3,7 +3,7 @@ import cloneDeep from "lodash.clonedeep";
 import { DataProvider } from "../../services/data-provider";
 import { DIMENSION_YEAR } from "../../types/constants";
 import { Dataset } from "../../services/dataset";
-import { Dimension, Filters, DimensionFilter } from "../../types/data.types";
+import { Dimension, Filters } from "../../types/data.types";
 import {
   ChartConfiguration,
   ChartOptions,
@@ -87,17 +87,35 @@ export class ChartService {
     dimension: Dimension
   ): ChartConfiguration[] {
     if (!dataset || !dimension) {
-      throw new Error("Los parámetros dataset y dimension son requeridos");
+      throw new Error('Los parámetros dataset y dimension son requeridos');
     }
+
+    const dimensionKey = dataset.getDimensionKey(dimension.id);
+    if (!dimensionKey) {
+      console.error(`No se pudo encontrar la clave de datos para la dimensión de división: ${dimension.nameView}`);
+      return [];
+    }
+
     return dimension.items
-      .filter((item) => item.selected)
-      .map((item) => {
-        const datasetCopy = new Dataset(dataset);
-        datasetCopy.dataProvider.filters = JSON.parse(
-          JSON.stringify(
-            dataset.dataProvider.filters || { rollUp: [], filter: [] }
-          )
-        );
+      .filter(item => item.selected)
+      .map(item => {
+        const datasetCopy = new Dataset({
+          id: dataset.id,
+          dimensions: dataset.getAllDimensions(),
+          enableRollUp: dataset.enableRollUp,
+          rowData: dataset.getRawData(),
+        });
+
+        const baseFilters = dataset.dataProvider.filters;
+        if (baseFilters) {
+          const newFilters = new Filters();
+          newFilters.rollUp = [...baseFilters.rollUp];
+          newFilters.filter = baseFilters.filter.map(f => ({ ...f }));
+          datasetCopy.dataProvider.filters = newFilters;
+        } else {
+          datasetCopy.dataProvider.filters = new Filters();
+        }
+
         const chartConfig: ChartConfiguration = {
           dataset: datasetCopy,
           options: {
@@ -112,41 +130,20 @@ export class ChartService {
           libraryOptions: {},
           preview: false,
           seriesConfig: {
-            x1: "",
-            measure: "",
+            x1: '',
+            measure: '',
             stack: null,
           },
         };
-        if (!chartConfig.dataset.dataProvider.filters) {
-          chartConfig.dataset.dataProvider.filters = new Filters();
-        } else {
-          const existingFilters = chartConfig.dataset.dataProvider.filters;
-          if (!(existingFilters instanceof Filters)) {
-            const filters = new Filters();
-            const filtersAny = existingFilters as {
-              rollUp?: unknown[];
-              filter?: unknown[];
-            };
-            if (filtersAny.rollUp && Array.isArray(filtersAny.rollUp)) {
-              filters.rollUp = [...(filtersAny.rollUp as string[])];
-            }
-            if (filtersAny.filter && Array.isArray(filtersAny.filter)) {
-              filters.filter = [...(filtersAny.filter as DimensionFilter[])];
-            }
-            chartConfig.dataset.dataProvider.filters = filters;
-          }
-        }
-        chartConfig.dataset.dataProvider.filters.rollUp.push(
-          dimension.nameView
-        );
+
+        chartConfig.dataset.dataProvider.filters.rollUp.push(dimensionKey);
         chartConfig.dataset.dataProvider.filters.filter.push({
-          name: dimension.nameView,
+          name: dimensionKey,
           items: [item.name],
         });
+
         this.updateChartData(chartConfig);
-        chartConfig.libraryOptions = this.getLibraryOptions(
-          chartConfig.options
-        );
+        chartConfig.libraryOptions = this.getLibraryOptions(chartConfig.options);
         return chartConfig;
       });
   }
@@ -177,13 +174,13 @@ export class ChartService {
    */
   public updateSeriesConfig(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration) {
-      throw new Error("El parámetro chartConfiguration es requerido");
+      throw new Error('El parámetro chartConfiguration es requerido');
     }
     const { chartData, seriesConfig, options, dataset } = chartConfiguration;
     const { rollUp } = chartData.dataProvider.filters;
     if (!seriesConfig.x1 && !seriesConfig.x2) {
       throw new Error(
-        "Se requiere al menos un eje (x1 o x2) en la configuración de series."
+        'Se requiere al menos un eje (x1 o x2) en la configuración de series.'
       );
     }
     if (options?.filterLastYear) {
@@ -202,7 +199,7 @@ export class ChartService {
       chartData.seriesConfig.x1 = DIMENSION_YEAR;
     } else {
       const availableDimension = this.findAvailableDimension(
-        dataset.dimensions,
+        dataset,
         rollUp
       );
       if (availableDimension) {
@@ -210,7 +207,7 @@ export class ChartService {
         chartData.seriesConfig.x2 = undefined;
       } else {
         throw new Error(
-          "No se pudo encontrar una dimensión disponible para el eje X."
+          'No se pudo encontrar una dimensión disponible para el eje X.'
         );
       }
     }
@@ -250,14 +247,16 @@ export class ChartService {
    * @returns El nombre de la dimensión disponible o `null` si no se encuentra ninguna.
    */
   private findAvailableDimension(
-    dimensions: Dimension[],
+    dataset: Dataset,
     rollUp: string[]
   ): string | null {
-    const availableDimension = dimensions.find(
-      (dimension) =>
-        dimension.nameView && rollUp.indexOf(dimension.nameView) === -1
-    );
-    return availableDimension?.nameView ?? null;
+    const availableDimension = dataset.getAllDimensions().find(dimension => {
+      const key = dataset.getDimensionKey(dimension.id);
+      return key && !rollUp.includes(key);
+    });
+
+    const key = availableDimension ? dataset.getDimensionKey(availableDimension.id) : null;
+    return key ?? null;
   }
 
   /**
@@ -327,19 +326,24 @@ export class ChartService {
    */
   public updateChartData(chartConfiguration: ChartConfiguration): void {
     if (!chartConfiguration?.dataset?.dataProvider) {
-      throw new Error("El dataset o dataProvider no está definido");
+      throw new Error('El dataset o dataProvider no está definido');
     }
+
+    const getDimensionKeyById = (id: number | undefined): string | undefined => {
+      if (id === undefined) {
+        return undefined;
+      }
+      return chartConfiguration.dataset.getDimensionKey(id);
+    };
+
     const seriesConfig: SeriesConfig = {
       x1:
-        chartConfiguration.dataset.dataProvider.dimensions.find(
-          (d) => d.id === chartConfiguration.options?.xAxis?.firstLevel
-        )?.nameView ?? "",
-      x2: chartConfiguration.dataset.dataProvider.dimensions.find(
-        (d) => d.id === chartConfiguration.options?.xAxis?.secondLevel
-      )?.nameView,
+        getDimensionKeyById(chartConfiguration.options?.xAxis?.firstLevel) ?? '',
+      x2: getDimensionKeyById(chartConfiguration.options?.xAxis?.secondLevel ?? undefined),
       measure: chartConfiguration.options.measureUnit,
       stack: chartConfiguration.options.stacked ?? null,
     };
+
     try {
       const chartData = new ChartData(
         chartConfiguration.dataset.dataProvider,
@@ -349,8 +353,8 @@ export class ChartService {
       chartConfiguration.chartData = chartData;
       this.updateSeriesConfig(chartConfiguration);
     } catch (error) {
-      console.error("Error al configurar los datos del gráfico:", error);
-      throw new Error("No se pudo configurar los datos del gráfico");
+      console.error('Error al configurar los datos del gráfico:', error);
+      throw new Error('No se pudo configurar los datos del gráfico');
     }
   }
 }

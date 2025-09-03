@@ -1,5 +1,5 @@
 import uniqBy from 'lodash.uniqby';
-import { Dimension, Filters, RowData } from '../types/data.types';
+import { Filters, RowData } from '../types/data.types';
 import { DIMENSION_YEAR, DIMENSION_VALUE } from '../types/constants';
 
 /**
@@ -15,19 +15,22 @@ export class DataProvider {
   private _filters: Filters;
 
   /**
-   * Almacena las dimensiones con las que opera el proveedor.
-   * @public
-   */
-  public dimensions: Dimension[];
-
-  /**
    * Almacena el conjunto de datos crudos original.
    * @private
    */
   private rowData: RowData[];
 
   /**
-   * Obtiene los filtros actuales.
+   * @description
+   * Almacena reglas de ordenamiento personalizadas para claves específicas.
+   * La clave externa es la `key` de la columna, y el valor es un mapa interno
+   * donde la clave es el item (ej: 'Enero') y el valor es su orden numérico.
+   * @private
+   */
+  private readonly sortingRules?: Map<string, Map<string, number>>;
+
+  /**
+   * @description Obtiene los filtros actuales.
    * @returns La configuración de filtros actual.
    */
   public get filters(): Filters {
@@ -35,7 +38,7 @@ export class DataProvider {
   }
 
   /**
-   * Establece los filtros actuales.
+   * @description Establece los filtros actuales.
    * @param value - La nueva configuración de filtros a aplicar.
    */
   public set filters(value: Filters) {
@@ -43,74 +46,66 @@ export class DataProvider {
   }
 
   /**
-   * Crea una nueva instancia de DataProvider.
-   * @param initialData - Datos iniciales para el proveedor (dimensiones y datos de fila).
+   * @description Crea una nueva instancia de DataProvider.
+   * @param initialData - Datos iniciales y configuración para el proveedor.
+   * @param initialData.rowData - El conjunto de datos de filas a procesar.
+   * @param initialData.sortingRules - Reglas opcionales para un ordenamiento personalizado.
    * @example
    * const dataProvider = new DataProvider({
-   *   dimensions: [{ id: 1, name: 'año', nameView: 'Año', items: [] }],
-   *   rowData: [{ 'Año': 2023, 'valor': 100 }]
+   *   rowData: [{ 'Año': 2023, 'valor': 100 }],
+   *   sortingRules: new Map()
    * });
    */
-  constructor(initialData?: { dimensions?: Dimension[]; rowData?: RowData[] }) {
+  constructor(initialData?: { rowData?: RowData[], sortingRules?: Map<string, Map<string, number>> }) {
     this._filters = new Filters();
-    this.dimensions = [];
     this.rowData = [];
+    this.sortingRules = initialData?.sortingRules;
 
-    if (initialData) {
-      if (initialData.dimensions) {
-        this.dimensions = initialData.dimensions;
-      }
-      if (initialData.rowData) {
-        this.setData(initialData.rowData);
-      }
+    if (initialData?.rowData) {
+      this.setData(initialData.rowData);
     }
   }
 
   /**
-   * Obtiene las dimensiones activas (que no están siendo agrupadas por rollUp).
-   * @returns Un arreglo de las dimensiones visibles.
-   * @example
-   * const activeDimensions = dataProvider.getActiveDimensions();
+   * @description Obtiene las claves de columna activas (que no están siendo agrupadas por rollUp).
+   * @returns Un arreglo de las claves de columna visibles en los datos procesados.
    */
-  public getActiveDimensions(): Dimension[] {
-    return this.dimensions.filter(
-      dimension => !this._filters.rollUp.includes(dimension.nameView)
-    );
+  public getActiveKeys(): string[] {
+    const processedData = this.processConfig();
+    if (processedData.length === 0) {
+      return [];
+    }
+    return Object.keys(processedData[0] || {});
   }
 
   /**
-   * Establece y valida el conjunto de datos a procesar.
+   * @description Establece y valida el conjunto de datos a procesar.
    * @param data - El arreglo de datos de fila.
-   * @throws {Error} Si los datos no son un arreglo o si las filas tienen estructuras inconsistentes.
-   * @example
-   * dataProvider.setData([
-   *   { año: 2023, valor: 100 },
-   *   { año: 2024, valor: 200 }
-   * ]);
+   * @throws {Error} Si los datos no son un arreglo, o si las filas no son objetos o tienen estructuras inconsistentes.
    */
   public setData(data: RowData[]): void {
     if (!Array.isArray(data)) {
-      throw new Error('Los datos deben ser un arreglo');
+      throw new Error('Los datos de fila deben ser un arreglo');
     }
 
     if (data.length > 0) {
       const firstRowKeys = Object.keys(data[0] || {});
-      const invalidRow = data.find(row => {
+      data.forEach((row, index) => {
+        if (!row || typeof row !== 'object' || Array.isArray(row)) {
+          throw new Error(`Fila en posición ${index} no es un objeto válido`);
+        }
         const rowKeys = Object.keys(row || {});
-        return rowKeys.length !== firstRowKeys.length ||
-               !rowKeys.every(key => firstRowKeys.includes(key));
+        if (rowKeys.length !== firstRowKeys.length || !rowKeys.every(key => firstRowKeys.includes(key))) {
+          throw new Error('Todas las filas deben tener la misma estructura');
+        }
       });
-
-      if (invalidRow) {
-        throw new Error('Todas las filas deben tener la misma estructura');
-      }
     }
 
     this.rowData = data.map(row => ({ ...row }));
   }
 
   /**
-   * Obtiene los datos procesados después de aplicar filtros y agrupaciones.
+   * @description Obtiene los datos procesados después de aplicar filtros y agrupaciones.
    * @returns Un arreglo de datos procesados.
    */
   public getData(): RowData[] {
@@ -118,36 +113,35 @@ export class DataProvider {
   }
 
   /**
-   * Obtiene los nombres de las columnas de los datos procesados.
+   * @description Obtiene los nombres de las columnas (claves) de los datos procesados.
    * @returns Un arreglo con los nombres de las columnas.
    */
-  public getDimensionsNames(): string[] {
+  public getKeys(): string[] {
     const row = this.processConfig()[0] || {};
     return Object.keys(row);
   }
 
   /**
-   * Obtiene todos los valores únicos para una dimensión específica de los datos procesados.
-   * Los resultados son ordenados según la propiedad 'order' de los items de la dimensión.
-   * @param dimensionName - El nombre de la dimensión a consultar.
-   * @returns Un arreglo de valores únicos (string) para la dimensión.
+   * @description
+   * Obtiene todos los valores únicos para una clave de columna específica de los datos procesados.
+   * Los resultados son ordenados según las `sortingRules` si se proporcionaron para esa clave.
+   * @param key - El nombre de la clave de columna a consultar.
+   * @returns Un arreglo de valores únicos para la clave.
    */
-  public getItems(dimensionName: string): string[] {
+  public getValuesByKey(key: string): (string | number)[] {
     const processedConfig = this.processConfig();
-    const items = uniqBy(processedConfig, dimensionName)
-      .map((item) => item[dimensionName])
-      .filter((item): item is string => item !== undefined);
+    const items = uniqBy(processedConfig, key)
+      .map((item) => item[key])
+      .filter((item): item is string | number => item !== undefined && item !== null);
 
-    if (dimensionName !== DIMENSION_YEAR) {
-      const dimension = this.dimensions.find(d => d.nameView === dimensionName);
+    const sortingRule = this.sortingRules?.get(key);
 
-      if (dimension && Array.isArray(dimension.items) && dimension.items.length > 0) {
-        items.sort((a, b) => {
-          const itemA = dimension.items.find(i => i.name === a);
-          const itemB = dimension.items.find(i => i.name === b);
-          return (itemA?.order ?? 0) - (itemB?.order ?? 0);
-        });
-      }
+    if (key !== DIMENSION_YEAR && sortingRule) {
+      items.sort((a, b) => {
+        const orderA = sortingRule.get(String(a)) ?? Infinity;
+        const orderB = sortingRule.get(String(b)) ?? Infinity;
+        return orderA - orderB;
+      });
     }
 
     return items;

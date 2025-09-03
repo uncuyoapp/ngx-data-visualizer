@@ -99,7 +99,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
   // ============================================
 
   /** Lista de años disponibles en los datos */
-  years!: string[];
+  years!: (string | number)[];
 
   /** Flag para resaltar todos los elementos (no implementado) */
   highlighAll = false;
@@ -180,7 +180,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     this.splitDimension = dimensions[0];
 
     // Obtener lista de años disponibles en los datos
-    this.years = this.dataset.dataProvider.getItems("Año");
+    this.years = this.dataset.getDimensionValues(0);
 
     // Configurar opciones específicas del gráfico
     this.chartOptions.stacked = "Departamentos"; // Apilar por departamentos

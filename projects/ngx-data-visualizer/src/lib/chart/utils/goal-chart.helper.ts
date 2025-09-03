@@ -63,15 +63,16 @@ export class GoalChartHelper {
   }
 
   /**
-   * Genera los datos del gráfico para la meta
-   * @param goal - Objeto Goal que contiene los datos de la meta
+   * @description
+   * Genera la instancia de `ChartData` para la visualización de la meta.
+   * Crea un `DataProvider` temporal y efímero solo con los datos de la meta.
+   * @param goal - Objeto Goal que contiene los datos de la meta.
    * @private
    */
   private generateGoalChartData(goal: Goal): void {
-    const dataProvider = new DataProvider();
-    dataProvider.setData(goal.data);
+    const dataProvider = new DataProvider({ rowData: goal.data });
     const goalDimensions = dataProvider
-      .getDimensionsNames()
+      .getKeys()
       .filter((dim) => dim !== DIMENSION_VALUE && dim !== DIMENSION_YEAR);
     const seriesConfig: SeriesConfig = {
       x1: DIMENSION_YEAR,
@@ -80,7 +81,8 @@ export class GoalChartHelper {
       measure: this.chartConfiguration.seriesConfig.measure,
     };
 
-    this.goalChartData = new ChartData(dataProvider, seriesConfig);
+    // Se crea ChartData pasando un mapa de colores vacío, ya que la meta no usa paleta.
+    this.goalChartData = new ChartData(dataProvider, seriesConfig, new Map());
   }
 
   /**

@@ -1,6 +1,5 @@
 import { Injectable, Type } from "@angular/core";
 import cloneDeep from "lodash.clonedeep";
-import { DataProvider } from "../../services/data-provider";
 import { DIMENSION_YEAR } from "../../types/constants";
 import { Dataset } from "../../services/dataset";
 import { Dimension, Filters } from "../../types/data.types";
@@ -176,8 +175,8 @@ export class ChartService {
     if (!chartConfiguration) {
       throw new Error('El parámetro chartConfiguration es requerido');
     }
-    const { chartData, seriesConfig, options, dataset } = chartConfiguration;
-    const { rollUp } = chartData.dataProvider.filters;
+    const { seriesConfig, options, dataset } = chartConfiguration;
+    const { rollUp } = dataset.dataProvider.filters;
     if (!seriesConfig.x1 && !seriesConfig.x2) {
       throw new Error(
         'Se requiere al menos un eje (x1 o x2) en la configuración de series.'
@@ -186,25 +185,25 @@ export class ChartService {
     if (options?.filterLastYear) {
       this.filterLastPeriod(chartConfiguration);
     }
-    chartData.seriesConfig = this.initializeSeriesConfig(seriesConfig);
+    chartConfiguration.chartData.seriesConfig = this.initializeSeriesConfig(seriesConfig);
     if (this.canUseAxis(seriesConfig.x1, rollUp)) {
-      chartData.seriesConfig.x1 = seriesConfig.x1;
+      chartConfiguration.chartData.seriesConfig.x1 = seriesConfig.x1;
       if (seriesConfig.x2 && this.canUseAxis(seriesConfig.x2, rollUp)) {
-        chartData.seriesConfig.x2 = seriesConfig.x2;
+        chartConfiguration.chartData.seriesConfig.x2 = seriesConfig.x2;
       }
     } else if (seriesConfig.x2 && this.canUseAxis(seriesConfig.x2, rollUp)) {
-      chartData.seriesConfig.x1 = seriesConfig.x2;
-      chartData.seriesConfig.x2 = undefined;
+      chartConfiguration.chartData.seriesConfig.x1 = seriesConfig.x2;
+      chartConfiguration.chartData.seriesConfig.x2 = undefined;
     } else if (this.canUseAxis(DIMENSION_YEAR, rollUp)) {
-      chartData.seriesConfig.x1 = DIMENSION_YEAR;
+      chartConfiguration.chartData.seriesConfig.x1 = DIMENSION_YEAR;
     } else {
       const availableDimension = this.findAvailableDimension(
         dataset,
         rollUp
       );
       if (availableDimension) {
-        chartData.seriesConfig.x1 = availableDimension;
-        chartData.seriesConfig.x2 = undefined;
+        chartConfiguration.chartData.seriesConfig.x1 = availableDimension;
+        chartConfiguration.chartData.seriesConfig.x2 = undefined;
       } else {
         throw new Error(
           'No se pudo encontrar una dimensión disponible para el eje X.'
@@ -277,15 +276,6 @@ export class ChartService {
 
   /**
    * @description
-   * Resetea los filtros de un `DataProvider` a un estado vacío.
-   * @param arrayData El `DataProvider` cuyos filtros se van a resetear.
-   */
-  private resetFilters(arrayData: DataProvider) {
-    arrayData.filters = new Filters();
-  }
-
-  /**
-   * @description
    * Filtra los datos para mostrar únicamente el último período (año).
    * @param chartConfiguration La configuración del gráfico a modificar.
    */
@@ -295,7 +285,7 @@ export class ChartService {
     }
     try {
       const lastPeriods = chartConfiguration.dataset.dataProvider
-        .getItems(DIMENSION_YEAR)
+        .getValuesByKey(DIMENSION_YEAR)
         .slice(-1);
       if (lastPeriods.length > 0) {
         const lastPeriod = lastPeriods[0];
@@ -325,8 +315,8 @@ export class ChartService {
    * @throws {Error} Si el `dataProvider` no está definido o si hay un error al procesar los datos.
    */
   public updateChartData(chartConfiguration: ChartConfiguration): void {
-    if (!chartConfiguration?.dataset?.dataProvider) {
-      throw new Error('El dataset o dataProvider no está definido');
+    if (!chartConfiguration?.dataset) {
+      throw new Error('El dataset no está definido');
     }
 
     const getDimensionKeyById = (id: number | undefined): string | undefined => {
@@ -345,9 +335,11 @@ export class ChartService {
     };
 
     try {
+      const colorPalette = this.getPaletteFromDataset(chartConfiguration.dataset);
       const chartData = new ChartData(
         chartConfiguration.dataset.dataProvider,
-        seriesConfig
+        seriesConfig,
+        colorPalette
       );
       chartConfiguration.seriesConfig = cloneDeep(seriesConfig);
       chartConfiguration.chartData = chartData;
@@ -356,5 +348,23 @@ export class ChartService {
       console.error('Error al configurar los datos del gráfico:', error);
       throw new Error('No se pudo configurar los datos del gráfico');
     }
+  }
+
+  /**
+   * @description Extrae la paleta de colores a partir de las dimensiones de un `Dataset`.
+   * @param dataset El `Dataset` del cual extraer los colores.
+   * @returns Un `Map` donde la clave es el nombre del item y el valor es el color en formato string.
+   * @private
+   */
+  private getPaletteFromDataset(dataset: Dataset): Map<string, string> {
+    const mapColors = new Map<string, string>();
+    dataset.dimensions.forEach(dimension => {
+      dimension.items
+        .filter(item => item.color)
+        .forEach(item => {
+          mapColors.set(item.name, item.color as string);
+        });
+    });
+    return mapColors;
   }
 }

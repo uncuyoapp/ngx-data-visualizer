@@ -1,54 +1,49 @@
 import { DataProvider } from '../../services/data-provider';
 import { DIMENSION_VALUE } from '../../types/constants';
-import { Dimension, RowData } from '../../types/data.types';
+import { RowData } from '../../types/data.types';
 import { SeriesConfig } from '../types/chart-configuration';
 
 /**
- * Clase encargada de transformar y preparar datos para visualizaciones gráficas.
- * Gestiona la estructuración de datos en series, dimensiones y valores para representación visual.
+ * @description
+ * Clase encargada de transformar los datos procesados por `DataProvider` en una estructura
+ * de series compatible con la librería de gráficos (ECharts).
+ * @internal
  */
 export class ChartData {
   /**
-   * Constructor de la clase ChartData
-   * @param dataProvider Proveedor de datos para las visualizaciones
-   * @param seriesConfig Configuración de las series para el gráfico
+   * @description Crea una instancia de ChartData.
+   * @param dataProvider El proveedor de datos ya configurado y listo para ser consumido.
+   * @param seriesConfig La configuración de las series para el gráfico (ejes, stack, etc.).
+   * @param colorPalette Un mapa opcional para asignar colores a las series.
    */
   constructor(
     public dataProvider: DataProvider,
-    public seriesConfig: SeriesConfig
+    public seriesConfig: SeriesConfig,
+    private readonly colorPalette?: Map<string, string>
   ) {}
 
   /**
-   * Obtiene los items de una columna específica
-   * @param column Nombre de la columna para obtener items
-   * @param withoutFilter Si es true, obtiene todos los items sin aplicar filtros
-   * @returns Array de strings con los nombres de los items
+   * @description Obtiene los valores únicos para una columna (clave) específica de los datos procesados.
+   * @param column El nombre de la columna (clave) a consultar.
+   * @returns Un array de valores únicos (string o number).
    */
-  public getItems(column: string, withoutFilter?: boolean): string[] {
-    if (withoutFilter) {
-      const dimension = this.dataProvider.dimensions.find(
-        (d) => d.nameView === column
-      );
-      return dimension?.items?.map((i) => i.name) ?? [];
-    } else {
-      return this.dataProvider.getItems(column);
-    }
+  public getItems(column: string): (string | number)[] {
+    return this.dataProvider.getValuesByKey(column);
   }
 
   /**
-   * Genera las series de datos para el gráfico
-   * @returns Array de objetos que representan las series de datos
+   * @description Genera la estructura de series completa para el gráfico, procesando los datos del `DataProvider`.
+   * @returns Un array de objetos que representan las series de datos para la librería de gráficos.
    */
   public getSeries(): object[] {
-    const { stackKey, axis0, axis1, items, items2, palette } =
-      this.extractVariables();
+    const { stackKey, axis0, axis1, items, items2 } = this.extractVariables();
     const dataStruct = this.createDataStruct(items, items2);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const series = new Map<string, any>();
 
     this.dataProvider.getData().forEach((row) => {
       const { nameSeries, stack, firstLevel, secondLevel, color } =
-        this.processRow(row, stackKey, axis0, axis1, palette);
+        this.processRow(row, stackKey, axis0, axis1, this.colorPalette);
       if (!series.get(nameSeries)) {
         series.set(nameSeries, {
           name: nameSeries,
@@ -61,7 +56,10 @@ export class ChartData {
       const actualSeries = series.get(nameSeries);
       // Asegurarse de que el valor sea numérico o null/undefined
       const rawValue = row['valor'];
-      const valor = rawValue !== null && rawValue !== undefined ? parseFloat(String(rawValue)) : null;
+      const valor =
+        rawValue !== null && rawValue !== undefined
+          ? parseFloat(String(rawValue))
+          : null;
 
       if (!firstLevel) {
         throw new Error('FirstLevel is undefined');
@@ -89,24 +87,18 @@ export class ChartData {
   }
 
   /**
-   * Extrae variables necesarias para la configuración de series
-   * @returns Objeto con las variables extraídas (stackKey, ejes, items y paleta)
+   * @description Extrae las variables y claves necesarias para la configuración de las series a partir de los datos procesados.
+   * @returns Un objeto con las claves de los ejes y los items para construir el gráfico.
+   * @private
    */
   private extractVariables() {
     let stackKey = '';
     let axis0 = '';
     let axis1 = '';
-    let items: string[] = [];
-    let items2: string[] = [];
-    let palette: Map<string, string> | undefined;
+    let items: (string | number)[] = [];
+    let items2: (string | number)[] = [];
 
-    this.dataProvider.dimensions.forEach((dimension) => {
-      if (!palette || palette.size === 0) {
-        palette = this.getPalette(dimension);
-      }
-    });
-
-    this.dataProvider.getDimensionsNames().forEach((dimensionName) => {
+    this.dataProvider.getKeys().forEach((dimensionName) => {
       switch (dimensionName) {
         case this.seriesConfig.x1:
           axis0 = dimensionName;
@@ -122,37 +114,42 @@ export class ChartData {
       }
     });
 
-    return { stackKey, axis0, axis1, items, items2, palette };
+    return { stackKey, axis0, axis1, items, items2 };
   }
 
   /**
-   * Crea la estructura de datos base para las series
-   * @param items Array de items primarios
-   * @param items2 Array de items secundarios
-   * @returns Map con la estructura de datos inicializada para las series
+   * @description Crea una estructura de datos base (un Map) para las series, inicializando todos los valores a `null`.
+   * @param items - Array de items para el eje primario.
+   * @param items2 - Array de items para el eje secundario (si existe).
+   * @returns Un `Map` con la estructura de datos inicializada para una serie.
+   * @private
    */
-  private createDataStruct(items: string[], items2: string[]) {
-    const dataStruct = new Map<string, [string, number | null]>();
+  private createDataStruct(
+    items: (string | number)[],
+    items2: (string | number)[]
+  ) {
+    const dataStruct = new Map<string, [string | number, number | null]>();
     items.forEach((item) => {
       if (items2.length > 0) {
         items2.forEach((item2) => {
-          dataStruct.set(item.concat(item2), [item2, null]);
+          dataStruct.set(String(item).concat(String(item2)), [item2, null]);
         });
       } else {
-        dataStruct.set(item, [item, null]);
+        dataStruct.set(String(item), [item, null]);
       }
     });
     return dataStruct;
   }
 
   /**
-   * Procesa una fila de datos para integrarla en las series
-   * @param row Fila de datos a procesar
-   * @param stackKey Clave para el apilamiento de datos
-   * @param axis0 Nombre de la dimensión para el eje primario
-   * @param axis1 Nombre de la dimensión para el eje secundario
-   * @param palette Mapa de colores para las series
-   * @returns Objeto con los datos procesados (nombre de serie, stack, niveles y color)
+   * @description Procesa una única fila de datos para extraer la información relevante de la serie.
+   * @param row - La fila de datos a procesar.
+   * @param stackKey - La clave usada para el apilamiento de datos.
+   * @param axis0 - La clave para el eje primario.
+   * @param axis1 - La clave para el eje secundario.
+   * @param palette - El mapa de colores a utilizar.
+   * @returns Un objeto con los datos procesados de la fila (nombre de serie, stack, niveles y color).
+   * @private
    */
   private processRow(
     row: RowData,
@@ -214,22 +211,5 @@ export class ChartData {
     });
 
     return { nameSeries, stack, firstLevel, secondLevel, color };
-  }
-
-  /**
-   * Obtiene la paleta de colores a partir de una dimensión
-   * @param dimension Dimensión de la cual extraer la paleta de colores
-   * @returns Mapa con nombres de items y sus colores asociados
-   */
-  private getPalette(dimension: Dimension): Map<string, string> {
-    const mapColors = new Map<string, string>();
-    // Filtramos los items que tienen color definido y no es undefined
-    dimension.items
-      .filter((item) => item.color !== undefined && item.color !== null)
-      .forEach((i) => {
-        // Estamos seguros de que i.color no es undefined gracias al filtro previo
-        mapColors.set(i.name, i.color as string);
-      });
-    return mapColors;
   }
 }

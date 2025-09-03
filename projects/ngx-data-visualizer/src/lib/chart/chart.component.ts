@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LegendComponent } from "../legend/legend.component";
 import { Filters } from "../types/data.types";
 import { EchartsComponent } from "./echart/echarts.component";
-import { ChartService } from "./services/chart.service";
+import { ChartUpdater } from "./services/chart-updater.service";
 import { Chart } from "./types/chart";
 import { ChartConfiguration } from "./types/chart-configuration";
 import { Goal, Series } from "./types/chart-models";
@@ -36,7 +36,7 @@ import { GoalChartHelper } from "./utils/goal-chart.helper";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements OnDestroy {
-  private readonly chartService = inject(ChartService);
+  private readonly chartUpdater = inject(ChartUpdater);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef);
@@ -131,7 +131,7 @@ export class ChartComponent implements OnDestroy {
    * @param config La nueva configuración del gráfico.
    */
   private ngOnConfigChange(config: ChartConfiguration): void {
-    this.chartService.updateSeriesConfig(config);
+    this.chartUpdater.updateSeriesConfig(config);
     this.goalChartHelper = new GoalChartHelper(config);
     requestAnimationFrame(() => {
       const echart = this.echart();
@@ -150,7 +150,7 @@ export class ChartComponent implements OnDestroy {
   private handleDataUpdate(): void {
     const config = this.chartConfiguration();
     if (!config) return;
-    this.chartService.updateChartData(config);
+    this.chartUpdater.updateChartData(config);
     requestAnimationFrame(() => {
       const echart = this.echart();
       if (echart) {

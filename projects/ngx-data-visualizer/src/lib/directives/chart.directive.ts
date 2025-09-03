@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { ChartComponent } from "../chart/chart.component";
-import { ChartService } from "../chart/services/chart.service";
+import { ChartFactory } from "../chart/services/chart-factory.service";
 import { ChartOptions } from "../chart/types/chart-configuration";
 import { Goal, Series } from "../chart/types/chart-models";
 import { Dataset } from "../services/dataset";
@@ -42,7 +42,7 @@ export class ChartDirective implements OnDestroy {
 
   constructor(
     private readonly viewContainerRef: ViewContainerRef,
-    private readonly chartService: ChartService,
+    private readonly chartFactory: ChartFactory,
   ) {
     // Crear el componente UNA SOLA VEZ al inicio.
     this.createChartComponent();
@@ -81,7 +81,7 @@ export class ChartDirective implements OnDestroy {
    */
   private initializeChartUpdates(): void {
     effect(() => {
-      const chartConfiguration = this.chartService.getChartConfiguration(
+      const chartConfiguration = this.chartFactory.getChartConfiguration(
         this.dataset(),
         this.chartOptions(),
       );

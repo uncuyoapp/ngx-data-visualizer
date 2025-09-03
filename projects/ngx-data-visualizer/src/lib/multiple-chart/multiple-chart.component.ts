@@ -14,7 +14,7 @@ import {
 } from "@angular/core";
 import { Subscription } from "rxjs";
 
-import { ChartService } from "../chart/services/chart.service";
+import { ChartFactory } from "../chart/services/chart-factory.service";
 import {
   ChartConfiguration,
   ChartOptions,
@@ -51,7 +51,7 @@ export class MultipleChartComponent implements OnDestroy {
   @ViewChildren(ChartWrapperComponent, { read: ElementRef })
   private chartElements!: QueryList<ElementRef>;
 
-  private chartService = inject(ChartService);
+  private chartFactory = inject(ChartFactory);
 
   /**
    * Mantiene un registro de los componentes de wrapper activos.
@@ -119,7 +119,7 @@ export class MultipleChartComponent implements OnDestroy {
     }
 
     // Obtener la nueva configuración de gráficos a partir del servicio.
-    const newConfigurations = this.chartService.getSplitConfiguration(
+    const newConfigurations = this.chartFactory.getSplitConfiguration(
       dataset,
       options,
       splitDimension,

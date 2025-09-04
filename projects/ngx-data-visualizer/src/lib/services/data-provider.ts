@@ -1,5 +1,6 @@
 import uniqBy from 'lodash.uniqby';
-import { Filters, RowData } from '../types/data.types';
+import { RowData } from '../types/data.types';
+import { Filters } from './types';
 import { DIMENSION_YEAR, DIMENSION_VALUE } from '../types/constants';
 
 /**

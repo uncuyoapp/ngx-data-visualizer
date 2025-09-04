@@ -3,6 +3,10 @@
  */
 
 import { Dataset } from "../../services/dataset";
+import { TableOptions } from "../../types/data.types";
+
+// Re-exportar TableOptions para que esté disponible desde este módulo
+export { TableOptions } from "../../types/data.types";
 
 /**
  * Interfaz base para la configuración de tablas
@@ -12,45 +16,6 @@ export interface TableConfiguration {
   options: TableOptions;
   /** Conjunto de datos para la tabla */
   dataset: Dataset;
-}
-
-/**
- * Interfaz para la configuración del ordenamiento de dimensiones
- */
-export interface TableSorter {
-  /** Nombre o ID de la dimensión a ordenar */
-  name: string | number;
-  /** Lista de ítems con su orden específico */
-  items: {
-    /** Nombre del ítem */
-    name: string;
-    /** Orden del ítem */
-    order: number;
-  }[];
-}
-
-/**
- * Interfaz para la configuración de una tabla
- */
-export interface TableOptions {
-  /** Número de decimales a mostrar */
-  digitsAfterDecimal: number;
-  /** Configuración de ordenamiento para cada dimensión */
-  sorters: TableSorter[];
-  /** Indica si se debe mostrar la fila de totales */
-  totalRow: boolean;
-  /** Indica si se debe mostrar la columna de totales */
-  totalCol: boolean;
-  /** Lista de nombres o IDs de columnas */
-  cols: (string | number)[];
-  /** Lista de nombres o IDs de filas */
-  rows: (string | number)[];
-  /** Sufijo opcional para los valores numéricos */
-  suffix?: string;
-  /** Define el modo de visualización de los valores en la tabla */
-  valueDisplay?: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn';
-  /** Atributos derivados para la tabla pivot */
-  derivedAttributes?: Record<string, (record: Record<string, unknown>) => unknown>;
 }
 
 /**
@@ -126,5 +91,3 @@ export interface PivotOptions {
   /** Propiedades adicionales */
   [key: string]: unknown;
 }
-
-

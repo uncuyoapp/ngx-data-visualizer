@@ -14,13 +14,13 @@ import {
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LegendComponent } from "../legend/legend.component";
-import { Filters } from "../types/data.types";
+import { Filters } from "../services/types";
 import { EchartsComponent } from "./echart/echarts.component";
 import { ChartUpdater } from "./services/chart-updater.service";
 import { Chart } from "./types/chart";
 import { ChartConfiguration } from "./types/chart-configuration";
-import { Goal, Series } from "./types/chart-models";
 import { GoalChartHelper } from "./utils/goal-chart.helper";
+import { Goal, Series } from "../types/data.types";
 
 /**
  * @description
@@ -230,10 +230,7 @@ export class ChartComponent implements OnDestroy {
     const goalChartData = this.goalChartHelper.showGoal(goal);
     const echart = this.echart();
     if (goalChartData && this.mainChart && echart) {
-      const goalSeries = echart.getGoalSeries(
-        goalChartData,
-        goal.chartType
-      );
+      const goalSeries = echart.getGoalSeries(goalChartData, goal.chartType);
       let isFirstEmission = true;
       const subscription = echart.chartUpdated.subscribe(() => {
         if (this.mainChart && isFirstEmission) {

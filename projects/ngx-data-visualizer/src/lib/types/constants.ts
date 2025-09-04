@@ -3,6 +3,8 @@
  * Proporciona valores predefinidos y configuraciones comunes para toda la biblioteca.
  */
 
+import { ChartOptions } from "./data.types";
+
 /**
  * Constantes relacionadas con dimensiones y nombres de campos
  */
@@ -11,12 +13,6 @@ export const Dimensions = {
   YEAR: "Año",
   /** Nombre de la dimensión de valor */
   VALUE: "valor",
-  /** Nombre de la dimensión de mes */
-  MONTH: "Mes",
-  /** Nombre de la dimensión de categoría */
-  CATEGORY: "Categoría",
-  /** Nombre de la dimensión de región */
-  REGION: "Región",
 } as const;
 
 /**
@@ -462,3 +458,47 @@ export const DANGEROUS_ATTRS = Security.DANGEROUS_ATTRS;
 export const EC_CHART_CONFIG_PREVIEW = ECharts.CHART_CONFIG_PREVIEW;
 export const EC_AXIS_CONFIG = ECharts.AXIS_CONFIG;
 export const EC_SERIES_CONFIG = ECharts.SERIES_CONFIG;
+
+/**
+ * Opciones por defecto para la configuración del gráfico
+ */
+export const DEFAULT_OPTIONS: ChartOptions = {
+  type: "column",
+  title: "",
+  stacked: null,
+  xAxis: {
+    title: "",
+    rotateLabels: null,
+    firstLevel: 0,
+    secondLevel: null,
+  },
+  yAxis: {
+    title: "",
+    max: null,
+  },
+  tooltip: {
+    shared: false,
+    decimals: null,
+    suffix: null,
+    format: null,
+    showTotal: false,
+  },
+  legends: {
+    enabled: true,
+    show: false,
+    position: "",
+  },
+  navigator: {
+    show: false,
+    start: null,
+    end: null,
+  },
+  width: null,
+  height: null,
+  filterLastYear: false,
+  showYearsLegend: false,
+  toPercent: false,
+  measureUnit: "",
+  isPreview: false,
+  disableAutoUpdate: false,
+};

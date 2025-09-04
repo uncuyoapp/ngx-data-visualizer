@@ -1,9 +1,9 @@
-import { DataProvider } from '../../services/data-provider';
-import { DIMENSION_VALUE, DIMENSION_YEAR } from '../../types/constants';
-import { Filters } from '../../types/data.types';
-import { Goal } from '../types/chart-models';
-import { ChartConfiguration, SeriesConfig } from '../types/chart-configuration';
-import { ChartData } from './chart-data';
+import { DataProvider } from "../../services/data-provider";
+import { DIMENSION_VALUE, DIMENSION_YEAR } from "../../types/constants";
+import { Filters } from "../../services/types";
+import { ChartConfiguration, SeriesConfig } from "../types/chart-configuration";
+import { ChartData } from "./chart-data";
+import { Goal } from "../../types/data.types";
 
 /**
  * Clase auxiliar para manejar la visualización de metas en los gráficos.
@@ -22,7 +22,7 @@ export class GoalChartHelper {
    * Constructor de la clase
    * @param chartConfiguration - Configuración del gráfico principal
    */
-  constructor(private readonly chartConfiguration: ChartConfiguration) { }
+  constructor(private readonly chartConfiguration: ChartConfiguration) {}
 
   /**
    * Muestra la meta en el gráfico
@@ -31,7 +31,7 @@ export class GoalChartHelper {
    */
   public showGoal(goal: Goal): ChartData | undefined {
     if (!goal) {
-      console.warn('No se proporcionó una meta válida');
+      console.warn("No se proporcionó una meta válida");
       return undefined;
     }
 
@@ -39,14 +39,14 @@ export class GoalChartHelper {
       this.generateGoalChartData(goal);
 
       if (!this.goalChartData) {
-        console.warn('No se pudo generar los datos de meta');
+        console.warn("No se pudo generar los datos de meta");
         return undefined;
       }
 
       this.updateSeriesConfig(this.goalChartData.seriesConfig);
       return this.goalChartData;
     } catch (error) {
-      console.error('Error al mostrar la meta:', error);
+      console.error("Error al mostrar la meta:", error);
       return undefined;
     }
   }
@@ -55,10 +55,13 @@ export class GoalChartHelper {
    * Oculta la meta y retorna la configuración guardada
    * @returns Objeto con la configuración de series y filtros guardados
    */
-  public hideGoal(): { savedSeriesConfig: SeriesConfig; savedFilters: Filters } {
+  public hideGoal(): {
+    savedSeriesConfig: SeriesConfig;
+    savedFilters: Filters;
+  } {
     return {
       savedSeriesConfig: this.savedSeriesConfiguration,
-      savedFilters: this.savedFilters
+      savedFilters: this.savedFilters,
     };
   }
 
@@ -99,7 +102,7 @@ export class GoalChartHelper {
       .filter(
         (dimension) =>
           dimension.nameView !== seriesConfig.x1 &&
-          dimension.nameView !== seriesConfig.x2
+          dimension.nameView !== seriesConfig.x2,
       )
       .map((dimension) => dimension.nameView);
 
@@ -107,8 +110,12 @@ export class GoalChartHelper {
 
     if (dataset.dataProvider.filters) {
       this.savedFilters = new Filters();
-      this.savedFilters.rollUp = [...(dataset.dataProvider.filters.rollUp || [])];
-      this.savedFilters.filter = [...(dataset.dataProvider.filters.filter || [])];
+      this.savedFilters.rollUp = [
+        ...(dataset.dataProvider.filters.rollUp || []),
+      ];
+      this.savedFilters.filter = [
+        ...(dataset.dataProvider.filters.filter || []),
+      ];
     } else {
       this.savedFilters = new Filters();
     }

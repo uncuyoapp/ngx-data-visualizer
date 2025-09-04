@@ -10,8 +10,7 @@ import {
 import { Subject } from "rxjs";
 import { ChartComponent } from "../chart/chart.component";
 import { ChartFactory } from "../chart/services/chart-factory.service";
-import { ChartOptions } from "../chart/types/chart-configuration";
-import { Goal, Series } from "../chart/types/chart-models";
+import { ChartOptions, Goal, Series } from "../types/data.types";
 import { Dataset } from "../services/dataset";
 
 /**

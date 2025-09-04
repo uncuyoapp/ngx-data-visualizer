@@ -14,7 +14,7 @@ import {
   MultipleChartDirective,
   ChartOptions,
   ThemeService,
-  Filters,
+  FiltersConfig,
 } from "ngx-data-visualizer";
 import { MatSelectModule } from "@angular/material/select";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -56,7 +56,7 @@ export class MultichartDemoComponent implements AfterViewInit {
     enableRollUp: true,
   });
 
-  filters: Filters = {
+  filters: FiltersConfig = {
     rollUp: ["Sexo"],
     filter: [],
   };

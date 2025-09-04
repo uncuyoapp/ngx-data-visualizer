@@ -10,7 +10,8 @@ import { Subscription, debounceTime } from "rxjs";
 import { Dataset } from "../services/dataset";
 import { ExcelService } from "../table/services/excel.service";
 import { TableComponent } from "../table/table.component";
-import { TableConfiguration, TableOptions } from "../table/types/table-base";
+import { TableConfiguration } from "../table/types/table-base";
+import { TableOptions } from "../types/data.types";
 
 /**
  * Directiva que permite incrustar una tabla dinámica en un componente contenedor.

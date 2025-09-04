@@ -40,25 +40,68 @@ const dataset = new Dataset({ dimensions, rowData });
 
 ### Opciones de configuración
 
+#### Configuración de gráficos (ChartOptions)
+
 ```ts
-const chartOptions = {
+import { ChartOptions } from 'ngx-data-visualizer';
+
+const chartOptions: ChartOptions = {
   type: 'column',
   title: 'Ventas por año',
-  xAxis: { title: 'Año' },
-  yAxis: { title: 'Ventas', suffix: ' USD' },
-  tooltip: { decimals: 2 },
-  colors: ['#1f77b4', '#ff7f0e']
+  stacked: null,
+  xAxis: { 
+    title: 'Año',
+    rotateLabels: null,
+    firstLevel: 0,
+    secondLevel: null
+  },
+  yAxis: { 
+    title: 'Ventas',
+    max: null
+  },
+  tooltip: { 
+    shared: true,
+    decimals: 2,
+    suffix: ' USD',
+    format: null,
+    showTotal: false
+  },
+  legends: {
+    enabled: true,
+    show: true,
+    position: 'right'
+  },
+  navigator: {
+    show: false,
+    start: null,
+    end: null
+  },
+  colors: ['#1f77b4', '#ff7f0e'],
+  width: null,
+  height: null,
+  filterLastYear: false,
+  showYearsLegend: false,
+  toPercent: false,
+  measureUnit: 'USD',
+  isPreview: false,
+  disableAutoUpdate: false
 };
 ```
 
+#### Configuración de tablas (TableOptions)
+
 ```ts
-const tableOptions = {
+import { TableOptions } from 'ngx-data-visualizer';
+
+const tableOptions: TableOptions = {
   cols: ['año'],
   rows: ['categoría'],
-  digitsAfterDecimal: 0,
+  digitsAfterDecimal: 2,
   suffix: ' unidades',
   totalRow: true,
-  totalCol: true
+  totalCol: true,
+  sorters: [],
+  valueDisplay: 'nominal'
 };
 ```
 
@@ -71,17 +114,23 @@ const tableOptions = {
 
 ## 🧩 Componentes principales
 
-### Gráficos
-- `ChartDirective`: Directiva base para la renderización de gráficos
-- `MultipleChartDirective`: Directiva para la visualización de múltiples gráficos
-- Componentes de gráficos específicos en el directorio `chart/`
+### Directivas
+- `ChartDirective`: Directiva standalone para la renderización de gráficos individuales
+- `MultipleChartDirective`: Directiva standalone para la visualización de múltiples gráficos
+- `TableDirective`: Directiva standalone para la renderización de tablas de datos
 
-### Tablas
-- `TableDirective`: Directiva para la renderización de tablas de datos
+### Interfaces principales
+- `ChartOptions`: Configuración completa para gráficos (en `data.types.ts`)
+- `TableOptions`: Configuración para tablas de datos
+- `Dataset`: Clase para el manejo de conjuntos de datos
+- `Dimension`: Interfaz para definir dimensiones de datos
+- `ChartLibraryOptions`: Opciones específicas de la librería de gráficos
+- `ChartError`: Clase de error personalizada para operaciones de gráficos
+
+### Componentes internos
+- Componentes de gráficos ECharts en el directorio `chart/echart/`
 - Componentes de tabla en el directorio `table/`
-
-### Utilidades
-- `Dataset`: Utilidades para el manejo de conjuntos de datos
+- Componentes de iconos e interfaz de usuario
 
 ## 🛠️ Build de la librería
 

@@ -1,6 +1,8 @@
 import { Subject } from "rxjs";
 import { DataProvider } from "./data-provider";
-import { Dimension, Filters, RowData, FiltersConfig } from "../types/data.types";
+import { Dimension, RowData, FiltersConfig } from "../types/data.types";
+import { Filters } from "./types";
+import { DIMENSION_VALUE } from '../types/constants';
 
 /**
  * Clase que representa un conjunto de datos para visualización.
@@ -41,7 +43,7 @@ export class Dataset {
     rowData: RowData[];
   }) {
     if (!config) {
-      throw new Error('La configuración del dataset es requerida');
+      throw new Error("La configuración del dataset es requerida");
     }
 
     this.id = config.id;
@@ -66,10 +68,12 @@ export class Dataset {
    */
   private buildSortingRules(): Map<string, Map<string, number>> {
     const sortingRules = new Map<string, Map<string, number>>();
-    this.dimensions.forEach(dim => {
+    this.dimensions.forEach((dim) => {
       if (dim.items && dim.items.length > 0) {
         const itemOrderMap = new Map<string, number>();
-        dim.items.forEach((item, index) => itemOrderMap.set(item.name, item.order ?? index));
+        dim.items.forEach((item, index) =>
+          itemOrderMap.set(item.name, item.order ?? index),
+        );
         const dataKey = this.getDimensionKey(dim.id);
         if (dataKey) {
           sortingRules.set(dataKey, itemOrderMap);
@@ -87,7 +91,9 @@ export class Dataset {
    */
   private validateDimensions(dimensions: Dimension[] = []): Dimension[] {
     if (!Array.isArray(dimensions)) {
-      console.warn('Las dimensiones deben ser un arreglo, se usará un arreglo vacío');
+      console.warn(
+        "Las dimensiones deben ser un arreglo, se usará un arreglo vacío",
+      );
       return [];
     }
 
@@ -95,15 +101,19 @@ export class Dataset {
     const uniqueNames = new Set<string>();
 
     return dimensions.map((dim, index) => {
-      if (!dim || typeof dim !== 'object') {
-        throw new Error(`Dimensión en posición ${index} no es un objeto válido`);
+      if (!dim || typeof dim !== "object") {
+        throw new Error(
+          `Dimensión en posición ${index} no es un objeto válido`,
+        );
       }
 
-      const requiredFields = ['id', 'name', 'nameView', 'items'];
-      const missingFields = requiredFields.filter(field => !(field in dim));
+      const requiredFields = ["id", "name", "nameView", "items"];
+      const missingFields = requiredFields.filter((field) => !(field in dim));
 
       if (missingFields.length > 0) {
-        throw new Error(`Dimensión '${dim.name || 'sin nombre'}' falta(n) campo(s) requerido(s): ${missingFields.join(', ')}`);
+        throw new Error(
+          `Dimensión '${dim.name || "sin nombre"}' falta(n) campo(s) requerido(s): ${missingFields.join(", ")}`,
+        );
       }
 
       if (uniqueIds.has(dim.id)) {
@@ -133,7 +143,7 @@ export class Dataset {
 
     const dataKeys = new Set<string>(Object.keys(this.rowData[0] || {}));
 
-    this.dimensions.forEach(dim => {
+    this.dimensions.forEach((dim) => {
       let foundKey: string | null = null;
 
       // Búsqueda por id, name, o nameView para encontrar la key correspondiente en los datos
@@ -148,17 +158,23 @@ export class Dataset {
       if (foundKey) {
         this.dimensionKeyMap.set(dim.id, foundKey);
       } else {
-        console.warn(`ADVERTENCIA: Para la dimensión '${dim.nameView}', no se encontró una columna de datos que coincida con su 'id', 'name', o 'nameView'.`);
+        console.warn(
+          `ADVERTENCIA: Para la dimensión '${dim.nameView}', no se encontró una columna de datos que coincida con su 'id', 'name', o 'nameView'.`,
+        );
       }
     });
 
     const mappedKeys = new Set(this.dimensionKeyMap.values());
-    const keysToValidate = [...dataKeys].filter(key => key !== 'valor');
-    const extraDataKeys = keysToValidate.filter(key => !mappedKeys.has(key));
+    const keysToValidate = [...dataKeys].filter(
+      (key) => key !== DIMENSION_VALUE,
+    );
+    const extraDataKeys = keysToValidate.filter((key) => !mappedKeys.has(key));
 
     if (extraDataKeys.length > 0) {
-      const extraKeysStr = extraDataKeys.map(k => `'${k}'`).join(', ');
-      console.warn(`ADVERTENCIA: Las siguientes columnas en los datos no tienen una dimensión definida: ${extraKeysStr}.`);
+      const extraKeysStr = extraDataKeys.map((k) => `'${k}'`).join(", ");
+      console.warn(
+        `ADVERTENCIA: Las siguientes columnas en los datos no tienen una dimensión definida: ${extraKeysStr}.`,
+      );
     }
   }
 
@@ -179,21 +195,33 @@ export class Dataset {
     const finalFilters = new Filters();
 
     if (config.rollUp) {
-      finalFilters.rollUp = config.rollUp
-        .map((idOrName) => {
-          const dimension = this.dimensions.find(
-            (d) => d.id === idOrName || d.name === idOrName || d.nameView === idOrName
-          );
-          return dimension ? this.getDimensionKey(dimension.id) : null;
-        })
-        .filter((key): key is string => !!key);
+      if (!this.enableRollUp) {
+        console.warn(
+          'ADVERTENCIA: Se intentó realizar una operación de roll-up en un dataset que no la tiene habilitada. La operación de roll-up será ignorada. Para activarla, establezca "enableRollUp: true" en la configuración del dataset.',
+        );
+      } else {
+        finalFilters.rollUp = config.rollUp
+          .map((idOrName) => {
+            const dimension = this.dimensions.find(
+              (d) =>
+                d.id === idOrName ||
+                d.name === idOrName ||
+                d.nameView === idOrName,
+            );
+            return dimension ? this.getDimensionKey(dimension.id) : null;
+          })
+          .filter((key): key is string => !!key);
+      }
     }
 
     if (config.filter) {
       finalFilters.filter = config.filter
         .map((filterConfig) => {
           const dimension = this.dimensions.find(
-            (d) => d.id === filterConfig.name || d.name === filterConfig.name || d.nameView === filterConfig.name
+            (d) =>
+              d.id === filterConfig.name ||
+              d.name === filterConfig.name ||
+              d.nameView === filterConfig.name,
           );
           if (dimension) {
             const dataKey = this.getDimensionKey(dimension.id);
@@ -218,7 +246,7 @@ export class Dataset {
    * @returns Un array de `RowData`.
    */
   public getRawData(): RowData[] {
-    return this.rowData.map(row => ({ ...row }));
+    return this.rowData.map((row) => ({ ...row }));
   }
 
   /**
@@ -234,7 +262,7 @@ export class Dataset {
    * @returns Un array de `Dimension`.
    */
   public getAllDimensions(): Dimension[] {
-    return this.dimensions.map(dim => ({ ...dim }));
+    return this.dimensions.map((dim) => ({ ...dim }));
   }
 
   /**
@@ -246,7 +274,7 @@ export class Dataset {
   public getActiveDimensions(): Dimension[] {
     const activeKeys = this.dataProvider.getActiveKeys();
     const activeKeysSet = new Set(activeKeys);
-    return this.dimensions.filter(dim => {
+    return this.dimensions.filter((dim) => {
       const key = this.getDimensionKey(dim.id);
       return key ? activeKeysSet.has(key) : false;
     });

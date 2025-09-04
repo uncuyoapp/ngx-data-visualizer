@@ -7,7 +7,7 @@ import {
   inject,
   input,
 } from "@angular/core";
-import { ChartOptions } from "../chart/types/chart-configuration";
+import { ChartOptions } from "../types/data.types";
 import { MultipleChartComponent } from "../multiple-chart/multiple-chart.component";
 import { Dataset } from "../services/dataset";
 import { Dimension } from "../types/data.types";

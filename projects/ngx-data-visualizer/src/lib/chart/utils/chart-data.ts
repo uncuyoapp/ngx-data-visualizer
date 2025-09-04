@@ -1,7 +1,7 @@
-import { DataProvider } from '../../services/data-provider';
-import { DIMENSION_VALUE } from '../../types/constants';
-import { RowData } from '../../types/data.types';
-import { SeriesConfig } from '../types/chart-configuration';
+import { DataProvider } from "../../services/data-provider";
+import { DIMENSION_VALUE } from "../../types/constants";
+import { RowData } from "../../types/data.types";
+import { SeriesConfig } from "../types/chart-configuration";
 
 /**
  * @description
@@ -19,7 +19,7 @@ export class ChartData {
   constructor(
     public dataProvider: DataProvider,
     public seriesConfig: SeriesConfig,
-    private readonly colorPalette?: Map<string, string>
+    private readonly colorPalette?: Map<string, string>,
   ) {}
 
   /**
@@ -55,17 +55,17 @@ export class ChartData {
 
       const actualSeries = series.get(nameSeries);
       // Asegurarse de que el valor sea numérico o null/undefined
-      const rawValue = row['valor'];
+      const rawValue = row[DIMENSION_VALUE];
       const valor =
         rawValue !== null && rawValue !== undefined
           ? parseFloat(String(rawValue))
           : null;
 
       if (!firstLevel) {
-        throw new Error('FirstLevel is undefined');
+        throw new Error("FirstLevel is undefined");
       }
       if (actualSeries === undefined) {
-        throw new Error('An error occurred when finding series');
+        throw new Error("An error occurred when finding series");
       }
 
       // Solo agregar el valor si es un número válido o null
@@ -92,9 +92,9 @@ export class ChartData {
    * @private
    */
   private extractVariables() {
-    let stackKey = '';
-    let axis0 = '';
-    let axis1 = '';
+    let stackKey = "";
+    let axis0 = "";
+    let axis1 = "";
     let items: (string | number)[] = [];
     let items2: (string | number)[] = [];
 
@@ -126,7 +126,7 @@ export class ChartData {
    */
   private createDataStruct(
     items: (string | number)[],
-    items2: (string | number)[]
+    items2: (string | number)[],
   ) {
     const dataStruct = new Map<string, [string | number, number | null]>();
     items.forEach((item) => {
@@ -156,9 +156,9 @@ export class ChartData {
     stackKey: string,
     axis0: string,
     axis1: string,
-    palette: Map<string, string> | undefined
+    palette: Map<string, string> | undefined,
   ) {
-    let nameSeries: string = '';
+    let nameSeries: string = "";
     let stack: string | undefined;
     let firstLevel: string | undefined;
     let secondLevel: string | undefined;
@@ -190,7 +190,7 @@ export class ChartData {
 
         case DIMENSION_VALUE:
           nameSeries =
-            nameSeries === '' ? this.seriesConfig.measure ?? '' : nameSeries;
+            nameSeries === "" ? (this.seriesConfig.measure ?? "") : nameSeries;
           break;
 
         default:

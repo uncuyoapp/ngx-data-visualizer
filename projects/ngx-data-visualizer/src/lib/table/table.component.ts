@@ -10,10 +10,7 @@ import {
 } from "@angular/core";
 
 import { TableService } from "./services/table.service";
-import {
-  TableConfiguration,
-  TableOptions,
-} from "./types/table-base";
+import { TableConfiguration, TableOptions } from "./types/table-base";
 import { TableHelper } from "./utils/table-helper";
 
 @Component({
@@ -44,7 +41,10 @@ export class TableComponent {
     const { dataset, options } = config;
 
     const aliasMap: Record<string | number, string> = {};
-    const derivedAttributes: Record<string, (record: Record<string, unknown>) => unknown> = {};
+    const derivedAttributes: Record<
+      string,
+      (record: Record<string, unknown>) => unknown
+    > = {};
 
     for (const dim of dataset.getAllDimensions()) {
       const dataKey = dataset.getDimensionKey(dim.id);
@@ -56,8 +56,12 @@ export class TableComponent {
       }
     }
 
-    const translatedCols = options.cols.map(idOrName => aliasMap[idOrName]).filter(Boolean);
-    const translatedRows = options.rows.map(idOrName => aliasMap[idOrName]).filter(Boolean);
+    const translatedCols = options.cols
+      .map((idOrName: string | number) => aliasMap[idOrName])
+      .filter(Boolean);
+    const translatedRows = options.rows
+      .map((idOrName: string | number) => aliasMap[idOrName])
+      .filter(Boolean);
 
     const enrichedConfig: TableConfiguration = {
       ...config,

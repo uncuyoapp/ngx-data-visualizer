@@ -2,12 +2,15 @@ import { Injectable, Type } from "@angular/core";
 import cloneDeep from "lodash.clonedeep";
 import { EChartsOption } from "echarts";
 import { Dataset } from "../../services/dataset";
-import { Dimension, Filters } from "../../types/data.types";
+import { Dimension } from "../../types/data.types";
+import { Filters } from "../../services/types";
 import { ChartUpdater } from "./chart-updater.service";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
 import { ParserOptions } from "../types/parser-options";
-import { ChartConfiguration, ChartOptions, DEFAULT_OPTIONS } from "../types/chart-configuration";
+import { ChartConfiguration } from "../types/chart-configuration";
+import { ChartOptions } from "../../types/data.types";
+import { DEFAULT_OPTIONS } from "../../types/constants";
 import { ChartData } from "../utils/chart-data";
 
 /**

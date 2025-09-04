@@ -1,13 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   input,
   output,
-  signal
-} from '@angular/core';
-import { Series } from '../chart/types/chart-models';
+  signal,
+} from "@angular/core";
+import { Series } from "../types/data.types";
 
 /**
  * Componente que muestra una leyenda para series de gráficos con funcionalidad de alternancia.
@@ -22,11 +22,11 @@ import { Series } from '../chart/types/chart-models';
  * ```
  */
 @Component({
-  selector: 'lib-legend',
+  selector: "lib-legend",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './legend.component.html',
-  styleUrl: './legend.component.scss',
+  templateUrl: "./legend.component.html",
+  styleUrl: "./legend.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegendComponent {
@@ -55,7 +55,7 @@ export class LegendComponent {
    * Texto computado para el botón de alternar leyenda
    */
   readonly legendButtonText = computed(() =>
-    this.isLegendVisible() ? 'Ocultar leyendas' : 'Ver leyendas'
+    this.isLegendVisible() ? "Ocultar leyendas" : "Ver leyendas",
   );
 
   /**

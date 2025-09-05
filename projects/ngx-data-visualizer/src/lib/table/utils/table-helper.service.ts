@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Injectable } from "@angular/core";
 import { RowData } from "../../types/data.types";
 import { TableOptions } from "../types/table-base";
 import { JQueryService } from "./jquery.service";
 
 /**
- * Clase auxiliar para la manipulación y renderizado de tablas pivot
+ * Servicio para la manipulación y renderizado de tablas pivot.
  * Proporciona funcionalidades para:
  * - Renderizar tablas pivot con configuración personalizada
  * - Implementar efectos de "sticky" para mejorar la navegación
  * - Manejar interacciones del usuario como hover y clics
  * - Configurar ordenamiento y formato de datos
  */
-export class TableHelper {
-  /** Instancia estática de jQuery proporcionada por el servicio */
-  private static jQueryService: JQueryService;
-
+@Injectable({ providedIn: 'root' })
+export class TableHelperService {
   /** Clases de cabecera relevantes para hover (definidas una sola vez) */
-  private static readonly HEADER_CLASSES = [
+  private readonly HEADER_CLASSES = [
     "pvtColLabel",
     "pvtRowLabel",
     "pvtColTotalLabel",
@@ -28,23 +27,17 @@ export class TableHelper {
    * Mapeo de clase a función handler (definido una sola vez)
    * Permite extender fácilmente el soporte a nuevas cabeceras.
    */
-  private static readonly hoverHandlers: Record<
+  private readonly hoverHandlers: Record<
     string,
     (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void
   > = {
-    pvtColLabel: TableHelper.highlightColHeaders,
-    pvtRowLabel: TableHelper.highlightRowHeaders,
-    pvtColTotalLabel: TableHelper.highlightColTotals,
-    pvtRowTotalLabel: TableHelper.highlightRowTotals,
+    pvtColLabel: this.highlightColHeaders,
+    pvtRowLabel: this.highlightRowHeaders,
+    pvtColTotalLabel: this.highlightColTotals,
+    pvtRowTotalLabel: this.highlightRowTotals,
   };
 
-  /**
-   * Inicializa el TableHelper con el servicio de jQuery
-   * @param jQueryService Servicio que proporciona jQuery
-   */
-  static initialize(jQueryService: JQueryService): void {
-    TableHelper.jQueryService = jQueryService;
-  }
+  constructor(private readonly jQueryService: JQueryService) {}
 
   /**
    * Renderiza una tabla HTML en un elemento HTMLElement usando pivotJS
@@ -53,19 +46,13 @@ export class TableHelper {
    * @param data RowData[] es el array con los datos para el pivot
    * @param config PivotConfiguration es la configuración para la tabla pivot
    */
-  static renderPivot(
+  renderPivot(
     element: HTMLDivElement,
     data: RowData[],
     config: TableOptions,
   ): void {
-    // Asegurarse de que jQuery esté inicializado
-    if (!TableHelper.jQueryService) {
-      throw new Error(
-        "TableHelper no ha sido inicializado. Llama a TableHelper.initialize() primero.",
-      );
-    }
-    const $ = TableHelper.jQueryService.$;
-    const pivotConfiguration = TableHelper.configurePivot(config);
+    const $ = this.jQueryService.$;
+    const pivotConfiguration = this.configurePivot(config);
     $(element).pivot(data, pivotConfiguration, "es");
 
     // Aplicar eventos solo a los elementos td de esta tabla específica
@@ -79,9 +66,44 @@ export class TableHelper {
       .on("click", () => {});
 
     // Agregar el manejo de auto-scroll
-    TableHelper.setupAutoScroll(element);
+    this.setupAutoScroll(element);
     // Agregar el manejo de hover en cabeceras
-    TableHelper.setupHeaderHover(element);
+    this.setupHeaderHover(element);
+  }
+
+  /**
+   * Hace que la tabla sea "sticky" (fija) para mejorar la navegación en tablas grandes
+   * @param div Elemento HTML que contiene la tabla
+   */
+  stickyTable(div: HTMLDivElement) {
+    if (div.hasChildNodes()) {
+      const table = div.childNodes[0] as HTMLTableElement;
+
+      if (table.offsetHeight === 0) {
+        requestAnimationFrame(() => this.stickyTable(div));
+        return;
+      } else if (table.tHead) {
+        // Limpiar estilos sticky existentes antes de aplicar nuevos
+        this.clearStickyStyles(table);
+
+        const offsetTop = table.getBoundingClientRect().top;
+        const offsetLeft = this.getOffsetLeft(table);
+
+        this.stickyHeader(div, offsetTop, offsetLeft, table.tHead);
+        this.stickyBody(
+          table.tHead.clientHeight,
+          offsetLeft,
+          table.tBodies[0],
+          "pvtRowLabel",
+        );
+        this.stickyBody(
+          table.tHead.clientHeight,
+          offsetLeft,
+          table.tBodies[0],
+          "pvtTotalLabel",
+        );
+      }
+    }
   }
 
   /**
@@ -90,8 +112,8 @@ export class TableHelper {
    * @param element - El elemento `HTMLDivElement` que contiene la tabla pivot.
    * @private
    */
-  private static setupAutoScroll(element: HTMLDivElement): void {
-    const $ = TableHelper.jQueryService.$;
+  private setupAutoScroll(element: HTMLDivElement): void {
+    const $ = this.jQueryService.$;
     const scrollThreshold = 50; // Distancia en píxeles desde el borde para activar el scroll
     const scrollSpeed = 10; // Velocidad del scroll en píxeles por frame
     let scrollInterval: number | null = null;
@@ -158,11 +180,11 @@ export class TableHelper {
    * @param element - El elemento `HTMLDivElement` que contiene la tabla pivot.
    * @private
    */
-  private static setupHeaderHover(element: HTMLDivElement): void {
-    const $ = TableHelper.jQueryService.$;
+  private setupHeaderHover(element: HTMLDivElement): void {
+    const $ = this.jQueryService.$;
     $(element)
-      .find(TableHelper.HEADER_CLASSES.map((cls) => "th." + cls).join(", "))
-      .on("mouseenter", function (e: any) {
+      .find(this.HEADER_CLASSES.map((cls) => "th." + cls).join(", "))
+      .on("mouseenter", (e: any) => {
         const $th = $(e.currentTarget);
         if (!$th || $th.length === 0) {
           // eslint-disable-next-line no-console
@@ -175,8 +197,8 @@ export class TableHelper {
           console.warn("TableHelper: tabla no encontrada en mouseenter");
           return;
         }
-        TableHelper.clearHoverClasses(table);
-        const thClass = TableHelper.HEADER_CLASSES.find((cls) =>
+        this.clearHoverClasses(table);
+        const thClass = this.HEADER_CLASSES.find((cls) =>
           $th.hasClass(cls),
         );
         if (!thClass) {
@@ -187,15 +209,15 @@ export class TableHelper {
           );
           return;
         }
-        TableHelper.hoverHandlers[thClass]($th, table);
+        this.hoverHandlers[thClass]($th, table);
       })
-      .on("mouseleave", function (e: any) {
+      .on("mouseleave", (e: any) => {
         const $th = $(e.currentTarget);
         if (!$th || $th.length === 0) return;
         $th.removeClass("header-hovered");
         const table = $th.closest("table");
         if (!table || table.length === 0) return;
-        TableHelper.clearHoverClasses(table);
+        this.clearHoverClasses(table);
       });
   }
 
@@ -211,7 +233,7 @@ export class TableHelper {
    *
    * @param table Tabla jQuery
    */
-  private static clearHoverClasses(table: JQuery<HTMLElement>): void {
+  private clearHoverClasses(table: JQuery<HTMLElement>): void {
     table
       .find(
         "th.pvtColLabel, th.pvtRowLabel, th.pvtColTotalLabel, th.pvtRowTotalLabel",
@@ -226,7 +248,7 @@ export class TableHelper {
    * @param $th Cabecera de columna sobre la que se hace hover
    * @param table Tabla jQuery
    */
-  private static highlightColHeaders(
+  private highlightColHeaders(
     $th: JQuery<HTMLElement>,
     table: JQuery<HTMLElement>,
   ): void {
@@ -315,7 +337,7 @@ export class TableHelper {
    * @param $th Cabecera de fila sobre la que se hace hover
    * @param table Tabla jQuery
    */
-  private static highlightRowHeaders(
+  private highlightRowHeaders(
     $th: JQuery<HTMLElement>,
     table: JQuery<HTMLElement>,
   ): void {
@@ -355,7 +377,7 @@ export class TableHelper {
    * @param $th Cabecera de total de columna
    * @param table Tabla jQuery
    */
-  private static highlightColTotals(
+  private highlightColTotals(
     $th: JQuery<HTMLElement>,
     table: JQuery<HTMLElement>,
   ): void {
@@ -369,7 +391,7 @@ export class TableHelper {
    * @param $th Cabecera de total de fila
    * @param table Tabla jQuery
    */
-  private static highlightRowTotals(
+  private highlightRowTotals(
     $th: JQuery<HTMLElement>,
     table: JQuery<HTMLElement>,
   ): void {
@@ -378,47 +400,12 @@ export class TableHelper {
   }
 
   /**
-   * Hace que la tabla sea "sticky" (fija) para mejorar la navegación en tablas grandes
-   * @param div Elemento HTML que contiene la tabla
-   */
-  static stickyTable(div: HTMLDivElement) {
-    if (div.hasChildNodes()) {
-      const table = div.childNodes[0] as HTMLTableElement;
-
-      if (table.offsetHeight === 0) {
-        requestAnimationFrame(() => TableHelper.stickyTable(div));
-        return;
-      } else if (table.tHead) {
-        // Limpiar estilos sticky existentes antes de aplicar nuevos
-        TableHelper.clearStickyStyles(table);
-
-        const offsetTop = table.getBoundingClientRect().top;
-        const offsetLeft = TableHelper.getOffsetLeft(table);
-
-        TableHelper.stickyHeader(div, offsetTop, offsetLeft, table.tHead);
-        TableHelper.stickyBody(
-          table.tHead.clientHeight,
-          offsetLeft,
-          table.tBodies[0],
-          "pvtRowLabel",
-        );
-        TableHelper.stickyBody(
-          table.tHead.clientHeight,
-          offsetLeft,
-          table.tBodies[0],
-          "pvtTotalLabel",
-        );
-      }
-    }
-  }
-
-  /**
    * Limpia todos los estilos de posicionamiento `sticky` aplicados a la tabla.
    * Es crucial para evitar estilos residuales al redibujar o actualizar la tabla.
    * @param table - El elemento `HTMLTableElement` a limpiar.
    * @private
    */
-  private static clearStickyStyles(table: HTMLTableElement): void {
+  private clearStickyStyles(table: HTMLTableElement): void {
     // Limpiar estilos de todos los elementos th
     const allThs = table.querySelectorAll("th");
     allThs.forEach((th) => {
@@ -450,8 +437,8 @@ export class TableHelper {
    * @returns Un objeto de configuración listo para ser usado por `pivot.js`.
    * @private
    */
-  private static configurePivot(config: TableOptions) {
-    const $ = TableHelper.jQueryService.$;
+  private configurePivot(config: TableOptions) {
+    const $ = this.jQueryService.$;
     const aggregators = $.pivotUtilities.aggregators;
 
     let aggregator;
@@ -470,7 +457,7 @@ export class TableHelper {
         break;
     }
 
-    const sorters = TableHelper.configureSorters(config);
+    const sorters = this.configureSorters(config);
 
     return {
       aggregator: aggregator([
@@ -485,7 +472,7 @@ export class TableHelper {
           rowTotals: config.cols.length > 0 ? config.totalRow : true,
           colTotals: config.rows.length > 0 ? config.totalCol : true,
           clickCallback: (e: any, _value: any, filter: any) =>
-            TableHelper.hoverFunction(e, filter),
+            this.hoverFunction(e, filter),
         },
       },
     };
@@ -497,8 +484,8 @@ export class TableHelper {
    * @returns Un objeto donde cada clave es una dimensión y el valor es una función de ordenamiento.
    * @private
    */
-  private static configureSorters(config: TableOptions) {
-    const $ = TableHelper.jQueryService.$;
+  private configureSorters(config: TableOptions) {
+    const $ = this.jQueryService.$;
     const sorters: Record<string, (a: string, b: string) => number> = {};
     (config.sorters as { name: string; items: { name: string; order: number }[] }[]).forEach(
       (sorter) => {
@@ -523,8 +510,8 @@ export class TableHelper {
    * @param filter - Un objeto de `pivot.js` que contiene los filtros de la celda actual.
    * @private
    */
-  private static hoverFunction(e: any, filter: any) {
-    const $ = TableHelper.jQueryService.$;
+  private hoverFunction(e: any, filter: any) {
+    const $ = this.jQueryService.$;
     const currentTarget = $(e.currentTarget);
     const rect = e.currentTarget.getBoundingClientRect();
     const currentTable = currentTarget.closest("table");
@@ -600,7 +587,7 @@ export class TableHelper {
    * @param styles - Un objeto de clave-valor con los estilos CSS.
    * @private
    */
-  private static applyStyles(
+  private applyStyles(
     element: HTMLElement,
     styles: Record<string, string | number>,
   ): void {
@@ -616,7 +603,7 @@ export class TableHelper {
    * @param tHead - El elemento `thead` de la tabla.
    * @private
    */
-  private static stickyHeader(
+  private stickyHeader(
     div: HTMLDivElement,
     offsetTop: number,
     _offsetLeft: number,
@@ -638,32 +625,32 @@ export class TableHelper {
         };
 
         if (!css) {
-          TableHelper.applyStyles(th, {
+          this.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
             // zIndex: '3',
           });
           th.setAttribute("class", "pvtCorner");
         } else if (css === "pvtColLabel") {
-          TableHelper.applyStyles(th, {
+          this.applyStyles(th, {
             ...baseStyles,
             // zIndex: 2
           });
         } else if (css === "pvtAxisLabel") {
-          TableHelper.applyStyles(th, {
+          this.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
             // zIndex: '3',
           });
         } else if (css === "pvtCorner") {
           // Manejar elementos pvtCorner existentes
-          TableHelper.applyStyles(th, {
+          this.applyStyles(th, {
             ...baseStyles,
             left: `${left}px`,
             // zIndex: '3',
           });
         } else {
-          TableHelper.applyStyles(th, baseStyles);
+          this.applyStyles(th, baseStyles);
         }
       });
     });
@@ -678,7 +665,7 @@ export class TableHelper {
    * @param className - La clase de las celdas a las que se aplicará el efecto (`pvtRowLabel`, `pvtTotalLabel`).
    * @private
    */
-  private static stickyBody(
+  private stickyBody(
     offsetTop: number,
     offsetLeft: number,
     tBody: HTMLElement,
@@ -706,7 +693,7 @@ export class TableHelper {
    * @returns El desplazamiento izquierdo calculado.
    * @private
    */
-  private static getOffsetLeft(table: HTMLElement): number {
+  private getOffsetLeft(table: HTMLElement): number {
     const offsetLeft = table.getBoundingClientRect().left;
     const style = window.getComputedStyle(table);
     const paddingLeft = parseFloat(style.paddingLeft);

@@ -1,7 +1,5 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { TableOptions, TableConfiguration } from "../types/table-base";
-import { JQueryService } from "../utils/jquery.service";
-import { TableHelper } from "../utils/table-helper";
 
 /**
  * Servicio para la configuración y gestión de tablas dinámicas.
@@ -12,15 +10,10 @@ import { TableHelper } from "../utils/table-helper";
   providedIn: "root",
 })
 export class TableService {
-  private readonly jQueryService = inject(JQueryService);
-
   /**
    * Crea una instancia del servicio de tabla.
    */
-  constructor() {
-    // Inicializar el TableHelper con el servicio de jQuery
-    TableHelper.initialize(this.jQueryService);
-  }
+  constructor() {}
 
   /**
    * Genera una configuración de tabla dinámica a partir de una configuración de tabla base.

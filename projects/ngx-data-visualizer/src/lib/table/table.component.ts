@@ -11,7 +11,7 @@ import {
 
 import { TableService } from "./services/table.service";
 import { TableConfiguration, TableOptions } from "./types/table-base";
-import { TableHelper } from "./utils/table-helper";
+import { TableHelperService } from "./utils/table-helper.service";
 
 @Component({
   selector: "lib-table",
@@ -23,6 +23,7 @@ import { TableHelper } from "./utils/table-helper";
 })
 export class TableComponent {
   private readonly tableService = inject(TableService);
+  private readonly tableHelperService = inject(TableHelperService);
 
   protected readonly tableConfiguration = input.required<TableConfiguration>();
 
@@ -96,7 +97,7 @@ export class TableComponent {
     setTimeout(() => {
       const tableElement = this.getTableElement();
       if (tableElement instanceof HTMLDivElement) {
-        TableHelper.stickyTable(tableElement);
+        this.tableHelperService.stickyTable(tableElement);
       }
     }, 5);
   }
@@ -106,8 +107,8 @@ export class TableComponent {
     const tableData = this.tableConfiguration().dataset.dataProvider.getData();
 
     if (tableElement instanceof HTMLDivElement) {
-      TableHelper.renderPivot(tableElement, tableData, pivotConfig);
-      TableHelper.stickyTable(tableElement);
+      this.tableHelperService.renderPivot(tableElement, tableData, pivotConfig);
+      this.tableHelperService.stickyTable(tableElement);
     } else {
       throw new Error("El elemento pivotTable debe ser un HTMLDivElement");
     }

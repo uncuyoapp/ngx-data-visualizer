@@ -90,7 +90,25 @@ export interface TableSorter {
 }
 
 /**
- * Interfaz para la configuración de una tabla
+ * Interfaz para la configuración de una tabla.
+ * Esta es la interfaz utilizada en toda la librería para la configuración de tablas.
+ * Proporciona opciones completas para personalizar el comportamiento y apariencia
+ * de las tablas generadas.
+ * @example
+ * ```typescript
+ * const tableOptions: TableOptions = {
+ *   digitsAfterDecimal: 2,
+ *   sorters: [
+ *     { name: 'category', items: [{ name: 'Electronics', order: 1 }, { name: 'Clothing', order: 2 }] },
+ *     { name: 'year', items: [{ name: '2022', order: 1 }, { name: '2021', order: 2 }] }
+ *   ],
+ *   totalRow: true,
+ *   totalCol: true,
+ *   cols: ['product', 'quantity'],
+ *   rows: ['category', 'year'],
+ *   suffix: '$'
+ * };
+ * ```
  */
 export interface TableOptions {
   /** Número de decimales a mostrar */
@@ -271,7 +289,6 @@ export interface TimeSeries {
 
 /**
  * Interfaz que representa una serie de datos para gráficos
- * Extiende de BaseSeries para mantener compatibilidad con el código existente
  */
 export interface Series {
   /** Color de la serie */

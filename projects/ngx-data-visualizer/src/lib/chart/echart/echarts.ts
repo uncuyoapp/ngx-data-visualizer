@@ -4,17 +4,17 @@ import {
   EChartsOption,
   XAXisComponentOption,
   YAXisComponentOption,
-} from 'echarts';
-import { Chart } from '../types/chart';
+} from "echarts";
+import { Chart } from "../types/chart";
 import {
   ChartConfiguration,
   EChartsLibraryOptions,
-} from '../types/chart-configuration';
-import { ExportManager } from './managers/export-manager';
-import { SeriesManager } from './managers/series-manager';
-import { TooltipManager } from './managers/tooltip-manager';
-import { SeriesConfigType } from './types/echart-base';
-import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from '../../types/constants';
+} from "../types/chart-configuration";
+import { ExportManager } from "./managers/export-manager";
+import { SeriesManager } from "./managers/series-manager";
+import { TooltipManager } from "./managers/tooltip-manager";
+import { SeriesConfigType } from "./types/echart-base";
+import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from "../../types/constants";
 
 /**
  * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.
@@ -76,7 +76,7 @@ export class EChart extends Chart {
   private seriesManager!: SeriesManager;
 
   // Propiedades heredadas de la clase base Chart
-  override name: string = '';
+  override name: string = "";
   override libraryOptions!: EChartsLibraryOptions;
   override series: SeriesConfigType[] = [];
 
@@ -86,14 +86,14 @@ export class EChart extends Chart {
 
   // Propiedades privadas para manejo interno
   private totals: number[] = []; // Almacena los totales para cálculos de porcentajes
-  private suffixSaved: string | null = ''; // Guarda el sufijo original para restaurarlo
+  private suffixSaved: string | null = ""; // Guarda el sufijo original para restaurarlo
   private decimalsSaved: number | null = null; // Guarda los decimales originales para restaurarlos
   private maxValue = 0; // Valor máximo para escalado del eje
   private savedYAxisMaxValue: number | null = null; // Guarda el valor máximo del eje Y
 
   // Cache para memoización
   private readonly optionsCache: Map<string, EChartsOption> = new Map();
-  
+
   private lastRenderTime: number = 0;
   private renderDebounceTimeout: number | null = null;
   private readonly RENDER_DEBOUNCE_MS = 100;
@@ -102,7 +102,7 @@ export class EChart extends Chart {
     super(configuration);
     this.tooltipManager = new TooltipManager(
       this.chartOptions.tooltip.decimals,
-      this.chartOptions.tooltip.suffix
+      this.chartOptions.tooltip.suffix,
     );
   }
 
@@ -113,7 +113,7 @@ export class EChart extends Chart {
    */
   set instance(instance: ECharts) {
     if (!instance) {
-      throw new Error('La instancia de ECharts es requerida');
+      throw new Error("La instancia de ECharts es requerida");
     }
     this.chartInstance = instance;
     this.exportManager = new ExportManager(instance);
@@ -146,9 +146,9 @@ export class EChart extends Chart {
       this.handleChartEvent();
     }, 100);
 
-    this.chartInstance.on('click', eventHandler);
-    this.chartInstance.on('mouseover', eventHandler);
-    this.chartInstance.on('mouseout', eventHandler);
+    this.chartInstance.on("click", eventHandler);
+    this.chartInstance.on("mouseover", eventHandler);
+    this.chartInstance.on("mouseout", eventHandler);
   }
 
   /**
@@ -215,27 +215,27 @@ export class EChart extends Chart {
   addSeries(series: SeriesConfigType): void {
     if (!this.instance) {
       console.error(
-        'No se puede agregar la serie: la instancia de ECharts no está inicializada'
+        "No se puede agregar la serie: la instancia de ECharts no está inicializada",
       );
       return;
     }
 
     try {
       const currentSeries = this.instance.getOption()[
-        'series'
+        "series"
       ] as SeriesConfigType[];
 
       // Asegurarnos de que la serie tenga el formato correcto para ECharts
       const formattedSeries = {
         ...series,
-        type: series.type || 'line',
+        type: series.type || "line",
         data: series.data,
         name: series.name,
         color: series.color,
-        smooth: series['smooth'],
-        symbol: series['symbol'],
-        symbolSize: series['symbolSize'],
-        lineStyle: series['lineStyle'],
+        smooth: series["smooth"],
+        symbol: series["symbol"],
+        symbolSize: series["symbolSize"],
+        lineStyle: series["lineStyle"],
       };
 
       // Agregar la serie al gráfico
@@ -244,7 +244,7 @@ export class EChart extends Chart {
       // Invalidar la caché para forzar una actualización
       this.invalidateCache();
     } catch (error) {
-      console.error('Error al agregar la serie:', error);
+      console.error("Error al agregar la serie:", error);
     }
   }
 
@@ -284,25 +284,17 @@ export class EChart extends Chart {
   /**
    * Expande el gráfico para mejor visualización
    */
-  expand(): void {
-    setTimeout(() => {
-      this.chartInstance
-        .getDom()
-        .scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
-  }
+  expand(): void {}
 
   /**
    * Condensa el gráfico
    */
-  condense(): void {
-    this.expand();
-  }
+  condense(): void {}
 
   /**
    * Oculta el gráfico
    */
-  hide(): void { }
+  hide(): void {}
 
   /**
    * Alterna el modo porcentual del gráfico
@@ -310,7 +302,7 @@ export class EChart extends Chart {
    */
   togglePercentMode(): void {
     if (!this.chartData.seriesConfig.stack) {
-      throw new Error('El modo porcentual requiere series apiladas');
+      throw new Error("El modo porcentual requiere series apiladas");
     }
     this.chartOptions.toPercent = !this.chartOptions.toPercent;
     this.invalidateCache();
@@ -330,9 +322,9 @@ export class EChart extends Chart {
     this.ensureStackedSeries();
     this.suffixSaved = this.chartOptions.tooltip.suffix;
     this.decimalsSaved = this.chartOptions.tooltip.decimals;
-    this.chartOptions.tooltip.suffix = '%';
+    this.chartOptions.tooltip.suffix = "%";
     this.chartOptions.tooltip.decimals = 2; // Por defecto 2 decimales para porcentajes
-    this.tooltipManager.updateSuffix('%');
+    this.tooltipManager.updateSuffix("%");
     this.tooltipManager.updateDecimals(2);
     this.summarizeTotals(this.chartData.getSeries());
     this.saveAndSetYAxisMax(100);
@@ -356,7 +348,7 @@ export class EChart extends Chart {
    * @private
    */
   private ensureStackedSeries() {
-    this.chartData.seriesConfig.stack ??= 'stack';
+    this.chartData.seriesConfig.stack ??= "stack";
   }
 
   /**
@@ -395,7 +387,7 @@ export class EChart extends Chart {
    * @throws {Error} Método no implementado
    */
   setExtremes(): void {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   /**
@@ -404,9 +396,9 @@ export class EChart extends Chart {
    * @returns {string | void} Datos del gráfico exportado
    * @throws {Error} Si el tipo de exportación no es válido
    */
-  export(type: 'svg' | 'jpg'): string | void {
-    if (!['svg', 'jpg'].includes(type)) {
-      throw new Error('Tipo de exportación no válido');
+  export(type: "svg" | "jpg"): string | void {
+    if (!["svg", "jpg"].includes(type)) {
+      throw new Error("Tipo de exportación no válido");
     }
     return this.exportManager.export(type);
   }
@@ -436,7 +428,7 @@ export class EChart extends Chart {
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
     if (this.chartInstance) {
-      this.chartInstance.clear();
+      // this.chartInstance.clear();
       this.chartInstance.setOption(this.libraryOptions, {
         notMerge: true,
         lazyUpdate: true,
@@ -444,11 +436,24 @@ export class EChart extends Chart {
     }
   }
 
+  /**
+   * @description
+   * Orquesta la creación de la configuración completa de ECharts.
+   * Llama a los métodos para configurar las series y los ejes antes de renderizar.
+   * @private
+   */
   private generateConfiguration() {
     this.configureSeries(this.chartData.getSeries());
     this.configureAxis();
   }
 
+  /**
+   * @description
+   * Calcula los totales para cada punto de datos a través de todas las series.
+   * Este cálculo es necesario para el modo porcentual.
+   * @param series - Las series de datos del gráfico.
+   * @private
+   */
   private summarizeTotals(series: Array<any>) {
     this.totals = [];
     series.forEach((s) => {
@@ -462,9 +467,16 @@ export class EChart extends Chart {
     });
   }
 
+  /**
+   * @description
+   * Procesa y configura el array de series para ECharts.
+   * Asigna tipos, colores, datos procesados y configuraciones de apilamiento.
+   * @param series - El array de series proveniente de `ChartData`.
+   * @private
+   */
   private configureSeries(series: Array<any>) {
     const processedSeries = series.map((s, index) => {
-      s.type = this.getChartType(this.libraryOptions['type'] as string);
+      s.type = this.getChartType(this.libraryOptions["type"] as string);
       this.assignSeriesConfig(s);
       s.data = this.processSeriesData(s.data);
       this.ensureSeriesStack(s);
@@ -485,7 +497,7 @@ export class EChart extends Chart {
     return data.map((v, i) => {
       this.maxValue = Math.max(this.maxValue, v[1]);
 
-      if (this.chartOptions.type !== 'pie') {
+      if (this.chartOptions.type !== "pie") {
         return this.chartOptions.toPercent
           ? (v[1] * 100) / this.totals[i]
           : v[1];
@@ -508,7 +520,7 @@ export class EChart extends Chart {
   }
 
   private setSeriesColor(s: any, index: number) {
-    if (!s.color && s.type !== 'pie' && this.chartOptions.colors) {
+    if (!s.color && s.type !== "pie" && this.chartOptions.colors) {
       s.color =
         this.chartOptions.colors[index % this.chartOptions.colors.length];
     }
@@ -516,13 +528,13 @@ export class EChart extends Chart {
 
   private getChartType(type: string) {
     switch (type) {
-      case 'bar':
-      case 'column':
-        return 'bar';
-      case 'area':
-      case 'areaspline':
-      case 'spline':
-        return 'line';
+      case "bar":
+      case "column":
+        return "bar";
+      case "area":
+      case "areaspline":
+      case "spline":
+        return "line";
       default:
         return type;
     }
@@ -531,14 +543,14 @@ export class EChart extends Chart {
   private configureAxisOptions(
     axisOptions: any,
     data: any[],
-    isSecondaryAxis: boolean = false
+    isSecondaryAxis: boolean = false,
   ) {
-    axisOptions.show = this.chartOptions.type !== 'pie';
+    axisOptions.show = this.chartOptions.type !== "pie";
     axisOptions.name = isSecondaryAxis ? null : this.chartOptions.xAxis.title;
-    axisOptions.nameGap = this.chartOptions.type === 'bar' ? 20 : 35;
+    axisOptions.nameGap = this.chartOptions.type === "bar" ? 20 : 35;
     axisOptions.nameLocation =
-      this.chartOptions.type === 'bar' ? 'end' : 'middle';
-    axisOptions.nameTextStyle = { fontWeight: 'bold' };
+      this.chartOptions.type === "bar" ? "end" : "middle";
+    axisOptions.nameTextStyle = { fontWeight: "bold" };
     axisOptions.axisLabel.rotate = this.chartOptions.xAxis.rotateLabels;
     axisOptions.data = data;
     axisOptions.axisTick.show = true;
@@ -550,12 +562,18 @@ export class EChart extends Chart {
       axisOptions.splitArea.show = true;
 
       axisOptions.position =
-        this.chartOptions.type === 'bar' ? 'left' : 'bottom';
-      axisOptions.offset = this.chartOptions.type === 'bar' ? 60 : 30;
+        this.chartOptions.type === "bar" ? "left" : "bottom";
+      axisOptions.offset = this.chartOptions.type === "bar" ? 60 : 30;
     }
     return axisOptions;
   }
 
+  /**
+   * @description
+   * Configura los ejes X e Y del gráfico.
+   * Maneja la lógica para ejes simples, dobles e invierte los ejes para gráficos de barras.
+   * @private
+   */
   private configureAxis() {
     const nameGap = this.calculateNameGap();
     const xAxis: any[] = [];
@@ -565,18 +583,18 @@ export class EChart extends Chart {
       this.configureDualXAxis(
         xAxis,
         this.chartData.seriesConfig.x1,
-        this.chartData.seriesConfig.x2
+        this.chartData.seriesConfig.x2,
       );
     } else {
       this.configureSingleXAxis(xAxis);
     }
 
     this.libraryOptions.xAxis =
-      this.chartOptions.type === 'bar'
+      this.chartOptions.type === "bar"
         ? (yAxis as XAXisComponentOption)
         : xAxis;
     this.libraryOptions.yAxis =
-      this.chartOptions.type === 'bar'
+      this.chartOptions.type === "bar"
         ? xAxis
         : (yAxis as YAXisComponentOption);
   }
@@ -587,12 +605,12 @@ export class EChart extends Chart {
 
   private createYAxis(nameGap: number): any {
     return {
-      show: this.chartOptions.type !== 'pie',
-      type: 'value',
+      show: this.chartOptions.type !== "pie",
+      type: "value",
       name: this.chartOptions.yAxis.title,
-      nameLocation: 'middle',
+      nameLocation: "middle",
       nameGap: nameGap,
-      nameTextStyle: { fontWeight: 'bold' },
+      nameTextStyle: { fontWeight: "bold" },
       max: this.chartOptions.yAxis.max,
       axisLabel: {
         formatter: (value: string) => this.formatValue(value),
@@ -605,13 +623,13 @@ export class EChart extends Chart {
    */
   private formatValue(value: string): string {
     if (!value) {
-      return '-';
+      return "-";
     }
-    const returnValue = parseFloat(value).toLocaleString('es-AR', {
+    const returnValue = parseFloat(value).toLocaleString("es-AR", {
       useGrouping: true,
     });
     return this.chartOptions.tooltip.suffix
-      ? returnValue + ' ' + this.chartOptions.tooltip.suffix
+      ? returnValue + " " + this.chartOptions.tooltip.suffix
       : returnValue;
   }
 
@@ -625,15 +643,15 @@ export class EChart extends Chart {
     xAxis.push(
       this.configureAxisOptions(
         JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
-        dataX1
-      )
+        dataX1,
+      ),
     );
     xAxis.push(
       this.configureAxisOptions(
         JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
         dataX2,
-        true
-      )
+        true,
+      ),
     );
 
     xAxis[0].nameGap = 70;
@@ -649,8 +667,8 @@ export class EChart extends Chart {
   private createDataX2(items1: any[], items2: any[]): string[] {
     return this.chartOptions.navigator.show
       ? Array<string>().concat(
-        ...items1.map((i) => new Array(items2.length).fill(i))
-      )
+          ...items1.map((i) => new Array(items2.length).fill(i)),
+        )
       : items1;
   }
 
@@ -664,7 +682,7 @@ export class EChart extends Chart {
    */
   private debounce<T extends (...args: any[]) => any>(
     func: T,
-    wait: number
+    wait: number,
   ): (...args: Parameters<T>) => void {
     let timeout: number | null = null;
     return (...args: Parameters<T>) => {

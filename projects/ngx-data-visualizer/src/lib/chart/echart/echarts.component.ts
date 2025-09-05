@@ -2,7 +2,6 @@ import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   NgZone,
   OnDestroy,
   OnInit,
@@ -53,7 +52,6 @@ interface EChartsInitOptions extends EChartsOption {
   ],
 })
 export class EchartsComponent implements OnInit, OnDestroy {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly ngZone = inject(NgZone);
 
   /** Configuración del gráfico que se va a renderizar. */

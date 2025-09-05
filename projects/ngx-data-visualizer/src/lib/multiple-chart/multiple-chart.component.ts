@@ -15,12 +15,9 @@ import {
 import { Subscription } from "rxjs";
 
 import { ChartFactory } from "../chart/services/chart-factory.service";
-import {
-  ChartConfiguration,
-  ChartOptions,
-} from "../chart/types/chart-configuration";
+import { ChartConfiguration } from "../chart/types/chart-configuration";
 import { Dataset } from "../services/dataset";
-import { Dimension } from "../types/data.types";
+import { ChartOptions, Dimension } from "../types/data.types";
 import { ChartWrapperComponent } from "./components/chart-wrapper/chart-wrapper.component";
 
 /**

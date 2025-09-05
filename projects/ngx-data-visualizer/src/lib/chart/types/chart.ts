@@ -1,9 +1,6 @@
-import { ChartError } from './chart-base';
-import {
-  ChartConfiguration,
-  ChartOptions,
-} from './chart-configuration';
-import { ChartData } from '../utils/chart-data';
+import { ChartConfiguration, ChartError } from "./chart-configuration";
+import { ChartData } from "../utils/chart-data";
+import { ChartOptions } from "../../types/data.types";
 
 /**
  * Clase abstracta base para la implementación de diferentes tipos de gráficos.
@@ -111,7 +108,7 @@ export abstract class Chart {
    * @returns URL o datos del gráfico exportado
    * @throws {ChartError} Si hay un error al exportar el gráfico
    */
-  abstract export(type: 'svg' | 'jpg'): string | void;
+  abstract export(type: "svg" | "jpg"): string | void;
 
   /**
    * Libera los recursos utilizados por el gráfico
@@ -128,12 +125,12 @@ export abstract class Chart {
       throw new ChartError(
         `Error durante la operación '${operation}': ${error.message}`,
         `CHART_${operation.toUpperCase()}_ERROR`,
-        error
+        error,
       );
     }
     throw new ChartError(
       `Error desconocido durante la operación '${operation}'`,
-      `CHART_${operation.toUpperCase()}_ERROR`
+      `CHART_${operation.toUpperCase()}_ERROR`,
     );
   }
 }

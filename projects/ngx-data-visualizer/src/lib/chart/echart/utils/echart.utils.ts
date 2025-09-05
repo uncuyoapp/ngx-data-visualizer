@@ -1,5 +1,12 @@
+/**
+ * @fileoverview
+ * Este archivo contiene funciones de utilidad puras y reutilizables que asisten
+ * en la creación y configuración de gráficos con ECharts. Estas funciones son para
+ * uso interno del motor de gráficos.
+ * @internal
+ */
 import { EChartsOption } from "echarts";
-import { Series } from "../../types/chart-models";
+import { Series } from "../../../types/data.types";
 
 /**
  * Función para generar una clave única para el cache basada en el estado actual

@@ -85,8 +85,10 @@ export class TableHelper {
   }
 
   /**
-   * Configura el comportamiento de auto-scroll cuando el mouse se acerca a los bordes
-   * @param element Elemento contenedor de la tabla
+   * Configura el comportamiento de auto-scroll horizontal cuando el cursor del mouse
+   * se acerca a los bordes izquierdo o derecho del contenedor de la tabla.
+   * @param element - El elemento `HTMLDivElement` que contiene la tabla pivot.
+   * @private
    */
   private static setupAutoScroll(element: HTMLDivElement): void {
     const $ = TableHelper.jQueryService.$;
@@ -151,8 +153,10 @@ export class TableHelper {
   }
 
   /**
-   * Configura y aplica el efecto hover sobre cabeceras y celdas de datos.
-   * @param element Elemento contenedor de la tabla
+   * Vincula los eventos `mouseenter` y `mouseleave` a las cabeceras de la tabla
+   * para disparar la lógica de resaltado (hover).
+   * @param element - El elemento `HTMLDivElement` que contiene la tabla pivot.
+   * @private
    */
   private static setupHeaderHover(element: HTMLDivElement): void {
     const $ = TableHelper.jQueryService.$;
@@ -409,8 +413,10 @@ export class TableHelper {
   }
 
   /**
-   * Limpia los estilos sticky existentes de la tabla
-   * @param table Elemento de la tabla
+   * Limpia todos los estilos de posicionamiento `sticky` aplicados a la tabla.
+   * Es crucial para evitar estilos residuales al redibujar o actualizar la tabla.
+   * @param table - El elemento `HTMLTableElement` a limpiar.
+   * @private
    */
   private static clearStickyStyles(table: HTMLTableElement): void {
     // Limpiar estilos de todos los elementos th
@@ -439,9 +445,10 @@ export class TableHelper {
   }
 
   /**
-   * Configura las opciones del pivot table
-   * @param config Configuración del pivot table
-   * @returns Objeto de configuración para el pivot table
+   * Transforma la configuración de la tabla de la librería a un formato compatible con `pivot.js`.
+   * @param config - La configuración de la tabla (`TableOptions`).
+   * @returns Un objeto de configuración listo para ser usado por `pivot.js`.
+   * @private
    */
   private static configurePivot(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
@@ -485,9 +492,10 @@ export class TableHelper {
   }
 
   /**
-   * Configura los ordenadores personalizados para el pivot table
-   * @param config Configuración del pivot table
-   * @returns Objeto con los ordenadores configurados
+   * Configura las funciones de ordenamiento para cada dimensión de la tabla pivotante.
+   * @param config - La configuración de la tabla que contiene los `sorters`.
+   * @returns Un objeto donde cada clave es una dimensión y el valor es una función de ordenamiento.
+   * @private
    */
   private static configureSorters(config: TableOptions) {
     const $ = TableHelper.jQueryService.$;
@@ -509,9 +517,11 @@ export class TableHelper {
   }
 
   /**
-   * Maneja el efecto hover en las celdas de la tabla
-   * @param e Evento del mouse
-   * @param filter Filtros aplicados
+   * Función de callback que se ejecuta al hacer clic o `mouseenter` en una celda.
+   * Aplica clases de resaltado a las cabeceras y celdas correspondientes.
+   * @param e - El evento del mouse.
+   * @param filter - Un objeto de `pivot.js` que contiene los filtros de la celda actual.
+   * @private
    */
   private static hoverFunction(e: any, filter: any) {
     const $ = TableHelper.jQueryService.$;
@@ -585,9 +595,10 @@ export class TableHelper {
   }
 
   /**
-   * Aplica estilos CSS a un elemento HTML de manera segura
-   * @param element Elemento HTML al que se aplicarán los estilos
-   * @param styles Objeto con los estilos a aplicar
+   * Aplica un conjunto de estilos CSS a un elemento HTML.
+   * @param element - El elemento al que se aplicarán los estilos.
+   * @param styles - Un objeto de clave-valor con los estilos CSS.
+   * @private
    */
   private static applyStyles(
     element: HTMLElement,
@@ -597,11 +608,13 @@ export class TableHelper {
   }
 
   /**
-   * Hace que el encabezado de la tabla sea "sticky"
-   * @param div Elemento contenedor de la tabla
-   * @param offsetTop Desplazamiento superior
-   * @param _offsetLeft Desplazamiento izquierdo
-   * @param tHead Elemento del encabezado de la tabla
+   * Aplica posicionamiento `sticky` a las celdas del encabezado (`thead`) de la tabla
+   * para mantenerlas visibles durante el scroll vertical.
+   * @param div - El contenedor de la tabla.
+   * @param offsetTop - El desplazamiento superior para calcular la posición `top`.
+   * @param _offsetLeft - Desplazamiento izquierdo (actualmente no usado aquí, pero mantenido por consistencia).
+   * @param tHead - El elemento `thead` de la tabla.
+   * @private
    */
   private static stickyHeader(
     div: HTMLDivElement,
@@ -657,11 +670,13 @@ export class TableHelper {
   }
 
   /**
-   * Hace que las celdas del cuerpo de la tabla sean "sticky"
-   * @param offsetTop Desplazamiento superior
-   * @param offsetLeft Desplazamiento izquierdo
-   * @param tBody Elemento del cuerpo de la tabla
-   * @param className Nombre de la clase CSS para las celdas
+   * Aplica posicionamiento `sticky` a las celdas de cabecera de fila (`th.pvtRowLabel`)
+   * para mantenerlas visibles durante el scroll horizontal.
+   * @param offsetTop - El desplazamiento superior para el contenido `sticky` dentro de la celda.
+   * @param offsetLeft - El desplazamiento izquierdo para calcular la posición `left`.
+   * @param tBody - El elemento `tbody` de la tabla.
+   * @param className - La clase de las celdas a las que se aplicará el efecto (`pvtRowLabel`, `pvtTotalLabel`).
+   * @private
    */
   private static stickyBody(
     offsetTop: number,
@@ -686,9 +701,10 @@ export class TableHelper {
   }
 
   /**
-   * Calcula el offset izquierdo de la tabla considerando padding y margin
-   * @param table Elemento HTML de la tabla
-   * @returns Número que representa el offset izquierdo ajustado
+   * Calcula el `offsetLeft` real de la tabla, teniendo en cuenta el padding y margen del contenedor.
+   * @param table - El elemento `HTMLTableElement`.
+   * @returns El desplazamiento izquierdo calculado.
+   * @private
    */
   private static getOffsetLeft(table: HTMLElement): number {
     const offsetLeft = table.getBoundingClientRect().left;

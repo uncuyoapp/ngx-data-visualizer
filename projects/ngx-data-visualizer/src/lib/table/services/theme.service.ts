@@ -83,9 +83,11 @@ export class ThemeService {
   }
 
   /**
-   * Aplica el tema actual a las variables CSS
-   * @param theme - Tema a aplicar
-   * @param tableDirective - Directiva de la tabla específica (opcional)
+   * Aplica el tema actual a las variables CSS de forma global o a un elemento específico.
+   * Determina si la aplicación debe ser global (a todo el documento) o local (a una instancia de tabla).
+   * @param theme - El objeto de tema con las variables CSS a aplicar.
+   * @param tableDirective - Directiva opcional. Si se proporciona, el tema se aplica solo a esa tabla.
+   * @private
    */
   private applyTheme(theme: TableTheme, tableDirective?: TableDirective): void {
     if (tableDirective?.tableComponent) {
@@ -110,8 +112,10 @@ export class ThemeService {
   }
 
   /**
-   * Aplica el tema globalmente a todas las tablas
-   * @param theme - Tema a aplicar
+   * Aplica las variables de un tema de forma global al `document.documentElement`.
+   * Esto permite que cualquier tabla en la aplicación herede el tema si no tiene uno específico.
+   * @param theme - El objeto de tema a aplicar.
+   * @private
    */
   private applyThemeGlobally(theme: TableTheme): void {
     const root = document.documentElement;
@@ -222,9 +226,10 @@ export class ThemeService {
   }
 
   /**
-   * Aplica el tema directamente a un elemento
-   * @param element - Elemento donde aplicar el tema
-   * @param theme - Tema a aplicar
+   * Aplica las variables de un tema directamente a un elemento HTML específico.
+   * @param element - El elemento HTMLElement al que se le aplicarán los estilos del tema.
+   * @param theme - El objeto de tema a aplicar.
+   * @private
    */
   private applyThemeToElement(element: HTMLElement, theme: TableTheme): void {
     element.style.setProperty("--table-hover", theme.tableHover);

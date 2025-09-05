@@ -9,6 +9,7 @@ import {
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { ChartComponent } from "../chart/chart.component";
+import { Chart } from "../chart/types/chart";
 import { ChartFactory } from "../chart/services/chart-factory.service";
 import { ChartOptions, Goal, Series } from "../types/data.types";
 import { Dataset } from "../services/dataset";
@@ -94,8 +95,8 @@ export class ChartDirective implements OnDestroy {
   /**
    * Cambia la visualización del gráfico a modo porcentual.
    */
-  toPercentage() {
-    this.chartComponent?.mainChart?.togglePercentMode();
+  toPercentage(): void {
+    this._executeOnChart((chart) => chart.togglePercentMode());
   }
 
   /**
@@ -103,18 +104,37 @@ export class ChartDirective implements OnDestroy {
    * @param type Formato de exportación ('svg' o 'jpg').
    * @returns El gráfico en el formato especificado.
    */
-  export(type: "svg" | "jpg") {
-    return this.chartComponent?.mainChart?.export(type);
+  export(type: "svg" | "jpg"): string | void {
+    return this._executeOnChart((chart) => chart.export(type));
   }
 
   /**
    * Alterna la visibilidad de una meta específica en el gráfico.
    * @param goal Objeto Goal que representa la meta a mostrar/ocultar.
    */
-  toggleShowGoal(goal: Goal) {
-    if (this.chartComponent) {
-      this.chartComponent.toggleShowGoal(goal);
+  toggleShowGoal(goal: Goal): void {
+    // Este método tiene una lógica de validación más simple (solo necesita el componente wrapper),
+    // por lo que no utiliza el executor para no sobre-complicarlo.
+    if (!this.chartComponent) {
+      console.warn("El componente de gráfico no está inicializado.");
+      return;
     }
+    this.chartComponent.toggleShowGoal(goal);
+  }
+
+  /**
+   * Ejecuta una acción en la instancia principal del gráfico si está lista.
+   * @param action La función a ejecutar con la instancia del gráfico como argumento.
+   * @returns El resultado de la función de acción, o `void` si el gráfico no está listo.
+   * @private
+   */
+  private _executeOnChart<T>(action: (chart: Chart) => T): T | void {
+    if (this.chartComponent && this.chartComponent.mainChart) {
+      return action(this.chartComponent.mainChart);
+    }
+    console.warn(
+      "El componente de gráfico o su instancia principal no están inicializados. Acción omitida.",
+    );
   }
 
   /**

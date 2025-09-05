@@ -62,6 +62,13 @@ export class MultipleChartComponent implements OnDestroy {
   private dataSubscription?: Subscription;
   private navSubscriptions: { unsubscribe: () => void }[] = [];
 
+  /**
+   * @description
+   * El constructor establece un `effect` de Angular que actúa como el punto de entrada
+   * reactivo principal para este componente. Se ejecuta cada vez que cambia un `input`
+   * (dataset, options, etc.), disparando la lógica para actualizar los gráficos y
+   * re-suscribirse a los eventos de actualización de datos del `dataset`.
+   */
   constructor() {
     // Efecto principal que reacciona a cualquier cambio en los inputs.
     // Se encarga de disparar la lógica de actualización de gráficos y de suscripción a cambios de datos.
@@ -76,7 +83,11 @@ export class MultipleChartComponent implements OnDestroy {
   }
 
   /**
-   * Limpia todas las suscripciones y destruye los componentes hijos al destruir el componente principal.
+   * @description
+   * Implementación del ciclo de vida `OnDestroy` de Angular.
+   * Se asegura de que todas las suscripciones a eventos (datos, navegación)
+   * y todos los componentes de gráfico creados dinámicamente sean destruidos
+   * para prevenir fugas de memoria cuando este componente es eliminado del DOM.
    */
   ngOnDestroy(): void {
     this.dataSubscription?.unsubscribe();

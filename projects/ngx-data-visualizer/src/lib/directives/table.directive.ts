@@ -64,7 +64,11 @@ export class TableDirective implements OnDestroy {
   }
 
   /**
-   * Crea y configura el componente de tabla con la configuración actual
+   * @description
+   * Crea dinámicamente el `TableComponent` en el host de la directiva.
+   * Borra cualquier vista anterior, construye la configuración de la tabla
+   * a partir de los inputs y la pasa al nuevo componente.
+   * @private
    */
   createTableComponent() {
     this.viewContainerRef.clear();
@@ -85,10 +89,12 @@ export class TableDirective implements OnDestroy {
   }
 
   /**
-   * Actualiza las dimensiones de la tabla cuando cambian los datos
+   * @description
+   * Dispara la re-configuración de la tabla pivot en el `TableComponent` hijo.
+   * Este método se llama generalmente cuando los datos subyacentes han cambiado.
    */
-  updateTable() {
-    this.tableComponent.configure();
+  updateTable(): void {
+    this._executeOnTable((table) => table.configure());
   }
 
   /**
@@ -110,13 +116,10 @@ export class TableDirective implements OnDestroy {
   public setValueDisplay(
     mode: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn",
   ): void {
-    if (this.tableConfiguration) {
-      // 1. Actualizar la configuración interna con el nuevo modo.
+    this._executeOnTable((table) => {
       this.tableConfiguration.options.valueDisplay = mode;
-
-      // 2. Forzar una re-configuración y re-renderizado de la tabla.
-      this.tableComponent.configure();
-    }
+      table.configure();
+    });
   }
 
   /**
@@ -127,31 +130,41 @@ export class TableDirective implements OnDestroy {
    * @throws {Error} Si no se puede acceder al elemento de la tabla para la exportación
    */
   export(type: "html" | "xlsx", name: string = this.DEFAULT_EXPORT_NAME) {
-    if (!this.tableComponent) {
-      console.warn("El componente de tabla no está inicializado");
-      return null;
-    }
+    return this._executeOnTable((table) => {
+      try {
+        switch (type) {
+          case "html":
+            return table.getHtmlTable();
 
-    try {
-      switch (type) {
-        case "html":
-          return this.tableComponent.getHtmlTable();
-
-        case "xlsx": {
-          const tableElement = this.tableComponent.getTableElement();
-          if (!tableElement) {
-            throw new Error("No se pudo acceder al elemento de la tabla");
+          case "xlsx": {
+            const tableElement = table.getTableElement();
+            if (!tableElement) {
+              throw new Error("No se pudo acceder al elemento de la tabla");
+            }
+            return this.excelService.exportAsExcelFile(tableElement, name);
           }
-          return this.excelService.exportAsExcelFile(tableElement, name);
-        }
 
-        default:
-          console.warn(`Tipo de exportación no soportado: ${type}`);
-          return null;
+          default:
+            console.warn(`Tipo de exportación no soportado: ${type}`);
+            return null;
+        }
+      } catch (error) {
+        console.error("Error al exportar la tabla:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Error al exportar la tabla:", error);
-      throw error;
+    });
+  }
+
+  /**
+   * Ejecuta una acción en el componente de tabla si está listo.
+   * @param action La función a ejecutar con la instancia del componente como argumento.
+   * @returns El resultado de la función de acción, o `void` si la tabla no está lista.
+   * @private
+   */
+  private _executeOnTable<T>(action: (table: TableComponent) => T): T | void {
+    if (this.tableComponent) {
+      return action(this.tableComponent);
     }
+    console.warn("El componente de tabla no está inicializado. Acción omitida.");
   }
 }

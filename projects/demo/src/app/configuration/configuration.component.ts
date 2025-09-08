@@ -32,6 +32,8 @@ export class ConfigurationComponent implements AfterViewInit {
     this.router.navigate(["/multichart-demo"]);
   }
 
+  viewChildCode = `@ViewChild(ChartDirective) chartDirective: ChartDirective;`;
+
   importCode = `import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -47,7 +49,9 @@ import {
   RowData, // interface de fila de datos
   ChartOptions, // opciones de configuración de gráfico
   TableOptions, // opciones de configuración de tablas
-  Filters // interface para aplicar filtrado a los datos
+  Goal, // interface para definir una meta en un gráfico
+  TableSorter, // interface para ordenamiento en tablas
+  FiltersConfig // interface para aplicar filtros a los datos
 } from 'ngx-data-visualizer';
 
 @Component({selector: 'app-example',
@@ -69,133 +73,113 @@ import {
 
   datasetStructureCode = `
 /**
- * Clase que representa un conjunto de datos para visualización
- * Proporciona métodos para manejar y filtrar datos
+ * Clase que representa un conjunto de datos para visualización.
+ * Actúa como una fachada que simplifica la interacción con el DataProvider.
  */
- class Dataset {
-  /** Identificador único opcional del dataset */
+class Dataset {
+  /** Identificador opcional para el conjunto de datos. */
   public readonly id?: number;
-  /** Dimensiones disponibles en el dataset */
+  /** Array de objetos Dimension que describen los datos. */
   public readonly dimensions: Dimension[];
-  /** Indica si está habilitada la agrupación (roll up) de datos */
+  /** Flag para habilitar o deshabilitar la funcionalidad de roll-up. */
   public readonly enableRollUp: boolean;
-  /** Datos en formato de filas */
+  /** Los datos crudos (sin procesar) del conjunto de datos. */
   public readonly rowData: RowData[];
-  /** Proveedor de datos para operaciones de filtrado y consulta */
+  /** (Avanzado) Instancia del motor de procesamiento de datos subyacente. */
   public readonly dataProvider: DataProvider;
-  /** Subject que emite cuando los datos son actualizados */
+  /** Un 'Subject' de RxJS que emite 'true' cuando los datos se actualizan. */
   public readonly dataUpdated = new Subject<boolean>();
-  /** Serie temporal asociada al dataset (opcional) */
-  private readonly timeSeries?: TimeSeries;
 
   /**
-   * Aplica filtros al conjunto de datos
-   * @param filters - Filtros a aplicar
-   * @throws {Error} Si los filtros no son válidos
-   * @example
-   * dataset.applyFilters({
-   *   rollUp: ['categoria'],
-   *   filter: [
-   *     { name: 'año', items: [2023, 2024] }
-   *   ]
-   * });
+   * Aplica una configuración de filtros y/o roll-up al DataProvider.
+   * @param config - Objeto con la configuración de filtros a aplicar.
    */
-  public applyFilters(filters: Filters): void {
-    this.dataProvider.filters = filters;
-    this.dataUpdated.next(true);
-  }
+  public applyFilters(config: FiltersConfig): void { /* ... */ }
 
   /**
-   * Obtiene los datos actuales del dataset
-   * @returns Una copia de los datos actuales
-   * @example
-   * const currentData = dataset.getData();
-   * console.log('Datos actuales:', currentData);
+   * Devuelve una copia de los datos crudos originales.
+   * @returns Un array de RowData.
    */
-  public getData(): RowData[] {
-    return this.rowData.map(row => ({ ...row }));
-  }
+  public getRawData(): RowData[] { /* ... */ }
 
   /**
-   * Obtiene las dimensiones actuales del dataset
-   * @returns Una copia de las dimensiones actuales
-   * @example
-   * const dimensions = dataset.getDimensions();
-   * console.log('Dimensiones:', dimensions.map(d => d.nameView));
+   * Devuelve los datos procesados actuales del DataProvider (después de filtros y roll-up).
+   * @returns Un array de RowData procesado.
    */
-  public getDimensions(): Dimension[] {
-    return this.dimensions.map(dim => ({ ...dim }));
-  }
+  public getCurrentData(): RowData[] { /* ... */ }
+
+  /**
+   * Devuelve una copia de todas las dimensiones definidas en el Dataset.
+   * @returns Un array de Dimension.
+   */
+  public getAllDimensions(): Dimension[] { /* ... */ }
+
+  /**
+   * Devuelve las dimensiones que están activas (no agrupadas por rollUp).
+   * @returns Un array de Dimension activas.
+   */
+  public getActiveDimensions(): Dimension[] { /* ... */ }
+
+  /**
+   * Obtiene la clave de datos ('key') asociada a un ID de dimensión.
+   * @param dimensionId - El ID de la dimensión.
+   * @returns La 'key' (string) correspondiente o undefined.
+   */
+  public getDimensionKey(dimensionId: number): string | undefined { /* ... */ }
+
+  /**
+   * Obtiene todos los valores únicos para una dimensión específica.
+   * @param dimensionId - El ID de la dimensión a consultar.
+   * @returns Un array de valores únicos para la dimensión.
+   */
+  public getDimensionValues(dimensionId: number): (string | number)[] { /* ... */ }
 }
 
 /**
  * Interfaz que representa una dimensión en el conjunto de datos
  */
- interface Dimension {
-  /** Identificador único de la dimensión */
+interface Dimension {
   id: number;
-  /** Nombre interno de la dimensión */
   name: string;
-  /** Nombre para mostrar de la dimensión */
   nameView: string;
-  /** Elementos que componen la dimensión */
   items: Item[];
-  /** Tipo de dimensión (opcional) */
   type?: number;
-  /** Indica si la dimensión puede desagregarse en múltiples gráficos (opcional) */
   enableMulti?: boolean;
-  /** Indica si la dimensión está seleccionada (opcional) */
   selected?: boolean;
 }
 
 /**
  * Interfaz que representa un ítem dentro de una dimensión
  */
- interface Item {
-  /** Identificador único del ítem */
+interface Item {
   id: number;
-  /** Nombre del ítem */
   name: string;
-  /** Color asociado al ítem (opcional) */
   color?: string;
-  /** Orden de visualización del ítem (opcional) */
   order?: number;
-  /** Indica si el ítem está seleccionado */
   selected: boolean;
 }
 
 /**
  * Interfaz base que representa una fila de datos genérica.
- * Cada clave en el objeto representa una columna y su valor puede ser de cualquier tipo DataValue.
  */
- interface RowData {
-  [key: string]: DataValue;
+interface RowData {
+  [key: string]: string | number | null;
 }
 
 /**
- * Tipo que define los valores permitidos en una fila de datos.
- * Representa todos los tipos de datos que pueden ser almacenados en una celda.
+ * Configuración para un filtro de dimensión. Permite usar el id o el nombre de la dimensión.
  */
- type DataValue = string | number | null;
-
-/**
- * Clase que representa los filtros aplicables a un conjunto de datos
- */
- class Filters {
-  /** Nombres de dimensiones a agrupar */
-  public rollUp: string[] = [];
-  /** Filtros de dimensión a aplicar */
-  public filter: DimensionFilter[] = [];
+interface DimensionFilterConfig {
+  name: string | number;
+  items: (string | number)[];
 }
 
 /**
- * Interfaz que representa un filtro para una dimensión específica
+ * Objeto para la configuración de filtros y agrupaciones (roll-up).
  */
- interface DimensionFilter {
-  /** Nombre de la dimensión a filtrar */
-  name: string;
-  /** Valores seleccionados para el filtro */
-  items: Array<string | number>;
+interface FiltersConfig {
+  rollUp?: (string | number)[];
+  filter?: DimensionFilterConfig[];
 }
 `;
 
@@ -236,34 +220,26 @@ const dataset = new Dataset({
   id: 1
 });`;
 
-  applyFiltersCode = `// Configurar filtros
-const filters: Filters = {
-  filter: [],
-  rollUp: []
+  applyFiltersCode = `// Crear un objeto de configuración de filtros
+const filtersConfig: FiltersConfig = {
+  // 1. Agrupar (rollUp) por la dimensión con id 1 ('Región').
+  //    Esto colapsará la dimensión 'Región', sumando sus valores.
+  rollUp: [1],
+
+  // 2. Filtrar la dimensión con id 2 ('Año') para mostrar solo el item '2024'.
+  filter: [
+    {
+      name: 2, // ID de la dimensión 'Año'
+      items: ['2024']
+    }
+  ]
 };
 
-// Obtener dimensiones para rollUp (ejemplo: agrupar por dimensiones no seleccionadas)
-filters.rollUp = dataset.dimensions
-  .filter(dimension => !dimension.selected)
-  .map(dimension => dimension.nameView);
+// Aplicar los filtros al dataset.
+// El componente visual se actualizará automáticamente.
+dataset.applyFilters(filtersConfig);`;
 
-// Configurar filtros por dimensión (ejemplo: filtrar por items seleccionados)
-filters.filter = dataset.dimensions.map(dimension => ({
-  name: dimension.nameView,
-  items: dimension.items
-    .filter(item => item.selected)
-    .map(item => item.name)
-}));
-
-// Aplicar filtros al dataset
-dataset.applyFilters(filters);`;
-
-  clearFiltersCode = `// Resetear selección de dimensiones e items a su estado original
-dataset.dimensions.forEach((dimension: Dimension) => {
-  dimension.selected = true; // O el estado por defecto que desees
-  dimension.items.forEach((item: Item) => (item.selected = true));
-});
-
-// Aplicar filtros vacíos para resetear el dataset
-dataset.applyFilters(new Filters());`;
+  clearFiltersCode = `// Para limpiar todos los filtros y agrupaciones,
+// simplemente llama a applyFilters con un objeto vacío.
+dataset.applyFilters({});`;
 }

@@ -62,6 +62,33 @@
   </section>
   <hr />
   <section class="my-5">
+    <h2>API de las Directivas</h2>
+    <p>
+      Además de la configuración inicial a través de inputs, las directivas exponen métodos públicos que permiten interactuar con los componentes de forma dinámica. Para acceder a ellos, primero necesitas obtener una referencia a la directiva en tu componente usando el decorador <code>ViewChild</code>.
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="viewChildCode"></code></pre>
+      </div>
+    </div>
+
+    <h3 class="mt-4">ChartDirective</h3>
+    <ul>
+      <li><code>toPercentage(): void</code>: Cambia la visualización del gráfico a modo porcentual.</li>
+      <li><code>export(type: 'svg' | 'jpg'): string | void</code>: Exporta el gráfico como una imagen SVG o JPG.</li>
+      <li><code>toggleShowGoal(goal: Goal): void</code>: Muestra u oculta una línea de "meta" en el gráfico.</li>
+    </ul>
+
+    <h3 class="mt-4">TableDirective</h3>
+    <ul>
+      <li><code>setValueDisplay(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void</code>: Cambia cómo se muestran los valores (real, % del total, % de fila, etc.).</li>
+      <li><code>export(type: 'html' | 'xlsx', name?: string): any</code>: Exporta la tabla a formato HTML o a un archivo Excel.</li>
+    </ul>
+    <p>La directiva <code>MultipleChartDirective</code> no expone métodos públicos.</p>
+  </section>
+  <hr />
+  <section class="my-5">
     <h2>Configuración del Dataset</h2>
     <p>
       El objeto <code>Dataset</code> es el núcleo de la visualización de datos

@@ -13,7 +13,7 @@ import { JQueryService } from "./jquery.service";
  * - Manejar interacciones del usuario como hover y clics
  * - Configurar ordenamiento y formato de datos
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class TableHelperService {
   /** Clases de cabecera relevantes para hover (definidas una sola vez) */
   private readonly HEADER_CLASSES = [
@@ -198,9 +198,7 @@ export class TableHelperService {
           return;
         }
         this.clearHoverClasses(table);
-        const thClass = this.HEADER_CLASSES.find((cls) =>
-          $th.hasClass(cls),
-        );
+        const thClass = this.HEADER_CLASSES.find((cls) => $th.hasClass(cls));
         if (!thClass) {
           // eslint-disable-next-line no-console
           console.warn(
@@ -440,6 +438,13 @@ export class TableHelperService {
   private configurePivot(config: TableOptions) {
     const $ = this.jQueryService.$;
     const aggregators = $.pivotUtilities.aggregators;
+    const numberFormat = $.pivotUtilities.numberFormat;
+
+    // Configurar el formato de números con decimales y sufijo
+    const intFormat = numberFormat({
+      digitsAfterDecimal: config.digitsAfterDecimal ?? 0,
+      suffix: config.suffix || "",
+    });
 
     let aggregator;
     switch (config.valueDisplay) {
@@ -453,16 +458,17 @@ export class TableHelperService {
         aggregator = aggregators["Sum as Fraction of Columns"];
         break;
       default: // 'nominal' o indefinido
-        aggregator = aggregators["Sum"];
+        aggregator = ($.pivotUtilities as any).aggregatorTemplates.sum(
+          intFormat,
+        );
         break;
     }
 
     const sorters = this.configureSorters(config);
 
     return {
-      aggregator: aggregator([
-        "valor",
-      ]),
+      showDecimals: config.digitsAfterDecimal > 0,
+      aggregator: aggregator(["valor"]),
       cols: config.cols as string[],
       rows: config.rows as string[],
       sorters,
@@ -487,19 +493,22 @@ export class TableHelperService {
   private configureSorters(config: TableOptions) {
     const $ = this.jQueryService.$;
     const sorters: Record<string, (a: string, b: string) => number> = {};
-    (config.sorters as { name: string; items: { name: string; order: number }[] }[]).forEach(
-      (sorter) => {
-        const items = [...sorter.items]
-          .sort((a, b) => a.order - b.order)
-          .map((a) => a.name);
-        Object.defineProperty(sorters, sorter.name, {
-          value: $.pivotUtilities.sortAs(items),
-          writable: true,
-          enumerable: true,
-          configurable: true,
-        });
-      },
-    );
+    (
+      config.sorters as {
+        name: string;
+        items: { name: string; order: number }[];
+      }[]
+    ).forEach((sorter) => {
+      const items = [...sorter.items]
+        .sort((a, b) => a.order - b.order)
+        .map((a) => a.name);
+      Object.defineProperty(sorters, sorter.name, {
+        value: $.pivotUtilities.sortAs(items),
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    });
     return sorters;
   }
 

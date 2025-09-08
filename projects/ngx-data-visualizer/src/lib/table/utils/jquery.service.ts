@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import jQuery from 'jquery';
+import { Injectable } from "@angular/core";
+import jQuery from "jquery";
 import {
   PivotAggregator,
   PivotDeriver,
@@ -7,7 +7,7 @@ import {
   PivotLocale,
   PivotOptions,
   PivotRenderer,
-} from '../types/table-base';
+} from "../types/table-base";
 
 declare global {
   interface Window {
@@ -22,7 +22,7 @@ declare global {
     pivot(
       data: Record<string, unknown>[],
       options?: PivotOptions,
-      locale?: string
+      locale?: string,
     ): JQuery;
   }
 
@@ -30,13 +30,13 @@ declare global {
     pivotUtilities: {
       aggregatorTemplates: {
         sum: (
-          formatter?: PivotFormatter
+          formatter?: PivotFormatter,
         ) => (fields: string[]) => PivotAggregator;
         count: (
-          formatter?: PivotFormatter
+          formatter?: PivotFormatter,
         ) => (fields: string[]) => PivotAggregator;
         average: (
-          formatter?: PivotFormatter
+          formatter?: PivotFormatter,
         ) => (fields: string[]) => PivotAggregator;
       };
       aggregators: Record<string, (fields: string[]) => PivotAggregator>;
@@ -56,9 +56,9 @@ declare global {
 }
 
 // Importar estilos y scripts de pivottable
-import 'pivottable/dist/pivot.min.js';
+import "pivottable/dist/pivot.min.js";
 // import 'pivottable/dist/pivot.min.css';
-import 'pivottable/dist/pivot.es.min.js';
+import "pivottable/dist/pivot.es.min.js";
 
 /**
  * Servicio que proporciona acceso a jQuery y pivottable internamente en la biblioteca.
@@ -66,7 +66,7 @@ import 'pivottable/dist/pivot.es.min.js';
  * esté correctamente inicializado.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class JQueryService {
   /**
@@ -106,10 +106,10 @@ export class JQueryService {
   private verifyPivotTable(): void {
     if (!jQuery.fn.pivot) {
       console.error(
-        'PivotTable no está disponible. La funcionalidad de tablas dinámicas no funcionará correctamente.'
+        "PivotTable no está disponible. La funcionalidad de tablas dinámicas no funcionará correctamente.",
       );
       throw new Error(
-        'PivotTable no está disponible. Asegúrese de que el módulo pivottable.ts se haya importado correctamente.'
+        "PivotTable no está disponible. Asegúrese de que el módulo pivottable.ts se haya importado correctamente.",
       );
     }
   }
@@ -123,18 +123,21 @@ export class JQueryService {
       const defaults = {
         digitsAfterDecimal: 2,
         scaler: 1,
-        prefix: '',
-        suffix: '',
-        thousandsSep: '.',
-        decimalSep: ','
+        prefix: "",
+        suffix: "",
+        thousandsSep: ".",
+        decimalSep: ",",
       };
       const options = { ...defaults, ...opts };
-      
+
       return (x: number) => {
-        if (isNaN(x) || !isFinite(x)) return '';
+        if (isNaN(x) || !isFinite(x)) return "";
         const result = (x * options.scaler).toFixed(options.digitsAfterDecimal);
-        const parts = result.split('.');
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, options.thousandsSep);
+        const parts = result.split(".");
+        parts[0] = parts[0].replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          options.thousandsSep,
+        );
         return options.prefix + parts.join(options.decimalSep) + options.suffix;
       };
     };

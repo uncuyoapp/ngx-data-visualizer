@@ -15,7 +15,9 @@
     <p>
       La directiva <code>libChart</code> se utiliza para incrustar y configurar
       gráficos. Requiere un objeto <code>Dataset</code> y un objeto
-      <code>ChartOptions</code> como entradas.
+      <code>ChartOptions</code> como entradas. Adicionalmente, proporciona
+      funcionalidades avanzadas como la gestión de líneas de meta (Goals)
+      mediante el método <code>toggleShowGoal()</code>.
     </p>
 
     <h3>Configuración de opciones del gráfico (<code>ChartOptions</code>)</h3>
@@ -30,7 +32,10 @@
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">HTML</div>
       <div class="card-body bg-dark">
-        <pre><code class="language-html">&lt;libChart [dataset]="dataset" [chartOptions]="chartOptions"&gt;&lt;/libChart&gt;</code></pre>
+        <pre><code class="language-html">&lt;libChart
+  [dataset]="dataset"
+  [chartOptions]="chartOptions"&gt;
+&lt;/libChart&gt;</code></pre>
       </div>
     </div>
   </section>
@@ -309,6 +314,69 @@
       </mat-tab>
     </mat-tab-group>
   </section>
+
+  <section class="demo-section">
+    <h2>6. Líneas de Meta (Goals)</h2>
+    <p class="section-description">
+      Las líneas de meta permiten superponer objetivos o referencias visuales
+      sobre el gráfico principal. Esta funcionalidad es especialmente útil para
+      comparar el rendimiento actual contra objetivos establecidos. La interfaz
+      <code>Goal</code> define el tipo de línea, texto descriptivo y datos de
+      la meta. El método <code>toggleShowGoal()</code> permite mostrar u ocultar
+      dinámicamente estas líneas de referencia sin regenerar todo el gráfico.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="goal-buttons mb-3">
+            <button
+              mat-raised-button
+              [color]="showingGoal ? 'warn' : 'primary'"
+              (click)="toggleGoal()"
+            >
+              {{ showingGoal ? 'Ocultar Meta' : 'Mostrar Meta' }}
+            </button>
+          </div>
+          <div class="chart-container">
+            <libChart
+              [dataset]="dataset1"
+              [chartOptions]="chartConfig6"
+              #chartGoals
+            ></libChart>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example6TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example6HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+
 
   <!-- Botones de navegación -->
   <hr />

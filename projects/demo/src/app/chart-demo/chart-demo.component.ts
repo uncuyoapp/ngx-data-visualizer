@@ -13,6 +13,7 @@ import {
   Dimension,
   ChartDirective,
   ChartOptions,
+  Goal,
   ThemeService,
 } from "ngx-data-visualizer";
 import dashDimensions from "../../assets/data/dash-dimensions.json";
@@ -224,8 +225,70 @@ export class ChartDemoComponent implements AfterViewInit {
     disableAutoUpdate: false,
   };
 
+  // Configuración para ejemplo de Goals
+  chartConfig6: ChartOptions = {
+    type: "column",
+    title: "Estudiantes por Año con Meta",
+    stacked: null,
+    xAxis: {
+      title: "Año",
+      rotateLabels: null,
+      firstLevel: 0, // Año
+      secondLevel: null,
+    },
+    yAxis: {
+      title: "Cantidad de Estudiantes",
+      max: null,
+    },
+    tooltip: {
+      shared: false,
+      decimals: 0,
+      suffix: null,
+      format: null,
+      showTotal: false,
+    },
+    legends: {
+      enabled: true,
+      show: true,
+      position: "bottom",
+    },
+    navigator: {
+      show: false,
+      start: null,
+      end: null,
+    },
+    colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"],
+    width: null,
+    height: 400,
+    filterLastYear: false,
+    showYearsLegend: false,
+    toPercent: false,
+    measureUnit: "estudiantes",
+    isPreview: false,
+    disableAutoUpdate: false,
+  };
+
+  // Definición de la línea de meta
+  goalLine: Goal = {
+    chartType: "line",
+    text: "Objetivo 2024: 15,000 estudiantes",
+    data: [
+      { year: "2010", valor: 1950000 },
+      { year: "2011", valor: 2000000 },
+      { year: "2012", valor: 2050000 },
+      { year: "2013", valor: 2100000 },
+      { year: "2014", valor: 2150000 },
+    ],
+  };
+
+  // Estado de visibilidad de la meta
+  showingGoal = false;
+
   @ViewChild("chartInteractive", { read: ChartDirective })
   chart!: ChartDirective;
+
+  @ViewChild("chartGoals", { read: ChartDirective })
+  chartGoals!: ChartDirective;
 
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
@@ -363,22 +426,81 @@ togglePercentage(): void {
 // Exportar gráfico como SVG
 exportAsSVG(): void {
   const svg = this.chart.export('svg');
-  const blob = new Blob([svg], { type: 'image/svg+xml' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'grafico.svg';
-  link.click();
-  URL.revokeObjectURL(url);
+  if (svg) {
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'grafico.svg';
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
 
 // Exportar gráfico como JPG
 exportAsJPG(): void {
   const jpg = this.chart.export('jpg');
   const link = document.createElement('a');
-  link.href = jpg;
+  link.href = jpg as string;
   link.download = 'grafico.jpg';
   link.click();
+}`;
+
+  example6TypeScript = `// Configuración para gráfico con línea de meta
+chartConfig6: ChartOptions = {
+  type: "column",
+  title: "Estudiantes por Año con Meta",
+  stacked: null,
+  xAxis: {
+    title: "Año",
+    rotateLabels: null,
+    firstLevel: 0,
+    secondLevel: null,
+  },
+  yAxis: {
+    title: "Cantidad de Estudiantes",
+    max: null,
+  },
+  tooltip: {
+    shared: false,
+    decimals: 0,
+    suffix: null,
+    format: null,
+    showTotal: false,
+  },
+  legends: {
+    enabled: true,
+    show: true,
+    position: "bottom",
+  },
+  colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"],
+  height: 400,
+  measureUnit: "estudiantes",
+};
+
+// Definición de la línea de meta
+goalLine: Goal = {
+  chartType: "line",
+  text: "Objetivo 2024: 15,000 estudiantes",
+  data: [
+    { Año: "2019", Valor: 15000 },
+    { Año: "2020", Valor: 15000 },
+    { Año: "2021", Valor: 15000 },
+    { Año: "2022", Valor: 15000 },
+    { Año: "2023", Valor: 15000 },
+  ],
+};
+
+// Estado de visibilidad de la meta
+showingGoal = false;
+
+@ViewChild("chartGoals", { read: ChartDirective })
+chartGoals!: ChartDirective;
+
+// Método para alternar la visibilidad de la línea de meta
+toggleGoal(): void {
+  this.showingGoal = !this.showingGoal;
+  this.chartGoals.toggleShowGoal(this.goalLine);
 }`;
 
   // Código HTML para mostrar en las tabs
@@ -410,63 +532,20 @@ exportAsJPG(): void {
   </button>
 </div>
 <div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig4" #chartInteractive></libChart>
 </div>`;
 
-  example6HTML = `
-interface ChartOptions {
-  /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
-  type: string;
-
-  /** Título del gráfico */
-  title?: string;
-
-  /** Indica si el gráfico está apilado y el nombre del grupo */
-  stacked: string | null;
-
-  /** Configuración del eje X */
-  xAxis: {
-    title: string,
-    rotateLabels: number | null,
-    firstLevel: number,
-    secondLevel: number | null
-  };
-
-  /** Configuración del eje Y */
-  yAxis: {
-    title: string,
-    max: number | null
-  };
-
-  /** Configuración del tooltip */
-  tooltip: {
-    shared: boolean,
-    decimals: number | null,
-    suffix: string | null,
-    format: string | null,
-    showTotal: boolean
-  };
-
-  /** Configuración de las leyendas */
-  legends: {
-    enabled: boolean,
-    show: boolean,
-    position: string
-  };
-
-  /** Array de colores personalizados */
-  colors?: string[];
-
-  /** Dimensiones del gráfico */
-  width: number | null;
-  height: number | string | null;
-
-  /** Indica si los valores se muestran en porcentaje */
-  toPercent: boolean;
-
-  /** Unidad de medida para los valores */
-  measureUnit: string;
-}`;
+  example6HTML = `<div class="goal-buttons mb-3">
+  <button
+    mat-raised-button
+    [color]="showingGoal ? 'warn' : 'primary'"
+    (click)="toggleGoal()">
+    {{ showingGoal ? 'Ocultar Meta' : 'Mostrar Meta' }}
+  </button>
+</div>
+<div class="chart-container">
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig6" #chartGoals></libChart>
+</div>`;
 
   constructor(
     private readonly themeService: ThemeService,
@@ -476,7 +555,10 @@ interface ChartOptions {
 
   // Documentación de ChartOptions
   chartOptionsDocumentation = `/**
- * Interfaz que define las opciones de configuración para un gráfico
+ * Interfaz que define las opciones de configuración para un gráfico.
+ * Proporciona todas las opciones disponibles para personalizar la apariencia
+ * y comportamiento de los gráficos, incluyendo funcionalidades avanzadas
+ * como líneas de meta (Goals).
  */
 interface ChartOptions {
   /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
@@ -578,6 +660,12 @@ interface ChartOptions {
   // Métodos interactivos para el gráfico
   togglePercentage(): void {
     this.chart.toPercentage();
+  }
+
+  // Método para alternar la visibilidad de la línea de meta
+  toggleGoal(): void {
+    this.showingGoal = !this.showingGoal;
+    this.chartGoals.toggleShowGoal(this.goalLine);
   }
 
   // Métodos de navegación

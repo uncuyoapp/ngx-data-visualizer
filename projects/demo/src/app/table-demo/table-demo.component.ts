@@ -73,6 +73,24 @@ export class TableDemoComponent implements AfterViewInit {
     totalCol: true,
   };
 
+  // Configuración para ejemplo de porcentajes
+  tableConfig4: TableOptions = {
+    cols: ["Año"],
+    rows: ["Condición", "Sexo"],
+    digitsAfterDecimal: 2,
+    sorters: [],
+    totalRow: true,
+    totalCol: true,
+    valueDisplay: "nominal", // Valor inicial
+  };
+
+  // Estado actual del modo de visualización
+  currentValueDisplay:
+    | "nominal"
+    | "percentOfTotal"
+    | "percentOfRow"
+    | "percentOfColumn" = "nominal";
+
   // Ejemplo 3: Configuración con ordenamiento personalizado
   tableConfig3: TableOptions = {
     cols: ["Sector de gestión", "Condición"],
@@ -93,6 +111,8 @@ export class TableDemoComponent implements AfterViewInit {
   };
 
   @ViewChild("tableTheme", { read: TableDirective }) table!: TableDirective;
+  @ViewChild("tablePercentages", { read: TableDirective })
+  tablePercentages!: TableDirective;
 
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
@@ -132,7 +152,7 @@ tableConfig3: TableOptions = {
   totalCol: true,
   sorters: [
     {
-      name: 'Condición',
+      name: 117, // Usando el ID de la dimensión 'Condición'
       items: [
         { name: 'Nuevo inscripto', order: 0 },
         { name: 'Estudiante', order: 1 },
@@ -142,7 +162,49 @@ tableConfig3: TableOptions = {
   ],
 };`;
 
-  example4TypeScript = `// Métodos para cambiar el tema de la tabla
+  example4TypeScript = `// Configuración para visualización de porcentajes
+tableConfig4: TableOptions = {
+  cols: ["Año"],
+  rows: ["Condición", "Sexo"],
+  digitsAfterDecimal: 2,
+  sorters: [],
+  totalRow: true,
+  totalCol: true,
+  valueDisplay: "nominal", // Valor inicial
+};
+
+// Estado actual del modo de visualización
+currentValueDisplay:
+  | "nominal"
+  | "percentOfTotal"
+  | "percentOfRow"
+  | "percentOfColumn" = "nominal";
+
+@ViewChild("tablePercentages", { read: TableDirective })
+tablePercentages!: TableDirective;
+
+// Métodos para cambiar el modo de visualización de porcentajes
+setNominalView(): void {
+  this.currentValueDisplay = "nominal";
+  this.tablePercentages.setValueDisplay("nominal");
+}
+
+setPercentOfTotalView(): void {
+  this.currentValueDisplay = "percentOfTotal";
+  this.tablePercentages.setValueDisplay("percentOfTotal");
+}
+
+setPercentOfRowView(): void {
+  this.currentValueDisplay = "percentOfRow";
+  this.tablePercentages.setValueDisplay("percentOfRow");
+}
+
+setPercentOfColumnView(): void {
+  this.currentValueDisplay = "percentOfColumn";
+  this.tablePercentages.setValueDisplay("percentOfColumn");
+}`;
+
+  example6TypeScript = `// Métodos para cambiar el tema de la tabla
 @ViewChild('tableTheme', { read: TableDirective }) table!: TableDirective;
 
 constructor(private readonly themeService: ThemeService) {}
@@ -168,7 +230,6 @@ updateThemeWithCustomColors(): void {
     },
     this.table,
   );
-}
 }`;
 
   // Código HTML para mostrar en las tabs
@@ -184,7 +245,37 @@ updateThemeWithCustomColors(): void {
   <libTable [dataset]="dataset1" [tableOptions]="tableConfig3"></libTable>
 </div>`;
 
-  example4HTML = `<div class="theme-buttons">
+  example4HTML = `<div class="percentage-buttons">
+  <button
+    mat-raised-button
+    [color]="currentValueDisplay === 'nominal' ? 'primary' : 'basic'"
+    (click)="setNominalView()">
+    Valores Nominales
+  </button>
+  <button
+    mat-raised-button
+    [color]="currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
+    (click)="setPercentOfTotalView()">
+    % del Total
+  </button>
+  <button
+    mat-raised-button
+    [color]="currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
+    (click)="setPercentOfRowView()">
+    % de Fila
+  </button>
+  <button
+    mat-raised-button
+    [color]="currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
+    (click)="setPercentOfColumnView()">
+    % de Columna
+  </button>
+</div>
+<div class="table-container">
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig4" #tablePercentages></libTable>
+</div>`;
+
+  example6HTML = `<div class="theme-buttons">
   <button mat-raised-button color="primary" (click)="setDefaultTheme()">Tema por Defecto</button>
   <button mat-raised-button color="accent" (click)="setMaterialTheme()">Tema Material</button>
   <button mat-raised-button color="warn" (click)="setBootstrapTheme()">Tema Bootstrap</button>
@@ -194,7 +285,7 @@ updateThemeWithCustomColors(): void {
   <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" #tableTheme></libTable>
 </div>`;
 
-  example5HTML = `
+  example7HTML = `
 interface TableTheme {
   /** Color de fondo al pasar el mouse sobre una celda */
   tableHover: string;
@@ -307,20 +398,26 @@ interface TableOptions {
   totalRow: boolean;
   /** Indica si se debe mostrar la columna de totales */
   totalCol: boolean;
-  /** Lista de nombres de columnas */
-  cols: string[];
-  /** Lista de nombres de filas */
-  rows: string[];
+  /** Lista de nombres o IDs de columnas */
+  cols: (string | number)[];
+  /** Lista de nombres o IDs de filas */
+  rows: (string | number)[];
   /** Sufijo opcional para los valores numéricos */
   suffix?: string;
+  /** Define el modo de visualización de los valores en la tabla */
+  valueDisplay?:
+    | "nominal"
+    | "percentOfTotal"
+    | "percentOfRow"
+    | "percentOfColumn";
 }
 
 /**
 * Interfaz para la configuración del ordenamiento de dimensiones
 */
 interface TableSorter {
-  /** Nombre de la dimensión a ordenar */
-  name: string;
+  /** Nombre o ID de la dimensión a ordenar */
+  name: string | number;
   /** Lista de ítems con su orden específico */
   items: {
     /** Nombre del ítem */
@@ -373,6 +470,27 @@ interface TableSorter {
       },
       this.table,
     );
+  }
+
+  // Métodos para cambiar el modo de visualización de porcentajes
+  setNominalView(): void {
+    this.currentValueDisplay = "nominal";
+    this.tablePercentages.setValueDisplay("nominal");
+  }
+
+  setPercentOfTotalView(): void {
+    this.currentValueDisplay = "percentOfTotal";
+    this.tablePercentages.setValueDisplay("percentOfTotal");
+  }
+
+  setPercentOfRowView(): void {
+    this.currentValueDisplay = "percentOfRow";
+    this.tablePercentages.setValueDisplay("percentOfRow");
+  }
+
+  setPercentOfColumnView(): void {
+    this.currentValueDisplay = "percentOfColumn";
+    this.tablePercentages.setValueDisplay("percentOfColumn");
   }
 
   // Métodos de navegación

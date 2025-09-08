@@ -200,7 +200,94 @@
   </section>
 
   <section class="demo-section">
-    <h2>4. Configuración de Temas</h2>
+    <h2>4. Visualización de Porcentajes</h2>
+    <p class="section-description">
+      Esta funcionalidad permite cambiar dinámicamente entre diferentes modos de
+      visualización de los datos numéricos. Puedes alternar entre valores
+      nominales y distintos tipos de porcentajes: del total general, por fila o
+      por columna. Los botones interactivos utilizan el método
+      <code>setValueDisplay()</code> de la directiva para transformar la vista
+      de los datos sin recargar la tabla, proporcionando diferentes perspectivas
+      de análisis instantáneamente.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="percentage-buttons mb-3">
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'nominal' ? 'primary' : 'basic'"
+              (click)="setNominalView()"
+              class="me-2 mb-2"
+            >
+              Valores Nominales
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
+              (click)="setPercentOfTotalView()"
+              class="me-2 mb-2"
+            >
+              % del Total
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
+              (click)="setPercentOfRowView()"
+              class="me-2 mb-2"
+            >
+              % de Fila
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
+              (click)="setPercentOfColumnView()"
+              class="me-2 mb-2"
+            >
+              % de Columna
+            </button>
+          </div>
+          <div class="table-container">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig4"
+              #tablePercentages
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example4TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example4HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>5. Configuración de Temas</h2>
     <p class="section-description">
       Esta sección demuestra las capacidades de personalización visual de la
       directiva libTable a través del ThemeService. Se pueden aplicar temas
@@ -257,7 +344,7 @@
             <div class="card-body bg-dark">
               <pre
                 class="language-typescript"
-              ><code [textContent]="example4TypeScript"></code></pre>
+              ><code [textContent]="example6TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -270,7 +357,7 @@
             <div class="card-body bg-dark">
               <pre
                 class="language-html"
-              ><code [textContent]="example4HTML"></code></pre>
+              ><code [textContent]="example6HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -280,7 +367,7 @@
     <h4>Configuraciones disponibles:</h4>
     <pre
       class="language-typescript"
-    ><code [textContent]="example5HTML"></code></pre>
+    ><code [textContent]="example7HTML"></code></pre>
   </section>
 
   <!-- Botones de navegación -->

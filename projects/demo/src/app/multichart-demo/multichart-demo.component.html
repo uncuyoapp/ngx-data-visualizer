@@ -14,18 +14,40 @@
   <section class="my-5">
     <h2>Uso de la directiva <code>libMultipleChart</code></h2>
     <p>
-      La directiva <code>libMultipleChart</code> se utiliza para generar
-      múltiples gráficos automáticamente basados en una dimensión específica del
-      dataset. Cada ítem de la dimensión seleccionada genera un gráfico
-      individual con sus propios datos filtrados. Requiere un objeto
-      <code>Dataset</code>, un objeto <code>ChartOptions</code> y un objeto <code>Dimension</code> como entradas.
+      La directiva <code>libMultipleChart</code> genera múltiples gráficos
+      automáticamente basándose en los ítems seleccionados de una dimensión
+      específica del dataset. Cada ítem con <code>selected: true</code> crea un
+      gráfico independiente con datos filtrados automáticamente. La misma
+      configuración <code>ChartOptions</code> se aplica consistentemente a todos
+      los gráficos, mientras que los títulos y leyendas se ajustan
+      automáticamente para optimizar la visualización múltiple.
     </p>
+
+    <h3>Comportamientos Automáticos</h3>
+    <ul class="list-unstyled">
+      <li><strong>Filtrado de datos:</strong> Cada gráfico muestra solo los datos correspondientes a su ítem de dimensión</li>
+      <li><strong>Títulos automáticos:</strong> Cada gráfico recibe el nombre del ítem como título</li>
+      <li><strong>Leyendas optimizadas:</strong> Se ocultan automáticamente para evitar redundancia</li>
+      <li><strong>Configuración consistente:</strong> Todas las opciones avanzadas de ChartOptions se aplican a todos los gráficos</li>
+    </ul>
+
+    <h3>Configuración de la directiva (<code>MultipleChartDirective</code>)</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="multichartOptionsDocumentation"></code></pre>
+      </div>
+    </div>
 
     <h3>Uso en el template HTML</h3>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">HTML</div>
       <div class="card-body bg-dark">
-        <pre><code class="language-html">&lt;libMultipleChart [dataset]="dataset" [options]="chartOptions" [splitDimension]="dimension"&gt;&lt;/libMultipleChart&gt;</code></pre>
+        <pre><code class="language-html">&lt;libMultipleChart
+  [dataset]="dataset"
+  [options]="chartOptions"
+  [splitDimension]="dimension"&gt;
+&lt;/libMultipleChart&gt;</code></pre>
       </div>
     </div>
   </section>
@@ -202,6 +224,8 @@
       </mat-tab>
     </mat-tab-group>
   </section>
+
+
 
   <!-- Botones de navegación -->
   <hr />

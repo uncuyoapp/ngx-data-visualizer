@@ -190,40 +190,43 @@ export class MultichartDemoComponent implements AfterViewInit {
     }
   }
 
-  // Documentación de MultipleChartDirective
+  // Documentación real de MultipleChartDirective
   multichartOptionsDocumentation = `/**
- * La directiva libMultipleChart permite crear múltiples gráficos simultáneamente
- * utilizando una dimensión específica como criterio de separación.
+ * La directiva libMultipleChart genera múltiples gráficos automáticamente
+ * basándose en los elementos seleccionados de una dimensión específica.
  *
- * Configuración especial para múltiples gráficos:
- * - La dimensión utilizada para separar los gráficos debe tener enableMulti: true
- * - Cada gráfico individual utiliza la misma configuración ChartOptions
- * - Los datos se filtran automáticamente por cada valor de la dimensión seleccionada
+ * COMPORTAMIENTOS AUTOMÁTICOS:
+ * - Cada ítem con 'selected: true' en la dimensión genera un gráfico independiente
+ * - Los datos se filtran automáticamente por cada ítem de la dimensión
+ * - Cada gráfico recibe el nombre del ítem como título automáticamente
+ * - Las leyendas se ocultan automáticamente (legends.show = false)
+ * - La MISMA configuración ChartOptions se aplica a TODOS los gráficos
+ *
+ * ENTRADAS REQUERIDAS:
+ * - [dataset]: Dataset con los datos a visualizar
+ * - [options]: ChartOptions estándar (igual que libChart)
+ * - [splitDimension]: Dimension por la cual dividir los gráficos
+ *
+ * CONFIGURACIÓN DE LA DIMENSIÓN:
+ * La dimensión debe tener ítems con 'selected: true' para generar gráficos.
+ * No se requiere ninguna propiedad especial adicional.
  */
 
-interface MultiChartOptions extends ChartOptions {
-  /** Dimensión que se utilizará para crear múltiples gráficos */
-  separationDimension?: string;
-  /** Número máximo de gráficos por fila en la visualización */
-  chartsPerRow?: number;
-  /** Configuración del espaciado entre gráficos */
-  spacing?: {
-    horizontal: number;
-    vertical: number;
-  };
-}
-
-/**
- * Ejemplo de configuración de dimensión para múltiples gráficos:
- */
 interface Dimension {
   id: number;
   name: string;
   nameView: string;
   items: Item[];
   type?: number;
-  enableMulti?: boolean; // ¡IMPORTANTE! Debe estar en true para usar con libMultipleChart
   selected?: boolean;
+}
+
+interface Item {
+  id: number;
+  name: string;
+  color?: string;
+  order?: number;
+  selected: boolean; // ¡IMPORTANTE! Solo los ítems con selected: true generan gráficos
 }`;
 
   // Código TypeScript para mostrar en las tabs

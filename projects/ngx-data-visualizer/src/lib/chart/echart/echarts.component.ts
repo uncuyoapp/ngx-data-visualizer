@@ -10,7 +10,7 @@ import {
   output,
 } from "@angular/core";
 import { ECharts, EChartsOption } from "echarts";
-import { NGX_ECHARTS_CONFIG, NgxEchartsModule } from "ngx-echarts";
+import { NgxEchartsModule } from "ngx-echarts";
 import { Chart } from "../types/chart";
 import { ChartConfiguration } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
@@ -42,14 +42,6 @@ interface EChartsInitOptions extends EChartsOption {
   styleUrls: ["./echarts.component.scss"],
   imports: [NgxEchartsModule, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: NGX_ECHARTS_CONFIG,
-      useFactory: () => ({
-        echarts: () => import("echarts").then((m) => m),
-      }),
-    },
-  ],
 })
 export class EchartsComponent implements OnInit, OnDestroy {
   private readonly ngZone = inject(NgZone);

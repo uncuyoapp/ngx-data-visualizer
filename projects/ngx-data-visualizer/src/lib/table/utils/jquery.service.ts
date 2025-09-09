@@ -65,9 +65,7 @@ import "pivottable/dist/pivot.es.min.js";
  * Este servicio asegura que jQuery esté disponible globalmente y que PivotTable
  * esté correctamente inicializado.
  */
-@Injectable({
-  providedIn: "root",
-})
+@Injectable()
 export class JQueryService {
   /**
    * Instancia de jQuery para uso interno.

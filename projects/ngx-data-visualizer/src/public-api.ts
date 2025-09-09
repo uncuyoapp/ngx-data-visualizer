@@ -8,3 +8,4 @@ export * from "./lib/directives/chart.directive";
 export * from "./lib/directives/multiple-chart.directive";
 export * from "./lib/directives/table.directive";
 export * from "./lib/types/data.types";
+export * from "./lib/providers";

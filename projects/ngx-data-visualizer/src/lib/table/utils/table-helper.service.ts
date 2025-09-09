@@ -13,7 +13,7 @@ import { JQueryService } from "./jquery.service";
  * - Manejar interacciones del usuario como hover y clics
  * - Configurar ordenamiento y formato de datos
  */
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class TableHelperService {
   /** Clases de cabecera relevantes para hover (definidas una sola vez) */
   private readonly HEADER_CLASSES = [

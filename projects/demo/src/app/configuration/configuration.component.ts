@@ -54,7 +54,8 @@ import {
   FiltersConfig // interface para aplicar filtros a los datos
 } from 'ngx-data-visualizer';
 
-@Component({selector: 'app-example',
+@Component({
+  selector: 'app-example',
   standalone: true,
   imports: [
     CommonModule,
@@ -67,9 +68,62 @@ import {
   templateUrl: './example.component.html',
   styleUrl: './example.component.scss'
 })
- class ExampleComponent implements OnInit {
+export class ExampleComponent implements OnInit {
   // ... tu implementación
 }`;
+
+  providerConfigCode = `// app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import {
+  provideDataVisualizerCharts,
+  provideDataVisualizerTables
+} from 'ngx-data-visualizer';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideAnimations(),
+
+    // ✅ Proveedores de ngx-data-visualizer
+    provideDataVisualizerCharts(), // Para funcionalidad de gráficos
+    provideDataVisualizerTables(), // Para funcionalidad de tablas
+
+    // Otros providers...
+  ],
+};`;
+
+  installationCode = `# Instalar la librería
+npm install ngx-data-visualizer
+
+# Las dependencias se instalan automáticamente (npm 7+)
+# Si necesitas instalarlas manualmente:
+npm install echarts ngx-echarts pivottable jquery
+
+# Tipos para desarrollo (opcional pero recomendado)
+npm install --save-dev @types/jquery`;
+
+  onlyChartsCode = `// Solo para gráficos
+import { provideDataVisualizerCharts } from 'ngx-data-visualizer';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideDataVisualizerCharts(), // ✅ Solo gráficos
+    // Otros providers...
+  ]
+};`;
+
+  onlyTablesCode = `// Solo para tablas
+import { provideDataVisualizerTables } from 'ngx-data-visualizer';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideDataVisualizerTables(), // ✅ Solo tablas
+    // Otros providers...
+  ]
+};`;
 
   datasetStructureCode = `
 /**

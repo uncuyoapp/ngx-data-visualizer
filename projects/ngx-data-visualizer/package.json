@@ -1,29 +1,47 @@
 {
   "name": "ngx-data-visualizer",
-  "version": "0.1.0-alpha.1",
-  "description": "Librería Angular para visualización de datos (gráficos y tablas).",
-  "keywords": ["angular", "data-visualization", "charts", "tables", "echarts", "pivottable"],
+  "version": "1.0.0",
+  "description": "Librería Angular moderna para visualización de datos mediante gráficos y tablas interactivas. Incluye directivas standalone, sistema de proveedores configurables y soporte completo para ECharts y PivotTable.js.",
+  "keywords": [
+    "angular",
+    "data-visualization",
+    "charts",
+    "tables",
+    "echarts",
+    "pivottable",
+    "app",
+    "library",
+    "uncuyoapp",
+    "uncuyo"
+  ],
   "author": "Área de Políticas Públicas de la Universidad Nacional de Cuyo <politicaspublicasuncuyo@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uncuyoapp/ngx-data-visualizer"
+    "url": "git+https://github.com/uncuyoapp/ngx-data-visualizer.git"
   },
-  "homepage": "https://uncuyoapp.github.io/ngx-data-visualizer/",
+  "homepage": "https://github.com/uncuyoapp/ngx-data-visualizer#readme",
+  "bugs": {
+    "url": "https://github.com/uncuyoapp/ngx-data-visualizer/issues"
+  },
+  "engines": {
+    "node": ">=18.13.0",
+    "npm": ">=8.19.0"
+  },
   "peerDependencies": {
     "@angular/common": "^18.0.0",
-    "@angular/core": "^18.0.0"
+    "@angular/core": "^18.0.0",
+    "echarts": "^6.0.0",
+    "jquery": "^3.7.1",
+    "ngx-echarts": "^18.0.0",
+    "pivottable": "^2.23.0"
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "echarts": "^6.0.0",
     "file-saver": "^2.0.5",
     "lodash.clonedeep": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
-    "ngx-echarts": "^18.0.0",
-    "pivottable": "^2.23.0",
-    "xlsx": "^0.18.5",
-    "jquery": "^3.7.1"
+    "xlsx": "^0.18.5"
   },
   "sideEffects": false,
   "devDependencies": {

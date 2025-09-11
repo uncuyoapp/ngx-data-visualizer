@@ -113,78 +113,85 @@ export class MultipleChartComponent implements OnDestroy {
    * mínimas necesarias (añadir, actualizar, eliminar) para optimizar el rendimiento.
    */
   private updateCharts(): void {
-    // Salir si el host aún no está disponible (ej. en la primera ejecución del efecto).
-    if (!this.chartHost) return;
+    try {
+      // Salir si el host aún no está disponible (ej. en la primera ejecución del efecto).
+      if (!this.chartHost) return;
 
-    const dataset = this.dataset();
-    const options = this.options();
-    const splitDimension = this.splitDimension();
+      const dataset = this.dataset();
+      const options = this.options();
+      const splitDimension = this.splitDimension();
 
-    // Salir si algún input esencial aún no tiene valor.
-    if (!dataset || !options || !splitDimension) {
+      // Salir si algún input esencial aún no tiene valor.
+      if (!dataset || !options || !splitDimension) {
+        this.clearAllCharts();
+        return;
+      }
+
+      // Obtener la nueva configuración de gráficos a partir del servicio.
+      const newConfigurations = this.chartFactory.getSplitConfiguration(
+        dataset,
+        options,
+        splitDimension,
+      );
+
+      // Crear Sets para facilitar la comparación de claves (títulos de gráficos).
+      const newChartKeys = new Set(
+        newConfigurations.map((c) => c.options.title!),
+      );
+      const currentChartKeys = new Set(this.activeChartComponents.keys());
+
+      // --- PASO 1: ELIMINAR ---
+      // Iterar sobre los componentes actualmente renderizados y destruir aquellos
+      // cuyas claves no se encuentran en la nueva configuración.
+      for (const key of currentChartKeys) {
+        if (!newChartKeys.has(key)) {
+          this.activeChartComponents.get(key)?.destroy();
+          this.activeChartComponents.delete(key);
+        }
+      }
+
+      // Limpiar suscripciones de navegación de componentes que podrían ser destruidos
+      // o actualizados, para evitar fugas de memoria.
+      this.navSubscriptions.forEach((s) => s.unsubscribe());
+      this.navSubscriptions = [];
+
+      // --- PASO 2: AÑADIR Y ACTUALIZAR ---
+      // Iterar sobre la nueva configuración deseada.
+      newConfigurations.forEach((config, index) => {
+        const key = config.options.title!;
+        const existingComponentRef = this.activeChartComponents.get(key);
+
+        if (existingComponentRef) {
+          // Si el componente ya existe, simplemente se actualizan sus inputs.
+          // Esto dispara el ciclo de actualización interno del ChartWrapperComponent.
+          existingComponentRef.setInput("chartConfiguration", config);
+          existingComponentRef.setInput("index", index);
+          existingComponentRef.setInput("total", newConfigurations.length);
+        } else {
+          // Si es un gráfico nuevo, se crea dinámicamente en el host.
+          const newComponentRef = this.chartHost.createComponent(
+            ChartWrapperComponent,
+            { index },
+          );
+          newComponentRef.setInput("chartConfiguration", config);
+          newComponentRef.setInput("index", index);
+          newComponentRef.setInput("total", newConfigurations.length);
+          this.activeChartComponents.set(key, newComponentRef);
+
+          // Suscribirse a los eventos de navegación del nuevo componente.
+          // La suscripción se guarda para ser limpiada en el próximo update o en ngOnDestroy.
+          const sub = newComponentRef.instance.navigate.subscribe(
+            (direction) => {
+              this.handleNavigation(newConfigurations, index, direction);
+            },
+          );
+          this.navSubscriptions.push(sub);
+        }
+      });
+    } catch (error) {
       this.clearAllCharts();
-      return;
+      console.error(error);
     }
-
-    // Obtener la nueva configuración de gráficos a partir del servicio.
-    const newConfigurations = this.chartFactory.getSplitConfiguration(
-      dataset,
-      options,
-      splitDimension,
-    );
-
-    // Crear Sets para facilitar la comparación de claves (títulos de gráficos).
-    const newChartKeys = new Set(
-      newConfigurations.map((c) => c.options.title!),
-    );
-    const currentChartKeys = new Set(this.activeChartComponents.keys());
-
-    // --- PASO 1: ELIMINAR ---
-    // Iterar sobre los componentes actualmente renderizados y destruir aquellos
-    // cuyas claves no se encuentran en la nueva configuración.
-    for (const key of currentChartKeys) {
-      if (!newChartKeys.has(key)) {
-        this.activeChartComponents.get(key)?.destroy();
-        this.activeChartComponents.delete(key);
-      }
-    }
-
-    // Limpiar suscripciones de navegación de componentes que podrían ser destruidos
-    // o actualizados, para evitar fugas de memoria.
-    this.navSubscriptions.forEach((s) => s.unsubscribe());
-    this.navSubscriptions = [];
-
-    // --- PASO 2: AÑADIR Y ACTUALIZAR ---
-    // Iterar sobre la nueva configuración deseada.
-    newConfigurations.forEach((config, index) => {
-      const key = config.options.title!;
-      const existingComponentRef = this.activeChartComponents.get(key);
-
-      if (existingComponentRef) {
-        // Si el componente ya existe, simplemente se actualizan sus inputs.
-        // Esto dispara el ciclo de actualización interno del ChartWrapperComponent.
-        existingComponentRef.setInput("chartConfiguration", config);
-        existingComponentRef.setInput("index", index);
-        existingComponentRef.setInput("total", newConfigurations.length);
-      } else {
-        // Si es un gráfico nuevo, se crea dinámicamente en el host.
-        const newComponentRef = this.chartHost.createComponent(
-          ChartWrapperComponent,
-          { index },
-        );
-        newComponentRef.setInput("chartConfiguration", config);
-        newComponentRef.setInput("index", index);
-        newComponentRef.setInput("total", newConfigurations.length);
-        this.activeChartComponents.set(key, newComponentRef);
-
-        // Suscribirse a los eventos de navegación del nuevo componente.
-        // La suscripción se guarda para ser limpiada en el próximo update o en ngOnDestroy.
-        const sub = newComponentRef.instance.navigate.subscribe((direction) => {
-          this.handleNavigation(newConfigurations, index, direction);
-        });
-        this.navSubscriptions.push(sub);
-      }
-    });
   }
 
   /**

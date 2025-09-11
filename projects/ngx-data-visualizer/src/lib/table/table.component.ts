@@ -47,7 +47,7 @@ export class TableComponent {
       (record: Record<string, unknown>) => unknown
     > = {};
 
-    for (const dim of dataset.getAllDimensions()) {
+    for (const dim of dataset.getActiveDimensions()) {
       const dataKey = dataset.getDimensionKey(dim.id);
       if (dataKey) {
         aliasMap[dim.id] = dim.nameView;

@@ -339,19 +339,8 @@ ng serve demo
 ## 📋 Roadmap
 
 ### Próximas versiones
-- [ ] Soporte para más tipos de gráficos
-- [ ] Temas personalizables mejorados
-- [ ] Optimizaciones de rendimiento
-- [ ] Soporte para Angular 19+
-- [ ] Componentes de filtros UI
-- [ ] Internacionalización (i18n)
-
-### Versión actual
-- [x] ✅ Sistema de proveedores configurables
-- [x] ✅ Directivas standalone completas
-- [x] ✅ Documentación interactiva
-- [x] ✅ Soporte completo para TypeScript
-- [x] ✅ Exportación múltiple formato
+- [ ] Configurador de gráficos y tablas
+- [ ] Mejoras en la interfaz de usuario
 
 ## 📄 Licencia
 
@@ -365,7 +354,7 @@ Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
 - **Email**: [gonzasiman@gmail.com](mailto:gonzasiman@gmail.com)
 
 ### 🏛️ Información institucional
-- **Coordinación de Proyecto**: Gonzalo R. Siman
+- **Coordinación de Proyecto**: Gonzalo R. Siman [gonzasiman@gmail.com](mailto:gonzasiman@gmail.com)
 - **Área de Políticas Públicas - UNCUYO**: [politicaspublicasuncuyo@gmail.com](mailto:politicaspublicasuncuyo@gmail.com)
 - **Sitio web**: [https://www.uncuyo.edu.ar/politicaspublicas/](https://www.uncuyo.edu.ar/politicaspublicas/)
 

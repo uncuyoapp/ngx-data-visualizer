@@ -1,0 +1,61 @@
+{
+  "type": "column",
+  "title": "",
+  "stacked": "",
+  "xAxis": {
+    "title": "Año",
+    "rotateLabels": null,
+    "firstLevel": 0,
+    "secondLevel": 13
+  },
+  "yAxis": {
+    "title": "miles de pesos de 1993",
+    "max": null
+  },
+  "tooltip": {
+    "shared": true,
+    "decimals": 2,
+    "suffix": null,
+    "format": null,
+    "showTotal": true
+  },
+  "legends": {
+    "enabled": true,
+    "show": true,
+    "position": ""
+  },
+  "navigator": {
+    "show": true,
+    "start": null,
+    "end": null
+  },
+  "colors": [
+    "#7FDEFF",
+    "#7DD5FC",
+    "#96D7FF",
+    "#98CEFF",
+    "#ADCFFF",
+    "#ACC2FF",
+    "#C4C7FF",
+    "#C7BAFE",
+    "#DABFFF",
+    "#E0B8FB",
+    "#EABAF6",
+    "#F9B4ED",
+    "#F4A4E1",
+    "#EF94D5",
+    "#EA84C9",
+    "#E87CC3",
+    "#E574BC",
+    "#F171B4",
+    "#F66899",
+    "#FE6B93"
+  ],
+  "width": null,
+  "height": null,
+  "filterLastYear": false,
+  "showYearsLegend": false,
+  "toPercent": false,
+  "measureUnit": "miles de pesos de 1993",
+  "isPreview": false
+}

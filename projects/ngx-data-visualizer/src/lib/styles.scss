@@ -1,0 +1,423 @@
+:root {
+  // Valores por defecto
+  --table-hover: #0450ff;
+  --table-hover-contrast: #ffff;
+
+  // Tamaños y espaciado
+  --table-font-size: 12pt;
+  --table-header-font-size: 14pt;
+  --table-line-height: 30pt;
+  --table-cell-padding: 5px 10px;
+  --table-label-padding: 5px;
+
+  // Colores de fondo
+  --table-data-bg: #ffff;
+  --table-label-bg: #f9f9f9;
+  --table-axis-label-bg: #ffff;
+
+  // Colores de texto
+  --table-text-color: #333333;
+  --table-data-text-color: #333333;
+  --table-label-text-color: #333333;
+
+  // Alineación de texto
+  --table-data-text-align: right;
+
+  // Bordes
+  --table-border-color: #e6e6e6;
+  --table-border-width: 2px;
+  --table-border-style: solid;
+  --table-border-spacing: 0.5rem;
+  --table-border-collapse: separate;
+  // Bordes para etiquetas
+  --table-label-border-color: #e6e6e6;
+  --table-label-border-width: 2px;
+  --table-label-border-style: solid;
+  // Bordes para datos
+  --table-data-border-color: #e6e6e6;
+  --table-data-border-width: 2px;
+  --table-data-border-style: solid;
+
+  // Sombras
+  --table-cell-box-shadow: inset 0px 2px 0px #f2f2f2;
+  // Bordes hover para etiquetas
+  --table-label-hover-border-color: #0450ff;
+  --table-label-hover-border-width: 2px;
+  --table-label-hover-border-style: solid;
+  // Bordes hover para datos
+  --table-data-hover-border-color: #0450ff;
+  --table-data-hover-border-width: 1px;
+  --table-data-hover-border-style: solid;
+  // Colores de hover separados
+  --table-label-hover: #0450ff;
+  --table-label-hover-contrast: #ffff;
+  --table-data-hover: #0450ff;
+  --table-data-hover-contrast: #ffff;
+
+  // Border radius separados
+  --table-label-border-radius: 1rem;
+  --table-data-border-radius: 1rem;
+}
+
+/*
+ *  BreakPoints and mixins
+ */
+// Small tablets and large smartphones (landscape view)
+$screen-sm-min: 576px;
+
+// Small tablets (portrait view)
+$screen-md-min: 768px;
+
+// Tablets and small desktops
+$screen-lg-min: 992px;
+
+// Large tablets and desktops
+$screen-xl-min: 1200px;
+
+// XXLarge desktops
+$sceeen-xxl-min: 1400px;
+
+// Small devices
+@mixin min-sm {
+  @media (min-width: #{$screen-sm-min}) {
+    @content;
+  }
+}
+
+@mixin max-sm {
+  @media (max-width: #{$screen-sm-min}) {
+    @content;
+  }
+}
+
+// Medium devices
+@mixin min-md {
+  @media (min-width: #{$screen-md-min}) {
+    @content;
+  }
+}
+
+@mixin max-md {
+  @media (max-width: #{$screen-lg-min}) {
+    @content;
+  }
+}
+
+// Large devices
+@mixin min-lg {
+  @media (min-width: #{$screen-lg-min}) {
+    @content;
+  }
+}
+
+@mixin max-lg {
+  @media (max-width: #{$screen-xl-min}) {
+    @content;
+  }
+}
+
+// Extra large devices
+@mixin min-xl {
+  @media (min-width: #{$screen-xl-min}) {
+    @content;
+  }
+}
+
+@mixin max-xl {
+  @media (max-width: #{$screen-xxl-min}) {
+    @content;
+  }
+}
+
+// Extra extra large devices
+@mixin min-xxl {
+  @media (min-width: #{$screen-xxl-min}) {
+    @content;
+  }
+}
+
+@mixin max-xxl {
+  @media (max-width: #{$screen-xxl-min}) {
+    @content;
+  }
+}
+
+@mixin isMobile {
+  @media only screen and (hover: none) and (pointer: coarse) {
+    @content;
+  }
+  @media (max-width: #{$screen-sm-min}) and (max-height: 800px) {
+    @content;
+  }
+  @media (max-height: 500px) {
+    @content;
+  }
+}
+
+// Estilos de la tabla pivot
+table.pvtTable {
+  // Propiedades base
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  border-spacing: var(--table-border-spacing);
+  border-collapse: var(--table-border-collapse);
+  background-color: var(--table-data-bg);
+  font-size: var(--table-font-size);
+  color: var(--table-text-color);
+
+  // Estilos de encabezado y cuerpo
+  thead,
+  tbody {
+    background: var(--table-data-bg);
+
+    tr th {
+      font-weight: normal;
+      font-size: var(--table-header-font-size);
+    }
+    th {
+      line-height: var(--table-line-height);
+    }
+  }
+
+  tbody {
+    tr,
+    td {
+      text-align: var(--table-data-text-align);
+    }
+  }
+
+  // Estilos comunes para etiquetas
+  .pvtCorner,
+  .pvtColLabel,
+  .pvtTotalLabel,
+  .pvtRowLabel,
+  .pvtAxisLabel {
+    &::before {
+      position: absolute;
+      top: calc(0px - (var(--table-border-spacing) / 2));
+      left: calc(0px - (var(--table-border-spacing) / 2));
+      content: "";
+      width: calc(100% + var(--table-border-spacing));
+      height: calc(100% + var(--table-border-spacing));
+      background: var(--table-data-bg);
+      z-index: -1;
+      outline: 1px var(--table-data-bg);
+    }
+    &::after {
+      background-color: var(--table-label-bg);
+      position: absolute;
+      top: 0;
+      left: 0;
+      content: "";
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      border-radius: var(--table-label-border-radius);
+    }
+
+    transform: translateZ(0);
+    outline-offset: calc((var(--table-label-border-width) / 2) * -1);
+    outline: var(--table-label-border-width) var(--table-label-border-style)
+      var(--table-label-border-color);
+    text-align: center;
+    padding: var(--table-label-padding);
+    border-radius: var(--table-label-border-radius);
+  }
+
+  thead {
+    tr:first-of-type {
+      th {
+        &::before {
+          top: calc(-5px - (var(--table-border-spacing) / 2));
+          height: calc(100% + var(--table-border-spacing) + 5px);
+        }
+      }
+    }
+
+    th {
+      &::before {
+        box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+      }
+    }
+
+    tr {
+      .pvtCorner:first-of-type,
+      .pvtAxisLabel:first-of-type {
+        &::before {
+          left: calc(0px - (var(--table-border-spacing) / 2));
+          width: calc(100% + var(--table-border-spacing) + 0px);
+        }
+      }
+    }
+  }
+
+  tbody {
+    th {
+      &::before {
+        box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+      }
+    }
+    tr {
+      .pvtRowLabel:left,
+      .pvtTotalLabel:first-of-type {
+        &::before {
+          left: calc(-5px - (var(--table-border-spacing) / 2));
+          width: calc(100% + var(--table-border-spacing) + 5px);
+        }
+      }
+    }
+  }
+
+  // Estilos específicos para etiquetas
+  .pvtRowLabel,
+  .pvtColLabel,
+  .pvtAxisLabel,
+  .pvtTotalLabel {
+    color: var(--table-label-text-color);
+    vertical-align: middle;
+  }
+
+  // Estilos para etiquetas de eje
+  .pvtAxisLabel,
+  .pvtCorner {
+    text-align: center;
+    vertical-align: middle;
+    background-color: var(--table-axis-label-bg);
+  }
+
+  .pvtCorner {
+    border: var(--table-border-width) var(--table-border-style)
+      var(--table-border-color) !important;
+    background: var(--table-data-bg);
+    outline: var(--table-data-bg);
+  }
+
+  // Estilos para datos
+  .pvtVal,
+  .pvtTotal,
+  .pvtGrandTotal {
+    background-color: var(--table-data-bg);
+    color: var(--table-data-text-color);
+    text-align: var(--table-data-text-align);
+    vertical-align: middle;
+    padding: var(--table-cell-padding);
+    // box-shadow: var(--table-cell-box-shadow);
+    border: var(--table-data-border-width) var(--table-data-border-style)
+      var(--table-data-border-color);
+    border-radius: var(--table-data-border-radius);
+  }
+
+  .pvtRowLabel,
+  .pvtColTotalLabel {
+    // box-shadow: var(--table-cell-box-shadow);
+  }
+
+  // Estilos para totales
+  .pvtTotalLabel,
+  .pvtTotal,
+  .pvtGrandTotal {
+    font-weight: bold;
+  }
+
+  // Estilos para hover
+  .header-hovered,
+  .header-related-hovered {
+    &::after {
+      background-color: var(--table-label-hover);
+    }
+
+    color: var(--table-label-hover-contrast);
+    z-index: 2;
+    outline: var(--table-label-hover-border-width)
+      var(--table-label-hover-border-style)
+      var(--table-label-hover-border-color);
+  }
+
+  .header-hovered-cell {
+    background-color: var(--table-header-hover, #e0e7ef);
+    color: var(--table-header-hover-contrast, #1a237e);
+    z-index: 2;
+  }
+  .header-related-hovered-cell {
+    background-color: var(--table-label-hover, #f5f7fa);
+    color: var(--table-label-hover-contrast, #263238);
+    z-index: 1;
+  }
+
+  .data-hovered {
+    background-color: var(--table-data-hover);
+    color: var(--table-data-hover-contrast);
+    border: var(--table-data-hover-border-width)
+      var(--table-data-hover-border-style) var(--table-data-hover-border-color);
+  }
+
+  .pvtCorner,
+  .pvtAxisLabel {
+    z-index: 4;
+  }
+
+  .pvtColLabel {
+    z-index: 3;
+  }
+
+  .pvtRowLabel {
+    z-index: 2;
+  }
+
+  .pvtCorner {
+    &::after {
+      background: var(--table-data-bg);
+    }
+  }
+}
+
+// Estilos del tooltip
+.ec-tooltip {
+  .title {
+    width: 100%;
+    font-weight: bold;
+    border-bottom: 1px solid #c3c3c3;
+    text-align: center;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .series-name {
+    margin-bottom: 0.2rem;
+  }
+
+  .value {
+    font-weight: bold;
+    margin-left: 10px;
+    float: right;
+  }
+
+  .summation {
+    font-weight: bold;
+  }
+
+  hr {
+    margin: 5px auto;
+  }
+}

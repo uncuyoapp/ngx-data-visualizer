@@ -1,0 +1,1533 @@
+
+[
+  {
+    "Departamentos": "Capital",
+    "Año": "2003",
+    "valor": "2026608.3015977"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2003",
+    "valor": "664987.33832359"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2003",
+    "valor": "670559.30699316"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2003",
+    "valor": "423152.38211588"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2003",
+    "valor": "1378977.331589"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2003",
+    "valor": "673565.62332317"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2003",
+    "valor": "132147.63716429"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2003",
+    "valor": "347310.7221978"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2003",
+    "valor": "425674.47711733"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2003",
+    "valor": "29708.599499337"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2003",
+    "valor": "135119.9707534"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2003",
+    "valor": "64598.989975697"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2003",
+    "valor": "324082.59238526"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2003",
+    "valor": "178156.93401073"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2003",
+    "valor": "206401.93255991"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2003",
+    "valor": "157194.89593485"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2003",
+    "valor": "763725.4597832"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2003",
+    "valor": "737960.36362228"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2004",
+    "valor": "1606328.9866654"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2004",
+    "valor": "1023209.6415393"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2004",
+    "valor": "993203.78386994"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2004",
+    "valor": "522881.70594712"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2004",
+    "valor": "1564008.2590735"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2004",
+    "valor": "873889.03718116"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2004",
+    "valor": "262031.12090716"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2004",
+    "valor": "411557.56550507"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2004",
+    "valor": "610768.06361057"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2004",
+    "valor": "36249.328516746"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2004",
+    "valor": "188699.38932448"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2004",
+    "valor": "94005.910497236"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2004",
+    "valor": "283902.03411364"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2004",
+    "valor": "216155.09212421"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2004",
+    "valor": "231379.86760338"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2004",
+    "valor": "214788.12897188"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2004",
+    "valor": "846059.73936712"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2004",
+    "valor": "895811.44226594"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2005",
+    "valor": "1695458.6258299"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2005",
+    "valor": "1095308.0558196"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2005",
+    "valor": "1043825.3444358"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2005",
+    "valor": "548149.72744773"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2005",
+    "valor": "1700118.9745142"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2005",
+    "valor": "918846.52607634"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2005",
+    "valor": "262540.65619563"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2005",
+    "valor": "430255.41348528"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2005",
+    "valor": "648041.96997766"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2005",
+    "valor": "35423.080177306"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2005",
+    "valor": "188061.96962043"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2005",
+    "valor": "118034.94579604"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2005",
+    "valor": "316233.09611454"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2005",
+    "valor": "215415.80281355"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2005",
+    "valor": "200112.71425373"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2005",
+    "valor": "244396.72044665"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2005",
+    "valor": "784671.1701964"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2005",
+    "valor": "935868.61792718"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2006",
+    "valor": "1834134.0165747"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2006",
+    "valor": "1168591.1839564"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2006",
+    "valor": "1141617.0900687"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2006",
+    "valor": "593896.00416732"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2006",
+    "valor": "1781648.5894564"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2006",
+    "valor": "999861.6156579"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2006",
+    "valor": "287953.45783873"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2006",
+    "valor": "465674.17270844"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2006",
+    "valor": "688766.863726"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2006",
+    "valor": "38302.983149741"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2006",
+    "valor": "200306.87582293"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2006",
+    "valor": "122489.58782126"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2006",
+    "valor": "352043.96086035"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2006",
+    "valor": "239186.87540333"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2006",
+    "valor": "229905.64699901"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2006",
+    "valor": "274180.18350433"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2006",
+    "valor": "821386.32025307"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2006",
+    "valor": "1019358.5489652"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2007",
+    "valor": "2012176.3318686"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2007",
+    "valor": "1272146.4401331"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2007",
+    "valor": "1244693.4183233"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2007",
+    "valor": "556104.85230023"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2007",
+    "valor": "1762877.817061"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2007",
+    "valor": "1048072.9990764"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2007",
+    "valor": "284983.28260621"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2007",
+    "valor": "477290.66214573"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2007",
+    "valor": "674737.82028693"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2007",
+    "valor": "35169.354883205"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2007",
+    "valor": "213305.80436458"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2007",
+    "valor": "127057.92795204"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2007",
+    "valor": "360781.62176272"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2007",
+    "valor": "263673.78731763"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2007",
+    "valor": "241093.08703788"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2007",
+    "valor": "263551.73088057"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2007",
+    "valor": "882930.47436836"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2007",
+    "valor": "1050071.2025944"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2008",
+    "valor": "1993044.0077338"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2008",
+    "valor": "1243533.2225716"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2008",
+    "valor": "1245601.750112"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2008",
+    "valor": "622746.93786923"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2008",
+    "valor": "1780511.2416127"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2008",
+    "valor": "1045403.7087321"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2008",
+    "valor": "279848.49914317"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2008",
+    "valor": "495865.25021825"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2008",
+    "valor": "708715.56984928"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2008",
+    "valor": "43000.099359762"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2008",
+    "valor": "222765.84186765"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2008",
+    "valor": "128821.72191236"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2008",
+    "valor": "390368.85712838"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2008",
+    "valor": "248842.55031764"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2008",
+    "valor": "260013.79935068"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2008",
+    "valor": "285014.79921928"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2008",
+    "valor": "986256.46795679"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2008",
+    "valor": "1084819.6481818"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2009",
+    "valor": "1987193.5597914"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2009",
+    "valor": "1257564.2659416"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2009",
+    "valor": "1260056.1935283"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2009",
+    "valor": "654361.65936019"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2009",
+    "valor": "1739917.1469487"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2009",
+    "valor": "998048.43743778"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2009",
+    "valor": "250445.92648098"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2009",
+    "valor": "450015.82530489"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2009",
+    "valor": "681185.84898724"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2009",
+    "valor": "45415.00852191"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2009",
+    "valor": "211930.04087365"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2009",
+    "valor": "109853.14023778"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2009",
+    "valor": "357345.32677626"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2009",
+    "valor": "248374.03065064"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2009",
+    "valor": "241362.57368084"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2009",
+    "valor": "287813.16247133"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2009",
+    "valor": "843437.64636405"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2009",
+    "valor": "1076441.9264977"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2010",
+    "valor": "2105195.8732854"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2010",
+    "valor": "1317941.7981661"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2010",
+    "valor": "1351363.5112392"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2010",
+    "valor": "681872.13095943"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2010",
+    "valor": "1787255.4429712"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2010",
+    "valor": "1102340.8489594"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2010",
+    "valor": "275690.61093792"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2010",
+    "valor": "462392.05592402"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2010",
+    "valor": "717078.24641659"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2010",
+    "valor": "42840.908075463"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2010",
+    "valor": "218444.52135842"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2010",
+    "valor": "114141.04705649"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2010",
+    "valor": "369926.97744851"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2010",
+    "valor": "256485.93956835"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2010",
+    "valor": "241572.02742863"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2010",
+    "valor": "289648.48439662"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2010",
+    "valor": "824130.38468677"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2010",
+    "valor": "1104110.9144746"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2011",
+    "valor": "2215858.5277117"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2011",
+    "valor": "1382940.3246215"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2011",
+    "valor": "1399968.153385"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2011",
+    "valor": "693063.8660576"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2011",
+    "valor": "1857378.1993677"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2011",
+    "valor": "1142528.7800779"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2011",
+    "valor": "283351.63191231"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2011",
+    "valor": "451530.2965552"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2011",
+    "valor": "785705.0579182"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2011",
+    "valor": "43091.784208833"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2011",
+    "valor": "226464.81292497"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2011",
+    "valor": "117289.69369678"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2011",
+    "valor": "271402.51813173"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2011",
+    "valor": "264015.93162324"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2011",
+    "valor": "246267.31523273"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2011",
+    "valor": "299259.39041126"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2011",
+    "valor": "875210.78361274"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2011",
+    "valor": "1184256.6363704"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2012",
+    "valor": "2268138.5825664"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2012",
+    "valor": "1421191.1368801"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2012",
+    "valor": "1427156.0046912"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2012",
+    "valor": "710798.39983251"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2012",
+    "valor": "1804654.3760032"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2012",
+    "valor": "1133792.0872669"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2012",
+    "valor": "252904.1467571"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2012",
+    "valor": "429070.14439389"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2012",
+    "valor": "731858.20183251"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2012",
+    "valor": "43506.958420196"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2012",
+    "valor": "223453.02492943"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2012",
+    "valor": "99091.841828757"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2012",
+    "valor": "256745.50084847"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2012",
+    "valor": "236753.08162504"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2012",
+    "valor": "234549.5672036"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2012",
+    "valor": "270724.48979337"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2012",
+    "valor": "832655.95902484"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2012",
+    "valor": "1168042.1354871"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2013",
+    "valor": "2308777.3126898"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2013",
+    "valor": "1439718.7643618"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2013",
+    "valor": "1465685.3943341"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2013",
+    "valor": "737094.7127123"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2013",
+    "valor": "1961040.0073702"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2013",
+    "valor": "1236300.1475078"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2013",
+    "valor": "295744.86456144"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2013",
+    "valor": "468429.63633588"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2013",
+    "valor": "784939.7566328"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2013",
+    "valor": "45076.436860593"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2013",
+    "valor": "250569.95713656"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2013",
+    "valor": "113255.59699559"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2013",
+    "valor": "267432.88494048"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2013",
+    "valor": "257804.60768969"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2013",
+    "valor": "242882.3462589"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2013",
+    "valor": "282117.98890179"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2013",
+    "valor": "825062.79640436"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2013",
+    "valor": "1229580.4088242"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2014",
+    "valor": "2259849.6605512"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2014",
+    "valor": "1395801.0782657"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2014",
+    "valor": "1445068.6441963"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2014",
+    "valor": "732786.67710888"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2014",
+    "valor": "1885302.5420636"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2014",
+    "valor": "1149389.8586265"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2014",
+    "valor": "271755.37714427"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2014",
+    "valor": "435726.76133668"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2014",
+    "valor": "756882.96136096"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2014",
+    "valor": "45762.611009814"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2014",
+    "valor": "223699.2661031"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2014",
+    "valor": "110024.02265304"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2014",
+    "valor": "254628.4728777"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2014",
+    "valor": "248838.04689039"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2014",
+    "valor": "252028.79928071"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2014",
+    "valor": "275004.20560361"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2014",
+    "valor": "804731.88968745"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2014",
+    "valor": "1140643.2038877"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2015",
+    "valor": "2398623.8670334"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2015",
+    "valor": "1415510.4668599"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2015",
+    "valor": "1480009.5915244"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2015",
+    "valor": "745755.98512036"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2015",
+    "valor": "1976362.9716927"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2015",
+    "valor": "1136528.9482261"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2015",
+    "valor": "272435.37106821"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2015",
+    "valor": "427330.50553083"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2015",
+    "valor": "778609.65958802"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2015",
+    "valor": "53140.565718517"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2015",
+    "valor": "238230.40375614"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2015",
+    "valor": "119595.71879493"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2015",
+    "valor": "272445.43190082"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2015",
+    "valor": "271177.29767618"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2015",
+    "valor": "249399.81749376"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2015",
+    "valor": "315365.2730408"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2015",
+    "valor": "834216.47405156"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2015",
+    "valor": "1204764.327797"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2016",
+    "valor": "2329527.5943811"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2016",
+    "valor": "1354568.222431"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2016",
+    "valor": "1436042.7176142"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2016",
+    "valor": "718705.49970738"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2016",
+    "valor": "1852233.8598826"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2016",
+    "valor": "1012222.8389534"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2016",
+    "valor": "223835.74899113"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2016",
+    "valor": "375915.02147116"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2016",
+    "valor": "701167.21245179"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2016",
+    "valor": "72075.410469638"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2016",
+    "valor": "190601.28991426"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2016",
+    "valor": "100626.29243962"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2016",
+    "valor": "260044.65446455"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2016",
+    "valor": "250019.39769412"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2016",
+    "valor": "247794.58880068"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2016",
+    "valor": "294199.95878242"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2016",
+    "valor": "821567.71436676"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2016",
+    "valor": "1131854.7371331"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2017",
+    "valor": "2403962.2271439"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2017",
+    "valor": "1360449.8723481"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2017",
+    "valor": "1491719.1556921"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2017",
+    "valor": "751323.90699028"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2017",
+    "valor": "1846637.4789604"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2017",
+    "valor": "1076887.322706"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2017",
+    "valor": "234371.16051419"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2017",
+    "valor": "374417.96884891"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2017",
+    "valor": "719579.6444189"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2017",
+    "valor": "49361.567169267"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2017",
+    "valor": "192984.39477777"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2017",
+    "valor": "98306.386126263"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2017",
+    "valor": "261197.82039334"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2017",
+    "valor": "261199.75131827"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2017",
+    "valor": "250997.7801686"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2017",
+    "valor": "290649.84649407"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2017",
+    "valor": "837549.04191138"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2017",
+    "valor": "1153897.0832892"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2018",
+    "valor": "2407867.9157871"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2018",
+    "valor": "1318829.6619997"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2018",
+    "valor": "1549904.9884992"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2018",
+    "valor": "767032.35562547"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2018",
+    "valor": "1557544.0113231"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2018",
+    "valor": "975237.9527388"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2018",
+    "valor": "176054.49243311"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2018",
+    "valor": "354114.35745463"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2018",
+    "valor": "756383.45180565"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2018",
+    "valor": "48481.602486897"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2018",
+    "valor": "242948.16733946"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2018",
+    "valor": "97011.382888535"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2018",
+    "valor": "263213.54705506"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2018",
+    "valor": "283219.43564703"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2018",
+    "valor": "277661.21420472"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2018",
+    "valor": "328099.84096381"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2018",
+    "valor": "848263.4016391"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2018",
+    "valor": "1319116.0184763"
+  },
+  {
+    "Departamentos": "Capital",
+    "Año": "2019",
+    "valor": "2490449.8399842"
+  },
+  {
+    "Departamentos": "Godoy Cruz",
+    "Año": "2019",
+    "valor": "1282699.0484634"
+  },
+  {
+    "Departamentos": "Guaymallén",
+    "Año": "2019",
+    "valor": "1495550.3945621"
+  },
+  {
+    "Departamentos": "Las Heras",
+    "Año": "2019",
+    "valor": "714945.15974357"
+  },
+  {
+    "Departamentos": "Luján de Cuyo",
+    "Año": "2019",
+    "valor": "1555843.8420518"
+  },
+  {
+    "Departamentos": "Maipú",
+    "Año": "2019",
+    "valor": "945063.15791266"
+  },
+  {
+    "Departamentos": "Junín",
+    "Año": "2019",
+    "valor": "170875.71928829"
+  },
+  {
+    "Departamentos": "Rivadavia",
+    "Año": "2019",
+    "valor": "337531.48405883"
+  },
+  {
+    "Departamentos": "San Martín",
+    "Año": "2019",
+    "valor": "725977.57317115"
+  },
+  {
+    "Departamentos": "La Paz",
+    "Año": "2019",
+    "valor": "48728.505884479"
+  },
+  {
+    "Departamentos": "Lavalle",
+    "Año": "2019",
+    "valor": "238802.39309918"
+  },
+  {
+    "Departamentos": "Santa Rosa",
+    "Año": "2019",
+    "valor": "93214.580243098"
+  },
+  {
+    "Departamentos": "San Carlos",
+    "Año": "2019",
+    "valor": "250736.91361658"
+  },
+  {
+    "Departamentos": "Tunuyán",
+    "Año": "2019",
+    "valor": "275008.36158171"
+  },
+  {
+    "Departamentos": "Tupungato",
+    "Año": "2019",
+    "valor": "270988.19540019"
+  },
+  {
+    "Departamentos": "General Alvear",
+    "Año": "2019",
+    "valor": "320387.75104449"
+  },
+  {
+    "Departamentos": "Malargüe",
+    "Año": "2019",
+    "valor": "862567.24118663"
+  },
+  {
+    "Departamentos": "San Rafael",
+    "Año": "2019",
+    "valor": "1331481.2859897"
+  }
+] 

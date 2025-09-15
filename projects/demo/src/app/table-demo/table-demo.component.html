@@ -1,0 +1,425 @@
+<div class="container my-5">
+  <h1 class="mb-4">Uso de la directiva <code>libTable</code></h1>
+  <p class="col-lg-12 fs-5 text-muted mb-4">
+    Esta sección proporciona una guía completa sobre el uso de la directiva
+    <code>libTable</code> para la visualización de datos en formato tabular.
+    Incluye configuraciones disponibles, opciones de personalización y ejemplos
+    prácticos de implementación con capacidades de pivotado y ordenamiento.
+  </p>
+
+  <hr />
+
+  <!-- Documentación de uso -->
+  <section class="my-5">
+    <h2>Uso de la directiva <code>libTable</code></h2>
+    <p>
+      La directiva <code>libTable</code> se utiliza para mostrar datos en
+      formato tabular con capacidades de pivotado. Requiere un objeto
+      <code>Dataset</code> y un objeto <code>TableOptions</code> como entradas.
+    </p>
+
+    <h3>Configuración de opciones de la tabla (<code>TableOptions</code>)</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="tableOptionsDocumentation"></code></pre>
+      </div>
+    </div>
+
+    <h3>Uso en el template HTML</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">HTML</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-html">&lt;libTable [dataset]="dataset" [tableOptions]="tableOptions"&gt;&lt;/libTable&gt;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Ejemplos prácticos -->
+  <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
+  <p class="introduction">
+    Los siguientes ejemplos demuestran diferentes configuraciones y usos de la
+    directiva <code>libTable</code> con casos reales de visualización de datos
+    tabulares y funcionalidades avanzadas.
+  </p>
+
+  <section class="demo-section">
+    <h2>1. Configuración Básica</h2>
+    <p class="section-description">
+      Este ejemplo demuestra una configuración básica de tabla con una sola
+      columna ("Año") y múltiples filas ("Condición", "Sexo", "Sector de
+      gestión"). Se muestran los totales tanto por fila como por columna,
+      proporcionando un resumen completo de los datos. Esta configuración es
+      ideal para análisis temporales donde se desea ver la evolución de
+      diferentes categorías a lo largo del tiempo.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container" style="height: 500px">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig1"
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example1TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example1HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>2. Múltiples Columnas</h2>
+    <p class="section-description">
+      Esta configuración presenta múltiples columnas ("Sector de gestión" y
+      "Condición") con una sola fila ("Año"). Este diseño es especialmente útil
+      para comparar diferentes categorías lado a lado, permitiendo un análisis
+      transversal de los datos. Los totales por fila y columna facilitan la
+      comprensión de los agregados por cada dimensión, siendo ideal para
+      reportes comparativos entre sectores y condiciones.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig2"
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example2TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example2HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>3. Ordenamiento Personalizado</h2>
+    <p class="section-description">
+      Este ejemplo avanzado demuestra cómo implementar ordenamiento
+      personalizado mediante la configuración de sorters. Se define un orden
+      específico para la dimensión "Condición": primero "Nuevo inscripto", luego
+      "Estudiante" y finalmente "Egresado". Esta funcionalidad es crucial para
+      presentar datos educativos en un orden lógico que refleje el flujo
+      académico natural, mejorando significativamente la legibilidad y
+      comprensión de los resultados.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="table-container">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig3"
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example3TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example3HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>4. Visualización de Porcentajes</h2>
+    <p class="section-description">
+      Esta funcionalidad permite cambiar dinámicamente entre diferentes modos de
+      visualización de los datos numéricos. Puedes alternar entre valores
+      nominales y distintos tipos de porcentajes: del total general, por fila o
+      por columna. Los botones interactivos utilizan el método
+      <code>setValueDisplay()</code> de la directiva para transformar la vista
+      de los datos sin recargar la tabla, proporcionando diferentes perspectivas
+      de análisis instantáneamente.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="percentage-buttons mb-3">
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'nominal' ? 'primary' : 'basic'"
+              (click)="setNominalView()"
+              class="me-2 mb-2"
+            >
+              Valores Nominales
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
+              (click)="setPercentOfTotalView()"
+              class="me-2 mb-2"
+            >
+              % del Total
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
+              (click)="setPercentOfRowView()"
+              class="me-2 mb-2"
+            >
+              % de Fila
+            </button>
+            <button
+              mat-raised-button
+              [color]="currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
+              (click)="setPercentOfColumnView()"
+              class="me-2 mb-2"
+            >
+              % de Columna
+            </button>
+          </div>
+          <div class="table-container">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig4"
+              #tablePercentages
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example4TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example4HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>5. Configuración de Temas</h2>
+    <p class="section-description">
+      Esta sección demuestra las capacidades de personalización visual de la
+      directiva libTable a través del ThemeService. Se pueden aplicar temas
+      predefinidos (Default, Material, Bootstrap) o crear personalizaciones
+      específicas modificando colores individuales. Los botones interactivos
+      permiten cambiar dinámicamente la apariencia de la tabla, demostrando la
+      flexibilidad del sistema de temas para adaptarse a diferentes estilos de
+      interfaz y requisitos de marca.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="theme-buttons">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="setDefaultTheme()"
+            >
+              Tema por Defecto
+            </button>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="setMaterialTheme()"
+            >
+              Tema Material
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="setBootstrapTheme()"
+            >
+              Tema Bootstrap
+            </button>
+            <button mat-raised-button (click)="updateThemeWithCustomColors()">
+              Personalizar Tema
+            </button>
+          </div>
+          <div class="table-container">
+            <libTable
+              [dataset]="dataset1"
+              [tableOptions]="tableConfig3"
+              #tableTheme
+            ></libTable>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example6TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example6HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <h4>Configuraciones disponibles:</h4>
+    <pre
+      class="language-typescript"
+    ><code [textContent]="example7HTML"></code></pre>
+  </section>
+
+  <!-- Botones de navegación -->
+  <hr />
+  <section class="my-5">
+    <h2>Navegación</h2>
+    <p class="section-description">
+      Continúa explorando otros componentes y configuraciones disponibles en la
+      librería ngx-data-visualizer.
+    </p>
+
+    <div class="navigation-buttons">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <button
+            class="btn btn-outline-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToConfiguration()"
+          >
+            <i class="fas fa-cog me-2"></i>
+            <div>
+              <div class="btn-title">Configuración</div>
+              <small class="btn-subtitle">Guía inicial</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToChartDemo()"
+          >
+            <i class="fas fa-chart-bar me-2"></i>
+            <div>
+              <div class="btn-title">Gráficos</div>
+              <small class="btn-subtitle">Directiva libChart</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-warning btn-lg w-100 navigation-btn"
+            (click)="navigateToMultichartDemo()"
+          >
+            <i class="fas fa-chart-line me-2"></i>
+            <div>
+              <div class="btn-title">Múltiples Gráficos</div>
+              <small class="btn-subtitle">Directiva libMultipleChart</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,47 @@
+<main>
+  <nav class="navbar navbar-expand-lg border-bottom mb-4">
+    <div class="container">
+      <a class="navbar-brand fs-4" routerLink="/">ngx-data-visualizer</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
+        aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="configuration" routerLinkActive="active">Configuración</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="table-demo" routerLinkActive="active">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="chart-demo" routerLinkActive="active">Gráficos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="multichart-demo" routerLinkActive="active">Gráficos múltiples</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="full-example" routerLinkActive="active">Ejemplo completo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="dashboard" routerLinkActive="active">Escenario</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank" class="nav-link">
+              <img src="assets/github-mark.svg" alt="GitHub" height="24" class="d-inline-block align-text-top">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid container-lg">
+    <router-outlet></router-outlet>
+  </div>
+</main>

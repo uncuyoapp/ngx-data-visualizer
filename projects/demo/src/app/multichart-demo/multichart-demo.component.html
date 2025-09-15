@@ -1,0 +1,282 @@
+<div class="container my-5">
+  <h1 class="mb-4">Uso de la directiva <code>libMultipleChart</code></h1>
+  <p class="col-lg-12 fs-5 text-muted mb-4">
+    Esta sección proporciona una guía completa sobre el uso de la directiva
+    <code>libMultipleChart</code> para la visualización de múltiples gráficos
+    simultáneamente. Incluye configuraciones disponibles, opciones de
+    personalización y ejemplos prácticos de implementación con separación
+    automática por dimensiones.
+  </p>
+
+  <hr />
+
+  <!-- Documentación de uso -->
+  <section class="my-5">
+    <h2>Uso de la directiva <code>libMultipleChart</code></h2>
+    <p>
+      La directiva <code>libMultipleChart</code> genera múltiples gráficos
+      automáticamente basándose en los ítems seleccionados de una dimensión
+      específica del dataset. Cada ítem con <code>selected: true</code> crea un
+      gráfico independiente con datos filtrados automáticamente. La misma
+      configuración <code>ChartOptions</code> se aplica consistentemente a todos
+      los gráficos, mientras que los títulos y leyendas se ajustan
+      automáticamente para optimizar la visualización múltiple.
+    </p>
+
+    <h3>Comportamientos Automáticos</h3>
+    <ul class="list-unstyled">
+      <li><strong>Filtrado de datos:</strong> Cada gráfico muestra solo los datos correspondientes a su ítem de dimensión</li>
+      <li><strong>Títulos automáticos:</strong> Cada gráfico recibe el nombre del ítem como título</li>
+      <li><strong>Leyendas optimizadas:</strong> Se ocultan automáticamente para evitar redundancia</li>
+      <li><strong>Configuración consistente:</strong> Todas las opciones avanzadas de ChartOptions se aplican a todos los gráficos</li>
+    </ul>
+
+    <h3>Configuración de la directiva (<code>MultipleChartDirective</code>)</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="multichartOptionsDocumentation"></code></pre>
+      </div>
+    </div>
+
+    <h3>Uso en el template HTML</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">HTML</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-html">&lt;libMultipleChart
+  [dataset]="dataset"
+  [options]="chartOptions"
+  [splitDimension]="dimension"&gt;
+&lt;/libMultipleChart&gt;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- Ejemplos prácticos -->
+  <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
+  <p class="introduction">
+    Los siguientes ejemplos demuestran diferentes configuraciones y usos de la
+    directiva <code>libMultipleChart</code> con casos reales de visualización de
+    datos múltiples y comparaciones entre categorías.
+  </p>
+
+  <section class="demo-section">
+    <h2>1. Múltiples Gráficos de Columnas por Año</h2>
+    <p class="section-description">
+      Este ejemplo demuestra cómo crear múltiples gráficos de columnas, uno para
+      cada año disponible en los datos. Cada gráfico muestra la distribución por
+      condición para un año específico, permitiendo comparaciones temporales
+      efectivas. La configuración utiliza colores personalizados para cada serie.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="multichart-container">
+            <libMultipleChart
+              [dataset]="dataset1"
+              [options]="multichartConfig1"
+              [splitDimension]="dataset1.dimensions[3]"
+            ></libMultipleChart>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example1TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example1HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>2. Múltiples Gráficos de Líneas por Sector</h2>
+    <p class="section-description">
+      Esta configuración presenta múltiples gráficos de líneas que muestran la
+      evolución temporal para cada sector de gestión. Los tooltips compartidos
+      facilitan la comparación de valores en puntos temporales específicos. Ademas se configuró un filtrado
+      al dataset para agrupar la dimensión "Sexo" logrando una mejor visualización de los datos.
+      Este enfoque es ideal para análisis comparativos de tendencias entre diferentes categorías.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="multichart-container">
+            <libMultipleChart
+              [dataset]="dataset1Rolled"
+              [options]="multichartConfig2"
+              [splitDimension]="dataset1.dimensions[1]"
+            ></libMultipleChart>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example2TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example2HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <section class="demo-section">
+    <h2>3. Funcionalidades Interactivas</h2>
+    <p class="section-description">
+      Esta sección demuestra las capacidades interactivas avanzadas de la
+      directiva libMultipleChart para cambiar de dimensión por la que se generan los gráficos.
+      El selector permite cambiar dinámicamente la dimensión utilizada para separar los datos en múltiples gráficos.
+    </p>
+
+    <mat-tab-group (selectedTabChange)="onTabChange()">
+      <mat-tab label="Ejemplo">
+        <div class="tab-content">
+          <div class="interactive-controls mb-3">
+            <mat-form-field appearance="outline" style="min-width: 250px;">
+              <mat-label>Dimensión para separar gráficos</mat-label>
+              <mat-select
+                [value]="selectedDimensionId"
+                (selectionChange)="onDimensionChange($event.value)">
+                <mat-option *ngFor="let dimension of availableDimensions" [value]="dimension.id">
+                  {{dimension.nameView}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="multichart-container">
+            <libMultipleChart
+              [dataset]="dataset1"
+              [options]="multichartConfig1"
+              [splitDimension]="selectedDimension"
+              #multichartInteractive>
+            </libMultipleChart>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código TypeScript">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">TypeScript</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-typescript"
+              ><code [textContent]="example3TypeScript"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Código HTML">
+        <div class="tab-content">
+          <div class="card bg-light mb-3 shadow-sm">
+            <div class="card-header fw-semibold">HTML</div>
+            <div class="card-body bg-dark">
+              <pre
+                class="language-html"
+              ><code [textContent]="example3HTML"></code></pre>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+
+
+  <!-- Botones de navegación -->
+  <hr />
+  <section class="my-5">
+    <h2>Navegación</h2>
+    <p class="section-description">
+      Continúa explorando otros componentes y configuraciones disponibles en la
+      librería ngx-data-visualizer.
+    </p>
+
+    <div class="navigation-buttons">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <button
+            class="btn btn-outline-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToConfiguration()"
+          >
+            <i class="fas fa-cog me-2"></i>
+            <div>
+              <div class="btn-title">Configuración</div>
+              <small class="btn-subtitle">Guía inicial</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToChartDemo()"
+          >
+            <i class="fas fa-chart-bar me-2"></i>
+            <div>
+              <div class="btn-title">Gráficos</div>
+              <small class="btn-subtitle">Directiva libChart</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-success btn-lg w-100 navigation-btn"
+            (click)="navigateToTableDemo()"
+          >
+            <i class="fas fa-table me-2"></i>
+            <div>
+              <div class="btn-title">Tablas</div>
+              <small class="btn-subtitle">Directiva libTable</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,758 @@
+[
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "463403"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "597768"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "158534"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "193736"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "112484"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "142367"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "45300"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "55156"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "21671"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "31954"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2010",
+    "valor": "11177"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2010",
+    "valor": "17397"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "614241"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "827604"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "160910"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "205660"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "132700"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "175194"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "46395"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "58627"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "28782"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "44660"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2011",
+    "valor": "13684"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2011",
+    "valor": "22234"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "618624"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "823662"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "167429"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "215189"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "137702"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "177436"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "48963"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "59819"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "29227"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "44256"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2012",
+    "valor": "13540"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2012",
+    "valor": "23337"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "610843"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "826768"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "170424"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "222708"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "134034"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "181559"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "48275"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "61782"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "31082"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "49261"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2013",
+    "valor": "13737"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2013",
+    "valor": "23639"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "623108"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "844964"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "173448"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "229925"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "140405"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "190803"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "50118"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "64437"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "31761"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "49791"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2014",
+    "valor": "14737"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2014",
+    "valor": "24342"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "632599"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "858853"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "174987"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "236496"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "145463"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "197708"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "49132"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "66262"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "32505"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "50537"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2015",
+    "valor": "15892"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2015",
+    "valor": "26026"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "645462"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "874335"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "178245"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "241377"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "159044"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "213423"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "51148"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "66086"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "32271"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "50460"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2016",
+    "valor": "15683"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2016",
+    "valor": "26260"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "669770"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "914622"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "178880"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "241880"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "168821"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "227482"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "51738"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "68264"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "33407"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "52767"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2017",
+    "valor": "14958"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2017",
+    "valor": "24196"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "687615"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "952790"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "182205"
+  },
+  {
+    "Condición": "Estudiante",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "248660"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "175598"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "249361"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "52217"
+  },
+  {
+    "Condición": "Nuevo inscripto",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "70485"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "34319"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Estatal",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "52639"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Varones",
+    "Año": "2018",
+    "valor": "17309"
+  },
+  {
+    "Condición": "Egresado",
+    "Sector de gestión": "Privado",
+    "Sexo": "Mujeres",
+    "Año": "2018",
+    "valor": "28477"
+  }
+]

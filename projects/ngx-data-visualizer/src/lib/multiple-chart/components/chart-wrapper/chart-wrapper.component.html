@@ -1,0 +1,66 @@
+<div
+  #chartItem
+  [id]="'chartItem-' + index()"
+  class="chart-item"
+  [class.expanded]="chartConfiguration().expanded"
+>
+  <!-- Botón de navegación hacia atrás -->
+  @if (index() > 0) {
+  <button
+    class="icon-nav back"
+    (click)="navigate.emit('previous')"
+    type="button"
+    [attr.aria-label]="'Gráfico anterior'"
+  >
+    <lib-icon-back></lib-icon-back>
+  </button>
+  }
+
+  <!-- Contenedor del gráfico -->
+  <div class="chart-wrapper">
+    <div libChart
+         [dataset]="chartConfiguration().dataset"
+         [chartOptions]="chartConfiguration().options">
+    </div>
+  </div>
+
+  <!-- Botón de navegación hacia adelante -->
+  @if (index() < total() - 1) {
+  <button
+    class="icon-nav forward"
+    (click)="navigate.emit('next')"
+    type="button"
+    [attr.aria-label]="'Siguiente gráfico'"
+  >
+    <lib-icon-forward></lib-icon-forward>
+  </button>
+  }
+
+  <!-- Botón para expandir/contraer el gráfico -->
+  @if (chartConfiguration().expanded) {
+  <button
+    class="icon-expand"
+    (click)="toggleExpand()"
+    type="button"
+    [attr.aria-label]="'Contraer gráfico'"
+  >
+    <lib-icon-contract></lib-icon-contract>
+  </button>
+  } @else {
+  <button
+    class="icon-expand"
+    (click)="toggleExpand()"
+    type="button"
+    [attr.aria-label]="'Expandir gráfico'"
+  >
+    <lib-icon-expand></lib-icon-expand>
+  </button>
+  }
+
+  <!-- Indicador de posición en mobile -->
+  <div class="mobile-indicator">
+    <span class="current-position">{{ index() + 1 }}</span>
+    <span class="separator">/</span>
+    <span class="total-count">{{ total() }}</span>
+  </div>
+</div>

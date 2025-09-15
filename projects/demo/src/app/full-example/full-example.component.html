@@ -1,0 +1,192 @@
+<!-- Contenedor principal de la demo con ejemplos de uso de la librería ngx-data-visualizer -->
+<div class="my-5 pb-4">
+  <h1 class="mb-4">Ejemplo de uso de <code>ngx-data-visualizer</code></h1>
+
+  <!-- Sección de gráfico simple - Muestra cómo usar el componente libChart -->
+  <div class="chart my-4 shadow p-2 p-md-4 rounded">
+    <h2 class="text-center">Gráfico</h2>
+    <!--
+      libChart: Componente principal para mostrar gráficos
+      - dataset: Contiene los datos y configuración de dimensiones
+      - chartOptions: Configuración visual del gráfico
+      - seriesChange: Evento que se dispara cuando cambian las series del gráfico
+    -->
+    <libChart #chartOne="libChart" [dataset]="dataset" [chartOptions]="chartOptions"
+      (seriesChange)="onSeriesChange($event)">
+    </libChart>
+  </div>
+
+  <!-- Sección de tabla - Muestra cómo usar el componente libTable -->
+  <div class="my-4 shadow p-2 p-md-4 rounded">
+    <h2 class="text-center">Tabla</h2>
+    <div class="table">
+      <!--
+        libTable: Componente para mostrar datos en formato tabular
+        - dataset: Los mismos datos que usa el gráfico
+        - tableOptions: Configuración específica para la tabla
+      -->
+      <libTable #tableOne="libTable" [dataset]="dataset" [tableOptions]="tableOptions"></libTable>
+    </div>
+  </div>
+
+  <!-- Sección de gráficos múltiples - Muestra cómo dividir datos en múltiples gráficos -->
+  <div class="my-4 shadow p-2 p-md-4 rounded">
+    <h2 class="text-center">Gráficos múltiples - {{ splitDimension.nameView }}</h2>
+    <div class="multiChart">
+      <!--
+        libMultipleChart: Componente para generar múltiples gráficos basados en una dimensión
+        - dataset: Datos fuente
+        - options: Configuración de gráficos
+        - splitDimension: Dimensión por la cual dividir los datos
+      -->
+      <libMultipleChart [dataset]="dataset" [options]="chartOptions" [splitDimension]="splitDimension">
+      </libMultipleChart>
+    </div>
+  </div>
+</div>
+
+<!-- Panel lateral deslizante para controles de filtros y acciones -->
+<!-- Se abre/cierra con animaciones CSS mediante la clase 'open' -->
+<div class="side-menu shadow p-4" [class.open]="isSidePanelOpen">
+
+  <!-- Botón para cerrar el panel desde dentro -->
+  <div class="close-button" (click)="closeSidePanel()" (keyup.enter)="closeSidePanel()" tabindex="0" role="button" aria-label="Cerrar panel lateral">
+    <span>&times;</span>
+  </div>
+
+  <div class="actions">
+    <!-- Sección de filtrado y agrupamiento de dimensiones -->
+    <div class="dimensions my-4">
+      <h3>Filtrado y agrupamiento</h3>
+
+      <div class="actions-list">
+        <!-- Iteración sobre todas las dimensiones del dataset -->
+        @for (dimension of dataset.dimensions; track dimension.id) {
+        <div class="action">
+
+          <!-- Cabecera de cada dimensión con checkbox y botón de colapso -->
+          <div class="dimension-header">
+            <div class="checkboxlabel">
+              <!-- Checkbox para habilitar/deshabilitar dimensión completa -->
+              <!-- Validación: al menos una dimensión debe estar activa -->
+              <input color="zero" type="checkbox" class="checkbox" [(ngModel)]="dimension.selected"
+                (ngModelChange)="onDimensionChange(dimension)" [id]="'dimension' + dimension.id" />
+              <label [for]="'dimension' + dimension.id">{{
+                dimension.nameView
+                }}</label>
+            </div>
+
+            <!-- Botón para expandir/colapsar items de la dimensión -->
+            <button class="toggle-button" (click)="toggleDimensionItems(dimension)" type="button">
+              <span [innerHTML]="isDimensionCollapsed(dimension.id.toString()) ? '→' : '↓'"></span>
+            </button>
+          </div>
+
+          <!-- Lista de items de cada dimensión (colapsable) -->
+          <div class="actions-list" [class.collapsed]="isDimensionCollapsed(dimension.id.toString())" style="padding-right: 0px">
+
+            <!-- Opción "Todos" - controla todos los items de la dimensión -->
+            <div class="action action-item">
+              <div class="checkboxlabel">
+                <!--
+                  Checkbox "Todos" con estado inteligente:
+                  - Checked: cuando todos los items están seleccionados
+                  - Indeterminado: cuando algunos items están seleccionados
+                  - Unchecked: cuando ningún item está seleccionado
+                -->
+                <input type="checkbox" class="checkbox"
+                       #allCheckbox
+                       [checked]="areAllItemsSelected(dimension)"
+                       [id]="'alls' + dimension.id"
+                       (change)="toggleAllItems(dimension, $any($event.target).checked)" />
+                <label [for]="'alls' + dimension.id">Todos</label>
+              </div>
+            </div>
+
+            <!-- Items individuales de cada dimensión -->
+            @for (item of dimension.items; track item.id) {
+            <div class="action action-item">
+              <div class="checkboxlabel">
+                <!-- Checkbox individual para cada item -->
+                <input type="checkbox" class="checkbox" [(ngModel)]="item.selected" [id]="'item' + item.id"
+                  (ngModelChange)="onItemChange()" />
+                <label [for]="'item' + item.id">{{ item.name }}</label>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Botón para resetear todos los filtros a su estado inicial -->
+      <button class="action-btn reset-btn w-100" (click)="clearFilters()">
+        <span class="action-icon">🔄</span>
+        <span class="action-text">Reestablecer filtros</span>
+      </button>
+    </div>
+
+    <!-- Sección de configuración de gráficos múltiples -->
+    <div class="my-4">
+      <h3>Gráficos múltiples</h3>
+      <div class="multiple-charts-config">
+        <label for="splitDimensionSelect">Dividir por dimensión:</label>
+        <select
+          id="splitDimensionSelect"
+          class="form-select"
+          [value]="splitDimension.id"
+          (change)="onSplitDimensionChange($any($event.target).value)"
+        >
+          @for (dimension of dataset.dimensions; track dimension.id) {
+            <option [value]="dimension.id">{{ dimension.nameView }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Sección de acciones sobre los componentes de visualización -->
+    <div class="my-4">
+      <h3>Acciones</h3>
+      <div class="actions-buttons">
+
+        <!-- Toggle vista porcentual/nominal -->
+        <button class="action-btn" [class.active]="isPercentViewActive" (click)="togglePercentView(chartOne)">
+          <span class="action-icon">📊</span>
+          <span class="action-text">{{ isPercentViewActive ? 'Vista nominal' : 'Vista porcentual' }}</span>
+        </button>
+
+        <!-- Toggle mostrar/ocultar meta -->
+        <button class="action-btn" [class.active]="isGoalVisible" (click)="toggleGoal(chartOne)">
+          <span class="action-icon">🎯</span>
+          <span class="action-text">{{ isGoalVisible ? 'Ocultar meta' : 'Mostrar meta' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sección de descargas -->
+    <div class="my-4">
+      <h3>Descargas</h3>
+      <div class="actions-buttons">
+
+        <!-- Exportar el gráfico como imagen -->
+        <button class="action-btn" (click)="exportChart(chartOne)">
+          <span class="action-icon">📈</span>
+          <span class="action-text">Descargar gráfico</span>
+        </button>
+
+        <!-- Exportar los datos de la tabla como Excel -->
+        <button class="action-btn" (click)="exportTable(tableOne)">
+          <span class="action-icon">📋</span>
+          <span class="action-text">Descargar tabla</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Botón flotante para abrir el panel lateral -->
+<!-- Solo se muestra cuando el panel está cerrado -->
+<button class="floating-menu-button" (click)="toggleSidePanel()" *ngIf="!isSidePanelOpen">
+  <span>☰</span>
+</button>

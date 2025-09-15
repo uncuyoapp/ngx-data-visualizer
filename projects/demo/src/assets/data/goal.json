@@ -1,0 +1,22 @@
+{
+  "text": "Lograr, para el año 2015, un total de 90% de personas capacitadas en el marco del programa. ",
+  "data": [
+    {
+      "Año": "2003",
+      "valor": 10000000
+    },
+    {
+      "Año": "2004",
+      "valor": 7000000
+    },
+    {
+      "Año": "2005",
+      "valor": 8000000
+    },
+    {
+      "Año": "2006",
+      "valor": 9000000
+    }
+  ],
+  "chartType": "line"
+}

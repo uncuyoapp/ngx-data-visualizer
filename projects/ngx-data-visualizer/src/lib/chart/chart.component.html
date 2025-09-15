@@ -1,0 +1,9 @@
+@if (chartConfiguration(); as config) {
+  <lib-app-echarts [chartConfiguration]="config" (chartCreated)="mainChart=$event"
+    (seriesChange)="onSeriesChange($event)"></lib-app-echarts>
+
+  @if (config.options.legends.enabled && series() && series().length) {
+    <lib-legend [series]="series()" (legendClick)="onSelectSeries($event)"
+      (legendHover)="onHoverSeries($event)"></lib-legend>
+  }
+}

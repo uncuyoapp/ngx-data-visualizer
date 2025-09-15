@@ -1,0 +1,177 @@
+@use "../../../styles.scss" as styles;
+
+:host {
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  width: 100%;
+
+  /* Mobile - un gráfico por pantalla */
+  @include styles.isMobile {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    scroll-snap-align: center;
+  }
+
+  /* Tablet - 2 columnas */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    width: calc(50% - 8px);
+
+    &:only-child {
+      width: 100%;
+    }
+  }
+
+  /* Desktop - 3 columnas */
+  @media (min-width: 1200px) {
+    width: calc(33.333% - 10.667px);
+
+    &:only-child {
+      width: 100%;
+    }
+
+    &:first-child:nth-last-child(2),
+    &:last-child:nth-child(2) {
+      width: calc(50% - 8px);
+    }
+  }
+
+  /* Estado expandido */
+  &.expanded {
+    z-index: 5;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: calc(100% - 16px) !important;
+    margin-left: 8px;
+    margin-right: 8px;
+
+    @include styles.isMobile {
+      margin: 0;
+    }
+  }
+}
+
+/* Items de gráfico */
+.chart-item {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative; // Para posicionar los botones internos
+
+  .chart-wrapper {
+    overflow: auto;
+    max-height: 100%;
+  }
+}
+
+/* Botones de navegación */
+.icon-nav {
+  border: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+  z-index: 10;
+  display: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+
+  &:focus {
+    outline: 2px solid #6467f3;
+    outline-offset: 2px;
+  }
+
+  &.back {
+    left: 8px;
+  }
+
+  &.forward {
+    right: 8px;
+  }
+
+  @include styles.isMobile {
+    display: block;
+  }
+}
+
+/* Botón expandir/contraer */
+.icon-expand {
+  border: none;
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f5f5f5;
+    transform: scale(1.1);
+  }
+
+  &:focus {
+    outline: 2px solid #6467f3;
+    outline-offset: 2px;
+  }
+
+  @include styles.isMobile {
+    display: none;
+  }
+}
+
+/* Indicador de posición mobile */
+.mobile-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 10;
+  display: none;
+
+  @include styles.isMobile {
+    display: block;
+  }
+
+  .current-position {
+    font-weight: bold;
+  }
+
+  .separator {
+    margin: 0 2px;
+    opacity: 0.8;
+  }
+
+  .total-count {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+}

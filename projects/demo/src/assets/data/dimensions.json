@@ -1,0 +1,233 @@
+[
+  {
+    "id": 13,
+    "name": "Departamentos",
+    "nameView": "Departamentos de Mendoza",
+    "type": 3,
+    "selected": true,
+    "enableMulti": true,
+    "items": [
+      {
+        "id": 58,
+        "name": "Capital",
+        "order": 1,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 59,
+        "name": "Godoy Cruz",
+        "order": 2,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 60,
+        "name": "Guaymallén",
+        "order": 3,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 61,
+        "name": "Las Heras",
+        "order": 4,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 62,
+        "name": "Luján de Cuyo",
+        "order": 5,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 63,
+        "name": "Maipú",
+        "order": 6,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 64,
+        "name": "Junín",
+        "order": 7,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 65,
+        "name": "Rivadavia",
+        "order": 8,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 66,
+        "name": "San Martín",
+        "order": 9,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 67,
+        "name": "La Paz",
+        "order": 10,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 68,
+        "name": "Lavalle",
+        "order": 11,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 69,
+        "name": "Santa Rosa",
+        "order": 12,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 70,
+        "name": "San Carlos",
+        "order": 13,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 71,
+        "name": "Tunuyán",
+        "order": 14,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 72,
+        "name": "Tupungato",
+        "order": 15,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 73,
+        "name": "General Alvear",
+        "order": 16,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 74,
+        "name": "Malargüe",
+        "order": 17,
+        "color": "",
+        "selected": true
+      },
+      {
+        "id": 75,
+        "name": "San Rafael",
+        "order": 18,
+        "color": "",
+        "selected": true
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "name": "year",
+    "nameView": "Año",
+    "type": 0,
+    "selected": true,
+    "enableMulti": true,
+    "items": [
+      {
+        "name": "2003",
+        "selected": true,
+        "id": "2003"
+      },
+      {
+        "name": "2004",
+        "selected": true,
+        "id": "2004"
+      },
+      {
+        "name": "2005",
+        "selected": true,
+        "id": "2005"
+      },
+      {
+        "name": "2006",
+        "selected": true,
+        "id": "2006"
+      },
+      {
+        "name": "2007",
+        "selected": true,
+        "id": "2007"
+      },
+      {
+        "name": "2008",
+        "selected": true,
+        "id": "2008"
+      },
+      {
+        "name": "2009",
+        "selected": true,
+        "id": "2009"
+      },
+      {
+        "name": "2010",
+        "selected": true,
+        "id": "2010"
+      },
+      {
+        "name": "2011",
+        "selected": true,
+        "id": "2011"
+      },
+      {
+        "name": "2012",
+        "selected": true,
+        "id": "2012"
+      },
+      {
+        "name": "2013",
+        "selected": true,
+        "id": "2013"
+      },
+      {
+        "name": "2014",
+        "selected": true,
+        "id": "2014"
+      },
+      {
+        "name": "2015",
+        "selected": true,
+        "id": "2015"
+      },
+      {
+        "name": "2016",
+        "selected": true,
+        "id": "2016"
+      },
+      {
+        "name": "2017",
+        "selected": true,
+        "id": "2017"
+      },
+      {
+        "name": "2018",
+        "selected": true,
+        "id": "2018"
+      },
+      {
+        "name": "2019",
+        "selected": true,
+        "id": "2019"
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+// Variables
+$z-index-base: 8;
+$z-index-inner: 9;
+
+/**
+ * Contenedor principal de la tabla
+ * Proporciona un área desplazable con estilo para la tabla
+ */
+.table-container {
+  position: relative;
+  z-index: $z-index-base;
+  overflow: auto;
+  max-height: 100%;
+  max-width: 100%;
+
+  // Contenedor interno para la tabla
+  > div {
+    z-index: $z-index-inner;
+    position: relative;
+  }
+    
+}

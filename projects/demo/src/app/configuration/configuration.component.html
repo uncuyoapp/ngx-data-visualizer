@@ -1,0 +1,235 @@
+<div class="container my-5">
+  <h1 class="mb-4">
+    Guía de configuración de <code>ngx-data-visualizer</code>
+  </h1>
+  <p class="col-lg-12 fs-5 text-muted mb-4">
+    Esta sección explica cómo configurar e integrar la librería
+    <code>ngx-data-visualizer</code> dentro de una aplicación Angular. Abarca
+    desde la instalación del paquete, la importación de módulos necesarios,
+    hasta las configuraciones necesarias para utilizar las directivas
+    disponibles. Si estás comenzando, este es el primer paso para incorporar
+    nuestros componentes a tu proyecto.
+  </p>
+  <hr />
+  <section class="my-5">
+    <h2>Instalación de la librería</h2>
+    <p>
+      Para utilizar <code>ngx-data-visualizer</code> en tu proyecto Angular, debes
+      instalar la librería desde NPM junto con sus dependencias:
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">Bash</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-bash" [textContent]="installationCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Configuración de Proveedores</h2>
+    <p>
+      La librería utiliza un sistema modular de proveedores que te permite incluir solo las
+      funcionalidades que necesitas, optimizando el bundle de tu aplicación:
+    </p>
+
+    <h3>Configuración completa (gráficos + tablas)</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - app.config.ts</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="providerConfigCode"></code></pre>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <h4>Solo para gráficos</h4>
+        <div class="card bg-light mb-3 shadow-sm">
+          <div class="card-header fw-semibold">TypeScript</div>
+          <div class="card-body bg-dark">
+            <pre><code class="language-typescript" [textContent]="onlyChartsCode"></code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h4>Solo para tablas</h4>
+        <div class="card bg-light mb-3 shadow-sm">
+          <div class="card-header fw-semibold">TypeScript</div>
+          <div class="card-body bg-dark">
+            <pre><code class="language-typescript" [textContent]="onlyTablesCode"></code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-3" role="alert">
+      <strong>💡 Tip:</strong> Los proveedores implementan lazy loading automático.
+      <code>provideDataVisualizerCharts()</code> carga ECharts solo cuando se necesita,
+      y <code>provideDataVisualizerTables()</code> gestiona las dependencias de PivotTable.js.
+    </div>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Importación de la librería</h2>
+    <p>
+      Para comenzar a usar <code>ngx-data-visualizer</code>, debes importar los
+      módulos y directivas necesarios en tu componente o módulo Angular.
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="importCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Directivas disponibles</h2>
+    <p>
+      La librería proporciona las siguientes directivas, que debes importar y
+      usar según tus necesidades:
+    </p>
+    <ul>
+      <li>
+        <code>ChartDirective</code>: para visualización de gráficos
+        individuales, con selector <code>libChart</code>.
+      </li>
+      <li>
+        <code>MultipleChartDirective</code>: para visualizar múltiples gráficos
+        simultáneamente, con selector <code>libMultipleChart</code>.
+      </li>
+      <li>
+        <code>TableDirective</code>: para mostrar datos en formato tabular, con
+        selector <code>libTable</code>.
+      </li>
+    </ul>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>API de las Directivas</h2>
+    <p>
+      Además de la configuración inicial a través de inputs, las directivas exponen métodos públicos que permiten interactuar con los componentes de forma dinámica. Para acceder a ellos, primero necesitas obtener una referencia a la directiva en tu componente usando el decorador <code>ViewChild</code>.
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="viewChildCode"></code></pre>
+      </div>
+    </div>
+
+    <h3 class="mt-4">ChartDirective</h3>
+    <ul>
+      <li><code>toPercentage(): void</code>: Cambia la visualización del gráfico a modo porcentual.</li>
+      <li><code>export(type: 'svg' | 'jpg'): string | void</code>: Exporta el gráfico como una imagen SVG o JPG.</li>
+      <li><code>toggleShowGoal(goal: Goal): void</code>: Muestra u oculta una línea de "meta" en el gráfico.</li>
+    </ul>
+
+    <h3 class="mt-4">TableDirective</h3>
+    <ul>
+      <li><code>setValueDisplay(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void</code>: Cambia cómo se muestran los valores (real, % del total, % de fila, etc.).</li>
+      <li><code>export(type: 'html' | 'xlsx', name?: string): any</code>: Exporta la tabla a formato HTML o a un archivo Excel.</li>
+    </ul>
+    <p>La directiva <code>MultipleChartDirective</code> no expone métodos públicos.</p>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Configuración del Dataset</h2>
+    <p>
+      El objeto <code>Dataset</code> es el núcleo de la visualización de datos
+      en <code>ngx-data-visualizer</code>. Contiene las dimensiones y los datos
+      en bruto que serán procesados y visualizados.
+    </p>
+
+    <h3>Estructura del Dataset</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript (Interfaces)</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="datasetStructureCode"></code></pre>
+      </div>
+    </div>
+
+    <h4>Ejemplo de inicialización del Dataset</h4>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="datasetInitializationCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Filtrado y agrupación</h2>
+    <p>
+      La librería permite aplicar filtros y realizar agrupaciones (rollUp) sobre
+      el <code>Dataset</code>.
+    </p>
+
+    <h3>Aplicación de filtros</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="applyFiltersCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>Limpiar filtros</h3>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="clearFiltersCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+  <section class="my-5">
+    <h2>Ejemplos prácticos de uso</h2>
+    <p class="section-description">
+      Una vez configurado el dataset, puedes explorar ejemplos detallados de uso
+      de cada directiva. Cada sección incluye documentación específica,
+      configuraciones disponibles y ejemplos prácticos con código fuente
+      completo.
+    </p>
+
+    <div class="navigation-buttons">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <button
+            class="btn btn-primary btn-lg w-100 navigation-btn"
+            (click)="navigateToChartDemo()"
+          >
+            <i class="fas fa-chart-bar me-2"></i>
+            <div>
+              <div class="btn-title">Gráficos</div>
+              <small class="btn-subtitle">Directiva libChart</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-success btn-lg w-100 navigation-btn"
+            (click)="navigateToTableDemo()"
+          >
+            <i class="fas fa-table me-2"></i>
+            <div>
+              <div class="btn-title">Tablas</div>
+              <small class="btn-subtitle">Directiva libTable</small>
+            </div>
+          </button>
+        </div>
+
+        <div class="col-md-4">
+          <button
+            class="btn btn-warning btn-lg w-100 navigation-btn"
+            (click)="navigateToMultichartDemo()"
+          >
+            <i class="fas fa-chart-line me-2"></i>
+            <div>
+              <div class="btn-title">Múltiples Gráficos</div>
+              <small class="btn-subtitle">Directiva libMultipleChart</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

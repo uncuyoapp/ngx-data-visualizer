@@ -1,0 +1,121 @@
+[
+  {
+    "id": 117,
+    "name": "Condición estudiantil",
+    "nameView": "Condición",
+    "selected": true,
+    "items": [
+      {
+        "id": 836,
+        "name": "Estudiante",
+        "selected": true,
+        "order": 1
+      },
+      {
+        "id": 837,
+        "name": "Nuevo inscripto",
+        "selected": true,
+        "order": 2
+      },
+      {
+        "id": 838,
+        "name": "Egresado",
+        "selected": true,
+        "order": 3
+      }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Sector de gestión del sistema educativo",
+    "nameView": "Sector de gestión",
+    "selected": true,
+    "items": [
+      {
+        "id": 335,
+        "name": "Estatal",
+        "selected": true,
+        "order": 1
+      },
+      {
+        "id": 336,
+        "name": "Privado",
+        "selected": true,
+        "order": 2
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Sexo",
+    "nameView": "Sexo",
+    "selected": true,
+    "items": [
+      {
+        "id": 61,
+        "name": "Varones",
+        "selected": true,
+        "order": 1
+      },
+      {
+        "id": 62,
+        "name": "Mujeres",
+        "selected": true,
+        "order": 2
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "name": "Año",
+    "nameView": "Año",
+    "selected": true,
+    "items": [
+      {
+        "id": "2010",
+        "selected": true,
+        "name": "2010"
+      },
+      {
+        "id": "2011",
+        "selected": true,
+        "name": "2011"
+      },
+      {
+        "id": "2012",
+        "selected": true,
+        "name": "2012"
+      },
+      {
+        "id": "2013",
+        "selected": true,
+        "name": "2013"
+      },
+      {
+        "id": "2014",
+        "selected": true,
+        "name": "2014"
+      },
+      {
+        "id": "2015",
+        "selected": true,
+        "name": "2015"
+      },
+      {
+        "id": "2016",
+        "selected": true,
+        "name": "2016"
+      },
+      {
+        "id": "2017",
+        "selected": true,
+        "name": "2017"
+      },
+      {
+        "id": "2018",
+        "selected": true,
+        "name": "2018"
+      }
+    ]
+  }
+]

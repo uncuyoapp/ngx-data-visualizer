@@ -1,0 +1,39 @@
+{
+  "type": "column",
+  "title": "",
+  "stacked": "",
+  "xAxis": {
+    "title": "",
+    "rotateLabels": null,
+    "firstLevel": 0,
+    "secondLevel": null
+  },
+  "yAxis": {
+    "title": "",
+    "max": null
+  },
+  "tooltip": {
+    "shared": false,
+    "decimals": 1,
+    "suffix": null,
+    "format": null,
+    "showTotal": true
+  },
+  "legends": {
+    "enabled": false,
+    "show": false,
+    "position": ""
+  },
+  "navigator": {
+    "show": false,
+    "start": null,
+    "end": null
+  },
+  "width": null,
+  "height": null,
+  "filterLastYear": false,
+  "showYearsLegend": false,
+  "toPercent": false,
+  "measureUnit": "",
+  "isPreview": false
+}

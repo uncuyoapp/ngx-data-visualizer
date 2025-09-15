@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@angular/animations": "^18.2.13",
-    "@angular/build": "^18.2.19",
+    "@angular/build": "^20.3.1",
     "@angular/cdk": "^18.2.14",
     "@angular/common": "^18.2.13",
     "@angular/compiler": "^18.2.13",
@@ -44,7 +44,7 @@
     "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.19",
+    "@angular-devkit/build-angular": "^20.3.1",
     "@angular-eslint/builder": "^18.4.3",
     "@angular-eslint/eslint-plugin": "^18.4.3",
     "@angular-eslint/eslint-plugin-template": "^18.4.3",
@@ -61,7 +61,7 @@
     "@typescript-eslint/parser": "7.2.0",
     "angular-cli-ghpages": "^2.0.3",
     "eslint": "^8.57.0",
-    "ng-packagr": "^18.0.0",
+    "ng-packagr": "^20.3.0",
     "prismjs": "^1.30.0",
     "typescript": "~5.5.4"
   }

@@ -52,7 +52,7 @@ import {
   Goal, // interface para definir una meta en un gráfico
   TableSorter, // interface para ordenamiento en tablas
   FiltersConfig // interface para aplicar filtros a los datos
-} from 'ngx-data-visualizer';
+} from '@uncuyoapp/ngx-data-visualizer';
 
 @Component({
   selector: 'app-example',
@@ -79,7 +79,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import {
   provideDataVisualizerCharts,
   provideDataVisualizerTables
-} from 'ngx-data-visualizer';
+} from '@uncuyoapp/ngx-data-visualizer';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -95,18 +95,17 @@ export const appConfig: ApplicationConfig = {
   ],
 };`;
 
-  installationCode = `# Instalar la librería
-npm install ngx-data-visualizer
-
-# Las dependencias se instalan automáticamente (npm 7+)
-# Si necesitas instalarlas manualmente:
-npm install echarts ngx-echarts pivottable jquery
+  installationCode = `# Instalar la librería y sus dependencias
+npm install @uncuyoapp/ngx-data-visualizer echarts ngx-echarts pivottable jquery
 
 # Tipos para desarrollo (opcional pero recomendado)
 npm install --save-dev @types/jquery`;
 
+  scssImportCode = `// en src/styles.scss
+@import '@uncuyoapp/ngx-data-visualizer/styles';`;
+
   onlyChartsCode = `// Solo para gráficos
-import { provideDataVisualizerCharts } from 'ngx-data-visualizer';
+import { provideDataVisualizerCharts } from '@uncuyoapp/ngx-data-visualizer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -116,7 +115,7 @@ export const appConfig: ApplicationConfig = {
 };`;
 
   onlyTablesCode = `// Solo para tablas
-import { provideDataVisualizerTables } from 'ngx-data-visualizer';
+import { provideDataVisualizerTables } from '@uncuyoapp/ngx-data-visualizer';
 
 export const appConfig: ApplicationConfig = {
   providers: [

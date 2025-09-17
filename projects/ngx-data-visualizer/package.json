@@ -1,6 +1,6 @@
 {
   "name": "@uncuyoapp/ngx-data-visualizer",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Librería Angular moderna para visualización de datos mediante gráficos y tablas interactivas. Incluye directivas standalone, sistema de proveedores configurables y soporte completo para ECharts y PivotTable.js.",
   "keywords": [
     "angular",
@@ -16,6 +16,7 @@
   ],
   "author": "Área de Políticas Públicas de la Universidad Nacional de Cuyo <politicaspublicasuncuyo@gmail.com>",
   "license": "MIT",
+  "sass": "styles.scss",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uncuyoapp/ngx-data-visualizer.git"

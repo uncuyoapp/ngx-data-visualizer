@@ -1,10 +1,15 @@
-# NgxDataVisualizer
+# @uncuyoapp/ngx-data-visualizer
 
-[![npm version](https://badge.fury.io/js/ngx-data-visualizer.svg)](https://www.npmjs.com/package/ngx-data-visualizer)
+[![NPM Version](https://badge.fury.io/js/%40uncuyoapp%2Fngx-data-visualizer.svg)](https://www.npmjs.com/package/@uncuyoapp/ngx-data-visualizer)
+[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen.svg)](https://uncuyoapp.github.io/ngx-data-visualizer/)
 [![Angular](https://img.shields.io/badge/Angular-18+-red.svg)](https://angular.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-NgxDataVisualizer es una librería Angular moderna que proporciona directivas standalone para la visualización de datos mediante gráficos y tablas interactivas. Está diseñada para ser flexible, reutilizable y fácil de integrar en aplicaciones Angular modernas.
+> **Nota:** Esta es la documentación técnica de la librería. Para una guía de instalación, configuración y ejemplos de uso, consulta el [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md) o la [demo interactiva](https://uncuyoapp.github.io/ngx-data-visualizer/).
+
+`@uncuyoapp/ngx-data-visualizer` es una librería de código abierto desarrollada por el **Área de Políticas Públicas de la Universidad Nacional de Cuyo**. Su objetivo es facilitar la visualización de datos en proyectos Angular, promoviendo el uso de herramientas tecnológicas para el análisis de datos públicos.
+
+La librería proporciona un conjunto de directivas `standalone` para la visualización de datos mediante gráficos y tablas interactivas.
 
 ## ✨ Características principales
 
@@ -17,92 +22,26 @@ NgxDataVisualizer es una librería Angular moderna que proporciona directivas st
 - **📱 Responsive** - Optimizado para dispositivos móviles y desktop
 - **🎯 Filtros avanzados** - Sistema de filtrado y agrupación integrado
 
-## 📦 Instalación
+## 📁 Estructura de la Librería
 
-### Instalación básica
+La estructura del código fuente en `projects/ngx-data-visualizer/src/lib` está organizada por funcionalidad:
 
-```bash
-npm install ngx-data-visualizer
+```
+/src/lib/
+├── chart/               # Lógica principal para gráficos (ChartComponent)
+├── table/               # Lógica principal para tablas (TableComponent)
+├── multiple-chart/      # Componente para múltiples gráficos
+├── directives/          # Directivas standalone (chart, table, multiple-chart)
+├── services/            # Servicios principales (Dataset, DataProvider)
+├── providers.ts         # Proveedores de servicios para la inyección de dependencias
+├── icons/               # Componentes de íconos SVG
+├── legend/              # Componente de leyenda para gráficos
+└── types/               # Interfaces y tipos de datos globales
 ```
 
-### Dependencias automáticas
+## 📖 Uso en Componentes
 
-Las versiones modernas de npm (v7+) instalan automáticamente las dependencias requeridas. Si necesitas instalarlas manualmente:
-
-```bash
-npm install echarts ngx-echarts pivottable jquery
-```
-
-### Dependencias de tipos (opcional pero recomendado)
-
-```bash
-npm install --save-dev @types/jquery
-```
-
-## ⚙️ Configuración
-
-### Requisitos previos
-
-- **Angular**: >=18.0.0
-- **Node.js**: >=18.13.0
-- **TypeScript**: >=5.0.0
-
-### 1. Configurar proveedores
-
-En el archivo de configuración principal de tu aplicación (`app.config.ts`), debes agregar los proveedores según las funcionalidades que vayas a utilizar:
-
-#### Para usar solo Gráficos
-
-```ts
-// app.config.ts
-import { ApplicationConfig } from '@angular/core';
-import { provideDataVisualizerCharts } from 'ngx-data-visualizer';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // Otros providers...
-    provideDataVisualizerCharts(), // ✅ Habilita funcionalidad de gráficos
-  ]
-};
-```
-
-#### Para usar solo Tablas
-
-```ts
-// app.config.ts
-import { ApplicationConfig } from '@angular/core';
-import { provideDataVisualizerTables } from 'ngx-data-visualizer';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // Otros providers...
-    provideDataVisualizerTables(), // ✅ Habilita funcionalidad de tablas
-  ]
-};
-```
-
-#### Para usar Gráficos y Tablas
-
-```ts
-// app.config.ts
-import { ApplicationConfig } from '@angular/core';
-import { 
-  provideDataVisualizerCharts,
-  provideDataVisualizerTables 
-} from 'ngx-data-visualizer';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // Otros providers...
-    provideDataVisualizerCharts(), // ✅ Para gráficos
-    provideDataVisualizerTables(), // ✅ Para tablas
-  ]
-};
-```
-
-### 2. Usar en componentes
-
-Una vez configurados los proveedores, puedes usar las directivas en cualquier componente standalone:
+Una vez instalada y configurada según el [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md), puedes usar las directivas en cualquier componente standalone:
 
 ```ts
 // my-component.component.ts
@@ -115,7 +54,7 @@ import {
   TableOptions,
   Dimension,
   RowData
-} from 'ngx-data-visualizer';
+} from '@uncuyoapp/ngx-data-visualizer';
 
 @Component({
   selector: 'app-my-component',
@@ -277,7 +216,7 @@ Directiva para renderizar múltiples gráficos simultáneamente.
 La clase `Dataset` es el núcleo de la visualización de datos. Gestiona los datos, dimensiones y filtros.
 
 ```ts
-import { Dataset, Dimension, RowData } from 'ngx-data-visualizer';
+import { Dataset, Dimension, RowData } from '@uncuyoapp/ngx-data-visualizer';
 
 const dataset = new Dataset({
   id: 1,                    // Opcional - Identificador único
@@ -312,30 +251,18 @@ const dimension: Dimension = {
 
 ### ChartOptions
 
-Configuración completa para gráficos:
-
-```ts
-const chartOptions: ChartOptions = {
-  
-};
-```
+Configuración completa para gráficos.
 
 ### TableOptions
 
-Configuración para tablas:
-
-```ts
-const tableOptions: TableOptions = {
-
-};
-```
+Configuración para tablas.
 
 ## 🎨 Filtros y Agrupaciones
 
 ### Aplicar filtros
 
 ```ts
-import { FiltersConfig } from 'ngx-data-visualizer';
+import { FiltersConfig } from '@uncuyoapp/ngx-data-visualizer';
 
 // Configuración de filtros
 const filtersConfig: FiltersConfig = {
@@ -395,24 +322,23 @@ const htmlTable = tableDirective.export('html');
 
 ### Lazy Loading
 
-```ts
-// Los proveedores ya implementan lazy loading automático
-provideDataVisualizerCharts(); // ECharts se carga solo cuando se necesita
-```
+Los proveedores de la librería (`provideDataVisualizerCharts` y `provideDataVisualizerTables`) ya implementan carga diferida (lazy loading) de forma automática para dependencias pesadas como ECharts y PivotTable.js.
 
 ### Tree Shaking
 
-La librería está optimizada para tree shaking. Solo importa lo que necesitas:
+La librería está optimizada para tree shaking. Para asegurar un tamaño de bundle mínimo, importa solo los componentes y clases que necesites.
 
 ```ts
 // ✅ Bueno - Solo importa lo necesario
-import { ChartDirective, Dataset } from 'ngx-data-visualizer';
+import { ChartDirective, Dataset } from '@uncuyoapp/ngx-data-visualizer';
 
-// ❌ Evita - Importa todo
-import * as NgxDataVisualizer from 'ngx-data-visualizer';
+// ❌ Evita - Importa todo el namespace
+import * as NgxDataVisualizer from '@uncuyoapp/ngx-data-visualizer';
 ```
 
 ### Gestión de memoria
+
+Es una buena práctica desuscribirse de los observables para evitar fugas de memoria.
 
 ```ts
 export class MyComponent implements OnDestroy {
@@ -428,56 +354,14 @@ export class MyComponent implements OnDestroy {
 }
 ```
 
-## 🔍 Troubleshooting
-
-### Errores comunes
-
-**Error: "No provider for NGX_ECHARTS_CONFIG"**
-```ts
-// ✅ Solución: Agregar el provider de gráficos
-import { provideDataVisualizerCharts } from 'ngx-data-visualizer';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideDataVisualizerCharts() // ← Agregar esto
-  ]
-};
-```
-
-**Error: "jQuery is not defined"**
-```bash
-# ✅ Solución: Instalar jQuery
-npm install jquery @types/jquery
-```
-
-**Error: "Cannot resolve echarts"**
-```bash
-# ✅ Solución: Instalar ECharts
-npm install echarts ngx-echarts
-```
-
-### Debugging
-
-```ts
-// Habilitar logs de desarrollo
-const dataset = new Dataset({
-  dimensions,
-  rowData,
-  debug: true // ← Habilita logs detallados
-});
-```
-
 ## 📚 Ejemplos Adicionales
 
 Para ejemplos completos y casos de uso avanzados, consulta:
 
-- **Demo interactiva**: Ejecuta `ng serve demo` en el repositorio
-- **Documentación online**: [Ver ejemplos en vivo](#)
-- **Repositorio**: [GitHub - uncuyoapp/ngx-data-visualizer](https://github.com/uncuyoapp/ngx-data-visualizer)
+- **Demo interactiva**: [Ver ejemplos en vivo](https://uncuyoapp.github.io/ngx-data-visualizer/)
+- **Guía de instalación**: [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md)
+- **Repositorio**: [GitHub - @uncuyoapp/ngx-data-visualizer](https://github.com/uncuyoapp/ngx-data-visualizer)
 
-## 🤝 Contribuir
-
-Las contribuciones son bienvenidas. Ver [CONTRIBUTING.md](../../CONTRIBUTING.md) para detalles.
 
 ## 📄 Licencia
 

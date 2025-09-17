@@ -5,7 +5,11 @@
     "entryFile": "src/public-api.ts"
   },
   "assets": [
-    "./src/lib/styles.scss"
+    {
+      "glob": "styles.scss",
+      "input": "src/lib",
+      "output": "."
+    }
   ],
   "allowedNonPeerDependencies": [
     "jquery",

@@ -1,12 +1,13 @@
 # 📊 ngx-data-visualizer
 
-[![npm version](https://badge.fury.io/js/ngx-data-visualizer.svg)](https://www.npmjs.com/package/ngx-data-visualizer)
+[![NPM Version](https://badge.fury.io/js/%40uncuyoapp%2Fngx-data-visualizer.svg)](https://www.npmjs.com/package/@uncuyoapp/ngx-data-visualizer)
+[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen.svg)](https://uncuyoapp.github.io/ngx-data-visualizer/)
 [![Angular](https://img.shields.io/badge/Angular-18+-red.svg)](https://angular.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Este proyecto ha sido desarrollado por el **Área de Políticas Públicas de la Universidad Nacional de Cuyo**. Consiste en un workspace de Angular que incluye:
 
-- **`ngx-data-visualizer`**: una librería open-source diseñada para facilitar la visualización de datos en proyectos Angular, a través de componentes reutilizables, accesibles y adaptables a distintos contextos.
+- **`@uncuyoapp/ngx-data-visualizer`**: una librería open-source diseñada para facilitar la visualización de datos en proyectos Angular, a través de componentes reutilizables, accesibles y adaptables a distintos contextos.
 - **`demo`**: una aplicación de ejemplo que muestra cómo integrar y utilizar la librería en un proyecto Angular real.
 
 El objetivo principal del proyecto es promover el uso de herramientas tecnológicas abiertas para la exploración, presentación y análisis de datos públicos, en el marco de iniciativas de gobierno abierto y políticas basadas en evidencia.
@@ -24,7 +25,7 @@ El objetivo principal del proyecto es promover el uso de herramientas tecnológi
 ## 🚀 Instalación rápida
 
 ```bash
-npm install ngx-data-visualizer
+npm install @uncuyoapp/ngx-data-visualizer echarts ngx-echarts pivottable jquery
 ```
 
 ## ⚙️ Configuración básica
@@ -33,7 +34,7 @@ En tu `app.config.ts`:
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { provideDataVisualizerCharts, provideDataVisualizerTables } from 'ngx-data-visualizer';
+import { provideDataVisualizerCharts, provideDataVisualizerTables } from '@uncuyoapp/ngx-data-visualizer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -48,7 +49,7 @@ En tu componente:
 
 ```ts
 import { Component } from '@angular/core';
-import { ChartDirective, Dataset, ChartOptions } from 'ngx-data-visualizer';
+import { ChartDirective, Dataset, ChartOptions } from '@uncuyoapp/ngx-data-visualizer';
 
 @Component({
   selector: 'app-my-chart',
@@ -71,7 +72,7 @@ export class MyChartComponent {
 
 ## 🧩 Tecnologías y librerías utilizadas
 
-Este proyecto está desarrollado en **Angular 18** e integra múltiples librerías de visualización y manipulación de datos. La librería `ngx-data-visualizer` funciona como un *wrapper* que simplifica el uso combinado de las siguientes dependencias clave:
+Este proyecto está desarrollado en **Angular 18** e integra múltiples librerías de visualización y manipulación de datos. La librería `@uncuyoapp/ngx-data-visualizer` funciona como un *wrapper* que simplifica el uso combinado de las siguientes dependencias clave:
 
 ### Dependencias principales
 - [Angular 18+](https://angular.io/) — Framework base con APIs standalone
@@ -117,7 +118,7 @@ ngx-data-visualizer-workspace/
 
 ## 🧩 Componentes Principales
 
-### 📦 NgxDataVisualizer - Librería Principal
+### 📦 @uncuyoapp/ngx-data-visualizer - Librería Principal
 
 La librería proporciona un conjunto de directivas standalone y servicios para visualización de datos:
 
@@ -146,7 +147,7 @@ Una aplicación Angular completa que sirve como documentación viva y ejemplos d
 - **Casos de uso reales** - Dashboard y análisis de datos
 - **Código fuente** - Todos los ejemplos incluyen código
 
-👉 **Ver ejemplos**: [README del demo](projects/demo/README.md)
+👉 **Ver ejemplos**: [README del demo](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/projects/demo/README.md) o visita la [**Demo Online**](https://uncuyoapp.github.io/ngx-data-visualizer/).
 
 ## ⚙️ Requisitos del Sistema
 
@@ -198,7 +199,7 @@ ng lint
 ### 1. Instalación en tu proyecto
 
 ```bash
-npm install ngx-data-visualizer
+npm install @uncuyoapp/ngx-data-visualizer echarts ngx-echarts pivottable jquery
 ```
 
 ### 2. Configurar proveedores (obligatorio)
@@ -209,7 +210,7 @@ import { ApplicationConfig } from '@angular/core';
 import { 
   provideDataVisualizerCharts,
   provideDataVisualizerTables 
-} from 'ngx-data-visualizer';
+} from '@uncuyoapp/ngx-data-visualizer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -224,7 +225,16 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### 3. Usar en componentes
+### 3. Importar Estilos Globales (obligatorio)
+
+Para que los componentes se visualicen correctamente, importa el archivo de estilos principal de la librería en tu archivo `styles.scss` global (o equivalente).
+
+```scss
+// en src/styles.scss
+@import '@uncuyoapp/ngx-data-visualizer/styles';
+```
+
+### 4. Usar en componentes
 
 ```ts
 import { Component } from '@angular/core';
@@ -233,7 +243,7 @@ import {
   TableDirective,
   Dataset, 
   ChartOptions 
-} from 'ngx-data-visualizer';
+} from '@uncuyoapp/ngx-data-visualizer';
 
 @Component({
   selector: 'app-data-viz',
@@ -285,14 +295,16 @@ export class DataVizComponent {
 
 ## 🎨 Ejemplos y Documentación
 
-La mejor manera de aprender a usar la librería es explorando los ejemplos interactivos:
+La mejor manera de aprender a usar la librería es explorando los ejemplos interactivos en la **aplicación demo**.
 
 ```bash
-# Ejecutar los ejemplos
+# Ejecutar la aplicación demo localmente
 ng serve demo
 ```
 
-**Secciones disponibles**:
+Visita la [**Demo Online**](https://uncuyoapp.github.io/ngx-data-visualizer/) para ver la librería en acción sin necesidad de instalar nada.
+
+**Secciones disponibles en la demo**:
 - **📚 Configuración**: Guía paso a paso de setup
 - **📊 Gráficos**: Ejemplos de `ChartDirective`
 - **📋 Tablas**: Ejemplos de `TableDirective`
@@ -363,6 +375,6 @@ Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
 
 **Desarrollado con ❤️ por el [Área de Políticas Públicas](https://www.uncuyo.edu.ar/politicaspublicas/) - Universidad Nacional de Cuyo**
 
-[🌐 Website](https://www.uncuyo.edu.ar/politicaspublicas/) • [📧 Contact](mailto:politicaspublicasuncuyo@gmail.com) • [📊 NPM](https://www.npmjs.com/package/ngx-data-visualizer)
+[🌐 Website](https://www.uncuyo.edu.ar/politicaspublicas/) • [GitHub](https://github.com/uncuyoapp/ngx-data-visualizer) • [📊 NPM](https://www.npmjs.com/package/@uncuyoapp/ngx-data-visualizer) • [🧪 Demo](https://uncuyoapp.github.io/ngx-data-visualizer/)
 
 </div>

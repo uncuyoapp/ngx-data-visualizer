@@ -80,24 +80,7 @@ import {
 })
 export class MyComponent {
   // Configuración de datos
-  dataset = new Dataset({
-    dimensions: this.dimensions,
-    rowData: this.rowData,
-    enableRollUp: true
-  });
-
-  chartOptions: ChartOptions = {
-    chartType: 'bar',
-    title: 'Ventas por Región',
-    height: 400
-  };
-
-  tableOptions: TableOptions = {
-    cols: [1],
-    rows: [2]
-  };
-
-  private dimensions: Dimension[] = [
+  dimensions: Dimension[] = [
     {
       id: 1,
       name: 'region',
@@ -106,8 +89,8 @@ export class MyComponent {
         { id: 1, name: 'Norte', selected: true },
         { id: 2, name: 'Sur', selected: true },
         { id: 3, name: 'Este', selected: true },
-        { id: 4, name: 'Oeste', selected: true }
-      ]
+        { id: 4, name: 'Oeste', selected: true },
+      ],
     },
     {
       id: 2,
@@ -115,17 +98,76 @@ export class MyComponent {
       nameView: 'Período',
       items: [
         { id: 10, name: '2023', selected: true },
-        { id: 11, name: '2024', selected: true }
-      ]
-    }
+        { id: 11, name: '2024', selected: true },
+      ],
+    },
   ];
 
-  private rowData: RowData[] = [
-    { region: 'Norte', periodo: '2023', value: 1500},
-    { region: 'Sur', periodo: '2023', value: 1200 },
-    { region: 'Este', periodo: '2024', value: 1800 },
-    { region: 'Oeste', periodo: '2024', value: 1600 }
+  rowData: RowData[] = [
+    { region: 'Norte', periodo: '2023', valor: 1500 },
+    { region: 'Sur', periodo: '2023', valor: 1200 },
+    { region: 'Este', periodo: '2023', valor: 1800 },
+    { region: 'Oeste', periodo: '2023', valor: 1600 },
+    { region: 'Norte', periodo: '2024', valor: 1400 },
+    { region: 'Sur', periodo: '2024', valor: 1100 },
+    { region: 'Este', periodo: '2024', valor: 1900 },
+    { region: 'Oeste', periodo: '2024', valor: 1700 },
   ];
+
+  dataset = new Dataset({
+    dimensions: this.dimensions,
+    rowData: this.rowData,
+    enableRollUp: true,
+  });
+
+  chartOptions: ChartOptions = {
+    type: 'bar',
+    stacked: 'region',
+    xAxis: {
+      title: '',
+      rotateLabels: null,
+      firstLevel: 2,
+      secondLevel: null,
+    },
+    yAxis: {
+      title: '',
+      max: null,
+    },
+    tooltip: {
+      shared: true,
+      decimals: null,
+      suffix: null,
+      format: null,
+      showTotal: false,
+    },
+    legends: {
+      enabled: false,
+      show: false,
+      position: '',
+    },
+    navigator: {
+      show: false,
+      start: null,
+      end: null,
+    },
+    width: 600,
+    height: 400,
+    filterLastYear: false,
+    showYearsLegend: false,
+    toPercent: false,
+    measureUnit: '',
+    isPreview: false,
+    disableAutoUpdate: false,
+  };
+
+  tableOptions: TableOptions = {
+    digitsAfterDecimal: 0,
+    sorters: [],
+    totalRow: false,
+    totalCol: false,
+    cols: [1],
+    rows: [2],
+  };
 
   onSeriesChange(series: any[]): void {
     console.log('Series actualizadas:', series);
@@ -151,8 +193,6 @@ Directiva para renderizar gráficos individuales.
 | Evento | Tipo | Descripción |
 |--------|------|-------------|
 | `seriesChange` | `Series[]` | Se emite cuando cambian las series del gráfico |
-| `chartCreated` | `Chart` | Se emite cuando se crea la instancia del gráfico |
-| `chartUpdated` | `void` | Se emite después de actualizar el gráfico |
 
 #### Métodos públicos
 
@@ -253,9 +293,127 @@ const dimension: Dimension = {
 
 Configuración completa para gráficos.
 
+```ts
+interface ChartOptions {
+  /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
+  type: string;
+  /** Título del gráfico */
+  title?: string;
+  /** Indica si el gráfico está apilado y el valor debe corresponder al nombre de una de las dimensiones del conjunto de datos */
+  stacked: string | null;
+  /** Configuración del eje X */
+  xAxis: {
+    /** Título del eje X */
+    title: string,
+    /** Ángulo de rotación de las etiquetas en grados */
+    rotateLabels: number | null,
+    /** Nivel de agrupación primario (id de una de las dimensiones del conjunto de datos) */
+    firstLevel: number,
+    /** Nivel de agrupación secundario (id de una de las dimensiones del conjunto de datos) (opcional) */
+    secondLevel: number | null
+  },
+  /** Configuración del eje Y */
+  yAxis: {
+    /** Título del eje Y */
+    title: string,
+    /** Valor máximo del eje Y */
+    max: number | null
+  },
+  /** Configuración del tooltip */
+  tooltip: {
+    /** Indica si el tooltip es compartido entre series */
+    shared: boolean,
+    /** Número de decimales a mostrar */
+    decimals: number | null,
+    /** Sufijo para los valores */
+    suffix: string | null,
+    /** Formato personalizado para los valores */
+    format: string | null,
+    /** Indica si se muestra el total en el tooltip */
+    showTotal: boolean
+  },
+  /** Configuración de las leyendas */
+  legends: {
+    /** Indica si las leyendas están habilitadas */
+    enabled: boolean,
+    /** Indica si se muestran las leyendas */
+    show: boolean,
+    /** Posición de las leyendas */
+    position: string
+  },
+  /** Configuración del navegador */
+  navigator: {
+    /** Indica si se muestra el navegador */
+    show: boolean,
+    /** Valor inicial del navegador */
+    start: number | null,
+    /** Valor final del navegador */
+    end: number | null
+  },
+  /** Array de colores personalizados para las series */
+  colors?: string[],
+  /** Ancho del gráfico */
+  width: number | null,
+  /** Alto del gráfico */
+  height: number | string | null,
+  /** Indica si se filtra el último año */
+  filterLastYear: boolean,
+  /** Indica si se muestra la leyenda de años */
+  showYearsLegend: boolean,
+  /** Indica si los valores se muestran en porcentaje */
+  toPercent: boolean,
+  /** Unidad de medida para los valores */
+  measureUnit: string;
+  /** Indica si el gráfico está en modo vista previa */
+  isPreview: boolean;
+  /** Indica si se deshabilita la actualización automática */
+  disableAutoUpdate: boolean;
+}
+```
+
 ### TableOptions
 
 Configuración para tablas.
+
+```ts
+interface TableOptions {
+  /** Número de decimales a mostrar */
+  digitsAfterDecimal: number;
+  /** Configuración de ordenamiento para cada dimensión */
+  sorters: TableSorter[];
+  /** Indica si se debe mostrar la fila de totales */
+  totalRow: boolean;
+  /** Indica si se debe mostrar la columna de totales */
+  totalCol: boolean;
+  /** Lista de nombres o IDs de columnas */
+  cols: (string | number)[];
+  /** Lista de nombres o IDs de filas */
+  rows: (string | number)[];
+  /** Sufijo opcional para los valores numéricos */
+  suffix?: string;
+  /** Define el modo de visualización de los valores en la tabla */
+  valueDisplay?:
+    | "nominal"
+    | "percentOfTotal"
+    | "percentOfRow"
+    | "percentOfColumn";
+}
+
+/**
+* Interfaz para la configuración del ordenamiento de dimensiones
+*/
+interface TableSorter {
+  /** Nombre o ID de la dimensión a ordenar */
+  name: string | number;
+  /** Lista de ítems con su orden específico */
+  items: {
+    /** Nombre del ítem */
+    name: string;
+    /** Orden del ítem */
+    order: number;
+  }[];
+}
+```
 
 ## 🎨 Filtros y Agrupaciones
 
@@ -365,7 +523,7 @@ Para ejemplos completos y casos de uso avanzados, consulta:
 
 ## 📄 Licencia
 
-MIT License. Ver [LICENSE](../../LICENSE) para detalles completos.
+MIT License. Ver [LICENSE](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/LICENSE) para detalles completos.
 
 ---
 

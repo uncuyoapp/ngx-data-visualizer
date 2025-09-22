@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Configuración de estilos para la tabla
     this.themeService.updateTheme(
       {
-        tableDataBg: "#eeeff1",
+        tableDataBg: "#f8f9fa",
       },
       this.tableFull,
     );

@@ -1,47 +1,60 @@
 <main>
   <nav class="navbar navbar-expand-lg border-bottom mb-4">
     <div class="container">
-      <a class="navbar-brand fs-4" routerLink="/">ngx-data-visualizer</a>
+      <a class="navbar-brand fs-4 text-primary" routerLink="/">
+        <img class="img-fluid me-4 my-2" src="assets/logo.svg" alt="APP UNCuyo">
+        ngx-data-visualizer
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
         aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="main-nav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
+          <li class="nav-item me-4">
             <a class="nav-link" routerLink="/" routerLinkActive="active"
               [routerLinkActiveOptions]="{exact: true}">Inicio</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item me-4">
             <a class="nav-link" routerLink="configuration" routerLinkActive="active">Configuración</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="table-demo" routerLinkActive="active">Tablas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="chart-demo" routerLinkActive="active">Gráficos</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="multichart-demo" routerLinkActive="active">Gráficos múltiples</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="full-example" routerLinkActive="active">Ejemplo completo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="dashboard" routerLinkActive="active">Escenario</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="https://github.com/uncuyoapp/ngx-data-visualizer" target="_blank" class="nav-link">
-              <img src="assets/github-mark.svg" alt="GitHub" height="24" class="d-inline-block align-text-top">
+          <li class="nav-item me-4 dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <mat-icon aria-hidden="false" aria-label="Directivas" fontIcon="apps" class="me-2"></mat-icon>
+              Directivas
             </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" routerLink="table-demo" routerLinkActive="active">Tablas</a>
+              </li>
+              <li>
+                <a class="dropdown-item" routerLink="chart-demo" routerLinkActive="active">Gráficos</a>
+              </li>
+              <li>
+                <a class="dropdown-item" routerLink="multichart-demo" routerLinkActive="active">Gráficos múltiples</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <mat-icon aria-hidden="false" aria-label="Ejemplos" fontIcon="folder_copy" class="me-2"></mat-icon>
+              Ejemplos
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" routerLink="full-example" routerLinkActive="active">Funcionalidades</a>
+              </li>
+              <li>
+                <a class="dropdown-item" routerLink="dashboard" routerLinkActive="active">Escenario</a>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid container-lg">
+  <div class="">
     <router-outlet></router-outlet>
   </div>
 </main>

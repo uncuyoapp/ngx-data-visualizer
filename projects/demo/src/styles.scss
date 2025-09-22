@@ -17,7 +17,7 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Inter, "Helvetica Neue", sans-serif;
 }
 
 .button-4 {
@@ -79,4 +79,9 @@ body {
 
 .button-4:-webkit-details-marker {
   display: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
 }

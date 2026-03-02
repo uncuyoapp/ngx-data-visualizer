@@ -50,7 +50,17 @@
   </p>
 
   <section class="demo-section">
-    <h2>1. Gráfico de Columnas Básico</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>1. Gráfico de Columnas Básico</h2>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="showEditor = !showEditor"
+      >
+        {{ showEditor ? "Cerrar Editor" : "Editar en Vivo" }}
+      </button>
+    </div>
+
     <p class="section-description">
       Este ejemplo demuestra una configuración básica de gráfico de columnas que
       muestra la distribución de estudiantes por año y condición. El gráfico
@@ -68,6 +78,8 @@
               libChart
               [dataset]="dataset1"
               [chartOptions]="chartConfig1"
+              [enableEditor]="showEditor"
+              (optionsChange)="chartConfig1 = $event"
             ></div>
           </div>
         </div>
@@ -321,8 +333,8 @@
       Las líneas de meta permiten superponer objetivos o referencias visuales
       sobre el gráfico principal. Esta funcionalidad es especialmente útil para
       comparar el rendimiento actual contra objetivos establecidos. La interfaz
-      <code>Goal</code> define el tipo de línea, texto descriptivo y datos de
-      la meta. El método <code>toggleShowGoal()</code> permite mostrar u ocultar
+      <code>Goal</code> define el tipo de línea, texto descriptivo y datos de la
+      meta. El método <code>toggleShowGoal()</code> permite mostrar u ocultar
       dinámicamente estas líneas de referencia sin regenerar todo el gráfico.
     </p>
 
@@ -335,7 +347,7 @@
               [color]="showingGoal ? 'warn' : 'primary'"
               (click)="toggleGoal()"
             >
-              {{ showingGoal ? 'Ocultar Meta' : 'Mostrar Meta' }}
+              {{ showingGoal ? "Ocultar Meta" : "Mostrar Meta" }}
             </button>
           </div>
           <div class="chart-container">
@@ -375,8 +387,6 @@
       </mat-tab>
     </mat-tab-group>
   </section>
-
-
 
   <!-- Botones de navegación -->
   <hr />

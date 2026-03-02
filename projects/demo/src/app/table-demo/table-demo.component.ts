@@ -114,6 +114,9 @@ export class TableDemoComponent implements AfterViewInit {
   @ViewChild("tablePercentages", { read: TableDirective })
   tablePercentages!: TableDirective;
 
+  showEditor = false;
+
+
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
 dataset1 = new Dataset({
@@ -383,7 +386,7 @@ interface TableTheme {
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) { }
 
   // Documentación de TableOptions
   tableOptionsDocumentation = `/**

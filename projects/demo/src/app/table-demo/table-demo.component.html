@@ -46,7 +46,17 @@
   </p>
 
   <section class="demo-section">
-    <h2>1. Configuración Básica</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>1. Configuración Básica</h2>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="showEditor = !showEditor"
+      >
+        {{ showEditor ? "Cerrar Editor" : "Editar en Vivo" }}
+      </button>
+    </div>
+
     <p class="section-description">
       Este ejemplo demuestra una configuración básica de tabla con una sola
       columna ("Año") y múltiples filas ("Condición", "Sexo", "Sector de
@@ -60,10 +70,13 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container" style="height: 500px">
-            <libTable
+            <div
+              libTable
               [dataset]="dataset1"
               [tableOptions]="tableConfig1"
-            ></libTable>
+              [enableEditor]="showEditor"
+              (optionsChange)="tableConfig1 = $event"
+            ></div>
           </div>
         </div>
       </mat-tab>
@@ -225,7 +238,9 @@
             </button>
             <button
               mat-raised-button
-              [color]="currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
+              [color]="
+                currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'
+              "
               (click)="setPercentOfTotalView()"
               class="me-2 mb-2"
             >
@@ -233,7 +248,9 @@
             </button>
             <button
               mat-raised-button
-              [color]="currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
+              [color]="
+                currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'
+              "
               (click)="setPercentOfRowView()"
               class="me-2 mb-2"
             >
@@ -241,7 +258,9 @@
             </button>
             <button
               mat-raised-button
-              [color]="currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
+              [color]="
+                currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'
+              "
               (click)="setPercentOfColumnView()"
               class="me-2 mb-2"
             >

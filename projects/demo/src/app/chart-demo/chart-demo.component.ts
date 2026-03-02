@@ -287,6 +287,9 @@ export class ChartDemoComponent implements AfterViewInit {
   @ViewChild("chartInteractive", { read: ChartDirective })
   chart!: ChartDirective;
 
+  showEditor = false;
+
+
   @ViewChild("chartGoals", { read: ChartDirective })
   chartGoals!: ChartDirective;
 
@@ -551,7 +554,7 @@ toggleGoal(): void {
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) { }
 
   // Documentación de ChartOptions
   chartOptionsDocumentation = `/**

@@ -1,0 +1,213 @@
+<div class="config-editor-container" [ngStyle]="position" cdkDrag>
+  <div class="config-editor-header" cdkDragHandle>
+    <div class="drag-handle">
+      <div class="header-title">
+        <span>Configuración: Gráfico</span>
+      </div>
+      <div class="actions">
+        <button
+          type="button"
+          class="btn-icon"
+          (click)="exportConfig()"
+          title="Exportar JSON"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="btn-icon btn-close"
+          (click)="close.emit()"
+          title="Cerrar Editor"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-tabs">
+    <button
+      type="button"
+      [class.active]="activeTab === 'general'"
+      (click)="onTabChange('general')"
+    >
+      General
+    </button>
+    <button
+      type="button"
+      [class.active]="activeTab === 'axis'"
+      (click)="onTabChange('axis')"
+    >
+      Ejes
+    </button>
+    <button
+      type="button"
+      [class.active]="activeTab === 'legend'"
+      (click)="onTabChange('legend')"
+    >
+      Leyenda
+    </button>
+    <button
+      type="button"
+      [class.active]="activeTab === 'tooltip'"
+      (click)="onTabChange('tooltip')"
+    >
+      Tooltip
+    </button>
+  </div>
+
+  <form [formGroup]="configForm" class="editor-content">
+    <div *ngIf="activeTab === 'general'" class="tab-pane">
+      <div class="form-group">
+        <label>Tipo de Gráfico</label>
+        <select formControlName="type">
+          <option value="column">Columnas</option>
+          <option value="line">Líneas</option>
+          <option value="pie">Circular</option>
+          <option value="bar">Barras</option>
+          <option value="area">Área</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Título</label>
+        <input
+          type="text"
+          formControlName="title"
+          placeholder="Ej: Ventas por Mes"
+        />
+      </div>
+      <div class="form-group">
+        <label>Apilado</label>
+        <input
+          type="text"
+          formControlName="stacked"
+          placeholder="Nombre de dimensión o 'all'"
+        />
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="toPercent" /> Porcentual
+        </label>
+      </div>
+      <div class="form-group">
+        <label>Unidad de Medida</label>
+        <input
+          type="text"
+          formControlName="measureUnit"
+          placeholder="Ej: €, kg, %"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'axis'" formGroupName="xAxis" class="tab-pane">
+      <div class="form-group">
+        <label>Título Eje X</label>
+        <input type="text" formControlName="title" />
+      </div>
+      <div class="form-group">
+        <label>Nivel Principal</label>
+        <select formControlName="firstLevel">
+          <option *ngFor="let dim of dimensions" [value]="dim.id">
+            {{ dim.nameView }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nivel Secundario</label>
+        <select formControlName="secondLevel">
+          <option [value]="null">Ninguno</option>
+          <option *ngFor="let dim of dimensions" [value]="dim.id">
+            {{ dim.nameView }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rotación Etiquetas</label>
+        <input type="number" formControlName="rotateLabels" />
+      </div>
+
+      <div formGroupName="../yAxis">
+        <div class="form-group mt-3">
+          <label>Título Eje Y</label>
+          <input type="text" formControlName="title" />
+        </div>
+        <div class="form-group">
+          <label>Máximo Eje Y</label>
+          <input
+            type="number"
+            formControlName="max"
+            placeholder="Auto si es null"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="activeTab === 'legend'"
+      formGroupName="legends"
+      class="tab-pane"
+    >
+      <div class="form-group checkbox-label">
+        <input type="checkbox" formControlName="enabled" /> Habilitar Leyenda
+      </div>
+      <div class="form-group checkbox-label">
+        <input type="checkbox" formControlName="show" /> Mostrar Leyenda
+      </div>
+      <div class="form-group">
+        <label>Posición</label>
+        <select formControlName="position">
+          <option value="top">Arriba</option>
+          <option value="bottom">Abajo</option>
+          <option value="left">Izquierda</option>
+          <option value="right">Derecha</option>
+        </select>
+      </div>
+    </div>
+
+    <div
+      *ngIf="activeTab === 'tooltip'"
+      formGroupName="tooltip"
+      class="tab-pane"
+    >
+      <div class="form-group checkbox-label">
+        <input type="checkbox" formControlName="shared" /> Compartido
+      </div>
+      <div class="form-group checkbox-label">
+        <input type="checkbox" formControlName="showTotal" /> Mostrar Total
+      </div>
+      <div class="form-group">
+        <label>Decimales</label>
+        <input type="number" formControlName="decimals" />
+      </div>
+      <div class="form-group">
+        <label>Sufijo</label>
+        <input type="text" formControlName="suffix" />
+      </div>
+    </div>
+  </form>
+</div>

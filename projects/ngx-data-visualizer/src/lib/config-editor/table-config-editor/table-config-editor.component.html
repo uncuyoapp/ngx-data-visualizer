@@ -1,0 +1,131 @@
+<div
+  #editorContainer
+  class="config-editor-container"
+  [ngStyle]="position"
+  cdkDrag
+>
+  <div class="config-editor-header" cdkDragHandle>
+    <div class="drag-handle">
+      <div class="header-title">
+        <span>Configuración: Tabla</span>
+      </div>
+      <div class="actions">
+        <button
+          type="button"
+          class="btn-icon"
+          (click)="exportConfig()"
+          title="Exportar JSON"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="btn-icon btn-close"
+          (click)="close.emit()"
+          title="Cerrar Editor"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="configForm" class="editor-content">
+    <div class="form-group">
+      <label>Decimales</label>
+      <input type="number" formControlName="digitsAfterDecimal" />
+    </div>
+    <div class="form-group">
+      <label>Modo Visualización</label>
+      <select formControlName="valueDisplay">
+        <option value="nominal">Nominal</option>
+        <option value="percentOfTotal">% del Total</option>
+        <option value="percentOfRow">% de Fila</option>
+        <option value="percentOfColumn">% de Columna</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Sufijo</label>
+      <input type="text" formControlName="suffix" placeholder="Ej: $" />
+    </div>
+    <div class="form-group row">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="totalRow" /> Totales Fila
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="totalCol" /> Totales Columna
+      </label>
+    </div>
+
+    <div class="pivot-drag-drop mt-3">
+      <div class="pivot-grid">
+        <div class="pivot-section">
+          <label>Columnas (Cols)</label>
+          <div
+            cdkDropList
+            #colsList="cdkDropList"
+            [cdkDropListData]="selectedCols"
+            [cdkDropListConnectedTo]="[rowsList]"
+            class="dimension-list highlight-cols"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div class="dimension-box" *ngFor="let dim of selectedCols" cdkDrag>
+              {{ dim.nameView }}
+            </div>
+            <div class="placeholder" *ngIf="selectedCols.length === 0">
+              Arrastre columnas aquí
+            </div>
+          </div>
+        </div>
+
+        <div class="pivot-section">
+          <label>Filas (Rows)</label>
+          <div
+            cdkDropList
+            #rowsList="cdkDropList"
+            [cdkDropListData]="selectedRows"
+            [cdkDropListConnectedTo]="[colsList]"
+            class="dimension-list highlight-rows"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div class="dimension-box" *ngFor="let dim of selectedRows" cdkDrag>
+              {{ dim.nameView }}
+            </div>
+            <div class="placeholder" *ngIf="selectedRows.length === 0">
+              Arrastre filas aquí
+            </div>
+          </div>
+        </div>
+      </div>
+      <small class="info-text"
+        >Arrastra las dimensiones para reordenar o cambiar entre
+        filas/columnas.</small
+      >
+    </div>
+  </form>
+</div>

@@ -6,6 +6,7 @@ import {
   effect,
   input,
   output,
+  inject,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { ChartComponent } from "../chart/chart.component";
@@ -13,6 +14,8 @@ import { Chart } from "../chart/types/chart";
 import { ChartFactory } from "../chart/services/chart-factory.service";
 import { ChartOptions, Goal, Series } from "../types/data.types";
 import { Dataset } from "../services/dataset";
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 
 /**
  * Directiva que permite incrustar un gráfico en un componente contenedor.
@@ -37,8 +40,23 @@ export class ChartDirective implements OnDestroy {
 
   private chartRenderComponentRef!: ComponentRef<ChartComponent>;
 
+  /** Referencia al componente del editor de configuración */
+  configEditorComponentRef?: ComponentRef<any>;
+
+  private overlayRef?: OverlayRef;
+  private overlay = inject(Overlay);
+
   /** Referencia al componente de gráfico creado. */
   chartComponent!: ChartComponent;
+
+  /** Indica si se debe mostrar el editor de configuración */
+  enableEditor = input<boolean>(false);
+
+  /** Evento que emite los cambios en la configuración */
+  optionsChange = output<ChartOptions>();
+
+  /** Evento que emite cuando se cierra el editor */
+  close = output<void>();
 
   constructor(
     private readonly viewContainerRef: ViewContainerRef,
@@ -50,6 +68,60 @@ export class ChartDirective implements OnDestroy {
     // Reaccionar a los cambios para ACTUALIZAR el componente.
     this.initializeChartUpdates();
     this.initializeSeriesEffect();
+    this.initializeEditorEffect();
+  }
+
+  /**
+   * Inicializa el efecto para el editor de configuración
+   */
+  private initializeEditorEffect(): void {
+    effect(() => {
+      const show = this.enableEditor();
+      if (show) {
+        this.createEditorComponent();
+      } else {
+        this.destroyEditorComponent();
+      }
+    });
+  }
+
+  /**
+   * Crea dinámicamente el componente del editor usando Overlay
+   */
+  private async createEditorComponent() {
+    if (this.overlayRef) return;
+
+    const { ChartConfigEditorComponent } = await import('../config-editor/chart-config-editor/chart-config-editor.component');
+
+    // Crear el overlay
+    this.overlayRef = this.overlay.create({
+      hasBackdrop: false,
+      scrollStrategy: this.overlay.scrollStrategies.noop(),
+      positionStrategy: this.overlay.position().global().top('0').right('0')
+    });
+
+    const portal = new ComponentPortal(ChartConfigEditorComponent);
+    this.configEditorComponentRef = this.overlayRef.attach(portal);
+
+    this.configEditorComponentRef.setInput('dataset', this.dataset());
+    this.configEditorComponentRef.setInput('options', this.chartOptions());
+
+    this.configEditorComponentRef.instance.optionsChange.subscribe((newOptions: ChartOptions) => {
+      this.optionsChange.emit(newOptions);
+    });
+
+    this.configEditorComponentRef.instance.close.subscribe(() => {
+      this.close.emit();
+      this.destroyEditorComponent();
+    });
+  }
+
+  private destroyEditorComponent() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = undefined;
+      this.configEditorComponentRef = undefined;
+    }
   }
 
   /**
@@ -89,6 +161,11 @@ export class ChartDirective implements OnDestroy {
         "chartConfiguration",
         chartConfiguration,
       );
+
+      if (this.configEditorComponentRef) {
+        this.configEditorComponentRef.instance.options = this.chartOptions();
+        this.configEditorComponentRef.instance.dataset = this.dataset();
+      }
     });
   }
 

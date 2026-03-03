@@ -31,13 +31,13 @@ export class TableHelperService {
     string,
     (th: JQuery<HTMLElement>, table: JQuery<HTMLElement>) => void
   > = {
-    pvtColLabel: this.highlightColHeaders,
-    pvtRowLabel: this.highlightRowHeaders,
-    pvtColTotalLabel: this.highlightColTotals,
-    pvtRowTotalLabel: this.highlightRowTotals,
-  };
+      pvtColLabel: this.highlightColHeaders,
+      pvtRowLabel: this.highlightRowHeaders,
+      pvtColTotalLabel: this.highlightColTotals,
+      pvtRowTotalLabel: this.highlightRowTotals,
+    };
 
-  constructor(private readonly jQueryService: JQueryService) {}
+  constructor(private readonly jQueryService: JQueryService) { }
 
   /**
    * Renderiza una tabla HTML en un elemento HTMLElement usando pivotJS
@@ -63,7 +63,7 @@ export class TableHelperService {
       });
     $(element)
       .find("td")
-      .on("click", () => {});
+      .on("click", () => { });
 
     // Agregar el manejo de auto-scroll
     this.setupAutoScroll(element);

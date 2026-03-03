@@ -58,6 +58,9 @@ export class TableDirective implements OnDestroy {
   /** Evento que emite los cambios en la configuración */
   optionsChange = output<TableOptions>();
 
+  /** Evento que emite cuando la configuración cambia desde el editor */
+  onConfigChange = output<TableOptions>();
+
   /** Evento que emite cuando se cierra el editor */
   close = output<void>();
 
@@ -66,21 +69,17 @@ export class TableDirective implements OnDestroy {
     private readonly excelService: ExcelService,
   ) {
     this.initializeTable();
-    this.initializeEditorEffect();
   }
 
   /**
-   * Inicializa el efecto para el editor de configuración
+   * Alterna la visibilidad del editor de configuración
    */
-  private initializeEditorEffect(): void {
-    effect(() => {
-      const show = this.enableEditor();
-      if (show) {
-        this.createEditorComponent();
-      } else {
-        this.destroyEditorComponent();
-      }
-    });
+  public toggleEditor(): void {
+    if (this.overlayRef) {
+      this.destroyEditorComponent();
+    } else {
+      this.createEditorComponent();
+    }
   }
 
   /**
@@ -94,8 +93,19 @@ export class TableDirective implements OnDestroy {
     // Crear el overlay
     this.overlayRef = this.overlay.create({
       hasBackdrop: false,
-      scrollStrategy: this.overlay.scrollStrategies.noop(), // El editor se mueve con drag, no queremos que el scroll lo bloquee
-      positionStrategy: this.overlay.position().global().top('0').right('0') // Posición base, el componente usa top/right 24px
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      positionStrategy: this.overlay.position()
+        .flexibleConnectedTo(this.tableComponent.configToggleButton)
+        .withPush(false)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'top',
+            offsetX: -12
+          }
+        ])
     });
 
     const portal = new ComponentPortal(TableConfigEditorComponent);
@@ -106,6 +116,7 @@ export class TableDirective implements OnDestroy {
 
     this.configEditorComponentRef.instance.optionsChange.subscribe((newOptions: TableOptions) => {
       this.optionsChange.emit(newOptions);
+      this.onConfigChange.emit(newOptions);
     });
 
     this.configEditorComponentRef.instance.close.subscribe(() => {
@@ -163,6 +174,12 @@ export class TableDirective implements OnDestroy {
       "tableConfiguration",
       this.tableConfiguration,
     );
+    this.tableRenderComponentRef.setInput("showConfigToggle", this.enableEditor());
+
+    // Escuchar el evento de alternancia de configuración
+    this.tableComponent.toggleConfig.subscribe(() => {
+      this.toggleEditor();
+    });
 
     // Si el editor existe, hay que asegurarse que esté arriba o manejar su referencia
     if (this.configEditorComponentRef) {

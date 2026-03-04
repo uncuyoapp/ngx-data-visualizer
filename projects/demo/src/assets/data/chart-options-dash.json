@@ -1,7 +1,7 @@
 {
   "type": "column",
   "title": "",
-  "stacked": "",
+  "stacked": null,
   "xAxis": {
     "title": "",
     "rotateLabels": null,
@@ -35,5 +35,6 @@
   "showYearsLegend": false,
   "toPercent": false,
   "measureUnit": "",
-  "isPreview": false
+  "isPreview": false,
+  "disableAutoUpdate": false
 }

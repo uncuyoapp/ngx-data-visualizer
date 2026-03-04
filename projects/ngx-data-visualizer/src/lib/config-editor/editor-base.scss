@@ -1,0 +1,346 @@
+.config-editor-container {
+  width: 320px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow: hidden;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: #1a202c;
+  user-select: none;
+}
+
+.drag-handle {
+  cursor: move;
+  padding: 12px 16px;
+  background: rgba(25, 118, 210, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2c5282;
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #4a5568;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #2b6cb0;
+  }
+
+  &.editor-close-btn:hover {
+    background: rgba(229, 62, 62, 0.1);
+    color: #e53e3e;
+  }
+}
+
+.editor-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0 8px;
+
+  button {
+    background: none;
+    border: none;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #718096;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+
+    &.active {
+      color: #3182ce;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 2px;
+        background: #3182ce;
+        border-radius: 2px;
+      }
+    }
+
+    &:hover:not(.active) {
+      color: #4a5568;
+    }
+  }
+}
+
+.editor-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+}
+
+.tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .label-with-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    label {
+      margin-bottom: 0;
+    }
+  }
+
+  .badge-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #3182ce;
+    background: rgba(49, 130, 206, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="range"],
+  select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    color: #2d3748;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #3182ce;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+    }
+  }
+
+  input[type="range"] {
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+
+    &::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #3182ce;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -5px;
+      /* Centers thumb on the track */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    &:focus::-webkit-slider-runnable-track {
+      background: rgba(49, 130, 206, 0.1);
+    }
+  }
+
+  small {
+    font-size: 0.7rem;
+    color: #718096;
+    margin-top: 2px;
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4a5568;
+  cursor: pointer;
+  margin-bottom: 12px;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    input {
+      cursor: not-allowed;
+    }
+  }
+
+  input {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.col {
+  flex: 1;
+}
+
+.mt-3 {
+  margin-top: 12px;
+}
+
+// Pivot specific
+.pivot-drag-drop {
+  .pivot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .dimension-list {
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    min-height: 120px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-content: flex-start;
+    transition: background 0.2s;
+
+    &.cdk-drop-list-dragging {
+      background: rgba(49, 130, 206, 0.05);
+    }
+
+    &.highlight-cols {
+      border-color: rgba(49, 130, 206, 0.3);
+    }
+
+    &.highlight-rows {
+      border-color: rgba(56, 142, 60, 0.3);
+    }
+  }
+
+  .dimension-box {
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #4a5568;
+    cursor: move;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    user-select: none;
+
+    &:hover {
+      border-color: #3182ce;
+      color: #3182ce;
+    }
+  }
+
+  .placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a0aec0;
+    font-size: 0.7rem;
+    font-style: italic;
+    pointer-events: none;
+  }
+
+  .info-text {
+    display: block;
+    margin-top: 12px;
+    font-size: 0.7rem;
+    color: #718096;
+    font-style: italic;
+    text-align: center;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 6px;
+  box-shadow:
+    0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  background: white;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

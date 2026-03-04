@@ -1,0 +1,151 @@
+<div class="config-editor-container" cdkDrag>
+  <div class="config-editor-header" cdkDragHandle>
+    <div class="drag-handle">
+      <div class="header-title">
+        <span>Configuración de gráfico</span>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-icon" (click)="exportConfig()" title="Exportar JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+        <button type="button" class="btn-icon editor-close-btn" (click)="close.emit()" title="Cerrar Editor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-tabs">
+    <button type="button" [class.active]="activeTab() === 'general'" (click)="onTabChange('general')">
+      General
+    </button>
+    <button type="button" [class.active]="activeTab() === 'axis'" (click)="onTabChange('axis')">
+      Ejes
+    </button>
+    <button type="button" [class.active]="activeTab() === 'tooltip_legends'" (click)="onTabChange('tooltip_legends')">
+      Tooltip y leyendas
+    </button>
+  </div>
+
+  <form *ngIf="configForm" [formGroup]="configForm" class="editor-content">
+    <!-- General: title, type -->
+    <div *ngIf="activeTab() === 'general'" class="tab-pane">
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" formControlName="title" placeholder="Ej: Ventas por Mes" />
+      </div>
+      <div class="form-group">
+        <label>Tipo de Gráfico</label>
+        <select formControlName="type">
+          <option *ngFor="let chart of chartTypes" [value]="chart.value">{{ chart.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Ejes: xAxis, yAxis, stacked -->
+    <div *ngIf="activeTab() === 'axis'" class="tab-pane">
+      <div formGroupName="xAxis">
+        <div class="form-section-title">Eje X</div>
+        <div class="form-group">
+          <label>Título Eje X</label>
+          <input type="text" formControlName="title" />
+        </div>
+        <div class="form-group">
+          <label>Nivel Principal</label>
+          <select formControlName="firstLevel">
+            <option *ngFor="let dim of dimensions" [ngValue]="dim.id">
+              {{ dim.nameView }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nivel Secundario</label>
+          <select formControlName="secondLevel">
+            <option [ngValue]="null">Ninguno</option>
+            <option *ngFor="let dim of availableSecondLevelDimensions()" [ngValue]="dim.id">
+              {{ dim.nameView }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="label-with-value">
+            <label>Rotación de etiquetas</label>
+            <span class="badge-value">{{ configForm.get('xAxis.rotateLabels')?.value }}°</span>
+          </div>
+          <input type="range" formControlName="rotateLabels" min="-90" max="90" step="1" class="slider" />
+        </div>
+      </div>
+
+      <div formGroupName="yAxis" class="mt-3">
+        <div class="form-section-title">Eje Y</div>
+        <div class="form-group">
+          <label>Título Eje Y</label>
+          <input type="text" formControlName="title" />
+        </div>
+        <div class="form-group">
+          <label>Valor Máximo</label>
+          <input type="number" formControlName="max" placeholder="Auto" />
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <label>Apilado (Stacked)</label>
+        <select formControlName="stacked">
+          <option [ngValue]="null">Ninguno</option>
+          <option *ngFor="let dim of availableStackedDimensions()" [ngValue]="dim.id">
+            {{ dim.nameView }}
+          </option>
+        </select>
+      </div>
+
+      <div formGroupName="navigator" class="mt-3">
+        <div class="form-section-title">Navegador</div>
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="show" />
+          <span>Mostrar Navegador</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Tooltip y leyendas: tooltip.shared, tooltip.decimals, tooltip.suffix, tooltip.showTotal, legends.enabled, navigator.show -->
+    <div *ngIf="activeTab() === 'tooltip_legends'" class="tab-pane">
+      <div formGroupName="tooltip">
+        <div class="form-section-title">Tooltip</div>
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="shared" />
+          <span>Compartido</span>
+        </label>
+        <label class="checkbox-label" [class.disabled]="!configForm.get('tooltip.shared')?.value">
+          <input type="checkbox" formControlName="showTotal" />
+          <span>Mostrar Total</span>
+        </label>
+        <div class="form-group">
+          <label>Decimales</label>
+          <input type="number" formControlName="decimals" min="0" max="4" />
+        </div>
+        <div class="form-group">
+          <label>Sufijo</label>
+          <input type="text" formControlName="suffix" />
+        </div>
+      </div>
+
+      <div formGroupName="legends" class="mt-3">
+        <div class="form-section-title">Leyendas</div>
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="enabled" />
+          <span>Habilitar Leyenda</span>
+        </label>
+      </div>
+
+    </div>
+  </form>
+</div>

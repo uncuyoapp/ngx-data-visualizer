@@ -21,6 +21,7 @@ La librería proporciona un conjunto de directivas `standalone` para la visualiz
 - **🔧 TypeScript completo** - Interfaces tipadas para mejor experiencia de desarrollo
 - **📱 Responsive** - Optimizado para dispositivos móviles y desktop
 - **🎯 Filtros avanzados** - Sistema de filtrado y agrupación integrado
+- **🎛️ Editor panel integrado** - Permite configurar visualizaciones en tiempo real sin salir de la vista
 
 ## 📁 Estructura de la Librería
 
@@ -68,13 +69,15 @@ import {
     <div libChart 
          [dataset]="dataset" 
          [chartOptions]="chartOptions"
-         (seriesChange)="onSeriesChange($event)">
+         [enableEditor]="true"
+         (configChange)="onConfigChange($event)">
     </div>
 
     <!-- Tabla -->
     <div libTable 
          [dataset]="dataset" 
-         [tableOptions]="tableOptions">
+         [tableOptions]="tableOptions"
+         [enableEditor]="true">
     </div>
   `
 })
@@ -122,7 +125,7 @@ export class MyComponent {
 
   chartOptions: ChartOptions = {
     type: 'bar',
-    stacked: 'region',
+    stacked: 1,
     xAxis: {
       title: '',
       rotateLabels: null,
@@ -172,6 +175,10 @@ export class MyComponent {
   onSeriesChange(series: any[]): void {
     console.log('Series actualizadas:', series);
   }
+
+  onConfigChange(config: ChartOptions): void {
+    console.log('Nueva configuración:', config);
+  }
 }
 ```
 
@@ -187,14 +194,18 @@ Directiva para renderizar gráficos individuales.
 |-----------|------|-------------|
 | `dataset` | `Dataset` | ✅ **Requerido** - Conjunto de datos a visualizar |
 | `chartOptions` | `ChartOptions` | ✅ **Requerido** - Configuración del gráfico |
+| `enableEditor` | `boolean` | Habilita el panel de edición lateral (default: `false`) |
 
 #### Outputs
 
 | Evento | Tipo | Descripción |
 |--------|------|-------------|
 | `seriesChange` | `Series[]` | Se emite cuando cambian las series del gráfico |
+| `configChange` | `ChartOptions` | Se emite cuando se guarda una nueva configuración desde el editor |
 
 #### Métodos públicos
+
+Para interactuar directamente con la directiva mediante `@ViewChild`:
 
 ```ts
 @ViewChild(ChartDirective) chartDirective!: ChartDirective;
@@ -220,6 +231,13 @@ Directiva para renderizar tablas dinámicas e interactivas.
 |-----------|------|-------------|
 | `dataset` | `Dataset` | ✅ **Requerido** - Conjunto de datos a visualizar |
 | `tableOptions` | `TableOptions` | ✅ **Requerido** - Configuración de la tabla |
+| `enableEditor` | `boolean` | Habilita el panel de edición lateral (default: `false`) |
+
+#### Outputs
+
+| Evento | Tipo | Descripción |
+|--------|------|-------------|
+| `configChange` | `TableOptions` | Se emite cuando se guarda una nueva configuración desde el editor |
 
 #### Métodos públicos
 
@@ -299,8 +317,8 @@ interface ChartOptions {
   type: string;
   /** Título del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado y el valor debe corresponder al nombre de una de las dimensiones del conjunto de datos */
-  stacked: string | null;
+  /** Indica si el gráfico está apilado por una dimensión específica (ID) */
+  stacked: number | null;
   /** Configuración del eje X */
   xAxis: {
     /** Título del eje X */

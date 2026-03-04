@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   input,
+  output,
 } from "@angular/core";
 
 import { TableService } from "./services/table.service";
@@ -26,6 +27,15 @@ export class TableComponent {
   private readonly tableHelperService = inject(TableHelperService);
 
   protected readonly tableConfiguration = input.required<TableConfiguration>();
+
+  /** Indica si se debe mostrar el botón de configuración */
+  public readonly showConfigToggle = input<boolean>(false);
+
+  /** Emite cuando se presiona el botón de configuración */
+  public readonly toggleConfig = output<void>();
+
+  @ViewChild('configToggleButton')
+  public readonly configToggleButton!: ElementRef<HTMLButtonElement>;
 
   @ViewChild("pivotTable", { static: true })
   private readonly pivotTable!: ElementRef<HTMLDivElement>;

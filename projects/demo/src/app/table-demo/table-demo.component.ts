@@ -114,6 +114,9 @@ export class TableDemoComponent implements AfterViewInit {
   @ViewChild("tablePercentages", { read: TableDirective })
   tablePercentages!: TableDirective;
 
+
+
+
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
 dataset1 = new Dataset({
@@ -234,7 +237,7 @@ updateThemeWithCustomColors(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="table-container" style="height: 500px;">
-  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1"></libTable>
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1" [enableEditor]="true"></libTable>
 </div>`;
 
   example2HTML = `<div class="table-container">
@@ -383,7 +386,7 @@ interface TableTheme {
     private readonly themeService: ThemeService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) { }
 
   // Documentación de TableOptions
   tableOptionsDocumentation = `/**

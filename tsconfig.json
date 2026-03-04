@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "paths": {
       "ngx-data-visualizer": [
-        "./dist/ngx-data-visualizer",
+        "./projects/ngx-data-visualizer/src/public-api.ts"
       ]
     },
     "esModuleInterop": true,
@@ -25,10 +25,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

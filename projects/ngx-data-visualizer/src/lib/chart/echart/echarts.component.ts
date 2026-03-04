@@ -5,18 +5,19 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
+  effect,
   inject,
   input,
   output,
 } from "@angular/core";
 import { ECharts, EChartsOption } from "echarts";
 import { NgxEchartsModule } from "ngx-echarts";
+import { EC_SERIES_CONFIG } from "../../types/constants";
+import { Series } from "../../types/data.types";
 import { Chart } from "../types/chart";
 import { ChartConfiguration } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
 import { EChart } from "./echarts";
-import { EC_SERIES_CONFIG } from "../../types/constants";
-import { Series } from "../../types/data.types";
 
 /**
  * @description
@@ -93,6 +94,19 @@ export class EchartsComponent implements OnInit, OnDestroy {
       console.error("Error al inicializar el componente de gráficos:", error);
     }
   }
+
+  /**
+   * Efecto para reaccionar a cambios en la configuración y actualizar el gráfico
+   */
+  private readonly configUpdateEffect = effect(() => {
+    const config = this.chartConfiguration();
+    if (this.mainChart && config) {
+      // Sincronizar la configuración interna del gráfico de manera profunda
+      this.mainChart.refreshFromConfiguration(config);
+      // Solicitar redibujado
+      this.updateChart();
+    }
+  });
 
   /**
    * @description

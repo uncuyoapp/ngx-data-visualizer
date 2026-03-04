@@ -62,7 +62,9 @@ export interface Item {
  * Configuración para un filtro de dimensión. Permite usar el id o el nombre de la dimensión.
  */
 export interface DimensionFilterConfig {
+  /** Nombre o ID de la dimensión */
   name: string | number;
+  /** Lista de ítems seleccionados */
   items: (string | number)[];
 }
 
@@ -70,7 +72,9 @@ export interface DimensionFilterConfig {
  * Objeto para la configuración de filtros y agrupaciones (roll-up).
  */
 export interface FiltersConfig {
+  /** Lista de dimensiones para agrupamiento */
   rollUp?: (string | number)[];
+  /** Lista de configuraciones de filtros */
   filter?: DimensionFilterConfig[];
 }
 
@@ -127,10 +131,10 @@ export interface TableOptions {
   suffix?: string;
   /** Define el modo de visualización de los valores en la tabla */
   valueDisplay?:
-    | "nominal"
-    | "percentOfTotal"
-    | "percentOfRow"
-    | "percentOfColumn";
+  | "nominal"
+  | "percentOfTotal"
+  | "percentOfRow"
+  | "percentOfColumn";
   /** Atributos derivados para la tabla pivot */
   derivedAttributes?: Record<
     string,
@@ -194,8 +198,8 @@ export interface ChartOptions {
   type: string;
   /** Título del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado y el nombre del grupo de apilamiento */
-  stacked: string | null;
+  /** Indica si el gráfico está apilado por una dimensión específica (ID) */
+  stacked: number | null;
   /** Configuración del eje X - define títulos, rotación de etiquetas y niveles de agrupación */
   xAxis: {
     /** Título del eje X que se muestra junto al eje */

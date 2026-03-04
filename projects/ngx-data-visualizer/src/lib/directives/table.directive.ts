@@ -5,13 +5,20 @@ import {
   ViewContainerRef,
   effect,
   input,
+  output,
+  signal,
+  inject,
+  DestroyRef,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Subscription, debounceTime } from "rxjs";
 import { Dataset } from "../services/dataset";
 import { ExcelService } from "../table/services/excel.service";
 import { TableComponent } from "../table/table.component";
 import { TableConfiguration } from "../table/types/table-base";
 import { TableOptions } from "../types/data.types";
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 
 /**
  * Directiva que permite incrustar una tabla dinámica en un componente contenedor.
@@ -23,6 +30,11 @@ import { TableOptions } from "../types/data.types";
   exportAs: "libTable",
 })
 export class TableDirective implements OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly excelService = inject(ExcelService);
+  private readonly overlay = inject(Overlay);
+
   private readonly DEFAULT_EXPORT_NAME = "tabla";
   /** Conjunto de datos para la tabla */
   dataset = input.required<Dataset>();
@@ -33,20 +45,116 @@ export class TableDirective implements OnDestroy {
   /** Configuración de la tabla */
   tableConfiguration!: TableConfiguration;
 
-  /** Referencia al componente de tabla creado */
-  tableRenderComponentRef!: ComponentRef<TableComponent>;
+  /** Instancia del componente de tabla renderizado */
+  private tableRenderComponentRef!: ComponentRef<TableComponent>;
+
+  /** Referencia al componente del editor de configuración */
+  private configEditorComponentRef?: ComponentRef<any>;
+
+  /** Referencia al overlay de CDK para el editor */
+  private overlayRef?: OverlayRef;
 
   /** Instancia del componente de tabla */
   public tableComponent!: TableComponent;
 
+  /** Opciones internas "en vivo" para la tabla */
+  internalOptions = signal<TableOptions | null>(null);
+
   /** Suscripción para cambios en los datos */
   subscription!: Subscription;
 
-  constructor(
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly excelService: ExcelService,
-  ) {
+  /** Indica si se debe mostrar el editor de configuración */
+  enableEditor = input<boolean>(false);
+
+  /** Evento que emite los cambios en la configuración */
+  optionsChange = output<TableOptions>();
+
+  /** Evento que emite cuando la configuración cambia desde el editor */
+  onConfigChange = output<TableOptions>();
+
+  /** Evento que emite cuando se cierra el editor */
+  close = output<void>();
+
+  /**
+   * Inicializa la directiva, configurando la creación de la tabla y sus actualizaciones.
+   */
+  constructor() {
+    // Sincronizar internalOptions cuando el input tableOptions cambie desde afuera
+    effect(() => {
+      this.internalOptions.set(this.tableOptions());
+    }, { allowSignalWrites: true });
+
     this.initializeTable();
+  }
+
+  /**
+   * Alterna la visibilidad del editor de configuración
+   */
+  public toggleEditor(): void {
+    if (this.overlayRef) {
+      this.destroyEditorComponent();
+    } else {
+      this.createEditorComponent();
+    }
+  }
+
+  /**
+   * Crea dinámicamente el componente del editor usando Overlay
+   */
+  private async createEditorComponent() {
+    if (this.overlayRef) return;
+
+    const { TableConfigEditorComponent } = await import('../config-editor/table-config-editor/table-config-editor.component');
+
+    // Crear el overlay
+    this.overlayRef = this.overlay.create({
+      hasBackdrop: false,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      positionStrategy: this.overlay.position()
+        .flexibleConnectedTo(this.tableComponent.configToggleButton)
+        .withPush(false)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'top',
+            offsetX: -12
+          }
+        ])
+    });
+
+    const portal = new ComponentPortal(TableConfigEditorComponent);
+    this.configEditorComponentRef = this.overlayRef.attach(portal);
+
+    this.configEditorComponentRef.setInput('dataset', this.dataset());
+    this.configEditorComponentRef.setInput('options', this.internalOptions());
+
+    this.configEditorComponentRef.instance.optionsChange
+      .subscribe((newOptions: TableOptions) => {
+        // Actualizar estado interno para impacto inmediato (Live Preview)
+        this.internalOptions.set(newOptions);
+        this.optionsChange.emit(newOptions);
+        this.onConfigChange.emit(newOptions);
+      });
+
+    this.configEditorComponentRef.instance.close
+      .subscribe(() => {
+        this.close.emit();
+        this.destroyEditorComponent();
+      });
+  }
+
+  /**
+   * Destruye el componente del editor y limpia el overlay.
+   * @private
+   */
+  private destroyEditorComponent() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = undefined;
+      this.configEditorComponentRef = undefined;
+    }
   }
 
   /**
@@ -60,7 +168,7 @@ export class TableDirective implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.viewContainerRef.clear();
   }
 
   /**
@@ -71,12 +179,19 @@ export class TableDirective implements OnDestroy {
    * @private
    */
   createTableComponent() {
-    this.viewContainerRef.clear();
+    // Si queremos preservar el editor, no podemos usar clear() indiscriminadamente
+    if (this.tableRenderComponentRef) {
+      this.tableRenderComponentRef.destroy();
+    }
+
+    const options = this.internalOptions();
+    if (!options) return;
+
     this.tableConfiguration = {
       dataset: this.dataset(),
-      options: this.tableOptions(),
+      options: options,
     };
-    // Crear el componente
+    // Crear el componente de tabla
     this.tableRenderComponentRef =
       this.viewContainerRef.createComponent<TableComponent>(TableComponent);
     this.tableComponent = this.tableRenderComponentRef.instance;
@@ -86,6 +201,18 @@ export class TableDirective implements OnDestroy {
       "tableConfiguration",
       this.tableConfiguration,
     );
+    this.tableRenderComponentRef.setInput("showConfigToggle", this.enableEditor());
+
+    // Escuchar el evento de alternancia de configuración
+    this.tableComponent.toggleConfig.subscribe(() => {
+      this.toggleEditor();
+    });
+
+    // Si el editor existe, hay que asegurarse que esté arriba o manejar su referencia
+    if (this.configEditorComponentRef) {
+      this.configEditorComponentRef.instance.options = options;
+      this.configEditorComponentRef.instance.dataset = this.dataset();
+    }
   }
 
   /**
@@ -101,9 +228,11 @@ export class TableDirective implements OnDestroy {
    * Suscribe los cambios en los datos para actualizar la tabla automáticamente
    */
   private subscribeDataChanges() {
-    this.subscription?.unsubscribe(); // Cancelar suscripción anterior
-    this.subscription = this.dataset()
-      .dataUpdated.pipe(debounceTime(200))
+    this.dataset()
+      .dataUpdated.pipe(
+        debounceTime(200),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(() => {
         this.updateTable();
       });

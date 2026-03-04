@@ -37,6 +37,23 @@
 
   <hr />
 
+  <!-- Sección: Editor de Configuración -->
+  <section class="my-5">
+    <h2>Panel de Configuración Interactiva</h2>
+    <p>
+      La directiva <code>libTable</code> ahora incluye un panel de configuración integrado.
+      Habilitando <code>[enableEditor]="true"</code>, el usuario puede acceder a herramientas de pivotado y formato
+      directamente desde la visualización.
+    </p>
+    <ul>
+      <li><strong>Pivotado Dinámico:</strong> Cambia filas y columnas mediante drag-and-drop.</li>
+      <li><strong>Formato numérico:</strong> Ajusta la cantidad de decimales en tiempo real.</li>
+      <li><strong>Totales:</strong> Activa o desactiva las filas y columnas de totales.</li>
+    </ul>
+  </section>
+
+  <hr />
+
   <!-- Ejemplos prácticos -->
   <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
   <p class="introduction">
@@ -46,24 +63,21 @@
   </p>
 
   <section class="demo-section">
-    <h2>1. Configuración Básica</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>1. Configuración Básica (Con Editor Habilitado)</h2>
+    </div>
+
     <p class="section-description">
-      Este ejemplo demuestra una configuración básica de tabla con una sola
-      columna ("Año") y múltiples filas ("Condición", "Sexo", "Sector de
-      gestión"). Se muestran los totales tanto por fila como por columna,
-      proporcionando un resumen completo de los datos. Esta configuración es
-      ideal para análisis temporales donde se desea ver la evolución de
-      diferentes categorías a lo largo del tiempo.
+      Este ejemplo demuestra una tabla con pivotado básico.
+      <strong>Haz clic en el ícono de engranaje</strong> para abrir el editor y reorganizar las dimensiones de la tabla.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container" style="height: 500px">
-            <libTable
-              [dataset]="dataset1"
-              [tableOptions]="tableConfig1"
-            ></libTable>
+            <div libTable [dataset]="dataset1" [tableOptions]="tableConfig1" [enableEditor]="true"
+              (optionsChange)="tableConfig1 = $event"></div>
           </div>
         </div>
       </mat-tab>
@@ -73,9 +87,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example1TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example1TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -86,9 +98,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example1HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example1HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -111,10 +121,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container">
-            <libTable
-              [dataset]="dataset1"
-              [tableOptions]="tableConfig2"
-            ></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig2" [enableEditor]="true"></libTable>
           </div>
         </div>
       </mat-tab>
@@ -124,9 +131,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example2TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example2TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -137,9 +142,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example2HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example2HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -163,10 +166,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container">
-            <libTable
-              [dataset]="dataset1"
-              [tableOptions]="tableConfig3"
-            ></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" [enableEditor]="true"></libTable>
           </div>
         </div>
       </mat-tab>
@@ -176,9 +176,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example3TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example3TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -189,9 +187,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example3HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example3HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -215,45 +211,29 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="percentage-buttons mb-3">
-            <button
-              mat-raised-button
-              [color]="currentValueDisplay === 'nominal' ? 'primary' : 'basic'"
-              (click)="setNominalView()"
-              class="me-2 mb-2"
-            >
+            <button mat-raised-button [color]="currentValueDisplay === 'nominal' ? 'primary' : 'basic'"
+              (click)="setNominalView()" class="me-2 mb-2">
               Valores Nominales
             </button>
-            <button
-              mat-raised-button
-              [color]="currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
-              (click)="setPercentOfTotalView()"
-              class="me-2 mb-2"
-            >
+            <button mat-raised-button [color]="
+                currentValueDisplay === 'percentOfTotal' ? 'primary' : 'basic'
+              " (click)="setPercentOfTotalView()" class="me-2 mb-2">
               % del Total
             </button>
-            <button
-              mat-raised-button
-              [color]="currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
-              (click)="setPercentOfRowView()"
-              class="me-2 mb-2"
-            >
+            <button mat-raised-button [color]="
+                currentValueDisplay === 'percentOfRow' ? 'primary' : 'basic'
+              " (click)="setPercentOfRowView()" class="me-2 mb-2">
               % de Fila
             </button>
-            <button
-              mat-raised-button
-              [color]="currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
-              (click)="setPercentOfColumnView()"
-              class="me-2 mb-2"
-            >
+            <button mat-raised-button [color]="
+                currentValueDisplay === 'percentOfColumn' ? 'primary' : 'basic'
+              " (click)="setPercentOfColumnView()" class="me-2 mb-2">
               % de Columna
             </button>
           </div>
           <div class="table-container">
-            <libTable
-              [dataset]="dataset1"
-              [tableOptions]="tableConfig4"
-              #tablePercentages
-            ></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig4" [enableEditor]="true" #tablePercentages>
+            </libTable>
           </div>
         </div>
       </mat-tab>
@@ -263,9 +243,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example4TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example4TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -276,9 +254,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example4HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example4HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -302,25 +278,13 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="theme-buttons">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="setDefaultTheme()"
-            >
+            <button mat-raised-button color="primary" (click)="setDefaultTheme()">
               Tema por Defecto
             </button>
-            <button
-              mat-raised-button
-              color="accent"
-              (click)="setMaterialTheme()"
-            >
+            <button mat-raised-button color="accent" (click)="setMaterialTheme()">
               Tema Material
             </button>
-            <button
-              mat-raised-button
-              color="warn"
-              (click)="setBootstrapTheme()"
-            >
+            <button mat-raised-button color="warn" (click)="setBootstrapTheme()">
               Tema Bootstrap
             </button>
             <button mat-raised-button (click)="updateThemeWithCustomColors()">
@@ -328,11 +292,7 @@
             </button>
           </div>
           <div class="table-container">
-            <libTable
-              [dataset]="dataset1"
-              [tableOptions]="tableConfig3"
-              #tableTheme
-            ></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" [enableEditor]="true" #tableTheme></libTable>
           </div>
         </div>
       </mat-tab>
@@ -342,9 +302,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example6TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example6TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -355,9 +313,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example6HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example6HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -365,9 +321,7 @@
     </mat-tab-group>
 
     <h4>Configuraciones disponibles:</h4>
-    <pre
-      class="language-typescript"
-    ><code [textContent]="example7HTML"></code></pre>
+    <pre class="language-typescript"><code [textContent]="example7HTML"></code></pre>
   </section>
 
   <!-- Botones de navegación -->
@@ -382,10 +336,7 @@
     <div class="navigation-buttons">
       <div class="row g-3">
         <div class="col-md-4">
-          <button
-            class="btn btn-outline-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToConfiguration()"
-          >
+          <button class="btn btn-outline-primary btn-lg w-100 navigation-btn" (click)="navigateToConfiguration()">
             <i class="fas fa-cog me-2"></i>
             <div>
               <div class="btn-title">Configuración</div>
@@ -395,10 +346,7 @@
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToChartDemo()"
-          >
+          <button class="btn btn-primary btn-lg w-100 navigation-btn" (click)="navigateToChartDemo()">
             <i class="fas fa-chart-bar me-2"></i>
             <div>
               <div class="btn-title">Gráficos</div>
@@ -408,10 +356,7 @@
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-warning btn-lg w-100 navigation-btn"
-            (click)="navigateToMultichartDemo()"
-          >
+          <button class="btn btn-warning btn-lg w-100 navigation-btn" (click)="navigateToMultichartDemo()">
             <i class="fas fa-chart-line me-2"></i>
             <div>
               <div class="btn-title">Múltiples Gráficos</div>

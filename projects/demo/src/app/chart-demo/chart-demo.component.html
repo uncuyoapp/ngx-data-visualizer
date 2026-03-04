@@ -42,6 +42,24 @@
 
   <hr />
 
+  <!-- Sección: Editor de Configuración -->
+  <section class="my-5">
+    <h2>Panel de Configuración Interactiva</h2>
+    <p>
+      La directiva <code>libChart</code> ahora incluye un panel de configuración integrado.
+      Al habilitar la opción <code>[enableEditor]="true"</code>, aparecerá un ícono de engranaje en la esquina superior
+      derecha de la visualización.
+    </p>
+    <ul>
+      <li><strong>Edición en Vivo:</strong> Modifica títulos, tipos de gráficos, colores y leyendas en tiempo real.</li>
+      <li><strong>Persistencia:</strong> Los cambios se emiten a través del evento <code>(optionsChange)</code>.</li>
+      <li><strong>Interfaz Intuitiva:</strong> El editor se muestra como un panel flotante que no interfiere con el
+        diseño de la página.</li>
+    </ul>
+  </section>
+
+  <hr />
+
   <!-- Ejemplos prácticos -->
   <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
   <p class="introduction">
@@ -50,25 +68,22 @@
   </p>
 
   <section class="demo-section">
-    <h2>1. Gráfico de Columnas Básico</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>1. Gráfico de Columnas Básico (Con Editor Habilitado)</h2>
+    </div>
+
     <p class="section-description">
-      Este ejemplo demuestra una configuración básica de gráfico de columnas que
-      muestra la distribución de estudiantes por año y condición. El gráfico
-      incluye leyendas en la parte inferior, colores personalizados para cada
-      serie y tooltips informativos. Esta configuración es ideal para visualizar
-      datos categóricos a lo largo del tiempo, permitiendo comparaciones claras
-      entre diferentes grupos.
+      Este ejemplo demuestra una configuración básica de gráfico de columnas.
+      <strong>Prueba usar el panel de configuración (ícono de engranaje)</strong> para cambiar el tipo de gráfico o los
+      colores dinámicamente.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div
-              libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig1"
-            ></div>
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1" [enableEditor]="true"
+              (optionsChange)="chartConfig1 = $event"></div>
           </div>
         </div>
       </mat-tab>
@@ -78,9 +93,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example1TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example1TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -91,9 +104,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example1HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example1HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -116,11 +127,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div
-              libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig2"
-            ></div>
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig2" [enableEditor]="true"></div>
           </div>
         </div>
       </mat-tab>
@@ -130,9 +137,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example2TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example2TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -143,9 +148,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example2HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example2HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -168,11 +171,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div
-              libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig3"
-            ></div>
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" [enableEditor]="true"></div>
           </div>
         </div>
       </mat-tab>
@@ -182,9 +181,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example3TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example3TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -195,9 +192,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example3HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example3HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -216,11 +211,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div
-              libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig4"
-            ></div>
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig4" [enableEditor]="true"></div>
           </div>
         </div>
       </mat-tab>
@@ -230,9 +221,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example4TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example4TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -243,9 +232,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example4HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example4HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -268,21 +255,13 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="interactive-buttons">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="togglePercentage()"
-            >
+            <button mat-raised-button color="primary" (click)="togglePercentage()">
               Alternar Porcentaje
             </button>
           </div>
           <div class="chart-container">
-            <div
-              libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig3"
-              #chartInteractive
-            ></div>
+            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" [enableEditor]="true" #chartInteractive>
+            </div>
           </div>
         </div>
       </mat-tab>
@@ -292,9 +271,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example5TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example5TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -305,9 +282,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example5HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example5HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -321,8 +296,8 @@
       Las líneas de meta permiten superponer objetivos o referencias visuales
       sobre el gráfico principal. Esta funcionalidad es especialmente útil para
       comparar el rendimiento actual contra objetivos establecidos. La interfaz
-      <code>Goal</code> define el tipo de línea, texto descriptivo y datos de
-      la meta. El método <code>toggleShowGoal()</code> permite mostrar u ocultar
+      <code>Goal</code> define el tipo de línea, texto descriptivo y datos de la
+      meta. El método <code>toggleShowGoal()</code> permite mostrar u ocultar
       dinámicamente estas líneas de referencia sin regenerar todo el gráfico.
     </p>
 
@@ -330,20 +305,12 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="goal-buttons mb-3">
-            <button
-              mat-raised-button
-              [color]="showingGoal ? 'warn' : 'primary'"
-              (click)="toggleGoal()"
-            >
-              {{ showingGoal ? 'Ocultar Meta' : 'Mostrar Meta' }}
+            <button mat-raised-button [color]="showingGoal ? 'warn' : 'primary'" (click)="toggleGoal()">
+              {{ showingGoal ? "Ocultar Meta" : "Mostrar Meta" }}
             </button>
           </div>
           <div class="chart-container">
-            <libChart
-              [dataset]="dataset1"
-              [chartOptions]="chartConfig6"
-              #chartGoals
-            ></libChart>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig6" [enableEditor]="true" #chartGoals></libChart>
           </div>
         </div>
       </mat-tab>
@@ -353,9 +320,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example6TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example6TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -366,17 +331,13 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example6HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example6HTML"></code></pre>
             </div>
           </div>
         </div>
       </mat-tab>
     </mat-tab-group>
   </section>
-
-
 
   <!-- Botones de navegación -->
   <hr />
@@ -390,10 +351,7 @@
     <div class="navigation-buttons">
       <div class="row g-3">
         <div class="col-md-4">
-          <button
-            class="btn btn-outline-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToConfiguration()"
-          >
+          <button class="btn btn-outline-primary btn-lg w-100 navigation-btn" (click)="navigateToConfiguration()">
             <i class="fas fa-cog me-2"></i>
             <div>
               <div class="btn-title">Configuración</div>
@@ -403,10 +361,7 @@
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-success btn-lg w-100 navigation-btn"
-            (click)="navigateToTableDemo()"
-          >
+          <button class="btn btn-success btn-lg w-100 navigation-btn" (click)="navigateToTableDemo()">
             <i class="fas fa-table me-2"></i>
             <div>
               <div class="btn-title">Tablas</div>
@@ -416,10 +371,7 @@
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-warning btn-lg w-100 navigation-btn"
-            (click)="navigateToMultichartDemo()"
-          >
+          <button class="btn btn-warning btn-lg w-100 navigation-btn" (click)="navigateToMultichartDemo()">
             <i class="fas fa-chart-line me-2"></i>
             <div>
               <div class="btn-title">Múltiples Gráficos</div>

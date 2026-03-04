@@ -1,7 +1,7 @@
 {
   "type": "column",
   "title": "",
-  "stacked": "",
+  "stacked": null,
   "xAxis": {
     "title": "Año",
     "rotateLabels": null,
@@ -57,5 +57,6 @@
   "showYearsLegend": false,
   "toPercent": false,
   "measureUnit": "miles de pesos de 1993",
-  "isPreview": false
+  "isPreview": false,
+  "disableAutoUpdate": false
 }

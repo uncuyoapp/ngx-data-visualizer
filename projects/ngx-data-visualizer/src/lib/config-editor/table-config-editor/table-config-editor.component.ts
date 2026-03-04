@@ -58,11 +58,14 @@ export class TableConfigEditorComponent implements OnInit {
     configForm!: FormGroup;
 
     /** Estado de columnas seleccionadas para el drag & drop */
-    selectedCols: Dimension[] = [];
+    public selectedCols: Dimension[] = [];
 
     /** Estado de filas seleccionadas para el drag & drop */
-    selectedRows: Dimension[] = [];
+    public selectedRows: Dimension[] = [];
 
+    /**
+     * Inicializa el componente y sus efectos reactivos.
+     */
     constructor() {
         this.initializeEffects();
     }
@@ -124,9 +127,9 @@ export class TableConfigEditorComponent implements OnInit {
     }
 
     /**
-     * Exporta la configuración actual como un archivo JSON.
+     * Exporta la configuración actual como un archivo JSON descargable.
      */
-    exportConfig() {
+    public exportConfig() {
         const config = this.configForm.value;
         const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
         saveAs(blob, `config-table-${Date.now()}.json`);
@@ -176,9 +179,9 @@ export class TableConfigEditorComponent implements OnInit {
 
     /**
      * Maneja el evento de soltar elementos en las listas de drag & drop.
-     * @param event Evento de CdkDragDrop
+     * @param event Evento de CdkDragDrop.
      */
-    drop(event: CdkDragDrop<Dimension[]>) {
+    public drop(event: CdkDragDrop<Dimension[]>) {
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {

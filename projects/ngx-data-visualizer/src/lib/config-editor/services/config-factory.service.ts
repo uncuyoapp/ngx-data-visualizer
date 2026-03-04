@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ChartOptions, TableOptions } from '../../types/data.types';
 import { DEFAULT_OPTIONS, Table } from '../../types/constants';
+import { ChartOptions, TableOptions } from '../../types/data.types';
 
 @Injectable({
     providedIn: 'root'

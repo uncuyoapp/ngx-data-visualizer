@@ -126,6 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-bottom: 12px;
 
   label {
     font-size: 0.75rem;
@@ -135,8 +136,28 @@
     letter-spacing: 0.025em;
   }
 
+  .label-with-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    label {
+      margin-bottom: 0;
+    }
+  }
+
+  .badge-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #3182ce;
+    background: rgba(49, 130, 206, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
   input[type="text"],
   input[type="number"],
+  input[type="range"],
   select {
     padding: 8px 12px;
     border-radius: 8px;
@@ -155,6 +176,35 @@
     }
   }
 
+  input[type="range"] {
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+
+    &::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #3182ce;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -5px;
+      /* Centers thumb on the track */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    &:focus::-webkit-slider-runnable-track {
+      background: rgba(49, 130, 206, 0.1);
+    }
+  }
+
   small {
     font-size: 0.7rem;
     color: #718096;
@@ -170,6 +220,16 @@
   font-weight: 500;
   color: #4a5568;
   cursor: pointer;
+  margin-bottom: 12px;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    input {
+      cursor: not-allowed;
+    }
+  }
 
   input {
     width: 16px;

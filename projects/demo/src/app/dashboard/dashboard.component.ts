@@ -169,7 +169,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     // Configuración del gráfico 4 (gráfico principal)
     this.chartOptionsFour.xAxis.secondLevel = 12;
-    this.chartOptionsFour.stacked = "Condición";
+    this.chartOptionsFour.stacked = 117;
     this.chartOptionsFour.tooltip.shared = true;
 
     this.datasetFour = new Dataset({

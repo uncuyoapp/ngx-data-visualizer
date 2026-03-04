@@ -76,6 +76,8 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
   /** Configuración alternativa para gráficos (si se necesita) */
   chartOptions2: ChartOptions = {
     ...optionsChart,
+    disableAutoUpdate: false,
+    stacked: null
   } as ChartOptions;
 
   /** Configuración para la tabla de datos */
@@ -183,7 +185,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     this.years = this.dataset.getDimensionValues(0);
 
     // Configurar opciones específicas del gráfico
-    this.chartOptions.stacked = "Departamentos"; // Apilar por departamentos
+    this.chartOptions.stacked = 13; // Apilar por departamentos (ID)
     this.chartOptions.xAxis.secondLevel = 3; // Nivel de agrupación en eje X
 
     // Inicializar todas las dimensiones como colapsadas por defecto

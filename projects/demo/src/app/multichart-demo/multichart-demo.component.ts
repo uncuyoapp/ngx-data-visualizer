@@ -65,7 +65,7 @@ export class MultichartDemoComponent implements AfterViewInit {
   multichartConfig1: ChartOptions = {
     type: "column",
     title: "Distribución por Año",
-    stacked: "Sexo",
+    stacked: 12,
     xAxis: {
       title: "Condición",
       rotateLabels: 0,

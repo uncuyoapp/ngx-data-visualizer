@@ -9,21 +9,21 @@ import {
   effect,
   inject,
   input,
+  output,
   signal,
   viewChild,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LegendComponent } from "../legend/legend.component";
 import { Filters } from "../services/types";
+import { Goal, Series } from "../types/data.types";
 import { EchartsComponent } from "./echart/echarts.component";
 import { ChartUpdater } from "./services/chart-updater.service";
 import { Chart } from "./types/chart";
 import { ChartConfiguration } from "./types/chart-configuration";
 import { GoalChartHelper } from "./utils/goal-chart.helper";
-import { Goal, Series } from "../types/data.types";
 
 /**
- * @description
  * Componente principal de gráficos que encapsula la lógica de visualización
  * y manejo de datos para diferentes tipos de gráficos. Actúa como orquestador
  * entre la configuración, los datos y el componente de renderizado de ECharts.
@@ -45,11 +45,19 @@ export class ChartComponent implements OnDestroy {
   /** Configuración completa del gráfico, incluyendo datos, opciones y dimensiones. */
   chartConfiguration = input<ChartConfiguration | null>(null);
 
+  /** Indica si se debe mostrar el botón de configuración */
+  public readonly showConfigToggle = input<boolean>(false);
+
+  /** Emite cuando se presiona el botón de configuración */
+  public readonly toggleConfig = output<void>();
+
+  /** Referencia al botón de configuración */
+  public readonly configToggleButton = viewChild<ElementRef<HTMLButtonElement>>('configToggleButton');
+
   /** Señal que contiene las series actuales del gráfico para comunicación externa. */
   series = signal<Series[]>([]);
 
   /**
-   * @description
    * Referencia al componente hijo `EchartsComponent`, obtenida de forma reactiva.
    * `viewChild` devuelve una señal, permitiendo que los `effect` reaccionen
    * cuando el componente hijo está disponible en la vista.
@@ -66,7 +74,6 @@ export class ChartComponent implements OnDestroy {
   private isInitialized = false;
 
   /**
-   * @description
    * Efecto reactivo que se dispara cuando las dependencias (señales) cambian.
    * Se ejecuta cuando `chartConfiguration` o `echart` (el componente hijo) reciben un valor.
    * Este `effect` se ejecuta múltiples veces en la inicialización:
@@ -92,7 +99,6 @@ export class ChartComponent implements OnDestroy {
   });
 
   /**
-   * @description
    * Configura la suscripción a los cambios de datos del dataset.
    * Cuando el dataset notifica una actualización (ej. por un filtro), se actualiza el gráfico.
    * @param config La configuración del gráfico que contiene el dataset.
@@ -108,7 +114,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Inicializa un `ResizeObserver` para detectar cambios en el tamaño del contenedor
    * del gráfico y notificar al componente ECharts para que se redibuje.
    */
@@ -125,7 +130,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Se ejecuta cuando la configuración del gráfico cambia.
    * Actualiza la configuración de las series y el helper de metas.
    * @param config La nueva configuración del gráfico.
@@ -143,7 +147,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Maneja las actualizaciones de datos, actualizando la data del gráfico
    * y solicitando un redibujado.
    */
@@ -161,7 +164,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Limpia los recursos al destruir el componente, como el `ResizeObserver`
    * y la instancia del gráfico principal.
    */
@@ -177,7 +179,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Propaga la selección de una serie al `mainChart`.
    * @param seriesElement La serie que ha sido seleccionada.
    */
@@ -188,7 +189,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Propaga el evento de hover sobre una serie al `mainChart`.
    * @param seriesElement La serie sobre la que se ha hecho hover.
    */
@@ -199,7 +199,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Se ejecuta cuando las series del gráfico cambian, actualizando la señal `series`.
    * @param series El nuevo array de series.
    */
@@ -208,7 +207,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Alterna la visibilidad de una meta en el gráfico.
    * @param goal La meta a mostrar u ocultar.
    */
@@ -222,7 +220,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Muestra una meta en el gráfico, añadiendo una nueva serie para representarla.
    * @param goal La meta a visualizar.
    */
@@ -247,7 +244,6 @@ export class ChartComponent implements OnDestroy {
   }
 
   /**
-   * @description
    * Oculta la meta previamente mostrada, restaurando la configuración
    * de series y los filtros originales.
    */

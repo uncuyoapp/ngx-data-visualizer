@@ -21,6 +21,7 @@ El objetivo principal del proyecto es promover el uso de herramientas tecnológi
 - **Visualizaciones personalizables** - Mediante inputs simples y temas
 - **TypeScript completo** - Interfaces tipadas para mejor DX
 - **Optimizado para rendimiento** - Lazy loading y tree shaking incluido
+- **🎛️ Editor de configuración integrado** - Interfaz visual para personalizar gráficos y tablas en tiempo real
 
 ## 🚀 Instalación rápida
 
@@ -64,7 +65,7 @@ export class MyChartComponent {
   });
   
   options: ChartOptions = {
-    chartType: 'bar',
+    type: 'bar',
     // más opciones...
   };
 }
@@ -131,6 +132,7 @@ La librería proporciona un conjunto de directivas standalone y servicios para v
   - `Dataset` - Gestión de conjuntos de datos
   - `ChartOptions`, `TableOptions` - Configuraciones tipadas
   - `Dimension`, `RowData`, `Goal` - Interfaces de datos
+  - `ChartConfigEditor`, `TableConfigEditor` - Componentes del editor integrado
 
 - **Proveedores**:
   - `provideDataVisualizerCharts()` - Para funcionalidad de gráficos
@@ -283,7 +285,7 @@ export class DataVizComponent {
   });
   
   chartOptions: ChartOptions = {
-    chartType: 'bar',
+    type: 'bar',
     title: 'Mi Gráfico'
   };
   
@@ -351,7 +353,7 @@ Visita la [**Demo Online**](https://uncuyoapp.github.io/ngx-data-visualizer/) pa
 ## 📋 Roadmap
 
 ### Próximas versiones
-- [ ] Configurador de gráficos y tablas
+- [x] Configurador de gráficos y tablas
 - [ ] Mejoras en la interfaz de usuario
 
 ## 📄 Licencia

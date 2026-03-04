@@ -114,7 +114,7 @@ export class TableDemoComponent implements AfterViewInit {
   @ViewChild("tablePercentages", { read: TableDirective })
   tablePercentages!: TableDirective;
 
-  showEditor = false;
+
 
 
   // Código TypeScript para mostrar en las tabs
@@ -237,7 +237,7 @@ updateThemeWithCustomColors(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="table-container" style="height: 500px;">
-  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1"></libTable>
+  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1" [enableEditor]="true"></libTable>
 </div>`;
 
   example2HTML = `<div class="table-container">

@@ -6,8 +6,11 @@ import {
   effect,
   input,
   output,
+  signal,
   inject,
+  DestroyRef,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Subscription, debounceTime } from "rxjs";
 import { Dataset } from "../services/dataset";
 import { ExcelService } from "../table/services/excel.service";
@@ -27,6 +30,11 @@ import { ComponentPortal } from '@angular/cdk/portal';
   exportAs: "libTable",
 })
 export class TableDirective implements OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly excelService = inject(ExcelService);
+  private readonly overlay = inject(Overlay);
+
   private readonly DEFAULT_EXPORT_NAME = "tabla";
   /** Conjunto de datos para la tabla */
   dataset = input.required<Dataset>();
@@ -37,17 +45,20 @@ export class TableDirective implements OnDestroy {
   /** Configuración de la tabla */
   tableConfiguration!: TableConfiguration;
 
-  /** Referencia al componente de tabla creado */
-  tableRenderComponentRef!: ComponentRef<TableComponent>;
+  /** Instancia del componente de tabla renderizado */
+  private tableRenderComponentRef!: ComponentRef<TableComponent>;
 
   /** Referencia al componente del editor de configuración */
-  configEditorComponentRef?: ComponentRef<any>;
+  private configEditorComponentRef?: ComponentRef<any>;
 
+  /** Referencia al overlay de CDK para el editor */
   private overlayRef?: OverlayRef;
-  private overlay = inject(Overlay);
 
   /** Instancia del componente de tabla */
   public tableComponent!: TableComponent;
+
+  /** Opciones internas "en vivo" para la tabla */
+  internalOptions = signal<TableOptions | null>(null);
 
   /** Suscripción para cambios en los datos */
   subscription!: Subscription;
@@ -64,10 +75,15 @@ export class TableDirective implements OnDestroy {
   /** Evento que emite cuando se cierra el editor */
   close = output<void>();
 
-  constructor(
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly excelService: ExcelService,
-  ) {
+  /**
+   * Inicializa la directiva, configurando la creación de la tabla y sus actualizaciones.
+   */
+  constructor() {
+    // Sincronizar internalOptions cuando el input tableOptions cambie desde afuera
+    effect(() => {
+      this.internalOptions.set(this.tableOptions());
+    }, { allowSignalWrites: true });
+
     this.initializeTable();
   }
 
@@ -112,19 +128,27 @@ export class TableDirective implements OnDestroy {
     this.configEditorComponentRef = this.overlayRef.attach(portal);
 
     this.configEditorComponentRef.setInput('dataset', this.dataset());
-    this.configEditorComponentRef.setInput('options', this.tableOptions());
+    this.configEditorComponentRef.setInput('options', this.internalOptions());
 
-    this.configEditorComponentRef.instance.optionsChange.subscribe((newOptions: TableOptions) => {
-      this.optionsChange.emit(newOptions);
-      this.onConfigChange.emit(newOptions);
-    });
+    this.configEditorComponentRef.instance.optionsChange
+      .subscribe((newOptions: TableOptions) => {
+        // Actualizar estado interno para impacto inmediato (Live Preview)
+        this.internalOptions.set(newOptions);
+        this.optionsChange.emit(newOptions);
+        this.onConfigChange.emit(newOptions);
+      });
 
-    this.configEditorComponentRef.instance.close.subscribe(() => {
-      this.close.emit();
-      this.destroyEditorComponent();
-    });
+    this.configEditorComponentRef.instance.close
+      .subscribe(() => {
+        this.close.emit();
+        this.destroyEditorComponent();
+      });
   }
 
+  /**
+   * Destruye el componente del editor y limpia el overlay.
+   * @private
+   */
   private destroyEditorComponent() {
     if (this.overlayRef) {
       this.overlayRef.dispose();
@@ -144,7 +168,7 @@ export class TableDirective implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.viewContainerRef.clear();
   }
 
   /**
@@ -160,9 +184,12 @@ export class TableDirective implements OnDestroy {
       this.tableRenderComponentRef.destroy();
     }
 
+    const options = this.internalOptions();
+    if (!options) return;
+
     this.tableConfiguration = {
       dataset: this.dataset(),
-      options: this.tableOptions(),
+      options: options,
     };
     // Crear el componente de tabla
     this.tableRenderComponentRef =
@@ -183,7 +210,7 @@ export class TableDirective implements OnDestroy {
 
     // Si el editor existe, hay que asegurarse que esté arriba o manejar su referencia
     if (this.configEditorComponentRef) {
-      this.configEditorComponentRef.instance.options = this.tableOptions();
+      this.configEditorComponentRef.instance.options = options;
       this.configEditorComponentRef.instance.dataset = this.dataset();
     }
   }
@@ -201,9 +228,11 @@ export class TableDirective implements OnDestroy {
    * Suscribe los cambios en los datos para actualizar la tabla automáticamente
    */
   private subscribeDataChanges() {
-    this.subscription?.unsubscribe(); // Cancelar suscripción anterior
-    this.subscription = this.dataset()
-      .dataUpdated.pipe(debounceTime(200))
+    this.dataset()
+      .dataUpdated.pipe(
+        debounceTime(200),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(() => {
         this.updateTable();
       });

@@ -6,6 +6,7 @@ import {
   effect,
   input,
   output,
+  signal,
   inject,
 } from "@angular/core";
 import { Subject } from "rxjs";
@@ -27,7 +28,9 @@ import { ComponentPortal } from '@angular/cdk/portal';
   exportAs: "libChart",
 })
 export class ChartDirective implements OnDestroy {
-  private readonly destroy$ = new Subject<void>();
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly chartFactory = inject(ChartFactory);
+  private readonly overlay = inject(Overlay);
 
   /** Conjunto de datos para el gráfico. */
   dataset = input.required<Dataset>();
@@ -38,16 +41,20 @@ export class ChartDirective implements OnDestroy {
   /** Evento que se emite cuando cambian las series del gráfico. */
   seriesChange = output<Series[]>();
 
+  /** Instancia del componente de gráfico renderizado */
   private chartRenderComponentRef!: ComponentRef<ChartComponent>;
 
   /** Referencia al componente del editor de configuración */
-  configEditorComponentRef?: ComponentRef<any>;
+  private configEditorComponentRef?: ComponentRef<any>;
 
+  /** Referencia al overlay de CDK para el editor */
   private overlayRef?: OverlayRef;
-  private overlay = inject(Overlay);
 
   /** Referencia al componente de gráfico creado. */
-  chartComponent!: ChartComponent;
+  public chartComponent!: ChartComponent;
+
+  /** Opciones internas "en vivo" para el gráfico */
+  internalOptions = signal<ChartOptions | null>(null);
 
   /** Indica si se debe mostrar el editor de configuración */
   enableEditor = input<boolean>(false);
@@ -55,35 +62,41 @@ export class ChartDirective implements OnDestroy {
   /** Evento que emite los cambios en la configuración */
   optionsChange = output<ChartOptions>();
 
+  /** Evento que emite cuando la configuración cambia desde el editor */
+  onConfigChange = output<ChartOptions>();
+
   /** Evento que emite cuando se cierra el editor */
   close = output<void>();
 
-  constructor(
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly chartFactory: ChartFactory,
-  ) {
+  /**
+   * Inicializa la directiva, configurando la creación del gráfico y sus actualizaciones.
+   */
+  constructor() {
+    // Sincronizar internalOptions cuando el input chartOptions cambie desde afuera
+    effect(() => {
+      this.internalOptions.set(this.chartOptions());
+    }, { allowSignalWrites: true });
+
     // Crear el componente UNA SOLA VEZ al inicio.
     this.createChartComponent();
 
     // Reaccionar a los cambios para ACTUALIZAR el componente.
     this.initializeChartUpdates();
     this.initializeSeriesEffect();
-    this.initializeEditorEffect();
   }
 
   /**
-   * Inicializa el efecto para el editor de configuración
+   * Alterna la visibilidad del editor de configuración.
    */
-  private initializeEditorEffect(): void {
-    effect(() => {
-      const show = this.enableEditor();
-      if (show) {
-        this.createEditorComponent();
-      } else {
-        this.destroyEditorComponent();
-      }
-    });
+  public toggleEditor(): void {
+    if (this.overlayRef) {
+      this.destroyEditorComponent();
+    } else {
+      this.createEditorComponent();
+    }
   }
+
+
 
   /**
    * Crea dinámicamente el componente del editor usando Overlay
@@ -96,26 +109,46 @@ export class ChartDirective implements OnDestroy {
     // Crear el overlay
     this.overlayRef = this.overlay.create({
       hasBackdrop: false,
-      scrollStrategy: this.overlay.scrollStrategies.noop(),
-      positionStrategy: this.overlay.position().global().top('0').right('0')
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      positionStrategy: this.overlay.position()
+        .flexibleConnectedTo(this.chartComponent.configToggleButton()!.nativeElement)
+        .withPush(false)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'top',
+            offsetX: -12
+          }
+        ])
     });
 
     const portal = new ComponentPortal(ChartConfigEditorComponent);
     this.configEditorComponentRef = this.overlayRef.attach(portal);
 
     this.configEditorComponentRef.setInput('dataset', this.dataset());
-    this.configEditorComponentRef.setInput('options', this.chartOptions());
+    this.configEditorComponentRef.setInput('options', this.internalOptions());
 
-    this.configEditorComponentRef.instance.optionsChange.subscribe((newOptions: ChartOptions) => {
-      this.optionsChange.emit(newOptions);
-    });
+    this.configEditorComponentRef.instance.optionsChange
+      .subscribe((newOptions: ChartOptions) => {
+        // Actualizar estado interno para impacto inmediato (Live Preview)
+        this.internalOptions.set(newOptions);
+        this.optionsChange.emit(newOptions);
+        this.onConfigChange.emit(newOptions);
+      });
 
-    this.configEditorComponentRef.instance.close.subscribe(() => {
-      this.close.emit();
-      this.destroyEditorComponent();
-    });
+    this.configEditorComponentRef.instance.close
+      .subscribe(() => {
+        this.close.emit();
+        this.destroyEditorComponent();
+      });
   }
 
+  /**
+   * Destruye el componente del editor y limpia el overlay.
+   * @private
+   */
   private destroyEditorComponent() {
     if (this.overlayRef) {
       this.overlayRef.dispose();
@@ -153,19 +186,28 @@ export class ChartDirective implements OnDestroy {
    */
   private initializeChartUpdates(): void {
     effect(() => {
+      const options = this.internalOptions();
+      if (!options) return;
+
       const chartConfiguration = this.chartFactory.getChartConfiguration(
         this.dataset(),
-        this.chartOptions(),
+        options,
       );
       this.chartRenderComponentRef.setInput(
         "chartConfiguration",
         chartConfiguration,
       );
+      this.chartRenderComponentRef.setInput("showConfigToggle", this.enableEditor());
 
       if (this.configEditorComponentRef) {
-        this.configEditorComponentRef.instance.options = this.chartOptions();
-        this.configEditorComponentRef.instance.dataset = this.dataset();
+        this.configEditorComponentRef.setInput('options', options);
+        this.configEditorComponentRef.setInput('dataset', this.dataset());
       }
+    });
+
+    // Escuchar el evento de alternancia de configuración
+    this.chartComponent.toggleConfig.subscribe(() => {
+      this.toggleEditor();
     });
   }
 
@@ -218,8 +260,6 @@ export class ChartDirective implements OnDestroy {
    * Limpia los recursos al destruir la directiva.
    */
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.viewContainerRef.clear();
   }
 }

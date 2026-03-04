@@ -5,6 +5,7 @@ import {
   XAXisComponentOption,
   YAXisComponentOption,
 } from "echarts";
+import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from "../../types/constants";
 import { Chart } from "../types/chart";
 import {
   ChartConfiguration,
@@ -14,7 +15,6 @@ import { ExportManager } from "./managers/export-manager";
 import { SeriesManager } from "./managers/series-manager";
 import { TooltipManager } from "./managers/tooltip-manager";
 import { SeriesConfigType } from "./types/echart-base";
-import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from "../../types/constants";
 
 /**
  * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.
@@ -121,9 +121,18 @@ export class EChart extends Chart {
 
     // Optimización de eventos
     this.setupEventHandlers();
+    this.setupFormatter();
+  }
 
-    (this.libraryOptions.tooltip as any).formatter = (params: any) =>
-      this.tooltipManager.formatTooltip(params, this.libraryOptions);
+  /**
+   * Configura el formateador de tooltip para las opciones actuales.
+   * @private
+   */
+  private setupFormatter(): void {
+    if (this.libraryOptions && this.libraryOptions.tooltip) {
+      (this.libraryOptions.tooltip as any).formatter = (params: any) =>
+        this.tooltipManager.formatTooltip(params, this.libraryOptions);
+    }
   }
 
   /**
@@ -132,6 +141,25 @@ export class EChart extends Chart {
    */
   get instance(): ECharts {
     return this.chartInstance;
+  }
+
+  /**
+   * Actualiza la configuración interna del gráfico con una nueva instancia.
+   * Sincroniza las opciones de la biblioteca, las opciones del gráfico y el gestor de tooltips.
+   * @param config - Nueva configuración del gráfico
+   */
+  public refreshFromConfiguration(config: ChartConfiguration): void {
+    this.configuration = config;
+    this.libraryOptions = config.libraryOptions;
+    this.chartOptions = config.options;
+
+    if (this.tooltipManager) {
+      this.tooltipManager.updateDecimals(this.chartOptions.tooltip.decimals);
+      this.tooltipManager.updateSuffix(this.chartOptions.tooltip.suffix);
+    }
+
+    this.setupFormatter();
+    this.invalidateCache();
   }
 
   /**
@@ -284,17 +312,17 @@ export class EChart extends Chart {
   /**
    * Expande el gráfico para mejor visualización
    */
-  expand(): void {}
+  expand(): void { }
 
   /**
    * Condensa el gráfico
    */
-  condense(): void {}
+  condense(): void { }
 
   /**
    * Oculta el gráfico
    */
-  hide(): void {}
+  hide(): void { }
 
   /**
    * Alterna el modo porcentual del gráfico
@@ -667,8 +695,8 @@ export class EChart extends Chart {
   private createDataX2(items1: any[], items2: any[]): string[] {
     return this.chartOptions.navigator.show
       ? Array<string>().concat(
-          ...items1.map((i) => new Array(items2.length).fill(i)),
-        )
+        ...items1.map((i) => new Array(items2.length).fill(i)),
+      )
       : items1;
   }
 

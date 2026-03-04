@@ -1,44 +1,44 @@
-import { Injectable, Type } from "@angular/core";
-import cloneDeep from "lodash.clonedeep";
+import { Injectable, Type, inject } from "@angular/core";
 import { EChartsOption } from "echarts";
+import cloneDeep from "lodash.clonedeep";
 import { Dataset } from "../../services/dataset";
-import { Dimension } from "../../types/data.types";
 import { Filters } from "../../services/types";
-import { ChartUpdater } from "./chart-updater.service";
+import { DEFAULT_OPTIONS } from "../../types/constants";
+import { ChartOptions, Dimension } from "../../types/data.types";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
-import { ParserOptions } from "../types/parser-options";
 import { ChartConfiguration } from "../types/chart-configuration";
-import { ChartOptions } from "../../types/data.types";
-import { DEFAULT_OPTIONS } from "../../types/constants";
+import { ParserOptions } from "../types/parser-options";
 import { ChartData } from "../utils/chart-data";
+import { ChartUpdater } from "./chart-updater.service";
 
 /**
- * @description
  * Servicio de tipo "Fábrica" (Factory) para crear instancias de `ChartConfiguration`.
+ * Centraliza la creación y división de configuraciones de gráficos.
  */
 @Injectable({
   providedIn: "root",
 })
 export class ChartFactory {
+  private readonly chartUpdater = inject(ChartUpdater);
   private readonly parserOptions: ParserOptions;
   private readonly chartRenderEngine: Type<EchartsComponent>;
 
-  constructor(private readonly chartUpdater: ChartUpdater) {
+  constructor() {
     this.parserOptions = new EChartParser();
     this.chartRenderEngine = EchartsComponent;
   }
 
   /**
-   * @description
    * Crea y devuelve una configuración de gráfico completa para un único gráfico.
    * @param dataset El conjunto de datos para el gráfico.
    * @param options Las opciones de visualización y comportamiento del gráfico.
    * @returns Una instancia de `ChartConfiguration` completamente inicializada.
+   * @throws {Error} Si el parámetro dataset no está definido.
    */
   public getChartConfiguration(
     dataset: Dataset,
-    options: ChartOptions
+    options: ChartOptions,
   ): ChartConfiguration {
     if (!dataset) {
       throw new Error("El parámetro dataset es requerido");
@@ -59,38 +59,40 @@ export class ChartFactory {
     };
     this.chartUpdater.updateChartData(chartConfiguration);
     chartConfiguration.libraryOptions = this.getLibraryOptions(
-      chartConfiguration.options
+      chartConfiguration.options,
     );
     return chartConfiguration;
   }
 
   /**
-   * @description
    * Genera múltiples configuraciones de gráfico a partir de un único dataset,
    * dividiendo los datos según una dimensión específica.
    * @param dataset El conjunto de datos original.
    * @param options Las opciones base para cada gráfico generado.
    * @param dimension La dimensión utilizada para dividir los datos.
    * @returns Un array de `ChartConfiguration`.
+   * @throws {Error} Si los parámetros dataset o dimension no están definidos.
    */
   public getSplitConfiguration(
     dataset: Dataset,
     options: ChartOptions,
-    dimension: Dimension
+    dimension: Dimension,
   ): ChartConfiguration[] {
     if (!dataset || !dimension) {
-      throw new Error('Los parámetros dataset y dimension son requeridos');
+      throw new Error("Los parámetros dataset y dimension son requeridos");
     }
 
     const dimensionKey = dataset.getDimensionKey(dimension.id);
     if (!dimensionKey) {
-      console.error(`No se pudo encontrar la clave de datos para la dimensión de división: ${dimension.nameView}`);
+      console.error(
+        `No se pudo encontrar la clave de datos para la dimensión de división: ${dimension.nameView}`,
+      );
       return [];
     }
 
     return dimension.items
-      .filter(item => item.selected)
-      .map(item => {
+      .filter((item) => item.selected)
+      .map((item) => {
         const datasetCopy = new Dataset({
           id: dataset.id,
           dimensions: dataset.getAllDimensions(),
@@ -102,7 +104,7 @@ export class ChartFactory {
         if (baseFilters) {
           const newFilters = new Filters();
           newFilters.rollUp = [...baseFilters.rollUp];
-          newFilters.filter = baseFilters.filter.map(f => ({ ...f }));
+          newFilters.filter = baseFilters.filter.map((f) => ({ ...f }));
           datasetCopy.dataProvider.filters = newFilters;
         } else {
           datasetCopy.dataProvider.filters = new Filters();
@@ -122,8 +124,8 @@ export class ChartFactory {
           libraryOptions: {},
           preview: false,
           seriesConfig: {
-            x1: '',
-            measure: '',
+            x1: "",
+            measure: "",
             stack: null,
           },
         };
@@ -135,16 +137,18 @@ export class ChartFactory {
         });
 
         this.chartUpdater.updateChartData(chartConfig);
-        chartConfig.libraryOptions = this.getLibraryOptions(chartConfig.options);
+        chartConfig.libraryOptions = this.getLibraryOptions(
+          chartConfig.options,
+        );
         return chartConfig;
       });
   }
 
   /**
-   * @description
    * Obtiene las opciones específicas de la librería de gráficos (ECharts) según el modo (preview o completo).
    * @param options Las opciones generales del gráfico.
    * @returns Las opciones de ECharts correspondientes.
+   * @throws {Error} Si el parámetro options no está definido.
    * @private
    */
   private getLibraryOptions(options: ChartOptions): EChartsOption {

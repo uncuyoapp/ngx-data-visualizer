@@ -144,7 +144,7 @@ export class ChartDemoComponent implements AfterViewInit {
   chartConfig3: ChartOptions = {
     type: "column",
     title: "Distribución por Condición (Apilado)",
-    stacked: "Condición",
+    stacked: 117,
     xAxis: {
       title: "Año",
       rotateLabels: null,
@@ -187,7 +187,7 @@ export class ChartDemoComponent implements AfterViewInit {
   chartConfig4: ChartOptions = {
     type: "column",
     title: "Estudiantes por año y sector",
-    stacked: "all",
+    stacked: null,
     xAxis: {
       title: "Año",
       rotateLabels: null,
@@ -287,7 +287,7 @@ export class ChartDemoComponent implements AfterViewInit {
   @ViewChild("chartInteractive", { read: ChartDirective })
   chart!: ChartDirective;
 
-  showEditor = false;
+
 
 
   @ViewChild("chartGoals", { read: ChartDirective })
@@ -508,7 +508,7 @@ toggleGoal(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1"></div>
+  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1" [enableEditor]="true"></div>
 </div>`;
 
   example2HTML = `<div class="chart-container">

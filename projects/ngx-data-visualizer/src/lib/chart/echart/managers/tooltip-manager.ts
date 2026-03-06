@@ -28,9 +28,11 @@ interface TooltipConfig {
 }
 
 /**
- * Clase encargada de manejar la lógica de los tooltips en los gráficos ECharts.
- * Proporciona funcionalidades para formatear y personalizar la visualización
- * de información al hacer hover sobre los elementos del gráfico.
+ * Clase administradora encargada de manejar y gestionar la lógica reactiva de los tooltips
+ * (cuadros de información flotantes) en los gráficos generados con ECharts.
+ * Proporciona el mecanismo principal para formatear y personalizar la visualización de datos numéricos
+ * o textuales interactivamente al hacer hover sobre un elemento del gráfico, proveyendo sufijos y
+ * cantidad variable de decimales.
  */
 export class TooltipManager {
   /**
@@ -250,9 +252,8 @@ export class TooltipManager {
    * Formatea un valor numérico según la configuración
    * @param value - Valor a formatear
    * @returns Valor formateado como string
-   * @private
    */
-  private formatValue(value: number | string): string {
+  public formatValue(value: number | string): string {
     try {
       if (value === null || value === undefined) {
         return '-';

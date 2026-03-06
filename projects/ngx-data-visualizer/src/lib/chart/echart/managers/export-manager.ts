@@ -11,9 +11,10 @@ interface ChartDimensions {
 }
 
 /**
- * Clase encargada de manejar la exportación de gráficos ECharts.
- * Proporciona funcionalidades para exportar gráficos en formatos SVG y JPG,
- * manejando el redimensionamiento y la descarga de los archivos generados.
+ * Clase administradora encargada de gestionar y ejecutar la exportación del gráfico
+ * renderizado por ECharts hacia formatos de archivo como SVG y JPG.
+ * Proporciona funcionalidades para manejar el redimensionamiento, la recomposición
+ * del layout y la descarga interactiva de los archivos generados en el navegador.
  */
 export class ExportManager {
   /** Dimensiones por defecto para exportación SVG */

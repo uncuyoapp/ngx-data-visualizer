@@ -193,13 +193,19 @@ export interface TableOptions {
  * };
  * ```
  */
+
+/**
+ * Tipos de gráficos soportados por la librería.
+ */
+export type ChartType = 'column' | 'line' | 'pie' | 'bar' | 'area' | 'spline' | 'areaspline';
+
 export interface ChartOptions {
-  /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
-  type: string;
+  /** Tipo de gráfico */
+  type: ChartType;
   /** Título del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado por una dimensión específica (ID) */
-  stacked: number | null;
+  /** Indica si el gráfico está apilado por una dimensión específica (ID), todas ('all') o ninguna (null) */
+  stacked: number | 'all' | null;
   /** Configuración del eje X - define títulos, rotación de etiquetas y niveles de agrupación */
   xAxis: {
     /** Título del eje X que se muestra junto al eje */

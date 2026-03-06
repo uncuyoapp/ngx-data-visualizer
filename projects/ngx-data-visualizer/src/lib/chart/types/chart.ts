@@ -100,7 +100,10 @@ export abstract class Chart {
   abstract togglePercentMode(): void;
 
   /** Establece los valores extremos del gráfico */
-  abstract setExtremes(): void;
+  abstract setExtremes(start?: number, end?: number): void;
+
+  /** Obtiene los valores extremos actuales del navegador del gráfico */
+  abstract getExtremes(): { start: number, end: number } | null;
 
   /**
    * Exporta el gráfico en el formato especificado

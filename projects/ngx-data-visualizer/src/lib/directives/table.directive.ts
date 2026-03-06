@@ -168,6 +168,7 @@ export class TableDirective implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyEditorComponent();
     this.viewContainerRef.clear();
   }
 

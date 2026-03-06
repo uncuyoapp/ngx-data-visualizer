@@ -117,7 +117,9 @@ export class ChartUpdater {
       ),
       measure: chartConfiguration.options.measureUnit,
       stack:
-        typeof chartConfiguration.options.stacked === "number"
+        chartConfiguration.options.stacked === 'all'
+          ? 'all'
+          : typeof chartConfiguration.options.stacked === "number"
           ? getDimensionKeyById(chartConfiguration.options.stacked) ?? null
           : null,
     };

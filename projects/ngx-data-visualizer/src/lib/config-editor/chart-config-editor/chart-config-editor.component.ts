@@ -22,7 +22,7 @@ import {
 import { saveAs } from 'file-saver';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Dataset } from '../../services/dataset';
-import { ChartOptions } from '../../types/data.types';
+import { ChartOptions, ChartType } from '../../types/data.types';
 import { ConfigFactory } from '../services/config-factory.service';
 
 @Component({
@@ -49,6 +49,9 @@ export class ChartConfigEditorComponent implements OnInit {
     /** Emite cuando se solicita cerrar el editor */
     close = output<void>();
 
+    /** Función inyectada por la directiva para obtener los extremos del gráfico */
+    getExtremesFn = input<(() => { start: number; end: number } | null) | null>(null);
+
     /** Formulario de configuración */
     configForm!: FormGroup;
 
@@ -62,12 +65,14 @@ export class ChartConfigEditorComponent implements OnInit {
     private readonly secondLevelValue = signal<string | number | null>(null);
 
     /** Tipos de gráficos disponibles */
-    protected readonly chartTypes = [
+    protected readonly chartTypes: { value: ChartType; label: string }[] = [
         { value: 'column', label: 'Columnas' },
         { value: 'line', label: 'Líneas' },
+        { value: 'spline', label: 'Líneas Curvas (Spline)' },
         { value: 'pie', label: 'Circular' },
         { value: 'bar', label: 'Barras' },
-        { value: 'spline', label: 'Área' }
+        { value: 'area', label: 'Área' },
+        { value: 'areaspline', label: 'Área Curva (Spline)' }
     ];
 
     /**
@@ -159,7 +164,9 @@ export class ChartConfigEditorComponent implements OnInit {
                 enabled: [initialValues.legends.enabled]
             }),
             navigator: this.fb.group({
-                show: [initialValues.navigator?.show ?? false]
+                show: [initialValues.navigator?.show ?? false],
+                start: [initialValues.navigator?.start ?? null],
+                end: [initialValues.navigator?.end ?? null]
             })
         });
 
@@ -264,6 +271,24 @@ export class ChartConfigEditorComponent implements OnInit {
      */
     public onTabChange(tab: string) {
         this.activeTab.set(tab);
+    }
+
+    /**
+     * Emite un evento para guardar los extremos actuales del navegador.
+     */
+    public saveExtremes() {
+        const fn = this.getExtremesFn();
+        if (fn) {
+            const extremes = fn();
+            if (extremes) {
+                this.configForm.patchValue({
+                    navigator: {
+                        start: extremes.start,
+                        end: extremes.end
+                    }
+                }, { emitEvent: false });
+            }
+        }
     }
 
     /**

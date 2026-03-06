@@ -129,6 +129,7 @@ export class ChartDirective implements OnDestroy {
 
     this.configEditorComponentRef.setInput('dataset', this.dataset());
     this.configEditorComponentRef.setInput('options', this.internalOptions());
+    this.configEditorComponentRef.setInput('getExtremesFn', () => this.getExtremes());
 
     this.configEditorComponentRef.instance.optionsChange
       .subscribe((newOptions: ChartOptions) => {
@@ -242,6 +243,14 @@ export class ChartDirective implements OnDestroy {
   }
 
   /**
+   * Obtiene los valores extremos actuales del navegador del gráfico
+   */
+  getExtremes(): { start: number; end: number } | null {
+    const extremes = this._executeOnChart((chart) => chart.getExtremes());
+    return extremes ? (extremes as { start: number; end: number }) : null;
+  }
+
+  /**
    * Ejecuta una acción en la instancia principal del gráfico si está lista.
    * @param action La función a ejecutar con la instancia del gráfico como argumento.
    * @returns El resultado de la función de acción, o `void` si el gráfico no está listo.
@@ -260,6 +269,7 @@ export class ChartDirective implements OnDestroy {
    * Limpia los recursos al destruir la directiva.
    */
   ngOnDestroy(): void {
+    this.destroyEditorComponent();
     this.viewContainerRef.clear();
   }
 }

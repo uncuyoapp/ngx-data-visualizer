@@ -14,6 +14,7 @@ import {
 import { ExportManager } from "./managers/export-manager";
 import { SeriesManager } from "./managers/series-manager";
 import { TooltipManager } from "./managers/tooltip-manager";
+import { AxisManager, AxisContext } from "./managers/axis-manager";
 import { SeriesConfigType } from "./types/echart-base";
 
 /**
@@ -74,6 +75,7 @@ export class EChart extends Chart {
   private readonly tooltipManager: TooltipManager;
   private exportManager!: ExportManager;
   private seriesManager!: SeriesManager;
+  private axisManager!: AxisManager;
 
   // Propiedades heredadas de la clase base Chart
   override name: string = "";
@@ -85,10 +87,8 @@ export class EChart extends Chart {
   public hasRendered: boolean = false;
 
   // Propiedades privadas para manejo interno
-  private totals: number[] = []; // Almacena los totales para cálculos de porcentajes
   private suffixSaved: string | null = ""; // Guarda el sufijo original para restaurarlo
   private decimalsSaved: number | null = null; // Guarda los decimales originales para restaurarlos
-  private maxValue = 0; // Valor máximo para escalado del eje
   private savedYAxisMaxValue: number | null = null; // Guarda el valor máximo del eje Y
 
   // Cache para memoización
@@ -118,6 +118,7 @@ export class EChart extends Chart {
     this.chartInstance = instance;
     this.exportManager = new ExportManager(instance);
     this.seriesManager = new SeriesManager(instance);
+    this.axisManager = new AxisManager(this.tooltipManager, this.seriesManager);
 
     // Optimización de eventos
     this.setupEventHandlers();
@@ -222,9 +223,9 @@ export class EChart extends Chart {
   private generateCacheKey(): string {
     return JSON.stringify({
       series: this.series,
-      maxValue: this.maxValue,
+      maxValue: this.seriesManager?.getMaxValue(),
       toPercent: this.chartOptions.toPercent,
-      totals: this.totals,
+      totals: this.seriesManager?.getTotals(),
     });
   }
 
@@ -241,39 +242,8 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a añadir
    */
   addSeries(series: SeriesConfigType): void {
-    if (!this.instance) {
-      console.error(
-        "No se puede agregar la serie: la instancia de ECharts no está inicializada",
-      );
-      return;
-    }
-
-    try {
-      const currentSeries = this.instance.getOption()[
-        "series"
-      ] as SeriesConfigType[];
-
-      // Asegurarnos de que la serie tenga el formato correcto para ECharts
-      const formattedSeries = {
-        ...series,
-        type: series.type || "line",
-        data: series.data,
-        name: series.name,
-        color: series.color,
-        smooth: series["smooth"],
-        symbol: series["symbol"],
-        symbolSize: series["symbolSize"],
-        lineStyle: series["lineStyle"],
-      };
-
-      // Agregar la serie al gráfico
-      this.instance.setOption({ series: [...currentSeries, formattedSeries] });
-
-      // Invalidar la caché para forzar una actualización
-      this.invalidateCache();
-    } catch (error) {
-      console.error("Error al agregar la serie:", error);
-    }
+    this.seriesManager.addSeries(series);
+    this.invalidateCache();
   }
 
   /**
@@ -354,7 +324,7 @@ export class EChart extends Chart {
     this.chartOptions.tooltip.decimals = 2; // Por defecto 2 decimales para porcentajes
     this.tooltipManager.updateSuffix("%");
     this.tooltipManager.updateDecimals(2);
-    this.summarizeTotals(this.chartData.getSeries());
+    this.seriesManager.summarizeTotals(this.chartData.getSeries());
     this.saveAndSetYAxisMax(100);
   }
 
@@ -412,10 +382,33 @@ export class EChart extends Chart {
 
   /**
    * Establece los extremos del gráfico
-   * @throws {Error} Método no implementado
    */
-  setExtremes(): void {
-    throw new Error("Method not implemented.");
+  setExtremes(start?: number, end?: number): void {
+    if (this.chartInstance && start != null && end != null) {
+      this.chartInstance.dispatchAction({
+        type: "dataZoom",
+        start,
+        end,
+      });
+    }
+  }
+
+  /**
+   * Obtiene los extremos del navegador del gráfico
+   */
+  getExtremes(): { start: number; end: number } | null {
+    if (!this.chartInstance) return null;
+    const option = this.chartInstance.getOption() as Record<string, any>;
+    if (option && option['dataZoom'] && option['dataZoom'].length > 0) {
+      const dataZoom = option['dataZoom'][0];
+      if (dataZoom.start != null && dataZoom.end != null) {
+        return {
+          start: dataZoom.start,
+          end: dataZoom.end,
+        };
+      }
+    }
+    return null;
   }
 
   /**
@@ -461,6 +454,12 @@ export class EChart extends Chart {
         notMerge: true,
         lazyUpdate: true,
       });
+
+      if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
+        setTimeout(() => {
+          this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
+        }, 100);
+      }
     }
   }
 
@@ -471,238 +470,27 @@ export class EChart extends Chart {
    * @private
    */
   private generateConfiguration() {
-    this.configureSeries(this.chartData.getSeries());
-    this.configureAxis();
-  }
-
-  /**
-   * @description
-   * Calcula los totales para cada punto de datos a través de todas las series.
-   * Este cálculo es necesario para el modo porcentual.
-   * @param series - Las series de datos del gráfico.
-   * @private
-   */
-  private summarizeTotals(series: Array<any>) {
-    this.totals = [];
-    series.forEach((s) => {
-      (s.data as Array<any>).forEach((v, i) => {
-        if (!this.totals[i]) {
-          this.totals[i] = parseFloat(v[1]);
-        } else {
-          this.totals[i] += parseFloat(v[1]);
-        }
-      });
-    });
-  }
-
-  /**
-   * @description
-   * Procesa y configura el array de series para ECharts.
-   * Asigna tipos, colores, datos procesados y configuraciones de apilamiento.
-   * @param series - El array de series proveniente de `ChartData`.
-   * @private
-   */
-  private configureSeries(series: Array<any>) {
-    const processedSeries = series.map((s, index) => {
-      s.type = this.getChartType(this.libraryOptions["type"] as string);
-      this.assignSeriesConfig(s);
-      s.data = this.processSeriesData(s.data);
-      this.ensureSeriesStack(s);
-      this.setSeriesVisibility(s);
-      this.setSeriesColor(s, index);
-      return s;
-    });
-
-    this.libraryOptions.series = processedSeries;
-  }
-
-  private assignSeriesConfig(s: any) {
-    type ObjectKey = keyof typeof EC_SERIES_CONFIG;
-    Object.assign(s, EC_SERIES_CONFIG[s.type as ObjectKey]);
-  }
-
-  private processSeriesData(data: Array<any>) {
-    return data.map((v, i) => {
-      this.maxValue = Math.max(this.maxValue, v[1]);
-
-      if (this.chartOptions.type !== "pie") {
-        return this.chartOptions.toPercent
-          ? (v[1] * 100) / this.totals[i]
-          : v[1];
-      } else {
-        return this.chartOptions.toPercent
-          ? { name: v[0], value: (v[1] * 100) / this.totals[i] }
-          : { name: v[0], value: v[1] };
-      }
-    });
-  }
-
-  private ensureSeriesStack(s: any) {
-    if (!s.stack && this.chartData.seriesConfig.stack) {
-      s.stack = this.chartData.seriesConfig.stack;
-    }
-  }
-
-  private setSeriesVisibility(s: any) {
-    s.visible = true;
-  }
-
-  private setSeriesColor(s: any, index: number) {
-    if (!s.color && s.type !== "pie" && this.chartOptions.colors) {
-      s.color =
-        this.chartOptions.colors[index % this.chartOptions.colors.length];
-    }
-  }
-
-  private getChartType(type: string) {
-    switch (type) {
-      case "bar":
-      case "column":
-        return "bar";
-      case "area":
-      case "areaspline":
-      case "spline":
-        return "line";
-      default:
-        return type;
-    }
-  }
-
-  private configureAxisOptions(
-    axisOptions: any,
-    data: any[],
-    isSecondaryAxis: boolean = false,
-  ) {
-    axisOptions.show = this.chartOptions.type !== "pie";
-    axisOptions.name = isSecondaryAxis ? null : this.chartOptions.xAxis.title;
-    axisOptions.nameGap = this.chartOptions.type === "bar" ? 20 : 35;
-    axisOptions.nameLocation =
-      this.chartOptions.type === "bar" ? "end" : "middle";
-    axisOptions.nameTextStyle = { fontWeight: "bold" };
-    axisOptions.axisLabel.rotate = this.chartOptions.xAxis.rotateLabels;
-    axisOptions.data = data;
-    axisOptions.axisTick.show = true;
-    axisOptions.splitArea.show =
-      !isSecondaryAxis && !this.chartData.seriesConfig.x2;
-
-    if (isSecondaryAxis) {
-      // axisOptions.axisLabel.rotate = 45;
-      axisOptions.splitArea.show = true;
-
-      axisOptions.position =
-        this.chartOptions.type === "bar" ? "left" : "bottom";
-      axisOptions.offset = this.chartOptions.type === "bar" ? 60 : 30;
-    }
-    return axisOptions;
-  }
-
-  /**
-   * @description
-   * Configura los ejes X e Y del gráfico.
-   * Maneja la lógica para ejes simples, dobles e invierte los ejes para gráficos de barras.
-   * @private
-   */
-  private configureAxis() {
-    const nameGap = this.calculateNameGap();
-    const xAxis: any[] = [];
-    const yAxis = this.createYAxis(nameGap);
-
-    if (this.chartData.seriesConfig.x2) {
-      this.configureDualXAxis(
-        xAxis,
-        this.chartData.seriesConfig.x1,
-        this.chartData.seriesConfig.x2,
-      );
-    } else {
-      this.configureSingleXAxis(xAxis);
-    }
-
-    this.libraryOptions.xAxis =
-      this.chartOptions.type === "bar"
-        ? (yAxis as XAXisComponentOption)
-        : xAxis;
-    this.libraryOptions.yAxis =
-      this.chartOptions.type === "bar"
-        ? xAxis
-        : (yAxis as YAXisComponentOption);
-  }
-
-  private calculateNameGap(): number {
-    return Math.max(((Math.log(this.maxValue) * Math.LOG10E + 1) | 1) * 10, 30);
-  }
-
-  private createYAxis(nameGap: number): any {
-    return {
-      show: this.chartOptions.type !== "pie",
-      type: "value",
-      name: this.chartOptions.yAxis.title,
-      nameLocation: "middle",
-      nameGap: nameGap,
-      nameTextStyle: { fontWeight: "bold" },
-      max: this.chartOptions.yAxis.max,
-      axisLabel: {
-        formatter: (value: string) => this.formatValue(value),
-      },
+    const ctx = {
+      chartType: this.libraryOptions["type"] as string,
+      isPie: this.chartOptions.type === "pie",
+      toPercent: this.chartOptions.toPercent,
+      stack: this.chartData.seriesConfig.stack,
+      colors: this.chartOptions.colors,
     };
-  }
 
-  /**
-   * Formatea un valor numérico
-   */
-  private formatValue(value: string): string {
-    if (!value) {
-      return "-";
+    if (this.chartOptions.toPercent) {
+      this.seriesManager.summarizeTotals(this.chartData.getSeries());
     }
-    const returnValue = parseFloat(value).toLocaleString("es-AR", {
-      useGrouping: true,
-    });
-    return this.chartOptions.tooltip.suffix
-      ? returnValue + " " + this.chartOptions.tooltip.suffix
-      : returnValue;
-  }
 
-  private configureDualXAxis(xAxis: any[], x1: string, x2: string) {
-    const items1 = this.chartData.getItems(x1);
-    const items2 = this.chartData.getItems(x2);
-
-    const dataX1 = this.createDataX1(items1, items2);
-    const dataX2 = this.createDataX2(items1, items2);
-
-    xAxis.push(
-      this.configureAxisOptions(
-        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
-        dataX1,
-      ),
+    this.libraryOptions.series = this.seriesManager.configureSeries(
+      this.chartData.getSeries(),
+      ctx
     );
-    xAxis.push(
-      this.configureAxisOptions(
-        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
-        dataX2,
-        true,
-      ),
-    );
-
-    xAxis[0].nameGap = 70;
-    if (this.chartOptions.navigator.show) {
-      (this.libraryOptions.grid as any).bottom = 100;
-    }
-  }
-
-  private createDataX1(items1: any[], items2: any[]): string[] {
-    return Array<string>().concat(...new Array(items1.length).fill(items2));
-  }
-
-  private createDataX2(items1: any[], items2: any[]): string[] {
-    return this.chartOptions.navigator.show
-      ? Array<string>().concat(
-        ...items1.map((i) => new Array(items2.length).fill(i)),
-      )
-      : items1;
-  }
-
-  private configureSingleXAxis(xAxis: any[]) {
-    const dataX1 = this.chartData.getItems(this.chartData.seriesConfig.x1);
-    xAxis.push(this.configureAxisOptions({ ...EC_AXIS_CONFIG }, dataX1));
+    const axisCtx: AxisContext = {
+      chartData: this.chartData,
+      chartOptions: this.chartOptions,
+    };
+    this.axisManager.configureAxis(this.libraryOptions, axisCtx);
   }
 
   /**

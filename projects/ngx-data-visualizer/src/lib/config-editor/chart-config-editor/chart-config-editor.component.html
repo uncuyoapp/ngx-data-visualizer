@@ -101,6 +101,7 @@
         <label>Apilado (Stacked)</label>
         <select formControlName="stacked">
           <option [ngValue]="null">Ninguno</option>
+          <option [ngValue]="'all'">Único</option>
           <option *ngFor="let dim of availableStackedDimensions()" [ngValue]="dim.id">
             {{ dim.nameView }}
           </option>
@@ -113,6 +114,11 @@
           <input type="checkbox" formControlName="show" />
           <span>Mostrar Navegador</span>
         </label>
+        <button type="button"
+          style="margin-top: 10px; width: 100%; border-radius: 4px; padding: 6px; border: 1px solid #ccc; background: transparent; cursor: pointer; color: inherit;"
+          (click)="saveExtremes()" [disabled]="!configForm.get('navigator.show')?.value">
+          Fijar Extremos
+        </button>
       </div>
     </div>
 

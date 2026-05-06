@@ -1,6 +1,6 @@
 {
   "name": "ngx-data-visualizer-workspace",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Este es un espacio de trabajo de Angular que contiene una librería de visualización de datos (ngx-data-visualizer) y una aplicación de demostración de uso de la librería (demo).",
   "author": "Área de Políticas Públicas de la Universidad Nacional de Cuyo <politicaspublicasuncuyo@gmail.com>",
   "license": "MIT",

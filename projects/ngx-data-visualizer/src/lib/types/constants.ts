@@ -493,6 +493,7 @@ export const DEFAULT_OPTIONS: ChartOptions = {
     start: null,
     end: null,
   },
+  colors: undefined,
   width: null,
   height: null,
   filterLastYear: false,

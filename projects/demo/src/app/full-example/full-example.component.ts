@@ -187,7 +187,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     // Configurar opciones específicas del gráfico
     this.chartOptions.stacked = 13; // Apilar por departamentos (ID)
     this.chartOptions.xAxis.secondLevel = 3; // Nivel de agrupación en eje X
-
+    console.log(this.chartOptions);
     // Inicializar todas las dimensiones como colapsadas por defecto
     this.dataset.dimensions.forEach((dimension) => {
       this.collapsedDimensions[dimension.id.toString()] = true;

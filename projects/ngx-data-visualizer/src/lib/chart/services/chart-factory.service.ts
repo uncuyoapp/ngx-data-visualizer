@@ -1,4 +1,4 @@
-import { Injectable, Type, inject } from "@angular/core";
+import { Injectable, Type, inject, Optional } from "@angular/core";
 import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
 import { Dataset } from "../../services/dataset";
@@ -11,6 +11,7 @@ import { ChartConfiguration } from "../types/chart-configuration";
 import { ParserOptions } from "../types/parser-options";
 import { ChartData } from "../utils/chart-data";
 import { ChartUpdater } from "./chart-updater.service";
+import { DATA_VISUALIZER_CONFIG, DataVisualizerConfig } from "../../providers";
 
 /**
  * Servicio de tipo "Fábrica" (Factory) para crear instancias de `ChartConfiguration`.
@@ -21,6 +22,7 @@ import { ChartUpdater } from "./chart-updater.service";
 })
 export class ChartFactory {
   private readonly chartUpdater = inject(ChartUpdater);
+  private readonly config = inject(DATA_VISUALIZER_CONFIG, { optional: true });
   private readonly parserOptions: ParserOptions;
   private readonly chartRenderEngine: Type<EchartsComponent>;
 
@@ -43,9 +45,17 @@ export class ChartFactory {
     if (!dataset) {
       throw new Error("El parámetro dataset es requerido");
     }
+
+    const mergedOptions = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
+    
+    // Si el usuario no proveyó colores, usamos los del proveedor si existen
+    if (!mergedOptions.colors && this.config?.defaultColors) {
+      mergedOptions.colors = this.config.defaultColors;
+    }
+
     const chartConfiguration: ChartConfiguration = {
       dataset,
-      options: { ...cloneDeep(DEFAULT_OPTIONS), ...options },
+      options: mergedOptions,
       chartData: {} as ChartData,
       chartRenderType: this.chartRenderEngine,
       expanded: false,
@@ -110,14 +120,20 @@ export class ChartFactory {
           datasetCopy.dataProvider.filters = new Filters();
         }
 
+        const mergedOptions = {
+          ...cloneDeep(DEFAULT_OPTIONS),
+          ...options,
+          title: item.name,
+          legends: { ...options.legends, show: false },
+        };
+
+        if (!mergedOptions.colors && this.config?.defaultColors) {
+          mergedOptions.colors = this.config.defaultColors;
+        }
+
         const chartConfig: ChartConfiguration = {
           dataset: datasetCopy,
-          options: {
-            ...cloneDeep(DEFAULT_OPTIONS),
-            ...options,
-            title: item.name,
-            legends: { ...options.legends, show: false },
-          },
+          options: mergedOptions,
           chartData: {} as ChartData,
           chartRenderType: this.chartRenderEngine,
           expanded: false,

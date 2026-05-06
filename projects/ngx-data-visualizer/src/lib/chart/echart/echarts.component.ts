@@ -323,18 +323,35 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * Obtiene las series actuales del gráfico, las formatea y emite el evento `seriesChange`.
    */
   public emitSeries(): void {
-    if (this.isDestroyed || !this.mainChart?.instance) {
+    if (this.isDestroyed || !this.mainChart?.instance || this.mainChart.isRendering) {
       return;
     }
     try {
       const series = this.mainChart.getSeries();
+      const chartType = this.chartConfiguration().options.type;
+
       if (Array.isArray(series) && series.length > 0) {
-        const typedSeries: Series[] = series.map((s) => ({
-          name: s.name || "",
-          color: s.color ?? "#000000",
-          visible: s.visible ?? true,
-          data: s.data || [],
-        }));
+        let typedSeries: Series[] = [];
+
+        if (chartType === "pie") {
+          // Para gráficos de torta, emitimos cada rebanada como una "serie virtual" 
+          // para que la leyenda pueda mostrarlas individualmente.
+          const pieSeries = series[0];
+          typedSeries = (pieSeries.data as any[]).map((d: any, dataIndex: number) => ({
+            name: d.name || "",
+            color: this.getSafeColor({ seriesIndex: 0, dataIndex }, "#000000"),
+            visible: true,
+            data: [d.value],
+          }));
+        } else {
+          typedSeries = series.map((s, seriesIndex) => ({
+            name: s.name || "",
+            color: this.getSafeColor({ seriesIndex }, s.color || "#000000"),
+            visible: s.visible ?? true,
+            data: s.data || [],
+          }));
+        }
+
         requestAnimationFrame(() => {
           if (!this.isDestroyed) {
             this.seriesChange.emit(typedSeries);
@@ -343,6 +360,26 @@ export class EchartsComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error("Error al obtener series del gráfico:", error);
+    }
+  }
+
+  /**
+   * @description
+   * Intenta obtener el color de una serie o ítem de forma segura.
+   * Maneja errores potenciales si ECharts aún no ha inicializado sus modelos internos.
+   * @param finder El objeto selector para ECharts (seriesIndex, dataIndex).
+   * @param fallbackColor Color a retornar en caso de error o si no se encuentra el visual.
+   * @returns El color en formato string.
+   */
+  private getSafeColor(finder: any, fallbackColor: string): string {
+    try {
+      if (!this.mainChart?.instance) return fallbackColor;
+      return (
+        (this.mainChart.instance as any).getVisual(finder, "color") ||
+        fallbackColor
+      );
+    } catch {
+      return fallbackColor;
     }
   }
 

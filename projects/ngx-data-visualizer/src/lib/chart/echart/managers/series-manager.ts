@@ -168,11 +168,6 @@ export class SeriesManager {
       // Ensure visible
       s.visible = true;
 
-      // Ensure color
-      if (!s.color && !context.isPie && context.colors && context.colors.length) {
-        s.color = context.colors[index % context.colors.length];
-      }
-
       return s;
     });
   }
@@ -193,9 +188,12 @@ export class SeriesManager {
           ? (numericVal * 100) / (this.totals[i] || 1)
           : v[1];
       } else {
-        return context.toPercent
-          ? { name: v[0], value: (numericVal * 100) / (this.totals[i] || 1) }
-          : { name: v[0], value: v[1] };
+        return { 
+          name: v[0], 
+          value: context.toPercent
+            ? (numericVal * 100) / (this.totals[i] || 1)
+            : v[1]
+        };
       }
     });
   }

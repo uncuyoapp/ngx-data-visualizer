@@ -135,7 +135,7 @@ La librería proporciona un conjunto de directivas standalone y servicios para v
   - `ChartConfigEditor`, `TableConfigEditor` - Componentes del editor integrado
 
 - **Proveedores**:
-  - `provideDataVisualizerCharts()` - Para funcionalidad de gráficos
+  - `provideDataVisualizerCharts(config?)` - Para funcionalidad de gráficos. Permite configurar una paleta de colores global.
   - `provideDataVisualizerTables()` - Para funcionalidad de tablas
 
 👉 **Documentación completa**: [README de la librería](projects/ngx-data-visualizer/README.md)
@@ -354,6 +354,7 @@ Visita la [**Demo Online**](https://uncuyoapp.github.io/ngx-data-visualizer/) pa
 
 ### Próximas versiones
 - [x] Configurador de gráficos y tablas
+- [x] Inyección de paleta de colores global y soporte para paletas nativas
 - [ ] Mejoras en la interfaz de usuario
 
 ## 📄 Licencia

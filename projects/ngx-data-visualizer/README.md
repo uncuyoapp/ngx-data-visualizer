@@ -368,7 +368,7 @@ interface ChartOptions {
     /** Valor final del navegador */
     end: number | null
   },
-  /** Array de colores personalizados para las series */
+  /** Array de colores personalizados para las series. Si no se especifica, se usará la paleta global o la nativa de ECharts. */
   colors?: string[],
   /** Ancho del gráfico */
   width: number | null,
@@ -471,6 +471,28 @@ dataset.dataUpdated.subscribe(() => {
 });
 ```
 
+
+## ⚙️ Configuración Global
+
+La librería permite configurar una paleta de colores predeterminada que se aplicará a todos los gráficos del proyecto si no especifican una propia.
+
+### Proveedor de Gráficos
+
+En tu `app.config.ts`:
+
+```ts
+import { provideDataVisualizerCharts } from '@uncuyoapp/ngx-data-visualizer';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideDataVisualizerCharts({
+      defaultColors: ['#1976d2', '#4caf50', '#ff9800', '#f44336']
+    })
+  ]
+};
+```
+
+Si no se provee `defaultColors`, la librería utilizará la paleta nativa de **ECharts 6**, lo que garantiza una visualización moderna y variada de forma automática.
 
 ## 📤 Exportación de Datos
 

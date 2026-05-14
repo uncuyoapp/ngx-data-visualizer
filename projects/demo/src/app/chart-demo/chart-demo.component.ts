@@ -1,18 +1,18 @@
 import { CommonModule } from "@angular/common";
 import {
-  Component,
-  ViewChild,
   AfterViewInit,
   ChangeDetectorRef,
+  Component,
+  ViewChild,
 } from "@angular/core";
-import { Router, RouterModule } from "@angular/router";
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatButtonModule } from "@angular/material/button";
+import { MatTabsModule } from "@angular/material/tabs";
+import { Router, RouterModule } from "@angular/router";
 import {
-  Dataset,
-  Dimension,
   ChartDirective,
   ChartOptions,
+  Dataset,
+  Dimension,
   Goal,
   ThemeService,
 } from "ngx-data-visualizer";
@@ -77,8 +77,8 @@ export class ChartDemoComponent implements AfterViewInit {
       showTotal: false,
     },
     legends: {
-      enabled: true,
-      show: true,
+      enabled: false,
+      show: false,
       position: "bottom",
     },
     navigator: {
@@ -88,7 +88,7 @@ export class ChartDemoComponent implements AfterViewInit {
     },
     colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"],
     width: null,
-    height: 400,
+    height: null,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
@@ -131,7 +131,7 @@ export class ChartDemoComponent implements AfterViewInit {
     },
     colors: ["#2196f3", "#4caf50", "#ff9800"],
     width: null,
-    height: 450,
+    height: null,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
@@ -174,7 +174,7 @@ export class ChartDemoComponent implements AfterViewInit {
     },
     colors: ["#e91e63", "#9c27b0", "#673ab7", "#3f51b5"],
     width: null,
-    height: 400,
+    height: null,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
@@ -216,7 +216,7 @@ export class ChartDemoComponent implements AfterViewInit {
       end: null,
     },
     width: null,
-    height: 400,
+    height: null,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
@@ -259,7 +259,7 @@ export class ChartDemoComponent implements AfterViewInit {
     },
     colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"],
     width: null,
-    height: 400,
+    height: null,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
@@ -426,28 +426,11 @@ togglePercentage(): void {
   this.chart.toPercentage();
 }
 
-// Exportar gráfico como SVG
-exportAsSVG(): void {
-  const svg = this.chart.export('svg');
-  if (svg) {
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'grafico.svg';
-    link.click();
-    window.URL.revokeObjectURL(url);
-  }
+// Exportar gráfico como Imagen (PNG por defecto)
+exportAsImage(): void {
+  this.chart.export('png');
 }
-
-// Exportar gráfico como JPG
-exportAsJPG(): void {
-  const jpg = this.chart.export('jpg');
-  const link = document.createElement('a');
-  link.href = jpg as string;
-  link.download = 'grafico.jpg';
-  link.click();
-}`;
+`;
 
   example6TypeScript = `// Configuración para gráfico con línea de meta
 chartConfig6: ChartOptions = {
@@ -527,8 +510,8 @@ toggleGoal(): void {
   <button mat-raised-button color="primary" (click)="togglePercentage()">
     Alternar Porcentaje
   </button>
-  <button mat-raised-button color="accent" (click)="exportAsSVG()">
-    Exportar SVG
+  <button mat-raised-button color="accent" (click)="exportAsPNG()">
+    Exportar PNG
   </button>
   <button mat-raised-button color="warn" (click)="exportAsJPG()">
     Exportar JPG

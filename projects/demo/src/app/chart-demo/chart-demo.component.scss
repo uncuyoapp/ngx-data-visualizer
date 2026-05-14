@@ -146,6 +146,8 @@
   .chart-container {
     width: 100%;
     min-height: 400px;
+    display: flex;
+    flex-direction: column;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     background: #ffffff;
@@ -332,6 +334,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

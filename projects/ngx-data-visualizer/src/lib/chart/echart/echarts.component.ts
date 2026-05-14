@@ -1,7 +1,11 @@
 import { CommonModule } from "@angular/common";
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
+  HostBinding,
   NgZone,
   OnDestroy,
   OnInit,
@@ -9,9 +13,11 @@ import {
   inject,
   input,
   output,
+  signal
 } from "@angular/core";
 import { ECharts, EChartsOption } from "echarts";
 import { NgxEchartsModule } from "ngx-echarts";
+import { DATA_VISUALIZER_CONFIG } from "../../providers";
 import { EC_SERIES_CONFIG } from "../../types/constants";
 import { Series } from "../../types/data.types";
 import { Chart } from "../types/chart";
@@ -44,8 +50,14 @@ interface EChartsInitOptions extends EChartsOption {
   imports: [NgxEchartsModule, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EchartsComponent implements OnInit, OnDestroy {
+export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly ngZone = inject(NgZone);
+  private readonly elementRef = inject(ElementRef);
+  private readonly globalConfig = inject(DATA_VISUALIZER_CONFIG, { optional: true });
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  private readonly DEFAULT_FALLBACK_HEIGHT = "400px";
+  private readonly DEFAULT_FALLBACK_WIDTH = "100%";
 
   /** Configuración del gráfico que se va a renderizar. */
   public readonly chartConfiguration = input.required<ChartConfiguration>();
@@ -62,10 +74,45 @@ export class EchartsComponent implements OnInit, OnDestroy {
   /** Instancia principal del gráfico, encapsulada en la clase `EChart`. */
   protected mainChart!: EChart;
 
+  public chartHeight = signal<string>("100%");
+  public chartWidth = signal<string>("100%");
+
+  /** Señal que indica si el contenedor tiene dimensiones válidas para renderizar el gráfico. */
+  public isReady = signal<boolean>(false);
+
+  @HostBinding("style.min-height")
+  get hostMinHeight(): string | null {
+    const config = this.chartConfiguration();
+    // Si hay una altura fija definida por el usuario, no forzamos min-height
+    if (config?.options?.height !== undefined && config?.options?.height !== null) {
+      return null;
+    }
+
+    return this.globalConfig?.defaultHeight
+      ? typeof this.globalConfig.defaultHeight === "number"
+        ? `${this.globalConfig.defaultHeight}px`
+        : this.globalConfig.defaultHeight
+      : this.DEFAULT_FALLBACK_HEIGHT;
+  }
+
+  @HostBinding("style.min-width")
+  get hostMinWidth(): string | null {
+    const config = this.chartConfiguration();
+    if (config?.options?.width !== undefined && config?.options?.width !== null) {
+      return null;
+    }
+
+    return this.globalConfig?.defaultWidth
+      ? typeof this.globalConfig.defaultWidth === "number"
+        ? `${this.globalConfig.defaultWidth}px`
+        : this.globalConfig.defaultWidth
+      : this.DEFAULT_FALLBACK_WIDTH;
+  }
+
   /** Opciones de inicialización para el componente `ngx-echarts`. */
   protected initOptions: EChartsInitOptions = {
     locale: "es",
-    renderer: "svg",
+    renderer: "canvas",
     useDirtyRect: false,
     devicePixelRatio:
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
@@ -88,10 +135,28 @@ export class EchartsComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     try {
       this.configInitOptions();
-      this.createChart();
+      // Pequeño retraso para asegurar que los estilos del Host (min-height) se apliquen al DOM
+      // antes de que ngx-echarts intente inicializarse.
+      setTimeout(() => {
+        if (!this.isDestroyed) {
+          this.createChart();
+          this.cdr.markForCheck();
+        }
+      }, 0);
       this.setupResizeListener();
     } catch (error) {
       console.error("Error al inicializar el componente de gráficos:", error);
+    }
+  }
+
+  public ngAfterViewInit(): void {
+    // Primera comprobación de dimensiones al inicializar la vista
+    this.updateChart();
+
+    // Re-intento preventivo por si el layout flexbox tarda en asentarse
+    if (!this.isReady()) {
+      setTimeout(() => this.updateChart(), 50);
+      setTimeout(() => this.updateChart(), 300);
     }
   }
 
@@ -101,12 +166,13 @@ export class EchartsComponent implements OnInit, OnDestroy {
   private readonly configUpdateEffect = effect(() => {
     const config = this.chartConfiguration();
     if (this.mainChart && config) {
+      this.configInitOptions();
       // Sincronizar la configuración interna del gráfico de manera profunda
       this.mainChart.refreshFromConfiguration(config);
       // Solicitar redibujado
       this.updateChart();
     }
-  });
+  }, { allowSignalWrites: true });
 
   /**
    * @description
@@ -138,16 +204,48 @@ export class EchartsComponent implements OnInit, OnDestroy {
   private configInitOptions(): void {
     try {
       const config = this.chartConfiguration();
-      if (config?.options?.height) {
-        this.initOptions.height = `${config.options.height}px`;
+      if (!config) return;
+
+      const parent = this.elementRef.nativeElement.parentElement;
+      const parentHeight = parent?.clientHeight || 0;
+      const parentWidth = parent?.clientWidth || 0;
+
+      // Configuración de altura
+      if (config.options.height !== undefined && config.options.height !== null) {
+        const height = typeof config.options.height === "number"
+          ? `${config.options.height}px`
+          : config.options.height;
+        this.chartHeight.set(height);
+        this.initOptions.height = height;
+      } else {
+        this.chartHeight.set("100%");
+        delete this.initOptions.height;
       }
-      if (config?.options?.width) {
-        this.initOptions.width = `${config.options.width}px`;
+
+      // Configuración de ancho
+      if (config.options.width !== undefined && config.options.width !== null) {
+        const width = typeof config.options.width === "number"
+          ? `${config.options.width}px`
+          : config.options.width;
+        this.chartWidth.set(width);
+        this.initOptions.width = width;
+      } else {
+        this.chartWidth.set("100%");
+        delete this.initOptions.width;
       }
+
       this.initOptions.locale = this.initOptions.locale ?? "es";
+
+      // Configuración de tooltips
+      if (config.libraryOptions) {
+        config.libraryOptions['tooltip'] = {
+          ...(config.libraryOptions['tooltip'] as any),
+          confine: true,
+          appendTo: 'body'
+        };
+      }
     } catch (error) {
       console.error("Error al configurar las opciones del gráfico:", error);
-      throw new Error("No se pudo configurar las opciones del gráfico");
     }
   }
 
@@ -179,15 +277,36 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @param instance La instancia de ECharts creada por la directiva.
    */
   public setChartInstance(instance: ECharts): void {
-    if (!instance) {
-      console.warn("Se intentó establecer una instancia de ECharts nula");
-      return;
-    }
+    if (!instance) return;
+
     try {
       this.mainChart.instance = instance;
+      this.setupEChartsEventListeners();
+
+      const container = this.elementRef.nativeElement;
+      const config = this.chartConfiguration();
+      const isResponsive = config.options.height === null || config.options.height === undefined;
+
+      // Si es responsivo, nos aseguramos de que los signals estén en 100% 
+      // para que el CSS del contenedor controle el tamaño real.
+      if (isResponsive) {
+        this.chartHeight.set("100%");
+        this.chartWidth.set("100%");
+      }
+
       if (!this.mainChart.hasRendered) {
         this.mainChart.render();
         this.mainChart.hasRendered = true;
+        // Forzar un resize después de que el DOM se haya estabilizado
+        setTimeout(() => {
+          if (this.mainChart?.instance) {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            if (width > 0 && height > 0) {
+              this.mainChart.instance.resize({ width, height });
+            }
+          }
+        }, 100);
       }
       this.scheduleSeriesEmission(100);
     } catch (error) {
@@ -197,32 +316,82 @@ export class EchartsComponent implements OnInit, OnDestroy {
 
   /**
    * @description
+   * Configura los listeners de eventos de la instancia de ECharts de forma centralizada.
+   */
+  private setupEChartsEventListeners(): void {
+    if (!this.mainChart?.instance) return;
+
+    this.ngZone.runOutsideAngular(() => {
+      // Limpiar listeners previos por seguridad antes de añadir nuevos
+      this.mainChart.instance.off("finished");
+      this.mainChart.instance.off("legendselectchanged");
+
+      // Listener para el fin del renderizado
+      this.mainChart.instance.on("finished", () => {
+        this.ngZone.run(() => {
+          this.cleanupSeriesEmissionTimer();
+          this.chartUpdated.emit();
+          this.mainChart.isRendering = false;
+          this.emitSeries();
+        });
+      });
+
+      // Listener para clics en la leyenda nativa o cambios de selección
+      this.mainChart.instance.on("legendselectchanged", () => {
+        this.ngZone.run(() => {
+          this.emitSeries();
+        });
+      });
+    });
+  }
+
+  /**
+   * @description
    * Actualiza y redibuja el gráfico. Se asegura de que la instancia exista y
    * gestiona el estado de renderizado para evitar llamadas concurrentes.
    */
   public updateChart(): void {
-    if (!this.mainChart || !this.mainChart.hasRendered) {
+    if (!this.mainChart) {
       return;
     }
+
+    const container = this.elementRef.nativeElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Si aún no estamos listos, comprobamos si ya tenemos dimensiones para arrancar
+    if (!this.isReady()) {
+      if (width > 0 && height > 0) {
+        // Inyectamos las dimensiones actuales en initOptions para que ECharts
+        // no tenga que medir el DOM en el primer renderizado (evita el warning).
+        this.initOptions.width = `${width}px`;
+        this.initOptions.height = `${height}px`;
+
+        this.isReady.set(true);
+        // Devolvemos porque el *ngIf creará el div y disparará setChartInstance por su cuenta
+      }
+      return;
+    }
+
+    if (!this.mainChart.hasRendered) {
+      return;
+    }
+
     try {
       this.mainChart.isRendering = true;
       if (this.mainChart.instance) {
-        this.mainChart.instance.off("finished");
-      }
-      this.mainChart.render();
-      this.scheduleSeriesEmission();
-      this.ngZone.runOutsideAngular(() => {
-        if (this.mainChart.instance) {
-          requestAnimationFrame(() => {
-            this.mainChart.instance.on("finished", () => {
-              this.ngZone.run(() => {
-                this.chartUpdated.emit();
-                this.mainChart.isRendering = false;
-              });
-            });
+        // Solo redimensionamos si tenemos dimensiones válidas (> 0)
+        if (width > 0 && height > 0) {
+          this.mainChart.instance.resize({
+            width: width,
+            height: height
           });
         }
-      });
+      }
+      this.mainChart.render();
+      // El evento 'finished' (configurado en setupEChartsEventListeners) 
+      // se encargará de emitir las series y limpiar el estado.
+      this.scheduleSeriesEmission();
     } catch (error) {
       console.error("Error al actualizar el gráfico:", error);
       this.mainChart.isRendering = false;
@@ -272,6 +441,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       });
     }
   }
+
 
   /**
    * @description

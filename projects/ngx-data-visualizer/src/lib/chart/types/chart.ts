@@ -1,6 +1,6 @@
-import { ChartConfiguration, ChartError } from "./chart-configuration";
-import { ChartData } from "../utils/chart-data";
 import { ChartOptions } from "../../types/data.types";
+import { ChartData } from "../utils/chart-data";
+import { ChartConfiguration, ChartError } from "./chart-configuration";
 
 /**
  * Clase abstracta base para la implementación de diferentes tipos de gráficos.
@@ -107,11 +107,11 @@ export abstract class Chart {
 
   /**
    * Exporta el gráfico en el formato especificado
-   * @param type - Tipo de exportación ('svg' o 'jpg')
-   * @returns URL o datos del gráfico exportado
+   * @param type - Tipo de exportación ('png' o 'jpg')
+   * @returns void
    * @throws {ChartError} Si hay un error al exportar el gráfico
    */
-  abstract export(type: "svg" | "jpg"): string | void;
+  abstract export(type: "png" | "jpg"): void;
 
   /**
    * Libera los recursos utilizados por el gráfico

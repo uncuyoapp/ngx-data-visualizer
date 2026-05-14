@@ -1,8 +1,27 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   position: relative;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+}
+
+lib-app-echarts {
+  flex: 1 1 auto;
+  /* Permite crecer y encogerse, pero respeta el height como base si existe */
+  display: block;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  /* Evita que el canvas de ECharts sangre fuera del contenedor si este se encoge */
+}
+
+lib-legend {
+  display: block;
+  width: 100%;
+  flex: 0 0 auto;
 }
 
 .lib-chart-config-toggle {

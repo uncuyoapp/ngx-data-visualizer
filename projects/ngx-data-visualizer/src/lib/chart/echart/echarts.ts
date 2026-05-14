@@ -1,20 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ECharts,
-  EChartsOption,
-  XAXisComponentOption,
-  YAXisComponentOption,
+  EChartsOption
 } from "echarts";
-import { EC_AXIS_CONFIG, EC_SERIES_CONFIG } from "../../types/constants";
 import { Chart } from "../types/chart";
 import {
   ChartConfiguration,
   EChartsLibraryOptions,
 } from "../types/chart-configuration";
+import { AxisContext, AxisManager } from "./managers/axis-manager";
 import { ExportManager } from "./managers/export-manager";
 import { SeriesManager } from "./managers/series-manager";
 import { TooltipManager } from "./managers/tooltip-manager";
-import { AxisManager, AxisContext } from "./managers/axis-manager";
 import { SeriesConfigType } from "./types/echart-base";
 
 /**
@@ -413,12 +410,12 @@ export class EChart extends Chart {
 
   /**
    * Exporta el gráfico en el formato especificado
-   * @param type - Tipo de exportación ('svg' | 'jpg')
-   * @returns {string | void} Datos del gráfico exportado
+   * @param type - Tipo de exportación ('png' | 'jpg')
+   * @returns {void}
    * @throws {Error} Si el tipo de exportación no es válido
    */
-  export(type: "svg" | "jpg"): string | void {
-    if (!["svg", "jpg"].includes(type)) {
+  export(type: "png" | "jpg" = "png"): void {
+    if (!["png", "jpg"].includes(type)) {
       throw new Error("Tipo de exportación no válido");
     }
     return this.exportManager.export(type);
@@ -449,6 +446,7 @@ export class EChart extends Chart {
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
     if (this.chartInstance) {
+      this.chartInstance.resize();
       // this.chartInstance.clear();
       this.chartInstance.setOption(this.libraryOptions, {
         notMerge: true,

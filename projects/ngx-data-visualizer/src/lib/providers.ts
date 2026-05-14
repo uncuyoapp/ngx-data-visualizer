@@ -9,6 +9,10 @@ import { TableHelperService } from "./table/utils/table-helper.service";
 export interface DataVisualizerConfig {
   /** Colores predeterminados para los gráficos si no se especifican otros */
   defaultColors?: string[];
+  /** Alto predeterminado para los gráficos (fallback si el contenedor es 0px) */
+  defaultHeight?: number | string;
+  /** Ancho predeterminado para los gráficos (fallback si el contenedor es 0px) */
+  defaultWidth?: number | string;
 }
 
 /**

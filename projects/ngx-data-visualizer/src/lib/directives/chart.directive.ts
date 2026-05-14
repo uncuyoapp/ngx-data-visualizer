@@ -1,22 +1,21 @@
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 import {
   ComponentRef,
   Directive,
   OnDestroy,
   ViewContainerRef,
   effect,
+  inject,
   input,
   output,
   signal,
-  inject,
 } from "@angular/core";
-import { Subject } from "rxjs";
 import { ChartComponent } from "../chart/chart.component";
-import { Chart } from "../chart/types/chart";
 import { ChartFactory } from "../chart/services/chart-factory.service";
-import { ChartOptions, Goal, Series } from "../types/data.types";
+import { Chart } from "../chart/types/chart";
 import { Dataset } from "../services/dataset";
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
+import { ChartOptions, Goal, Series } from "../types/data.types";
 
 /**
  * Directiva que permite incrustar un gráfico en un componente contenedor.
@@ -221,11 +220,10 @@ export class ChartDirective implements OnDestroy {
 
   /**
    * Exporta el gráfico actual a un formato específico.
-   * @param type Formato de exportación ('svg' o 'jpg').
-   * @returns El gráfico en el formato especificado.
+   * @param type Formato de exportación ('png' o 'jpg').
    */
-  export(type: "svg" | "jpg"): string | void {
-    return this._executeOnChart((chart) => chart.export(type));
+  export(type: "png" | "jpg" = "png"): void {
+    this._executeOnChart((chart) => chart.export(type));
   }
 
   /**

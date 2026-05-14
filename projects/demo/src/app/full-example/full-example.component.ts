@@ -1,32 +1,32 @@
 // Importaciones de Angular
 import { CommonModule } from "@angular/common";
 import {
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
+  HostListener,
   inject,
   OnInit,
-  AfterViewInit,
-  ViewChildren,
   QueryList,
-  ElementRef,
-  ChangeDetectorRef,
-  HostListener,
+  ViewChildren,
 } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 // Importaciones de la librería ngx-data-visualizer
 import {
-  ChartOptions, // Configuración para gráficos
-  ChartDirective, // Directiva para componente de gráfico
+  ChartDirective,
+  ChartOptions, // Directiva para componente de gráfico
   Dataset, // Clase principal para manejo de datos
   Dimension, // Modelo para dimensiones del dataset
   FiltersConfig, // Modelo para filtros aplicados
   Goal, // Modelo para metas/objetivos en gráficos
   Item, // Modelo para items individuales de dimensiones
-  MultipleChartDirective, // Directiva para múltiples gráficos
-  TableOptions, // Configuración para tablas
+  MultipleChartDirective, // Configuración para tablas
   RowData, // Modelo para filas de datos
   Series, // Modelo para series de gráficos
-  TableDirective, // Directiva para componente de tabla
+  TableDirective, // Directiva para múltiples gráficos
+  TableOptions, // Directiva para componente de tabla
   ThemeService, // Servicio para manejo de temas
 } from "ngx-data-visualizer";
 
@@ -187,7 +187,6 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
     // Configurar opciones específicas del gráfico
     this.chartOptions.stacked = 13; // Apilar por departamentos (ID)
     this.chartOptions.xAxis.secondLevel = 3; // Nivel de agrupación en eje X
-    console.log(this.chartOptions);
     // Inicializar todas las dimensiones como colapsadas por defecto
     this.dataset.dimensions.forEach((dimension) => {
       this.collapsedDimensions[dimension.id.toString()] = true;
@@ -290,7 +289,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * @param chartDirective Referencia al componente de gráfico
    */
   exportChart(chartDirective: ChartDirective) {
-    chartDirective.export("jpg"); // Formato JPG por defecto
+    chartDirective.export("png"); // Formato PNG por defecto
   }
 
   /**

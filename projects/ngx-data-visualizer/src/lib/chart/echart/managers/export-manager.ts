@@ -33,50 +33,60 @@ export class ExportManager {
    * Constructor de la clase
    * @param chartInstance - Instancia de ECharts que maneja el gráfico
    */
-  constructor(private readonly chartInstance: ECharts) {}
+  constructor(private readonly chartInstance: ECharts) { }
 
   /**
    * Exporta el gráfico en el formato especificado
-   * @param type - Tipo de formato de exportación ('svg' o 'jpg')
-   * @returns URL de datos en formato SVG o void para JPG
+   * @param type - Tipo de formato de exportación ('png' o 'jpg')
    * @throws Error si no hay una instancia de gráfico disponible
    */
-  export(type: 'svg' | 'jpg'): string | void {
+  export(type: 'png' | 'jpg' = 'png'): void {
     if (!this.chartInstance) {
       throw new Error('No hay una instancia de gráfico disponible');
     }
-    return type === 'svg' ? this.exportToSVG() : this.exportToJPG();
+    this.exportToImage(type);
   }
 
   /**
-   * Exporta el gráfico a formato SVG
-   * @returns String con el contenido SVG del gráfico
+   * Exporta el gráfico a un formato de imagen (PNG o JPG)
+   * @param type - Formato de imagen ('png' | 'jpg')
    * @private
    */
-  private exportToSVG(): string {
-    const originalDimensions = this.getOriginalDimensions();
-    this.resizeChart(this.defaultDimensions);
-    const svgDataUrl = this.chartInstance.getConnectedDataURL({
-      type: 'svg',
-    });
-    this.resizeChart(originalDimensions);
-    return decodeURIComponent(svgDataUrl.split(',')[1]);
-  }
-
-  /**
-   * Exporta el gráfico a formato JPG
-   * @private
-   */
-  private exportToJPG(): void {
+  private exportToImage(type: 'png' | 'jpg'): void {
     const originalDimensions = this.getOriginalDimensions();
     this.resizeChart(this.jpgDimensions);
-    const pngDataUrl = this.chartInstance.getConnectedDataURL({
-      type: 'jpeg',
+
+    const dataUrl = this.chartInstance.getConnectedDataURL({
+      type: type === 'jpg' ? 'jpeg' : 'png',
       pixelRatio: 2,
-      backgroundColor: '#FFFF',
+      backgroundColor: '#FFFFFF',
     });
+
     this.resizeChart(originalDimensions);
-    this.downloadImage(pngDataUrl);
+    const fileName = this.getFileName(type);
+    this.downloadImage(dataUrl, fileName);
+  }
+
+  /**
+   * Obtiene el nombre del archivo basado en el título del gráfico
+   * @param extension - Extensión del archivo
+   * @returns Nombre de archivo formateado
+   * @private
+   */
+  private getFileName(extension: string): string {
+    const options = this.chartInstance.getOption() as any;
+    // ECharts puede tener title como objeto o array de objetos
+    const titleOption = Array.isArray(options.title) ? options.title[0] : options.title;
+    const titleText = titleOption?.text || 'grafico';
+
+    // Limpiar el título para usarlo como nombre de archivo
+    const safeTitle = titleText
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '_') // Reemplazar espacios por guiones bajos
+      .replace(/[^a-z0-9_]/g, ''); // Eliminar caracteres no alfanuméricos
+
+    return `${safeTitle}.${extension}`;
   }
 
   /**
@@ -103,12 +113,13 @@ export class ExportManager {
   /**
    * Descarga la imagen generada como archivo
    * @param dataUrl - URL de datos de la imagen a descargar
+   * @param fileName - Nombre del archivo para la descarga
    * @private
    */
-  private downloadImage(dataUrl: string): void {
+  private downloadImage(dataUrl: string, fileName: string): void {
     const downloadLink = document.createElement('a');
     downloadLink.href = dataUrl;
-    downloadLink.download = 'chart.jpg';
+    downloadLink.download = fileName;
     downloadLink.click();
   }
 }

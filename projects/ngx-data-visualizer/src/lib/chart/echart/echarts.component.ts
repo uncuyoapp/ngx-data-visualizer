@@ -493,7 +493,7 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
    * Obtiene las series actuales del gráfico, las formatea y emite el evento `seriesChange`.
    */
   public emitSeries(): void {
-    if (this.isDestroyed || !this.mainChart?.instance) {
+    if (this.isDestroyed || !this.mainChart?.instance || this.mainChart.isRendering) {
       return;
     }
     try {

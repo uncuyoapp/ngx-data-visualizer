@@ -15,18 +15,18 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 // Importaciones de la librería ngx-data-visualizer
 import {
-  ChartDirective,
-  ChartOptions, // Directiva para componente de gráfico
+  ChartComponent,
+  ChartOptions, // Opciones de configuración para gráficos
   Dataset, // Clase principal para manejo de datos
   Dimension, // Modelo para dimensiones del dataset
   FiltersConfig, // Modelo para filtros aplicados
   Goal, // Modelo para metas/objetivos en gráficos
   Item, // Modelo para items individuales de dimensiones
-  MultipleChartDirective, // Configuración para tablas
+  MultipleChartComponent, // Componente para múltiples gráficos
   RowData, // Modelo para filas de datos
   Series, // Modelo para series de gráficos
-  TableDirective, // Directiva para múltiples gráficos
-  TableOptions, // Directiva para componente de tabla
+  TableComponent, // Componente de tabla
+  TableOptions, // Opciones de configuración de tabla
   ThemeService, // Servicio para manejo de temas
 } from "ngx-data-visualizer";
 
@@ -55,9 +55,9 @@ import optionsTable from "../../assets/data/table-options.json"; // Configuraci�
     CommonModule, // Directivas básicas de Angular
     ReactiveFormsModule, // Para formularios reactivos
     FormsModule, // Para binding bidireccional [(ngModel)]
-    ChartDirective, // Componente de gráfico de la librería
-    TableDirective, // Componente de tabla de la librería
-    MultipleChartDirective, // Componente de múltiples gráficos
+    ChartComponent, // Componente de gráfico de la librería
+    TableComponent, // Componente de tabla de la librería
+    MultipleChartComponent, // Componente de múltiples gráficos
   ],
   templateUrl: "./full-example.component.html",
   styleUrl: "./full-example.component.scss",
@@ -94,7 +94,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
   // ============================================
 
   /** Referencia al componente de gráfico principal */
-  chartOne!: ChartDirective;
+  chartOne!: ChartComponent;
 
   // ============================================
   // PROPIEDADES DE ESTADO Y CONFIGURACIÓN
@@ -117,6 +117,15 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
 
   /** Estado del toggle de mostrar meta */
   isGoalVisible = false;
+
+  /** Controla la apertura del editor desde la demo */
+  showDemoEditor = false;
+
+  /** Controla la apertura del editor de tablas desde la demo */
+  showTableEditor = false;
+
+  /** Controla la visibilidad de leyendas nativas desde la demo */
+  showDemoLegends = true;
 
   /** Dimensión utilizada para dividir en múltiples gráficos */
   splitDimension!: Dimension;
@@ -240,7 +249,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
           .map((item) => item.name),
       })),
     };
-
+    console.log(filtersConfig);
     this.dataset.applyFilters(filtersConfig);
   }
 
@@ -252,7 +261,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Alterna entre vista porcentual y vista nominal
    * @param chartDirective Referencia al componente de gráfico
    */
-  togglePercentView(chartDirective: ChartDirective) {
+  togglePercentView(chartDirective: ChartComponent) {
     this.isPercentViewActive = !this.isPercentViewActive;
     chartDirective.toPercentage();
   }
@@ -288,7 +297,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Exporta el gráfico como imagen
    * @param chartDirective Referencia al componente de gráfico
    */
-  exportChart(chartDirective: ChartDirective) {
+  exportChart(chartDirective: ChartComponent) {
     chartDirective.export("png"); // Formato PNG por defecto
   }
 
@@ -296,7 +305,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Exporta los datos de la tabla como archivo Excel
    * @param tableDirective Referencia al componente de tabla
    */
-  exportTable(tableDirective: TableDirective) {
+  exportTable(tableDirective: TableComponent) {
     tableDirective.export("xlsx"); // Formato Excel
   }
 
@@ -304,7 +313,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Muestra u oculta la línea de meta en el gráfico
    * @param chartDirective Referencia al componente de gráfico
    */
-  toggleGoal(chartDirective: ChartDirective) {
+  toggleGoal(chartDirective: ChartComponent) {
     this.isGoalVisible = !this.isGoalVisible;
     chartDirective.toggleShowGoal(this.goal);
   }

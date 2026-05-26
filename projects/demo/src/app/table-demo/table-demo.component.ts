@@ -1,17 +1,17 @@
 import { CommonModule } from "@angular/common";
 import {
-  Component,
-  ViewChild,
   AfterViewInit,
   ChangeDetectorRef,
+  Component,
+  ViewChild,
 } from "@angular/core";
-import { Router, RouterModule } from "@angular/router";
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatButtonModule } from "@angular/material/button";
+import { MatTabsModule } from "@angular/material/tabs";
+import { Router, RouterModule } from "@angular/router";
 import {
   Dataset,
   Dimension,
-  TableDirective,
+  TableComponent,
   TableOptions,
   ThemeService,
 } from "ngx-data-visualizer";
@@ -29,7 +29,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   imports: [
     CommonModule,
     RouterModule,
-    TableDirective,
+    TableComponent,
     MatTabsModule,
     MatButtonModule,
   ],
@@ -37,6 +37,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   styleUrls: ["./table-demo.component.scss"],
 })
 export class TableDemoComponent implements AfterViewInit {
+  showBaseTableEditor = false;
   // Dataset 1: Datos de ejemplo con dimensiones del dashboard
   dataset1 = new Dataset({
     rowData: exampleData,
@@ -110,9 +111,9 @@ export class TableDemoComponent implements AfterViewInit {
     ],
   };
 
-  @ViewChild("tableTheme", { read: TableDirective }) table!: TableDirective;
-  @ViewChild("tablePercentages", { read: TableDirective })
-  tablePercentages!: TableDirective;
+  @ViewChild("tableTheme", { read: TableComponent }) table!: TableComponent;
+  @ViewChild("tablePercentages", { read: TableComponent })
+  tablePercentages!: TableComponent;
 
 
 
@@ -183,8 +184,8 @@ currentValueDisplay:
   | "percentOfRow"
   | "percentOfColumn" = "nominal";
 
-@ViewChild("tablePercentages", { read: TableDirective })
-tablePercentages!: TableDirective;
+@ViewChild("tablePercentages", { read: TableComponent })
+tablePercentages!: TableComponent;
 
 // Métodos para cambiar el modo de visualización de porcentajes
 setNominalView(): void {
@@ -208,7 +209,7 @@ setPercentOfColumnView(): void {
 }`;
 
   example6TypeScript = `// Métodos para cambiar el tema de la tabla
-@ViewChild('tableTheme', { read: TableDirective }) table!: TableDirective;
+@ViewChild('tableTheme', { read: TableComponent }) table!: TableComponent;
 
 constructor(private readonly themeService: ThemeService) {}
 
@@ -237,7 +238,7 @@ updateThemeWithCustomColors(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="table-container" style="height: 500px;">
-  <libTable [dataset]="dataset1" [tableOptions]="tableConfig1" [enableEditor]="true"></libTable>
+  <libTable [dataset]="dataset1" [(tableOptions)]="tableConfig1" [(showEditor)]="showBaseTableEditor"></libTable>
 </div>`;
 
   example2HTML = `<div class="table-container">

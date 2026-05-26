@@ -9,7 +9,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatTabsModule } from "@angular/material/tabs";
 import { Router, RouterModule } from "@angular/router";
 import {
-  ChartDirective,
+  ChartComponent,
   ChartOptions,
   Dataset,
   Dimension,
@@ -30,7 +30,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   imports: [
     CommonModule,
     RouterModule,
-    ChartDirective,
+    ChartComponent,
     MatTabsModule,
     MatButtonModule,
   ],
@@ -38,6 +38,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   styleUrls: ["./chart-demo.component.scss"],
 })
 export class ChartDemoComponent implements AfterViewInit {
+  showBaseEditor = false;
   // Dataset 1: Datos de ejemplo con dimensiones del dashboard
   dataset1 = new Dataset({
     rowData: exampleData,
@@ -284,14 +285,14 @@ export class ChartDemoComponent implements AfterViewInit {
   // Estado de visibilidad de la meta
   showingGoal = false;
 
-  @ViewChild("chartInteractive", { read: ChartDirective })
-  chart!: ChartDirective;
+  @ViewChild("chartInteractive", { read: ChartComponent })
+  chart!: ChartComponent;
 
 
 
 
-  @ViewChild("chartGoals", { read: ChartDirective })
-  chartGoals!: ChartDirective;
+  @ViewChild("chartGoals", { read: ChartComponent })
+  chartGoals!: ChartComponent;
 
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
@@ -419,7 +420,7 @@ chartConfig4: ChartOptions = {
 };`;
 
   example5TypeScript = `// Métodos interactivos para el gráfico
-@ViewChild('chartInteractive', { read: ChartDirective }) chart!: ChartDirective;
+@ViewChild('chartInteractive', { read: ChartComponent }) chart!: ChartComponent;
 
 // Cambiar a modo porcentaje
 togglePercentage(): void {
@@ -480,8 +481,8 @@ goalLine: Goal = {
 // Estado de visibilidad de la meta
 showingGoal = false;
 
-@ViewChild("chartGoals", { read: ChartDirective })
-chartGoals!: ChartDirective;
+@ViewChild("chartGoals", { read: ChartComponent })
+chartGoals!: ChartComponent;
 
 // Método para alternar la visibilidad de la línea de meta
 toggleGoal(): void {
@@ -491,19 +492,19 @@ toggleGoal(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1" [enableEditor]="true"></div>
+  <libChart [dataset]="dataset1" [(chartOptions)]="chartConfig1" [(showEditor)]="showBaseEditor"></libChart>
 </div>`;
 
   example2HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></libChart>
 </div>`;
 
   example3HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></libChart>
 </div>`;
 
   example4HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></libChart>
 </div>`;
 
   example5HTML = `<div class="interactive-buttons">

@@ -13,7 +13,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   styleUrl: "./configuration.component.scss",
 })
 export class ConfigurationComponent implements AfterViewInit {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngAfterViewInit() {
     // Usamos Prism para formatear las secciones de código para que se vean bonitas.
@@ -32,7 +32,7 @@ export class ConfigurationComponent implements AfterViewInit {
     this.router.navigate(["/multichart-demo"]);
   }
 
-  viewChildCode = `@ViewChild(ChartDirective) chartDirective: ChartDirective;`;
+  viewChildCode = `@ViewChild(ChartComponent) chartComponent: ChartComponent;`;
 
   importCode = `import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -40,9 +40,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Importaciones de ngx-data-visualizer
 import {
-  ChartDirective, // directiva para renderizado de gráficos
-  TableDirective, // directiva para renderizado de tablas
-  MultipleChartDirective, // directiva para renderizado de múltiples gráficos
+  ChartComponent, // componente para renderizado de gráficos
+  TableComponent, // componente para renderizado de tablas
+  MultipleChartComponent, // componente para renderizado de múltiples gráficos
   Dataset, // clase para definicion del conjunto de datos
   Dimension, // interface para las dimensiones de los datos
   Item, // interface para los items de las dimensiones
@@ -61,9 +61,9 @@ import {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    ChartDirective,
-    TableDirective,
-    MultipleChartDirective
+    ChartComponent,
+    TableComponent,
+    MultipleChartComponent
   ],
   templateUrl: './example.component.html',
   styleUrl: './example.component.scss'
@@ -93,6 +93,21 @@ export const appConfig: ApplicationConfig = {
 
     // Otros providers...
   ],
+};`;
+
+  providerOptionsExampleCode = `// app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideDataVisualizerCharts } from '@uncuyoapp/ngx-data-visualizer';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ✅ Configuración global de gráficos opcional
+    provideDataVisualizerCharts({
+      defaultColors: ['#1976d2', '#388e3c', '#f57c00', '#d32f2f'], // Colores por defecto para series
+      defaultHeight: 400, // Alto predeterminado del gráfico (número o string como '400px')
+      defaultWidth: '100%' // Ancho predeterminado del gráfico
+    })
+  ]
 };`;
 
   installationCode = `# Instalar la librería y sus dependencias

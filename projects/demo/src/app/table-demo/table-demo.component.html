@@ -1,8 +1,8 @@
 <div class="container my-5">
-  <h1 class="mb-4">Uso de la directiva <code>libTable</code></h1>
+  <h1 class="mb-4">Uso del componente <code>TableComponent</code></h1>
   <p class="col-lg-12 fs-5 text-muted mb-4">
-    Esta sección proporciona una guía completa sobre el uso de la directiva
-    <code>libTable</code> para la visualización de datos en formato tabular.
+    Esta sección proporciona una guía completa sobre el uso del componente
+    <code>TableComponent</code> para la visualización de datos en formato tabular.
     Incluye configuraciones disponibles, opciones de personalización y ejemplos
     prácticos de implementación con capacidades de pivotado y ordenamiento.
   </p>
@@ -11,9 +11,10 @@
 
   <!-- Documentación de uso -->
   <section class="my-5">
-    <h2>Uso de la directiva <code>libTable</code></h2>
+    <h2>Uso del componente <code>TableComponent</code></h2>
     <p>
-      La directiva <code>libTable</code> se utiliza para mostrar datos en
+      El componente <code>TableComponent</code> (con selector de etiqueta <code>&lt;libTable&gt;</code>) se utiliza para
+      mostrar datos en
       formato tabular con capacidades de pivotado. Requiere un objeto
       <code>Dataset</code> y un objeto <code>TableOptions</code> como entradas.
     </p>
@@ -41,9 +42,9 @@
   <section class="my-5">
     <h2>Panel de Configuración Interactiva</h2>
     <p>
-      La directiva <code>libTable</code> ahora incluye un panel de configuración integrado.
-      Habilitando <code>[enableEditor]="true"</code>, el usuario puede acceder a herramientas de pivotado y formato
-      directamente desde la visualización.
+      El componente <code>TableComponent</code> incluye un panel de configuración integrado.
+      Al pasar la propiedad de entrada <code>[showEditor]="showBaseTableEditor"</code> (o llamando al método público
+      <code>toggleEditor()</code>), se mostrará u ocultará de forma dinámica el panel interactivo de pivotado y formato.
     </p>
     <ul>
       <li><strong>Pivotado Dinámico:</strong> Cambia filas y columnas mediante drag-and-drop.</li>
@@ -57,27 +58,31 @@
   <!-- Ejemplos prácticos -->
   <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
   <p class="introduction">
-    Los siguientes ejemplos demuestran diferentes configuraciones y usos de la
-    directiva <code>libTable</code> con casos reales de visualización de datos
+    Los siguientes ejemplos demuestran diferentes configuraciones y usos del
+    componente <code>TableComponent</code> con casos reales de visualización de datos
     tabulares y funcionalidades avanzadas.
   </p>
 
   <section class="demo-section">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>1. Configuración Básica (Con Editor Habilitado)</h2>
+      <button mat-stroked-button color="primary" (click)="showBaseTableEditor = !showBaseTableEditor">
+        {{ showBaseTableEditor ? 'Cerrar Editor' : 'Configurar Tabla' }}
+      </button>
     </div>
 
     <p class="section-description">
       Este ejemplo demuestra una tabla con pivotado básico.
-      <strong>Haz clic en el ícono de engranaje</strong> para abrir el editor y reorganizar las dimensiones de la tabla.
+      <strong>Prueba abrir el panel de configuración (botón Configurar Tabla)</strong> para reorganizar las dimensiones
+      de la tabla.
     </p>
 
     <mat-tab-group (selectedTabChange)="onTabChange()">
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container" style="height: 500px">
-            <div libTable [dataset]="dataset1" [tableOptions]="tableConfig1" [enableEditor]="true"
-              (optionsChange)="tableConfig1 = $event"></div>
+            <libTable [dataset]="dataset1" [(tableOptions)]="tableConfig1" [(showEditor)]="showBaseTableEditor">
+            </libTable>
           </div>
         </div>
       </mat-tab>
@@ -121,7 +126,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container">
-            <libTable [dataset]="dataset1" [tableOptions]="tableConfig2" [enableEditor]="true"></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig2"></libTable>
           </div>
         </div>
       </mat-tab>
@@ -166,7 +171,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="table-container">
-            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" [enableEditor]="true"></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3"></libTable>
           </div>
         </div>
       </mat-tab>
@@ -202,7 +207,7 @@
       visualización de los datos numéricos. Puedes alternar entre valores
       nominales y distintos tipos de porcentajes: del total general, por fila o
       por columna. Los botones interactivos utilizan el método
-      <code>setValueDisplay()</code> de la directiva para transformar la vista
+      <code>setValueDisplay()</code> del componente para transformar la vista
       de los datos sin recargar la tabla, proporcionando diferentes perspectivas
       de análisis instantáneamente.
     </p>
@@ -232,7 +237,7 @@
             </button>
           </div>
           <div class="table-container">
-            <libTable [dataset]="dataset1" [tableOptions]="tableConfig4" [enableEditor]="true" #tablePercentages>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig4" #tablePercentages>
             </libTable>
           </div>
         </div>
@@ -265,8 +270,8 @@
   <section class="demo-section">
     <h2>5. Configuración de Temas</h2>
     <p class="section-description">
-      Esta sección demuestra las capacidades de personalización visual de la
-      directiva libTable a través del ThemeService. Se pueden aplicar temas
+      Esta sección demuestra las capacidades de personalización visual del
+      componente TableComponent a través del ThemeService. Se pueden aplicar temas
       predefinidos (Default, Material, Bootstrap) o crear personalizaciones
       específicas modificando colores individuales. Los botones interactivos
       permiten cambiar dinámicamente la apariencia de la tabla, demostrando la
@@ -292,7 +297,7 @@
             </button>
           </div>
           <div class="table-container">
-            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" [enableEditor]="true" #tableTheme></libTable>
+            <libTable [dataset]="dataset1" [tableOptions]="tableConfig3" #tableTheme></libTable>
           </div>
         </div>
       </mat-tab>
@@ -350,7 +355,7 @@
             <i class="fas fa-chart-bar me-2"></i>
             <div>
               <div class="btn-title">Gráficos</div>
-              <small class="btn-subtitle">Directiva libChart</small>
+              <small class="btn-subtitle">Componente ChartComponent</small>
             </div>
           </button>
         </div>
@@ -360,7 +365,7 @@
             <i class="fas fa-chart-line me-2"></i>
             <div>
               <div class="btn-title">Múltiples Gráficos</div>
-              <small class="btn-subtitle">Directiva libMultipleChart</small>
+              <small class="btn-subtitle">Componente MultipleChartComponent</small>
             </div>
           </button>
         </div>

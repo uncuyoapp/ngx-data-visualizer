@@ -1,25 +1,25 @@
+import { CommonModule } from "@angular/common";
 import {
-  Component,
-  OnInit,
   AfterViewInit,
-  ViewChildren,
-  QueryList,
+  Component,
   ElementRef,
   HostListener,
+  OnInit,
+  QueryList,
   ViewChild,
+  ViewChildren,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import cloneDeep from "lodash.clonedeep";
 import {
+  ChartComponent,
   ChartOptions,
-  ChartDirective,
   Dataset,
   Dimension,
-  TableOptions,
   RowData,
-  TableDirective,
+  TableComponent,
+  TableOptions,
   ThemeService,
 } from "ngx-data-visualizer";
 import optionsChart from "../../assets/data/chart-options-dash.json";
@@ -41,8 +41,8 @@ import optionsTable from "../../assets/data/table-options-dash.json";
   standalone: true,
   imports: [
     CommonModule,
-    ChartDirective,
-    TableDirective,
+    ChartComponent,
+    TableComponent,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChildren("allCheckbox") allCheckboxes!: QueryList<ElementRef>;
 
   /** Referencias a los elementos de librería */
-  @ViewChild("tableFull", { read: TableDirective }) tableFull!: TableDirective;
+  @ViewChild("tableFull", { read: TableComponent }) tableFull!: TableComponent;
 
   // ============================================
   // INICIALIZACIÓN

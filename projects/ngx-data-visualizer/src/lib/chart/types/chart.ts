@@ -99,6 +99,9 @@ export abstract class Chart {
   /** Alterna el modo de visualización de porcentajes */
   abstract togglePercentMode(): void;
 
+  /** Alterna la visibilidad de la leyenda nativa del gráfico */
+  abstract toggleLegendVisibility(show: boolean): void;
+
   /** Establece los valores extremos del gráfico */
   abstract setExtremes(start?: number, end?: number): void;
 

@@ -82,6 +82,7 @@ export class EChart extends Chart {
   // Propiedades para control de renderizado
   public isRendering: boolean = false;
   public hasRendered: boolean = false;
+  private addedSeries: SeriesConfigType[] = [];
 
   // Propiedades privadas para manejo interno
   private suffixSaved: string | null = ""; // Guarda el sufijo original para restaurarlo
@@ -195,6 +196,7 @@ export class EChart extends Chart {
       window.clearTimeout(this.renderDebounceTimeout);
     }
     this.optionsCache.clear();
+    this.addedSeries = [];
     this.chartInstance.dispose();
   }
 
@@ -239,6 +241,9 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a añadir
    */
   addSeries(series: SeriesConfigType): void {
+    if (!this.addedSeries.some(s => s.name === series.name)) {
+      this.addedSeries.push(series);
+    }
     this.seriesManager.addSeries(series);
     this.invalidateCache();
   }
@@ -248,6 +253,7 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a eliminar
    */
   delSeries(series: SeriesConfigType): void {
+    this.addedSeries = this.addedSeries.filter(s => s.name !== series.name);
     this.seriesManager.deleteSeries(series);
     this.invalidateCache();
   }
@@ -306,6 +312,21 @@ export class EChart extends Chart {
     } else {
       this.disablePercentMode();
     }
+    this.render();
+  }
+
+  /**
+   * Alterna la visibilidad de la leyenda nativa del gráfico
+   * @param show - Indica si se debe mostrar o ocultar la leyenda
+   */
+  override toggleLegendVisibility(show: boolean): void {
+    this.chartOptions.legends.show = show;
+    this.chartOptions.legends.enabled = show;
+    if (this.libraryOptions) {
+      (this.libraryOptions as any).legend = (this.libraryOptions as any).legend || {};
+      (this.libraryOptions as any).legend.show = show;
+    }
+    this.invalidateCache();
     this.render();
   }
 
@@ -443,21 +464,20 @@ export class EChart extends Chart {
    * @private
    */
   private performRender(): void {
+    if (!this.chartInstance) return;
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
-    if (this.chartInstance) {
-      this.chartInstance.resize();
-      // this.chartInstance.clear();
-      this.chartInstance.setOption(this.libraryOptions, {
-        notMerge: true,
-        lazyUpdate: true,
-      });
+    this.chartInstance.resize();
+    // this.chartInstance.clear();
+    this.chartInstance.setOption(this.libraryOptions, {
+      notMerge: true,
+      lazyUpdate: true,
+    });
 
-      if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
-        setTimeout(() => {
-          this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
-        }, 100);
-      }
+    if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
+      setTimeout(() => {
+        this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
+      }, 100);
     }
   }
 
@@ -480,10 +500,11 @@ export class EChart extends Chart {
       this.seriesManager.summarizeTotals(this.chartData.getSeries());
     }
 
-    this.libraryOptions.series = this.seriesManager.configureSeries(
+    const mainSeries = this.seriesManager.configureSeries(
       this.chartData.getSeries(),
       ctx
     );
+    this.libraryOptions.series = [...mainSeries, ...this.addedSeries];
     const axisCtx: AxisContext = {
       chartData: this.chartData,
       chartOptions: this.chartOptions,

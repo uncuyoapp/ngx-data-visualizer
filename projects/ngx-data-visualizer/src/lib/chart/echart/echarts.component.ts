@@ -17,7 +17,6 @@ import {
 } from "@angular/core";
 import { ECharts, EChartsOption } from "echarts";
 import { NgxEchartsModule } from "ngx-echarts";
-import { DATA_VISUALIZER_CONFIG } from "../../providers";
 import { EC_SERIES_CONFIG } from "../../types/constants";
 import { Series } from "../../types/data.types";
 import { Chart } from "../types/chart";
@@ -53,11 +52,7 @@ interface EChartsInitOptions extends EChartsOption {
 export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly ngZone = inject(NgZone);
   private readonly elementRef = inject(ElementRef);
-  private readonly globalConfig = inject(DATA_VISUALIZER_CONFIG, { optional: true });
   private readonly cdr = inject(ChangeDetectorRef);
-
-  private readonly DEFAULT_FALLBACK_HEIGHT = "400px";
-  private readonly DEFAULT_FALLBACK_WIDTH = "100%";
 
   /** Configuración del gráfico que se va a renderizar. */
   public readonly chartConfiguration = input.required<ChartConfiguration>();
@@ -80,39 +75,20 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
   /** Señal que indica si el contenedor tiene dimensiones válidas para renderizar el gráfico. */
   public isReady = signal<boolean>(false);
 
-  @HostBinding("style.min-height")
-  get hostMinHeight(): string | null {
-    const config = this.chartConfiguration();
-    // Si hay una altura fija definida por el usuario, no forzamos min-height
-    if (config?.options?.height !== undefined && config?.options?.height !== null) {
-      return null;
-    }
-
-    return this.globalConfig?.defaultHeight
-      ? typeof this.globalConfig.defaultHeight === "number"
-        ? `${this.globalConfig.defaultHeight}px`
-        : this.globalConfig.defaultHeight
-      : this.DEFAULT_FALLBACK_HEIGHT;
+  @HostBinding("style.height")
+  get hostHeight(): string {
+    return this.chartHeight();
   }
 
-  @HostBinding("style.min-width")
-  get hostMinWidth(): string | null {
-    const config = this.chartConfiguration();
-    if (config?.options?.width !== undefined && config?.options?.width !== null) {
-      return null;
-    }
-
-    return this.globalConfig?.defaultWidth
-      ? typeof this.globalConfig.defaultWidth === "number"
-        ? `${this.globalConfig.defaultWidth}px`
-        : this.globalConfig.defaultWidth
-      : this.DEFAULT_FALLBACK_WIDTH;
+  @HostBinding("style.width")
+  get hostWidth(): string {
+    return this.chartWidth();
   }
 
   /** Opciones de inicialización para el componente `ngx-echarts`. */
   protected initOptions: EChartsInitOptions = {
     locale: "es",
-    renderer: "canvas",
+    renderer: "svg",
     useDirtyRect: false,
     devicePixelRatio:
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,

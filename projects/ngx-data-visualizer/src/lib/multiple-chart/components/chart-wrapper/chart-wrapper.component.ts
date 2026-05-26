@@ -1,7 +1,7 @@
-import { Component, HostBinding, input, output, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ElementRef, HostBinding, inject, input, output } from '@angular/core';
+import { ChartComponent } from '../../../chart/chart.component';
 import { ChartConfiguration } from '../../../chart/types/chart-configuration';
-import { ChartDirective } from '../../../directives/chart.directive';
 import { BackComponent } from '../../../icons/back/back.component';
 import { ContractComponent } from '../../../icons/contract/contract.component';
 import { ExpandComponent } from '../../../icons/expand/expand.component';
@@ -15,11 +15,11 @@ import { ForwardComponent } from '../../../icons/forward/forward.component';
   selector: 'lib-chart-wrapper',
   standalone: true,
   imports: [
-    CommonModule, 
-    ChartDirective, 
-    BackComponent, 
-    ContractComponent, 
-    ExpandComponent, 
+    CommonModule,
+    ChartComponent,
+    BackComponent,
+    ContractComponent,
+    ExpandComponent,
     ForwardComponent
   ],
   templateUrl: './chart-wrapper.component.html',
@@ -35,7 +35,7 @@ export class ChartWrapperComponent {
 
   /** Emite 'previous' o 'next' cuando se hace clic en los botones de navegación. */
   navigate = output<'previous' | 'next'>();
-  
+
   private elementRef = inject(ElementRef);
 
   /**

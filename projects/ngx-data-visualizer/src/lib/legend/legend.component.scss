@@ -12,6 +12,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -19,11 +20,11 @@
 }
 
 .legend-wrapper {
-  --focus-color: var(--primary-color, #005fcc);
-  --legend-text-color: var(--text-color, #333);
-  --legend-bg-hover: rgba(0, 95, 204, 0.1);
-  --legend-border-radius: 4px;
-  --legend-transition: all 0.2s ease-in-out;
+  --focus-color: var(--viz-focus-color, var(--viz-primary, #6467f3));
+  --legend-text-color: var(--viz-text, #333333);
+  --legend-bg-hover: var(--viz-bg-overlay, rgba(4, 80, 255, 0.1));
+  --legend-border-radius: var(--viz-border-radius, 8px);
+  --legend-transition: var(--viz-transition-duration-fast, 0.2s) var(--viz-transition-easing, ease-in-out);
 
   width: 100%;
   max-width: 100%;

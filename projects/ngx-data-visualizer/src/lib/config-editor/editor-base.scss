@@ -1,11 +1,11 @@
 .config-editor-container {
   width: 320px;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--viz-bg-overlay, rgba(255, 255, 255, 0.75));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  border-radius: calc(var(--viz-border-radius, 8px) * 2);
+  box-shadow: var(--viz-shadow-lg, 0 8px 32px 0 rgba(31, 38, 135, 0.2));
   display: flex;
   flex-direction: column;
   max-height: 80vh;
@@ -17,21 +17,21 @@
     "Segoe UI",
     Roboto,
     sans-serif;
-  color: #1a202c;
+  color: var(--viz-text, #1a202c);
   user-select: none;
 }
 
 .drag-handle {
   cursor: move;
   padding: 12px 16px;
-  background: rgba(25, 118, 210, 0.1);
+  background: rgba(var(--table-hover, 25, 118, 210), 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #2c5282;
+  color: var(--viz-primary, #2c5282);
 
   .actions {
     display: flex;
@@ -44,13 +44,13 @@
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #4a5568;
-  border-radius: 4px;
-  transition: all 0.2s;
+  color: var(--viz-text-muted, #4a5568);
+  border-radius: var(--viz-border-radius, 4px);
+  transition: all var(--viz-transition-duration-fast, 0.2s) var(--viz-transition-easing, ease);
 
   &:hover {
     background: rgba(0, 0, 0, 0.05);
-    color: #2b6cb0;
+    color: var(--viz-primary, #2b6cb0);
   }
 
   &.editor-close-btn:hover {
@@ -71,13 +71,13 @@
     padding: 10px 12px;
     font-size: 0.8rem;
     font-weight: 500;
-    color: #718096;
+    color: var(--viz-text-muted, #718096);
     cursor: pointer;
     position: relative;
-    transition: color 0.2s;
+    transition: color var(--viz-transition-duration-fast, 0.2s) var(--viz-transition-easing, ease);
 
     &.active {
-      color: #3182ce;
+      color: var(--viz-primary, #3182ce);
 
       &::after {
         content: "";
@@ -86,13 +86,13 @@
         left: 8px;
         right: 8px;
         height: 2px;
-        background: #3182ce;
+        background: var(--viz-primary, #3182ce);
         border-radius: 2px;
       }
     }
 
     &:hover:not(.active) {
-      color: #4a5568;
+      color: var(--viz-text, #4a5568);
     }
   }
 }
@@ -149,10 +149,10 @@
   .badge-value {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #3182ce;
-    background: rgba(49, 130, 206, 0.1);
+    color: var(--viz-primary, #3182ce);
+    background: rgba(var(--table-hover, 49, 130, 206), 0.1);
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--viz-border-radius, 4px);
   }
 
   input[type="text"],
@@ -160,19 +160,19 @@
   input[type="range"],
   select {
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: var(--viz-border-radius, 8px);
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
-    color: #2d3748;
+    color: var(--viz-text, #2d3748);
     transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
+      border-color var(--viz-transition-duration-fast, 0.2s) var(--viz-transition-easing, ease),
+      box-shadow var(--viz-transition-duration-fast, 0.2s) var(--viz-transition-easing, ease);
 
     &:focus {
       outline: none;
-      border-color: #3182ce;
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+      border-color: var(--viz-primary, #3182ce);
+      box-shadow: 0 0 0 3px rgba(var(--table-hover, 66, 153, 225), 0.15);
     }
   }
 
@@ -191,17 +191,17 @@
     &::-webkit-slider-thumb {
       height: 16px;
       width: 16px;
-      border-radius: 50%;
-      background: #3182ce;
+      border-radius: var(--viz-border-radius-pill, 50%);
+      background: var(--viz-primary, #3182ce);
       cursor: pointer;
       -webkit-appearance: none;
       margin-top: -5px;
       /* Centers thumb on the track */
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--viz-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.2));
     }
 
     &:focus::-webkit-slider-runnable-track {
-      background: rgba(49, 130, 206, 0.1);
+      background: rgba(var(--table-hover, 49, 130, 206), 0.1);
     }
   }
 
@@ -273,11 +273,11 @@
     transition: background 0.2s;
 
     &.cdk-drop-list-dragging {
-      background: rgba(49, 130, 206, 0.05);
+      background: rgba(var(--table-hover, 49, 130, 206), 0.05);
     }
 
     &.highlight-cols {
-      border-color: rgba(49, 130, 206, 0.3);
+      border-color: rgba(var(--table-hover, 49, 130, 206), 0.3);
     }
 
     &.highlight-rows {
@@ -289,17 +289,17 @@
     padding: 6px 10px;
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
+    border-radius: var(--viz-border-radius, 6px);
     font-size: 0.75rem;
     font-weight: 500;
-    color: #4a5568;
+    color: var(--viz-text-muted, #4a5568);
     cursor: move;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--viz-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
     user-select: none;
 
     &:hover {
-      border-color: #3182ce;
-      color: #3182ce;
+      border-color: var(--viz-primary, #3182ce);
+      color: var(--viz-primary, #3182ce);
     }
   }
 

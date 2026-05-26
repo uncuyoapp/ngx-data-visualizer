@@ -19,9 +19,10 @@
             <a class="nav-link" routerLink="configuration" routerLinkActive="active">Configuración</a>
           </li>
           <li class="nav-item me-4 dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <mat-icon aria-hidden="false" aria-label="Directivas" fontIcon="apps" class="me-2"></mat-icon>
-              Directivas
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <mat-icon aria-hidden="false" aria-label="Componentes" fontIcon="apps" class="me-2"></mat-icon>
+              Componentes
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
@@ -36,7 +37,8 @@
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
               <mat-icon aria-hidden="false" aria-label="Ejemplos" fontIcon="folder_copy" class="me-2"></mat-icon>
               Ejemplos
             </a>
@@ -48,6 +50,12 @@
                 <a class="dropdown-item" routerLink="dashboard" routerLinkActive="active">Escenario</a>
               </li>
             </ul>
+          </li>
+          <li class="nav-item ms-2 d-flex align-items-center">
+            <button class="btn btn-link nav-link p-2 d-flex align-items-center" (click)="toggleTheme()"
+              [title]="isDarkMode ? 'Modo Claro' : 'Modo Oscuro'">
+              <mat-icon [fontIcon]="isDarkMode ? 'light_mode' : 'dark_mode'"></mat-icon>
+            </button>
           </li>
         </ul>
       </div>

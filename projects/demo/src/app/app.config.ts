@@ -4,6 +4,7 @@ import { provideAnimations } from "@angular/platform-browser/animations";
 import {
   provideDataVisualizerCharts,
   provideDataVisualizerTables,
+  DATA_VISUALIZER_CONFIG,
 } from "ngx-data-visualizer";
 import { routes } from "./app.routes";
 
@@ -16,5 +17,12 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideDataVisualizerCharts(),
     provideDataVisualizerTables(),
+    {
+      provide: DATA_VISUALIZER_CONFIG,
+      useValue: {
+        defaultHeight: 420,
+        defaultWidth: "100%",
+      },
+    },
   ],
 };

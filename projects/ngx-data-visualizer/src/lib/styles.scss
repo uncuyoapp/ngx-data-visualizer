@@ -1,7 +1,37 @@
+@forward "./variables";
+@use "./variables" as *;
+
 :root {
   // Valores por defecto
   --table-hover: #0450ff;
   --table-hover-contrast: #ffff;
+
+  // Nuevos Tokens de Estilos Globales de la Librería
+  --viz-primary: var(--table-hover, #0450ff);
+  --viz-primary-contrast: var(--table-hover-contrast, #ffff);
+  --viz-bg-card: #ffffff;
+  --viz-bg-overlay: rgba(255, 255, 255, 0.9);
+  --viz-bg-overlay-hover: rgba(255, 255, 255, 1);
+  --viz-text: #333333;
+  --viz-text-muted: #666666;
+  --viz-border-color: #e6e6e6;
+  --viz-focus-color: #6467f3;
+
+  // Sombras Premium
+  --viz-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --viz-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --viz-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+  // Espaciado y Bordes
+  --viz-border-radius: 8px;
+  --viz-border-radius-pill: 50%;
+  --viz-grid-gap: 16px;
+  --viz-padding-card: 16px;
+
+  // Micro-animaciones y Transiciones
+  --viz-transition-duration: 0.3s;
+  --viz-transition-duration-fast: 0.2s;
+  --viz-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
   // Tamaños y espaciado
   --table-font-size: 12pt;
@@ -59,100 +89,6 @@
   --table-data-border-radius: 1rem;
 }
 
-/*
- *  BreakPoints and mixins
- */
-// Small tablets and large smartphones (landscape view)
-$screen-sm-min: 576px;
-
-// Small tablets (portrait view)
-$screen-md-min: 768px;
-
-// Tablets and small desktops
-$screen-lg-min: 992px;
-
-// Large tablets and desktops
-$screen-xl-min: 1200px;
-
-// XXLarge desktops
-$sceeen-xxl-min: 1400px;
-
-// Small devices
-@mixin min-sm {
-  @media (min-width: #{$screen-sm-min}) {
-    @content;
-  }
-}
-
-@mixin max-sm {
-  @media (max-width: #{$screen-sm-min}) {
-    @content;
-  }
-}
-
-// Medium devices
-@mixin min-md {
-  @media (min-width: #{$screen-md-min}) {
-    @content;
-  }
-}
-
-@mixin max-md {
-  @media (max-width: #{$screen-lg-min}) {
-    @content;
-  }
-}
-
-// Large devices
-@mixin min-lg {
-  @media (min-width: #{$screen-lg-min}) {
-    @content;
-  }
-}
-
-@mixin max-lg {
-  @media (max-width: #{$screen-xl-min}) {
-    @content;
-  }
-}
-
-// Extra large devices
-@mixin min-xl {
-  @media (min-width: #{$screen-xl-min}) {
-    @content;
-  }
-}
-
-@mixin max-xl {
-  @media (max-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-// Extra extra large devices
-@mixin min-xxl {
-  @media (min-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-@mixin max-xxl {
-  @media (max-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-@mixin isMobile {
-  @media only screen and (hover: none) and (pointer: coarse) {
-    @content;
-  }
-  @media (max-width: #{$screen-sm-min}) and (max-height: 800px) {
-    @content;
-  }
-  @media (max-height: 500px) {
-    @content;
-  }
-}
 
 // Estilos de la tabla pivot
 table.pvtTable {
@@ -179,12 +115,14 @@ table.pvtTable {
       font-weight: normal;
       font-size: var(--table-header-font-size);
     }
+
     th {
       line-height: var(--table-line-height);
     }
   }
 
   tbody {
+
     tr,
     td {
       text-align: var(--table-data-text-align);
@@ -208,6 +146,7 @@ table.pvtTable {
       z-index: -1;
       outline: 1px var(--table-data-bg);
     }
+
     &::after {
       background-color: var(--table-label-bg);
       position: absolute;
@@ -222,8 +161,7 @@ table.pvtTable {
 
     transform: translateZ(0);
     outline-offset: calc((var(--table-label-border-width) / 2) * -1);
-    outline: var(--table-label-border-width) var(--table-label-border-style)
-      var(--table-label-border-color);
+    outline: var(--table-label-border-width) var(--table-label-border-style) var(--table-label-border-color);
     text-align: center;
     padding: var(--table-label-padding);
     border-radius: var(--table-label-border-radius);
@@ -241,19 +179,14 @@ table.pvtTable {
 
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
 
     tr {
+
       .pvtCorner:first-of-type,
       .pvtAxisLabel:first-of-type {
         &::before {
@@ -267,18 +200,14 @@ table.pvtTable {
   tbody {
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
+
     tr {
+
       .pvtRowLabel:left,
       .pvtTotalLabel:first-of-type {
         &::before {
@@ -307,8 +236,7 @@ table.pvtTable {
   }
 
   .pvtCorner {
-    border: var(--table-border-width) var(--table-border-style)
-      var(--table-border-color) !important;
+    border: var(--table-border-width) var(--table-border-style) var(--table-border-color) !important;
     background: var(--table-data-bg);
     outline: var(--table-data-bg);
   }
@@ -323,8 +251,7 @@ table.pvtTable {
     vertical-align: middle;
     padding: var(--table-cell-padding);
     // box-shadow: var(--table-cell-box-shadow);
-    border: var(--table-data-border-width) var(--table-data-border-style)
-      var(--table-data-border-color);
+    border: var(--table-data-border-width) var(--table-data-border-style) var(--table-data-border-color);
     border-radius: var(--table-data-border-radius);
   }
 
@@ -349,9 +276,7 @@ table.pvtTable {
 
     color: var(--table-label-hover-contrast);
     z-index: 2;
-    outline: var(--table-label-hover-border-width)
-      var(--table-label-hover-border-style)
-      var(--table-label-hover-border-color);
+    outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style) var(--table-label-hover-border-color);
   }
 
   .header-hovered-cell {
@@ -359,6 +284,7 @@ table.pvtTable {
     color: var(--table-header-hover-contrast, #1a237e);
     z-index: 2;
   }
+
   .header-related-hovered-cell {
     background-color: var(--table-label-hover, #f5f7fa);
     color: var(--table-label-hover-contrast, #263238);
@@ -368,8 +294,7 @@ table.pvtTable {
   .data-hovered {
     background-color: var(--table-data-hover);
     color: var(--table-data-hover-contrast);
-    border: var(--table-data-hover-border-width)
-      var(--table-data-hover-border-style) var(--table-data-hover-border-color);
+    border: var(--table-data-hover-border-width) var(--table-data-hover-border-style) var(--table-data-hover-border-color);
   }
 
   .pvtCorner,

@@ -1,54 +1,146 @@
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
+  ComponentRef,
   ElementRef,
+  OnDestroy,
   ViewChild,
+  computed,
   effect,
   inject,
   input,
+  model,
   output,
+  signal,
 } from "@angular/core";
 
+import { Dataset } from "../services/dataset";
+import { TableOptions as TableOptionsType } from "../types/data.types";
+import { ExcelService } from "./services/excel.service";
 import { TableService } from "./services/table.service";
 import { TableConfiguration, TableOptions } from "./types/table-base";
 import { TableHelperService } from "./utils/table-helper.service";
+import { injectAutoUpdate } from "../utils/auto-update.helper";
 
 @Component({
-  selector: "lib-table",
+  selector: "libTable, [libTable]",
   standalone: true,
+  exportAs: "libTable",
   imports: [CommonModule],
   templateUrl: "./table.component.html",
   styleUrls: ["./table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TableComponent {
+export class TableComponent implements OnDestroy {
   private readonly tableService = inject(TableService);
   private readonly tableHelperService = inject(TableHelperService);
+  private readonly excelService = inject(ExcelService);
+  private readonly overlay = inject(Overlay);
+  private readonly elementRef = inject(ElementRef);
 
-  protected readonly tableConfiguration = input.required<TableConfiguration>();
+  private readonly DEFAULT_EXPORT_NAME = "tabla";
 
-  /** Indica si se debe mostrar el botón de configuración */
-  public readonly showConfigToggle = input<boolean>(false);
+  // ============================================
+  // INPUTS & OUTPUTS PRINCIPALES (PÚBLICOS)
+  // ============================================
 
-  /** Emite cuando se presiona el botón de configuración */
-  public readonly toggleConfig = output<void>();
+  /** Conjunto de datos para la tabla */
+  dataset = input.required<Dataset>();
 
-  @ViewChild('configToggleButton')
-  public readonly configToggleButton!: ElementRef<HTMLButtonElement>;
+  /** Opciones de configuración de la tabla */
+  tableOptions = input.required<TableOptionsType>();
 
+
+  /** Controla la apertura y cierre del panel de edición de configuración de forma bidireccional. */
+  showEditor = model<boolean>(false);
+
+  /** Evento de salida para soportar el enlace bidireccional de la configuración [(tableOptions)] */
+  tableOptionsChange = output<TableOptionsType>();
+
+  // ============================================
+  // ESTADOS Y SEÑALES INTERNAS
+  // ============================================
+
+  /** Opciones internas "en vivo" para la tabla */
+  internalOptions = signal<TableOptionsType | null>(null);
+
+  /** Referencia al elemento DOM de la tabla pivot del template */
   @ViewChild("pivotTable", { static: true })
   private readonly pivotTable!: ElementRef<HTMLDivElement>;
 
-  private readonly configEffect = effect(() => {
-    const config = this.tableConfiguration();
-    if (config) {
-      this.configure();
-    }
+  /** Referencia al overlay de CDK para el editor */
+  private overlayRef?: OverlayRef;
+
+  /** Instancia del editor de configuración inyectado en el overlay */
+  private configEditorComponentRef?: ComponentRef<any>;
+
+
+
+  // ============================================
+  // SIGNALS COMPUTADOS
+  // ============================================
+
+  /** Genera la configuración de la tabla de forma reactiva */
+  tableConfiguration = computed<TableConfiguration | null>(() => {
+    const ds = this.dataset();
+    const opts = this.internalOptions();
+    if (!ds || !opts) return null;
+    return {
+      dataset: ds,
+      options: opts as any,
+    };
   });
+
+  // ============================================
+  // CONSTRUCTOR & EFECTOS DE INICIALIZACIÓN
+  // ============================================
+
+  constructor() {
+    // Sincronizar internalOptions cuando el input tableOptions cambie desde afuera
+    effect(() => {
+      this.internalOptions.set(this.tableOptions());
+    }, { allowSignalWrites: true });
+
+    // Efecto reactivo que gatilla el renderizado e inicializa la tabla
+    effect(() => {
+      const config = this.tableConfiguration();
+      if (config) {
+        this.configure();
+      }
+    });
+
+    // Registrar la suscripción automática para actualizar los datos en caliente con 200ms de debounce
+    injectAutoUpdate(
+      () => this.dataset(),
+      () => this.internalOptions(),
+      () => this.configure(),
+      200
+    );
+
+    // Reactivamente abrir/cerrar el editor según el input showEditor
+    effect(() => {
+      const show = this.showEditor();
+      if (show) {
+        this.createEditorComponent();
+      } else {
+        this.destroyEditorComponent();
+      }
+    }, { allowSignalWrites: true });
+
+
+  }
+
+  // ============================================
+  // PROCESAMIENTO Y RENDEREADO DE TABLAS
+  // ============================================
 
   public configure(): void {
     const config = this.tableConfiguration();
+    if (!config) return;
+
     const { dataset, options } = config;
 
     const aliasMap: Record<string | number, string> = {};
@@ -88,6 +180,71 @@ export class TableComponent {
     this.render(pivotConfig);
   }
 
+  private render(pivotConfig: TableOptions): void {
+    const tableElement = this.pivotTable.nativeElement;
+    const config = this.tableConfiguration();
+    if (!config) return;
+
+    const tableData = config.dataset.dataProvider.getData();
+
+    if (tableElement instanceof HTMLDivElement) {
+      this.tableHelperService.renderPivot(tableElement, tableData, pivotConfig);
+      this.tableHelperService.stickyTable(tableElement);
+    } else {
+      throw new Error("El elemento pivotTable debe ser un HTMLDivElement");
+    }
+  }
+
+
+
+  // ============================================
+  // API PÚBLICA DEL COMPONENTE (MÉTODOS)
+  // ============================================
+
+  /**
+   * Cambia el modo de visualización de los valores de la tabla.
+   * @param mode El modo de visualización: 'nominal', 'percentOfTotal', 'percentOfRow', o 'percentOfColumn'.
+   */
+  public setValueDisplay(
+    mode: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn",
+  ): void {
+    const config = this.tableConfiguration();
+    if (config) {
+      config.options.valueDisplay = mode;
+      this.configure();
+    }
+  }
+
+  /**
+   * Exporta la tabla en diferentes formatos
+   * @param type Tipo de exportación ('html' o 'xlsx')
+   * @param name Nombre opcional para el archivo exportado
+   * @returns Dependiendo del tipo, puede devolver el HTML o el resultado de la exportación
+   */
+  public export(type: "html" | "xlsx", name: string = this.DEFAULT_EXPORT_NAME) {
+    try {
+      switch (type) {
+        case "html":
+          return this.getHtmlTable();
+
+        case "xlsx": {
+          const tableElement = this.getTableElement();
+          if (!tableElement) {
+            throw new Error("No se pudo acceder al elemento de la tabla");
+          }
+          return this.excelService.exportAsExcelFile(tableElement, name);
+        }
+
+        default:
+          console.warn(`Tipo de exportación no soportado: ${type}`);
+          return null;
+      }
+    } catch (error) {
+      console.error("Error al exportar la tabla:", error);
+      throw error;
+    }
+  }
+
   public getHtmlTable(): string {
     const tableElement = this.pivotTable.nativeElement;
     const firstChild = tableElement.firstElementChild;
@@ -112,15 +269,72 @@ export class TableComponent {
     }, 5);
   }
 
-  private render(pivotConfig: TableOptions): void {
-    const tableElement = this.pivotTable.nativeElement;
-    const tableData = this.tableConfiguration().dataset.dataProvider.getData();
+  // ============================================
+  // LÓGICA DEL EDITOR DE CONFIGURACIÓN (CDK OVERLAY)
+  // ============================================
 
-    if (tableElement instanceof HTMLDivElement) {
-      this.tableHelperService.renderPivot(tableElement, tableData, pivotConfig);
-      this.tableHelperService.stickyTable(tableElement);
-    } else {
-      throw new Error("El elemento pivotTable debe ser un HTMLDivElement");
+  /** Alterna la visibilidad del editor de configuración. */
+  public toggleEditor(): void {
+    this.showEditor.set(!this.showEditor());
+  }
+
+  private async createEditorComponent() {
+    if (this.overlayRef) return;
+
+    const { TableConfigEditorComponent } = await import('../config-editor/table-config-editor/table-config-editor.component');
+
+    this.overlayRef = this.overlay.create({
+      hasBackdrop: false,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      positionStrategy: this.overlay.position()
+        .flexibleConnectedTo(this.elementRef.nativeElement)
+        .withPush(false)
+        .withPositions([
+          {
+            originX: 'end',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'top',
+            offsetX: -12,
+            offsetY: 12
+          }
+        ])
+    });
+
+    const portal = new ComponentPortal(TableConfigEditorComponent);
+    this.configEditorComponentRef = this.overlayRef.attach(portal);
+
+    this.configEditorComponentRef.setInput('dataset', this.dataset());
+    this.configEditorComponentRef.setInput('options', this.internalOptions());
+
+    this.configEditorComponentRef.instance.optionsChange
+      .subscribe((newOptions: TableOptionsType) => {
+        this.internalOptions.set(newOptions);
+        this.tableOptionsChange.emit(newOptions);
+      });
+
+    this.configEditorComponentRef.instance.close
+      .subscribe(() => {
+        this.showEditor.set(false);
+      });
+  }
+
+  private destroyEditorComponent() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = undefined;
+      this.configEditorComponentRef = undefined;
     }
   }
+
+  // ============================================
+  // DESTRUCCIÓN
+  // ============================================
+
+  ngOnDestroy(): void {
+    this.destroyEditorComponent();
+  }
 }
+
+/** @deprecated Usar TableComponent en su lugar. Se mantiene por motivos de retrocompatibilidad. */
+export { TableComponent as TableDirective };

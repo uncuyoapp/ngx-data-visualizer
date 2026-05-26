@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { TableTheme } from "../types/table-theme";
 import { TableThemes } from "../../types/constants";
-import { TableDirective } from "../../directives/table.directive";
+import { TableComponent } from "../table.component";
+import { TableTheme } from "../types/table-theme";
 
 /**
  * Tipos de temas disponibles
@@ -46,9 +46,9 @@ export class ThemeService {
   /**
    * Cambia al tema especificado
    * @param themeType - Tipo de tema a aplicar
-   * @param tableDirective - Directiva de la tabla específica (opcional)
+   * @param tableComponent - Componente de la tabla específica (opcional)
    */
-  setTheme(themeType: ThemeType, tableDirective?: TableDirective): void {
+  setTheme(themeType: ThemeType, tableComponent?: TableComponent): void {
     let newTheme: TableTheme;
 
     switch (themeType) {
@@ -64,35 +64,35 @@ export class ThemeService {
 
     this.currentThemeType = themeType;
     this.themeSubject.next(newTheme);
-    this.applyTheme(newTheme, tableDirective);
+    this.applyTheme(newTheme, tableComponent);
   }
 
   /**
    * Actualiza el tema actual con nuevos valores
    * @param newTheme - Nuevos valores del tema
-   * @param tableDirective - Directiva de la tabla específica (opcional)
+   * @param tableComponent - Componente de la tabla específica (opcional)
    */
   updateTheme(
     newTheme: Partial<TableTheme>,
-    tableDirective?: TableDirective,
+    tableComponent?: TableComponent,
   ): void {
     const currentTheme = this.themeSubject.value;
     const updatedTheme = { ...currentTheme, ...newTheme };
     this.themeSubject.next(updatedTheme);
-    this.applyTheme(updatedTheme, tableDirective);
+    this.applyTheme(updatedTheme, tableComponent);
   }
 
   /**
    * Aplica el tema actual a las variables CSS de forma global o a un elemento específico.
    * Determina si la aplicación debe ser global (a todo el documento) o local (a una instancia de tabla).
    * @param theme - El objeto de tema con las variables CSS a aplicar.
-   * @param tableDirective - Directiva opcional. Si se proporciona, el tema se aplica solo a esa tabla.
+   * @param tableComponent - Componente opcional. Si se proporciona, el tema se aplica solo a esa tabla.
    * @private
    */
-  private applyTheme(theme: TableTheme, tableDirective?: TableDirective): void {
-    if (tableDirective?.tableComponent) {
+  private applyTheme(theme: TableTheme, tableComponent?: TableComponent): void {
+    if (tableComponent) {
       // Aplicación específica para una tabla
-      const tableElement = tableDirective.tableComponent.getTableElement();
+      const tableElement = tableComponent.getTableElement();
       if (tableElement) {
         const actualTable = tableElement.querySelector(
           ".pvtTable",
@@ -100,8 +100,8 @@ export class ThemeService {
         if (actualTable) {
           this.applyThemeToElement(actualTable, theme);
           // Notificar al componente que el tema se ha aplicado para re-aplicar sticky
-          if (tableDirective.tableComponent.onThemeApplied) {
-            tableDirective.tableComponent.onThemeApplied();
+          if (tableComponent.onThemeApplied) {
+            tableComponent.onThemeApplied();
           }
         }
       }

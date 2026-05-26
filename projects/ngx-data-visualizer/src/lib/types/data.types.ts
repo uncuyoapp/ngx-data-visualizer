@@ -140,6 +140,8 @@ export interface TableOptions {
     string,
     (record: Record<string, unknown>) => unknown
   >;
+  /** Indica si se debe deshabilitar la actualización automática de la tabla */
+  disableAutoUpdate?: boolean;
 }
 
 /**

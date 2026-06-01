@@ -48,3 +48,6 @@ Thumbs.db
 .windsurf/rules/
 .cursor/rules/
 GEMINI.md
+.agents/workflows/prepare-branch.md
+.agents/workflows/prepare-commits.md
+.agents/workflows/prepare-pr.md

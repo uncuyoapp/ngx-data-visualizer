@@ -1,0 +1,197 @@
+.cases-test-page {
+  background-color: var(--bs-body-bg);
+  min-height: 100vh;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  color: var(--bs-body-color);
+  padding-bottom: 3rem;
+
+  .header-section {
+    background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05) 0%, rgba(var(--bs-success-rgb), 0.05) 100%);
+    border-radius: 16px;
+
+    .icon-gradient {
+      background: linear-gradient(45deg, var(--bs-primary), var(--bs-success));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      height: 40px;
+      width: 40px;
+    }
+  }
+
+  .text-gradient {
+    background: linear-gradient(45deg, var(--bs-primary), var(--bs-success));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .card-premium {
+    background-color: var(--bs-card-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(var(--bs-card-border-color), 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+
+  .json-viewer-container {
+    background-color: #1e1e1e !important;
+    max-height: 380px;
+    overflow-y: auto;
+    font-size: 0.825rem;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #121212;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+
+    .json-code {
+      color: #a9ffb7 !important;
+      display: block;
+      line-height: 1.5;
+    }
+  }
+
+  .chart-wrapper {
+    transition: background-color 0.3s ease;
+    min-height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .btn-download {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      transform: scale(1.02);
+      filter: brightness(1.05);
+    }
+  }
+
+  // Pulsing Dot for Sync Badge
+  .pulsing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--bs-success);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.8s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(var(--bs-success-rgb), 0);
+  }
+
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0);
+  }
+}
+
+// Global Dark Mode Theme compatibility override
+[data-theme="dark"] {
+  .cases-test-page {
+    .header-section {
+      background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.15) 0%, rgba(var(--bs-success-rgb), 0.1) 100%);
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .chart-wrapper {
+      background-color: #1b1b1f !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    // Anulaciones del bloque de filtrado para uso no anidado
+    .filter-section {
+      background-color: #16161a !important;
+      border-color: #29292e !important;
+
+      h4 {
+        color: #ffffff !important;
+        border-bottom-color: #29292e !important;
+      }
+    }
+
+    .filter-group {
+      background-color: #1a1a1e !important;
+      border-color: #29292e !important;
+    }
+
+    .dimension-header {
+      border-bottom-color: #29292e !important;
+
+      .form-check-label {
+        color: #e1e1e6 !important;
+      }
+
+      .toggle-button span {
+        color: #9ca3af !important;
+      }
+    }
+
+    .dimension-items {
+      &::-webkit-scrollbar-track {
+        background: #16161a !important;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #29292e !important;
+      }
+
+      .form-check {
+        &:hover {
+          background-color: rgba(0, 123, 255, 0.15) !important;
+        }
+
+        .form-check-label {
+          color: #9ca3af !important;
+        }
+
+        &:first-of-type {
+          border-bottom-color: #29292e !important;
+
+          .form-check-label {
+            color: #ffffff !important;
+          }
+        }
+      }
+    }
+  }
+}

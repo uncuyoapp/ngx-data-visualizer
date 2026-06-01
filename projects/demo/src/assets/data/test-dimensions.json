@@ -1,0 +1,76 @@
+[
+  {
+    "id": 0,
+    "name": "Año",
+    "nameView": "Año",
+    "selected": true,
+    "items": [
+      { "id": "2010", "selected": true, "name": "2010" },
+      { "id": "2011", "selected": true, "name": "2011" },
+      { "id": "2012", "selected": true, "name": "2012" },
+      { "id": "2013", "selected": true, "name": "2013" },
+      { "id": "2014", "selected": true, "name": "2014" },
+      { "id": "2015", "selected": true, "name": "2015" },
+      { "id": "2016", "selected": true, "name": "2016" },
+      { "id": "2017", "selected": true, "name": "2017" },
+      { "id": "2018", "selected": true, "name": "2018" }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Sector de gestión del sistema educativo",
+    "nameView": "Sector de gestión",
+    "selected": true,
+    "items": [
+      { "id": 335, "name": "Estatal", "selected": true, "order": 1 },
+      { "id": 336, "name": "Privado", "selected": true, "order": 2 }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Sexo",
+    "nameView": "Sexo",
+    "selected": true,
+    "items": [
+      { "id": 61, "name": "Varones", "selected": true, "order": 1 },
+      { "id": 62, "name": "Mujeres", "selected": true, "order": 2 }
+    ]
+  },
+  {
+    "id": 117,
+    "name": "Condición estudiantil",
+    "nameView": "Condición",
+    "selected": true,
+    "items": [
+      { "id": 836, "name": "Estudiante", "selected": true, "order": 1 },
+      { "id": 837, "name": "Nuevo inscripto", "selected": true, "order": 2 },
+      { "id": 838, "name": "Egresado", "selected": true, "order": 3 }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Departamentos",
+    "nameView": "Departamentos de Mendoza",
+    "selected": true,
+    "items": [
+      { "id": 58, "name": "Capital", "order": 1, "color": "", "selected": true },
+      { "id": 59, "name": "Godoy Cruz", "order": 2, "color": "", "selected": true },
+      { "id": 60, "name": "Guaymallén", "order": 3, "color": "", "selected": true },
+      { "id": 61, "name": "Las Heras", "order": 4, "color": "", "selected": true },
+      { "id": 62, "name": "Luján de Cuyo", "order": 5, "color": "", "selected": true },
+      { "id": 63, "name": "Maipú", "order": 6, "color": "", "selected": true },
+      { "id": 64, "name": "Junín", "order": 7, "color": "", "selected": true },
+      { "id": 65, "name": "Rivadavia", "order": 8, "color": "", "selected": true },
+      { "id": 66, "name": "San Martín", "order": 9, "color": "", "selected": true },
+      { "id": 67, "name": "La Paz", "order": 10, "color": "", "selected": true },
+      { "id": 68, "name": "Lavalle", "order": 11, "color": "", "selected": true },
+      { "id": 69, "name": "Santa Rosa", "order": 12, "color": "", "selected": true },
+      { "id": 70, "name": "San Carlos", "order": 13, "color": "", "selected": true },
+      { "id": 71, "name": "Tunuyán", "order": 14, "color": "", "selected": true },
+      { "id": 72, "name": "Tupungato", "order": 15, "color": "", "selected": true },
+      { "id": 73, "name": "General Alvear", "order": 16, "color": "", "selected": true },
+      { "id": 74, "name": "Malargüe", "order": 17, "color": "", "selected": true },
+      { "id": 75, "name": "San Rafael", "order": 18, "color": "", "selected": true }
+    ]
+  }
+]

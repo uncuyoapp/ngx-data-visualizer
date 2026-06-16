@@ -56,8 +56,10 @@
       <div formGroupName="xAxis">
         <div class="form-section-title">Eje X</div>
         <div class="form-group">
-          <label>Título Eje X</label>
-          <input type="text" formControlName="title" />
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="disableAutoTitle" />
+            <span>Deshabilitar título automático</span>
+          </label>
         </div>
         <div class="form-group">
           <label>Nivel Principal</label>

@@ -145,7 +145,7 @@ export class ChartConfigEditorComponent implements OnInit {
             title: [initialValues.title],
             stacked: [initialValues.stacked],
             xAxis: this.fb.group({
-                title: [initialValues.xAxis.title],
+                disableAutoTitle: [initialValues.xAxis.disableAutoTitle ?? false],
                 firstLevel: [initialValues.xAxis.firstLevel, Validators.required],
                 secondLevel: [initialValues.xAxis.secondLevel],
                 rotateLabels: [initialValues.xAxis.rotateLabels ?? 0]

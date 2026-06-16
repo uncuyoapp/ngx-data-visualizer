@@ -1,7 +1,13 @@
 import { EChartsOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
-import { EC_AXIS_CONFIG } from "../../../types/constants";
+import {
+  EC_AXIS_CONFIG,
+  MAX_XAXIS_TITLE_LIMIT_PIXELS,
+  MAX_YAXIS_TITLE_LIMIT_PIXELS
+} from "../../../types/constants";
+import { calculateNameGap as calculateLabelNameGap } from "../utils/echart.utils";
 import { ChartOptions } from "../../../types/data.types";
 import { ChartData } from "../../utils/chart-data";
+import { Dataset } from "../../../services/dataset";
 import { TooltipManager } from "./tooltip-manager";
 import { SeriesManager } from "./series-manager";
 
@@ -12,6 +18,7 @@ import { SeriesManager } from "./series-manager";
 export interface AxisContext {
   chartOptions: ChartOptions;
   chartData: ChartData;
+  dataset?: Dataset;
 }
 
 /**
@@ -92,17 +99,32 @@ export class AxisManager {
    * @returns Configuración en formato Objeto inyectable como Eje (YAXisComponentOption).
    */
   private createYAxis(chartOptions: ChartOptions, nameGap: number): any {
+    const yAxisTitle = chartOptions.yAxis.title;
+    const name = typeof yAxisTitle === "string" && yAxisTitle.trim().length > 0 ? yAxisTitle : undefined;
+    
+    const isBar = chartOptions.type === "bar";
+    const maxWidth = isBar ? MAX_XAXIS_TITLE_LIMIT_PIXELS : MAX_YAXIS_TITLE_LIMIT_PIXELS;
+
     return {
       show: chartOptions.type !== "pie",
       type: "value",
-      name: chartOptions.yAxis.title,
-      nameLocation: "middle",
-      nameGap: nameGap,
+      name,
+      nameLocation: "center",
+      nameRotate: isBar ? 0 : 90,
+      nameGap: isBar ? 35 : nameGap,
       nameTextStyle: { fontWeight: "bold" },
+      nameTruncate: {
+        maxWidth: maxWidth,
+        ellipsis: "...",
+      },
       max: chartOptions.yAxis.max,
       axisLabel: {
         formatter: (value: string) => this.tooltipManager.formatValue(value),
       },
+      tooltip: {
+        show: true,
+      },
+      triggerEvent: true,
     };
   }
 
@@ -144,11 +166,6 @@ export class AxisManager {
 
     // Incrementa la separación del primer eje para que no colisionen los labels de ambos
     xAxis[0].nameGap = 70;
-    
-    // Si la barra de navegación inferior está activa, ensancha el padding de la gráfica
-    if (chartOptions.navigator.show && libraryOptions.grid) {
-      (libraryOptions.grid as any).bottom = 100;
-    }
   }
 
   /**
@@ -193,20 +210,63 @@ export class AxisManager {
     context: AxisContext,
     isSecondaryAxis: boolean = false
   ) {
-    const { chartOptions, chartData } = context;
+    const { chartOptions, chartData, dataset } = context;
     
     // Gráficos como las tortas ('pie') no poseen ejes
     axisOptions.show = chartOptions.type !== "pie";
-    axisOptions.name = isSecondaryAxis ? null : chartOptions.xAxis.title;
-    axisOptions.nameGap = chartOptions.type === "bar" ? 20 : 35;
-    axisOptions.nameLocation =
-      chartOptions.type === "bar" ? "end" : "middle";
+    axisOptions.triggerEvent = true;
+    
+    if (isSecondaryAxis) {
+      axisOptions.name = null;
+    } else {
+      if (chartOptions.xAxis?.disableAutoTitle) {
+        axisOptions.name = null;
+      } else {
+        const x1 = chartData.seriesConfig.x1;
+        const x2 = chartData.seriesConfig.x2;
+        const name1 = this.getDimensionName(x1, dataset);
+        if (x2) {
+          const name2 = this.getDimensionName(x2, dataset);
+          axisOptions.name = `${name1} / ${name2}`;
+        } else {
+          axisOptions.name = name1;
+        }
+      }
+    }
+
+    const isBar = chartOptions.type === "bar";
+    const maxWidth = isBar ? MAX_YAXIS_TITLE_LIMIT_PIXELS : MAX_XAXIS_TITLE_LIMIT_PIXELS;
+
+    axisOptions.nameTruncate = {
+      maxWidth: maxWidth,
+      ellipsis: "...",
+    };
+
+    if (isBar) {
+      const maxLabelLength = data.reduce((max, item) => Math.max(max, String(item).length), 0);
+      axisOptions.nameGap = calculateLabelNameGap(maxLabelLength);
+      axisOptions.nameLocation = "center";
+      axisOptions.nameRotate = 90;
+    } else {
+      let gap = 35;
+      if (chartOptions.xAxis?.rotateLabels && chartOptions.xAxis.rotateLabels !== 0) {
+        gap += 20;
+      }
+      axisOptions.nameGap = gap;
+      axisOptions.nameLocation = "center";
+      axisOptions.nameRotate = 0;
+    }
+
     axisOptions.nameTextStyle = { fontWeight: "bold" };
     axisOptions.axisLabel.rotate = chartOptions.xAxis.rotateLabels;
     axisOptions.data = data;
     axisOptions.axisTick.show = true;
     axisOptions.splitArea.show =
       !isSecondaryAxis && !chartData.seriesConfig.x2;
+
+    axisOptions.tooltip = {
+      show: true,
+    };
 
     if (isSecondaryAxis) {
       axisOptions.splitArea.show = true;
@@ -215,6 +275,17 @@ export class AxisManager {
       axisOptions.offset = chartOptions.type === "bar" ? 60 : 30;
     }
     return axisOptions;
+  }
+
+  /**
+   * Obtiene el nombre legible de una dimensión basada en su clave de datos.
+   */
+  private getDimensionName(key: string, dataset?: Dataset): string {
+    if (!dataset || !dataset.dimensions) {
+      return key;
+    }
+    const dim = dataset.dimensions.find(d => dataset.getDimensionKey(d.id) === key);
+    return dim ? dim.nameView : key;
   }
 }
 

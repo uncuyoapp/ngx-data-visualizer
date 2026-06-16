@@ -61,7 +61,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por Año y Condición",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -104,7 +103,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Evolución Temporal por Sector de Gestión",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -147,7 +145,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Distribución por Condición (Apilado)",
     stacked: 117,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -190,7 +187,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por año y sector",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: 54,
@@ -232,7 +228,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por Año con Meta",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -309,7 +304,6 @@ chartConfig1: ChartOptions = {
   title: 'Estudiantes por Año y Condición',
   stacked: null,
   xAxis: {
-    title: 'Año',
     rotateLabels: null,
     firstLevel: 0, // Año
     secondLevel: null
@@ -341,7 +335,6 @@ chartConfig2: ChartOptions = {
   title: 'Evolución Temporal por Sector de Gestión',
   stacked: null,
   xAxis: {
-    title: 'Año',
     firstLevel: 0, // Año
     secondLevel: null
   },
@@ -370,7 +363,6 @@ chartConfig3: ChartOptions = {
   title: 'Distribución por Condición (Apilado)',
   stacked: 'condicion',
   xAxis: {
-    title: 'Año',
     firstLevel: 0, // Año
     secondLevel: null
   },
@@ -399,7 +391,6 @@ chartConfig4: ChartOptions = {
   title: 'Distribución por Sector de Gestión',
   stacked: null,
   xAxis: {
-    title: '',
     firstLevel: 1, // Sector de gestión
     secondLevel: null
   },
@@ -439,7 +430,6 @@ chartConfig6: ChartOptions = {
   title: "Estudiantes por Año con Meta",
   stacked: null,
   xAxis: {
-    title: "Año",
     rotateLabels: null,
     firstLevel: 0,
     secondLevel: null,
@@ -556,14 +546,14 @@ interface ChartOptions {
   stacked: string | null;
   /** Configuración del eje X */
   xAxis: {
-    /** Título del eje X */
-    title: string,
     /** Ángulo de rotación de las etiquetas en grados */
     rotateLabels: number | null,
     /** Nivel de agrupación primario (id de una de las dimensiones del conjunto de datos) */
     firstLevel: number,
     /** Nivel de agrupación secundario (id de una de las dimensiones del conjunto de datos) (opcional) */
-    secondLevel: number | null
+    secondLevel: number | null,
+    /** Indica si se deshabilita la generación automática del título del eje X */
+    disableAutoTitle?: boolean
   },
   /** Configuración del eje Y */
   yAxis: {

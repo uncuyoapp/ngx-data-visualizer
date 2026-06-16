@@ -100,7 +100,6 @@ export class ChartCasesTestComponent {
     title: "Distribución de Prueba de Combinaciones",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,

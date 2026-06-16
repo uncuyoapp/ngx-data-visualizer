@@ -210,14 +210,14 @@ export interface ChartOptions {
   stacked: number | 'all' | null;
   /** Configuración del eje X - define títulos, rotación de etiquetas y niveles de agrupación */
   xAxis: {
-    /** Título del eje X que se muestra junto al eje */
-    title: string;
     /** Ángulo de rotación de las etiquetas en grados (0-360). Útil para etiquetas largas */
     rotateLabels: number | null;
     /** Nivel de agrupación primario para datos jerárquicos */
     firstLevel: number;
     /** Nivel de agrupación secundario para datos jerárquicos (opcional) */
     secondLevel: number | null;
+    /** Indica si se deshabilita la generación automática del título del eje X */
+    disableAutoTitle?: boolean;
   };
   /** Configuración del eje Y - define título y límites del eje vertical */
   yAxis: {

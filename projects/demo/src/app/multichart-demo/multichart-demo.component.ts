@@ -67,7 +67,6 @@ export class MultichartDemoComponent implements AfterViewInit {
     title: "Distribución por Año",
     stacked: 12,
     xAxis: {
-      title: "Condición",
       rotateLabels: 0,
       firstLevel: 117, // Condición
       secondLevel: null,
@@ -110,7 +109,6 @@ export class MultichartDemoComponent implements AfterViewInit {
     title: "Evolución Temporal",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -244,7 +242,6 @@ multichartConfig1: ChartOptions = {
   title: "Distribución por Año",
   stacked: "Sexo",
   xAxis: {
-    title: "Condición",
     rotateLabels: 0,
     firstLevel: 117, // Condición
     secondLevel: null,
@@ -302,7 +299,6 @@ multichartConfig1: ChartOptions = {
     title: "Evolución Temporal",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,

@@ -12,6 +12,7 @@ import { AxisContext, AxisManager } from "./managers/axis-manager";
 import { ExportManager } from "./managers/export-manager";
 import { SeriesManager } from "./managers/series-manager";
 import { TooltipManager } from "./managers/tooltip-manager";
+import { LayoutManager } from "./managers/layout-manager";
 import { SeriesConfigType } from "./types/echart-base";
 
 /**
@@ -73,6 +74,7 @@ export class EChart extends Chart {
   private exportManager!: ExportManager;
   private seriesManager!: SeriesManager;
   private axisManager!: AxisManager;
+  private layoutManager!: LayoutManager;
 
   // Propiedades heredadas de la clase base Chart
   override name: string = "";
@@ -117,6 +119,7 @@ export class EChart extends Chart {
     this.exportManager = new ExportManager(instance);
     this.seriesManager = new SeriesManager(instance);
     this.axisManager = new AxisManager(this.tooltipManager, this.seriesManager);
+    this.layoutManager = new LayoutManager();
 
     // Optimización de eventos
     this.setupEventHandlers();
@@ -500,6 +503,10 @@ export class EChart extends Chart {
       this.seriesManager.summarizeTotals(this.chartData.getSeries());
     }
 
+    if (this.layoutManager) {
+      this.layoutManager.configureLayout(this.libraryOptions, this.chartOptions, this.chartData);
+    }
+
     const mainSeries = this.seriesManager.configureSeries(
       this.chartData.getSeries(),
       ctx
@@ -508,6 +515,7 @@ export class EChart extends Chart {
     const axisCtx: AxisContext = {
       chartData: this.chartData,
       chartOptions: this.chartOptions,
+      dataset: this.configuration.dataset,
     };
     this.axisManager.configureAxis(this.libraryOptions, axisCtx);
   }

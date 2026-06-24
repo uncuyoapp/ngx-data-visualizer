@@ -1,20 +1,19 @@
 :host {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: var(--viz-chart-flex, unset);
   position: relative;
-  width: var(--viz-chart-width, var(--viz-chart-min-width, 100%));
-  height: var(--viz-chart-height, 100%);
+  width: var(--viz-chart-width, var(--viz-chart-default-width, 100%));
+  height: var(--viz-chart-height, var(--viz-chart-default-height, 100%));
   box-sizing: border-box;
   overflow: hidden;
 }
 
 lib-app-echarts {
   flex: 1 1 auto;
-  display: block;
   width: 100%;
   height: 100%;
-  min-height: var(--viz-chart-min-height, 400px);
-  min-width: var(--viz-chart-min-width, 100%);
+  min-height: var(--viz-chart-min-height, 0);
+  min-width: var(--viz-chart-min-width, 0);
   overflow: hidden;
 }

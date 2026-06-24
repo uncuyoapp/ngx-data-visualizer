@@ -21,9 +21,12 @@ import {
 } from "@angular/core";
 import { LegendComponent } from "../legend/legend.component";
 import { DATA_VISUALIZER_CONFIG } from "../providers";
+import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
+import { EventBusService } from "../services/event-bus.service";
 import { Filters } from "../services/types";
 import { ChartOptions, Goal, Series } from "../types/data.types";
+import { VisualizerEventType } from "../types/visualizer-event.types";
 import { injectAutoUpdate } from "../utils/auto-update.helper";
 import { EchartsComponent } from "./echart/echarts.component";
 import { ChartFactory } from "./services/chart-factory.service";
@@ -53,6 +56,9 @@ export class ChartComponent implements OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly elementRef = inject(ElementRef);
   private readonly globalConfig = inject(DATA_VISUALIZER_CONFIG, { optional: true });
+  private readonly eventBus = inject(EventBusService);
+  private readonly auditService = inject(AuditService);
+  private readonly instanceId = `chart-${Math.floor(Math.random() * 10000)}`;
 
   // ============================================
   // INPUTS & OUTPUTS PRINCIPALES (PÚBLICOS)
@@ -76,16 +82,12 @@ export class ChartComponent implements OnDestroy {
   /** Evento de salida para soportar el enlace bidireccional de la configuración [(chartOptions)] */
   chartOptionsChange = output<ChartOptions>();
 
-  @HostBinding("style.flex")
-  get hostFlex(): string | null {
-    const opts = this.chartOptions();
-    if (opts?.width !== undefined && opts?.width !== null) {
-      return "0 0 auto";
-    }
-    return null;
-  }
 
-  @HostBinding("style.height")
+  /** 
+   * Inyecta la altura explícita configurada vía TypeScript en el contenedor anfitrión.
+   * Si no se define en la configuración, retorna null para delegar el layout al CSS.
+   */
+  @HostBinding("style.--viz-chart-height")
   get hostHeight(): string | null {
     const opts = this.chartOptions();
     if (opts?.height !== undefined && opts?.height !== null) {
@@ -94,7 +96,25 @@ export class ChartComponent implements OnDestroy {
     return null;
   }
 
-  @HostBinding("style.width")
+  /** 
+   * Inyecta la altura por defecto proveniente de la configuración global (DATA_VISUALIZER_CONFIG).
+   * Actúa como fallback secundario en el SCSS si no hay una altura explícita.
+   */
+  @HostBinding("style.--viz-chart-default-height")
+  get hostDefaultHeight(): string | null {
+    if (this.globalConfig?.defaultHeight) {
+      return typeof this.globalConfig.defaultHeight === "number"
+        ? `${this.globalConfig.defaultHeight}px`
+        : this.globalConfig.defaultHeight;
+    }
+    return null;
+  }
+
+  /** 
+   * Inyecta el ancho explícito configurado vía TypeScript en el contenedor anfitrión.
+   * Si no se define en la configuración, retorna null para delegar el layout al CSS.
+   */
+  @HostBinding("style.--viz-chart-width")
   get hostWidth(): string | null {
     const opts = this.chartOptions();
     if (opts?.width !== undefined && opts?.width !== null) {
@@ -103,31 +123,21 @@ export class ChartComponent implements OnDestroy {
     return null;
   }
 
-  @HostBinding("style.--viz-chart-min-height")
-  get hostMinHeight(): string | null {
-    const opts = this.chartOptions();
-    if (opts?.height !== undefined && opts?.height !== null) {
-      return "0px";
+  /** 
+   * Inyecta el ancho por defecto proveniente de la configuración global (DATA_VISUALIZER_CONFIG).
+   * Actúa como fallback secundario en el SCSS si no hay un ancho explícito.
+   */
+  @HostBinding("style.--viz-chart-default-width")
+  get hostDefaultWidth(): string | null {
+    if (this.globalConfig?.defaultWidth) {
+      return typeof this.globalConfig.defaultWidth === "number"
+        ? `${this.globalConfig.defaultWidth}px`
+        : this.globalConfig.defaultWidth;
     }
-    return this.globalConfig?.defaultHeight
-      ? typeof this.globalConfig.defaultHeight === "number"
-        ? `${this.globalConfig.defaultHeight}px`
-        : this.globalConfig.defaultHeight
-      : null;
+    return null;
   }
 
-  @HostBinding("style.--viz-chart-min-width")
-  get hostMinWidth(): string | null {
-    const opts = this.chartOptions();
-    if (opts?.width !== undefined && opts?.width !== null) {
-      return "0px";
-    }
-    return this.globalConfig?.defaultWidth
-      ? typeof this.globalConfig.defaultWidth === "number"
-        ? `${this.globalConfig.defaultWidth}px`
-        : this.globalConfig.defaultWidth
-      : null;
-  }
+
 
   // ============================================
   // ESTADOS Y SEÑALES INTERNAS
@@ -159,7 +169,6 @@ export class ChartComponent implements OnDestroy {
   /** Estado que indica si una meta está siendo visualizada actualmente. */
   showingGoal = false;
 
-  private resizeObserver: ResizeObserver | null = null;
   private isInitialized = false;
   private goalChartHelper!: GoalChartHelper;
 
@@ -181,7 +190,11 @@ export class ChartComponent implements OnDestroy {
     const ds = this.dataset();
     const opts = this.internalOptions();
     if (!ds || !opts) return null;
-    return this.chartFactory.getChartConfiguration(ds, opts);
+    const config = this.chartFactory.getChartConfiguration(ds, opts);
+    if (config) {
+      config.instanceId = this.instanceId;
+    }
+    return config;
   });
 
   // ============================================
@@ -191,21 +204,47 @@ export class ChartComponent implements OnDestroy {
   constructor() {
     // Sincronizar internalOptions cuando el input chartOptions cambie desde afuera
     effect(() => {
-      this.internalOptions.set(this.chartOptions());
+      const opts = this.chartOptions();
+      this.eventBus.emit({
+        type: VisualizerEventType.CHART_CONFIG_CHANGE,
+        instanceId: this.instanceId,
+        payload: { optionsType: opts?.type ?? 'unknown' }
+      });
+      this.internalOptions.set(opts);
     }, { allowSignalWrites: true });
 
-    // Efecto reactivo principal que inicializa y reacciona a cambios de configuración
+    // Efecto reactivo principal
     effect(() => {
       const config = this.chartConfiguration();
       const echart = this.echart();
 
-      // Solo proceder cuando ambas dependencias estén disponibles
       if (config && echart) {
-        if (!this.isInitialized) {
-          this.setupResizeObserver();
+        if (this.isInitialized) {
+          this.eventBus.emit({
+            type: VisualizerEventType.CHART_CONFIG_CHANGE,
+            instanceId: this.instanceId,
+            payload: {
+              optionsType: config.options?.type,
+              seriesCount: config.chartData?.getSeries()?.length
+            }
+          });
+          this.ngOnConfigChange(config);
+        } else {
+          this.eventBus.emit({
+            type: VisualizerEventType.CHART_INIT,
+            instanceId: this.instanceId,
+            payload: {
+              datasetId: config.dataset?.id,
+              chartOptions: {
+                type: config.options?.type,
+                height: config.options?.height,
+                width: config.options?.width
+              }
+            }
+          });
+          this.goalChartHelper = new GoalChartHelper(config);
           this.isInitialized = true;
         }
-        this.ngOnConfigChange(config);
       }
     }, { allowSignalWrites: true });
 
@@ -242,54 +281,48 @@ export class ChartComponent implements OnDestroy {
   // MÉTODOS DE CICLO DE VIDA INTERNO
   // ============================================
 
-
-
-  private setupResizeObserver(): void {
-    if (typeof ResizeObserver !== "undefined") {
-      this.resizeObserver = new ResizeObserver(() => {
-        const echart = this.echart();
-        if (echart) {
-          echart.updateChart();
-        }
-      });
-      this.resizeObserver.observe(this.elementRef.nativeElement);
-    }
+  /**
+   * Programa un ciclo de renderizado en el próximo animation frame.
+   * Centraliza la lógica de emit RENDER_START + rAF + renderChart(config) + markForCheck.
+   */
+  private scheduleRender(config: ChartConfiguration): void {
+    this.eventBus.emit({
+      type: VisualizerEventType.CHART_RENDER_START,
+      instanceId: this.instanceId
+    });
+    requestAnimationFrame(() => {
+      this.echart()?.renderChart(config);
+      this.cdr.markForCheck();
+    });
   }
 
   private ngOnConfigChange(config: ChartConfiguration): void {
     this.chartUpdater.updateSeriesConfig(config);
     this.goalChartHelper = new GoalChartHelper(config);
-    requestAnimationFrame(() => {
-      const echart = this.echart();
-      if (echart) {
-        echart.updateChart();
-      }
-      this.cdr.markForCheck();
-    });
+    this.scheduleRender(config);
   }
 
   private handleDataUpdate(): void {
     const config = this.chartConfiguration();
     if (!config) return;
     this.chartUpdater.updateChartData(config);
-    requestAnimationFrame(() => {
-      const echart = this.echart();
-      if (echart) {
-        echart.updateChart();
-      }
-      this.cdr.markForCheck();
-    });
+    this.scheduleRender(config);
   }
 
   // ============================================
   // API PÚBLICA DEL COMPONENTE (MÉTODOS)
   // ============================================
 
+
   /** Exponer API de redimensionamiento pública */
   public resize(): void {
-    const echartComp = this.echart();
-    if (echartComp) {
-      echartComp.updateChart();
+    const echart = this.echart();
+    if (echart?.mainChart?.instance) {
+      this.eventBus.emit({
+        type: VisualizerEventType.CHART_RESIZE,
+        instanceId: this.instanceId
+      });
+      echart.mainChart.instance.resize();
     }
   }
 
@@ -449,10 +482,6 @@ export class ChartComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyEditorComponent();
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-      this.resizeObserver = null;
-    }
     if (this.mainChart) {
       this.mainChart.dispose();
       this.mainChart = null;

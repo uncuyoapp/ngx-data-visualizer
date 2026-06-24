@@ -1,24 +1,22 @@
 import { CommonModule } from "@angular/common";
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
-  HostBinding,
   NgZone,
   OnDestroy,
   OnInit,
-  effect,
   inject,
   input,
-  output,
-  signal
+  output
 } from "@angular/core";
 import { ECharts, EChartsOption } from "echarts";
 import { NgxEchartsModule } from "ngx-echarts";
+import { EventBusService } from "../../services/event-bus.service";
 import { EC_SERIES_CONFIG } from "../../types/constants";
 import { Series } from "../../types/data.types";
+import { VisualizerEventType } from "../../types/visualizer-event.types";
 import { Chart } from "../types/chart";
 import { ChartConfiguration } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
@@ -31,8 +29,6 @@ import { EChart } from "./echarts";
 interface EChartsInitOptions extends EChartsOption {
   locale?: string;
   renderer?: "canvas" | "svg";
-  width?: number | string;
-  height?: number | string;
 }
 
 /**
@@ -49,10 +45,11 @@ interface EChartsInitOptions extends EChartsOption {
   imports: [NgxEchartsModule, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
+export class EchartsComponent implements OnInit, OnDestroy {
   private readonly ngZone = inject(NgZone);
   private readonly elementRef = inject(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly eventBus = inject(EventBusService);
 
   /** Configuración del gráfico que se va a renderizar. */
   public readonly chartConfiguration = input.required<ChartConfiguration>();
@@ -67,23 +64,9 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
   public readonly chartUpdated = output<void>();
 
   /** Instancia principal del gráfico, encapsulada en la clase `EChart`. */
-  protected mainChart!: EChart;
+  public mainChart!: EChart;
 
-  public chartHeight = signal<string>("100%");
-  public chartWidth = signal<string>("100%");
 
-  /** Señal que indica si el contenedor tiene dimensiones válidas para renderizar el gráfico. */
-  public isReady = signal<boolean>(false);
-
-  @HostBinding("style.height")
-  get hostHeight(): string {
-    return this.chartHeight();
-  }
-
-  @HostBinding("style.width")
-  get hostWidth(): string {
-    return this.chartWidth();
-  }
 
   /** Opciones de inicialización para el componente `ngx-echarts`. */
   protected initOptions: EChartsInitOptions = {
@@ -91,64 +74,36 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
     renderer: "svg",
     useDirtyRect: false,
     devicePixelRatio:
-      typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
+      typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
   };
 
   /** ID único para el elemento del DOM del gráfico. */
   public id: string = `echart-${Math.floor(Math.random() * 10000)}`;
 
   private isDestroyed = false;
-  private seriesEmissionTimer: ReturnType<typeof setTimeout> | null = null;
-  private resizeTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly EMIT_DEBOUNCE = 100;
-  private readonly RESIZE_DEBOUNCE = 150;
 
   /**
    * @description
    * Ciclo de vida de Angular. Se ejecuta al inicializar el componente.
-   * Configura las opciones, crea el gráfico y establece listeners para el redimensionamiento.
+   * Configura las opciones iniciales y crea el gráfico de forma sincrónica.
    */
   public ngOnInit(): void {
+    this.eventBus.emit({
+      type: VisualizerEventType.CHART_VIEW_INIT,
+      instanceId: this.chartConfiguration()?.instanceId || 'unknown',
+      payload: { initOptions: this.initOptions }
+    });
     try {
       this.configInitOptions();
-      // Pequeño retraso para asegurar que los estilos del Host (min-height) se apliquen al DOM
-      // antes de que ngx-echarts intente inicializarse.
-      setTimeout(() => {
-        if (!this.isDestroyed) {
-          this.createChart();
-          this.cdr.markForCheck();
-        }
-      }, 0);
-      this.setupResizeListener();
+      this.createChart();
+      this.cdr.markForCheck();
     } catch (error) {
       console.error("Error al inicializar el componente de gráficos:", error);
     }
   }
 
-  public ngAfterViewInit(): void {
-    // Primera comprobación de dimensiones al inicializar la vista
-    this.updateChart();
 
-    // Re-intento preventivo por si el layout flexbox tarda en asentarse
-    if (!this.isReady()) {
-      setTimeout(() => this.updateChart(), 50);
-      setTimeout(() => this.updateChart(), 300);
-    }
-  }
 
-  /**
-   * Efecto para reaccionar a cambios en la configuración y actualizar el gráfico
-   */
-  private readonly configUpdateEffect = effect(() => {
-    const config = this.chartConfiguration();
-    if (this.mainChart && config) {
-      this.configInitOptions();
-      // Sincronizar la configuración interna del gráfico de manera profunda
-      this.mainChart.refreshFromConfiguration(config);
-      // Solicitar redibujado
-      this.updateChart();
-    }
-  }, { allowSignalWrites: true });
 
   /**
    * @description
@@ -157,8 +112,6 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   public ngOnDestroy(): void {
     this.isDestroyed = true;
-    this.cleanupSeriesEmissionTimer();
-    this.cleanupResizeListener();
     if (this.mainChart?.instance) {
       try {
         this.ngZone.runOutsideAngular(() => {
@@ -172,6 +125,8 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+
+
   /**
    * @description
    * Configura las opciones de inicialización del gráfico (dimensiones, locale) basándose
@@ -182,44 +137,7 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
       const config = this.chartConfiguration();
       if (!config) return;
 
-      const parent = this.elementRef.nativeElement.parentElement;
-      const parentHeight = parent?.clientHeight || 0;
-      const parentWidth = parent?.clientWidth || 0;
-
-      // Configuración de altura
-      if (config.options.height !== undefined && config.options.height !== null) {
-        const height = typeof config.options.height === "number"
-          ? `${config.options.height}px`
-          : config.options.height;
-        this.chartHeight.set(height);
-        this.initOptions.height = height;
-      } else {
-        this.chartHeight.set("100%");
-        delete this.initOptions.height;
-      }
-
-      // Configuración de ancho
-      if (config.options.width !== undefined && config.options.width !== null) {
-        const width = typeof config.options.width === "number"
-          ? `${config.options.width}px`
-          : config.options.width;
-        this.chartWidth.set(width);
-        this.initOptions.width = width;
-      } else {
-        this.chartWidth.set("100%");
-        delete this.initOptions.width;
-      }
-
       this.initOptions.locale = this.initOptions.locale ?? "es";
-
-      // Configuración de tooltips
-      if (config.libraryOptions) {
-        config.libraryOptions['tooltip'] = {
-          ...(config.libraryOptions['tooltip'] as any),
-          confine: true,
-          appendTo: 'body'
-        };
-      }
     } catch (error) {
       console.error("Error al configurar las opciones del gráfico:", error);
     }
@@ -254,37 +172,25 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   public setChartInstance(instance: ECharts): void {
     if (!instance) return;
+    this.eventBus.emit({
+      type: VisualizerEventType.CHART_INSTANCE_SET,
+      instanceId: this.chartConfiguration()?.instanceId || 'unknown',
+      payload: { hasInstance: true }
+    });
 
     try {
       this.mainChart.instance = instance;
       this.setupEChartsEventListeners();
 
-      const container = this.elementRef.nativeElement;
-      const config = this.chartConfiguration();
-      const isResponsive = config.options.height === null || config.options.height === undefined;
-
-      // Si es responsivo, nos aseguramos de que los signals estén en 100% 
-      // para que el CSS del contenedor controle el tamaño real.
-      if (isResponsive) {
-        this.chartHeight.set("100%");
-        this.chartWidth.set("100%");
-      }
-
+      this.eventBus.emit({
+        type: VisualizerEventType.CHART_RENDER_START,
+        instanceId: this.chartConfiguration()?.instanceId || 'unknown'
+      });
       if (!this.mainChart.hasRendered) {
+        this.mainChart.isRendering = true;
         this.mainChart.render();
         this.mainChart.hasRendered = true;
-        // Forzar un resize después de que el DOM se haya estabilizado
-        setTimeout(() => {
-          if (this.mainChart?.instance) {
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            if (width > 0 && height > 0) {
-              this.mainChart.instance.resize({ width, height });
-            }
-          }
-        }, 100);
       }
-      this.scheduleSeriesEmission(100);
     } catch (error) {
       console.error("Error al establecer la instancia de ECharts:", error);
     }
@@ -302,13 +208,29 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
       this.mainChart.instance.off("finished");
       this.mainChart.instance.off("legendselectchanged");
 
+      let finishedDebounceTimer: any;
+
       // Listener para el fin del renderizado
       this.mainChart.instance.on("finished", () => {
         this.ngZone.run(() => {
-          this.cleanupSeriesEmissionTimer();
-          this.chartUpdated.emit();
-          this.mainChart.isRendering = false;
-          this.emitSeries();
+          clearTimeout(finishedDebounceTimer);
+
+          finishedDebounceTimer = setTimeout(() => {
+            if (this.isDestroyed) return;
+
+            // Sólo emitir eventos de cierre de ciclo si fue un render explícito
+            if (this.mainChart.isRendering) {
+              this.chartUpdated.emit();
+              this.mainChart.isRendering = false;
+              this.emitSeries();
+
+              // Emitir RENDER_COMPLETE cuando ECharts realmente terminó
+              this.eventBus.emit({
+                type: VisualizerEventType.CHART_RENDER_COMPLETE,
+                instanceId: this.chartConfiguration()?.instanceId || 'unknown'
+              });
+            }
+          }, 50);
         });
       });
 
@@ -321,148 +243,30 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+
+
   /**
-   * @description
-   * Actualiza y redibuja el gráfico. Se asegura de que la instancia exista y
-   * gestiona el estado de renderizado para evitar llamadas concurrentes.
+   * Ejecuta un ciclo de renderizado lógico completo.
+   * Si se recibe una nueva configuración, sincroniza el modelo interno antes de renderizar.
+   * Regenera la configuración (Layout, Series, Ejes) y aplica setOption.
    */
-  public updateChart(): void {
-    if (!this.mainChart) {
-      return;
+  public renderChart(config?: ChartConfiguration): void {
+    if (!this.mainChart?.instance || !this.mainChart.hasRendered) return;
+
+    // Sincronizar el modelo si se recibe una nueva configuración
+    if (config) {
+      this.configInitOptions();
+      this.mainChart.refreshFromConfiguration(config);
     }
 
-    const container = this.elementRef.nativeElement;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
-    // Si aún no estamos listos, comprobamos si ya tenemos dimensiones para arrancar
-    if (!this.isReady()) {
-      if (width > 0 && height > 0) {
-        // Inyectamos las dimensiones actuales en initOptions para que ECharts
-        // no tenga que medir el DOM en el primer renderizado (evita el warning).
-        this.initOptions.width = `${width}px`;
-        this.initOptions.height = `${height}px`;
-
-        this.isReady.set(true);
-        // Devolvemos porque el *ngIf creará el div y disparará setChartInstance por su cuenta
-      }
-      return;
-    }
-
-    if (!this.mainChart.hasRendered) {
-      return;
-    }
-
+    this.mainChart.isRendering = true;
     try {
-      this.mainChart.isRendering = true;
-      if (this.mainChart.instance) {
-        // Solo redimensionamos si tenemos dimensiones válidas (> 0)
-        if (width > 0 && height > 0) {
-          this.mainChart.instance.resize({
-            width: width,
-            height: height
-          });
-        }
-      }
       this.mainChart.render();
-      // El evento 'finished' (configurado en setupEChartsEventListeners) 
-      // se encargará de emitir las series y limpiar el estado.
-      this.scheduleSeriesEmission();
     } catch (error) {
-      console.error("Error al actualizar el gráfico:", error);
+      console.error("Error al renderizar el gráfico:", error);
       this.mainChart.isRendering = false;
     }
   }
-
-  /**
-   * @description
-   * Programa la emisión de las series del gráfico con un debounce para evitar
-   * emisiones excesivas durante actualizaciones rápidas.
-   * @param delay El tiempo de espera en milisegundos.
-   */
-  private scheduleSeriesEmission(delay: number = this.EMIT_DEBOUNCE): void {
-    if (this.isDestroyed) {
-      return;
-    }
-    this.cleanupSeriesEmissionTimer();
-    this.ngZone.runOutsideAngular(() => {
-      this.seriesEmissionTimer = setTimeout(() => {
-        if (!this.isDestroyed) {
-          this.ngZone.run(() => this.emitSeries());
-        }
-      }, delay);
-    });
-  }
-
-  /**
-   * @description
-   * Limpia el temporizador de emisión de series si existe.
-   */
-  private cleanupSeriesEmissionTimer(): void {
-    if (this.seriesEmissionTimer) {
-      clearTimeout(this.seriesEmissionTimer);
-      this.seriesEmissionTimer = null;
-    }
-  }
-
-  /**
-   * @description
-   * Añade un listener al evento `resize` de la ventana para redimensionar el gráfico.
-   * Se ejecuta fuera de la zona de Angular para mejorar el rendimiento.
-   */
-  private setupResizeListener(): void {
-    if (typeof window !== "undefined") {
-      this.ngZone.runOutsideAngular(() => {
-        window.addEventListener("resize", this.handleResize);
-      });
-    }
-  }
-
-
-  /**
-   * @description
-   * Limpia el listener de `resize` y el temporizador asociado.
-   */
-  private cleanupResizeListener(): void {
-    if (typeof window !== "undefined") {
-      window.removeEventListener("resize", this.handleResize);
-    }
-    this.cleanupResizeTimer();
-  }
-
-  /**
-   * @description
-   * Limpia el temporizador de redimensionamiento si existe.
-   */
-  private cleanupResizeTimer(): void {
-    if (this.resizeTimer) {
-      clearTimeout(this.resizeTimer);
-      this.resizeTimer = null;
-    }
-  }
-
-  /**
-   * @description
-   * Manejador del evento `resize`. Redimensiona el gráfico con un debounce
-   * para evitar llamadas excesivas.
-   */
-  private readonly handleResize = (): void => {
-    if (this.isDestroyed || !this.mainChart?.instance) {
-      return;
-    }
-    this.cleanupResizeTimer();
-    this.resizeTimer = setTimeout(() => {
-      if (this.mainChart?.instance) {
-        this.ngZone.runOutsideAngular(() => {
-          this.mainChart.instance.resize({
-            animation: {
-              duration: 300,
-            },
-          });
-        });
-      }
-    }, this.RESIZE_DEBOUNCE);
-  };
 
   /**
    * @description
@@ -500,6 +304,11 @@ export class EchartsComponent implements OnInit, OnDestroy, AfterViewInit {
 
         requestAnimationFrame(() => {
           if (!this.isDestroyed) {
+            this.eventBus.emit({
+              type: VisualizerEventType.CHART_EMIT_SERIES,
+              instanceId: this.chartConfiguration()?.instanceId || 'unknown',
+              payload: { seriesCount: typedSeries.length, seriesNames: typedSeries.map(s => s.name) }
+            });
             this.seriesChange.emit(typedSeries);
           }
         });

@@ -261,6 +261,12 @@
             <button mat-raised-button color="primary" (click)="togglePercentage()">
               Alternar Porcentaje
             </button>
+            <button mat-raised-button color="accent" (click)="exportAsPNG()">
+              Exportar PNG
+            </button>
+            <button mat-raised-button color="warn" (click)="exportAsJPG()">
+              Exportar JPG
+            </button>
           </div>
           <div class="chart-container">
             <libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive>

@@ -361,7 +361,7 @@ chartConfig2: ChartOptions = {
 chartConfig3: ChartOptions = {
   type: 'column',
   title: 'Distribución por Condición (Apilado)',
-  stacked: 'condicion',
+  stacked: 117,
   xAxis: {
     firstLevel: 0, // Año
     secondLevel: null
@@ -385,29 +385,35 @@ chartConfig3: ChartOptions = {
   measureUnit: 'total'
 };`;
 
-  example4TypeScript = `// Configuración: Gráfico circular (pie)
+  example4TypeScript = `// Configuración: Gráfico columnas con doble eje x
 chartConfig4: ChartOptions = {
-  type: 'pie',
-  title: 'Distribución por Sector de Gestión',
+  type: 'column',
+  title: 'Estudiantes por año y sector',
   stacked: null,
   xAxis: {
-    firstLevel: 1, // Sector de gestión
-    secondLevel: null
+    rotateLabels: null,
+    firstLevel: 0, // Año
+    secondLevel: 54 // ID de dimensión Sector de Gestión
+  },
+  yAxis: {
+    title: 'Total Acumulado',
+    max: null
   },
   tooltip: {
-    shared: false,
-    decimals: 1,
-    suffix: '%'
+    shared: true,
+    decimals: 0,
+    suffix: null,
+    format: null,
+    showTotal: true
   },
   legends: {
     enabled: true,
     show: true,
-    position: 'right'
+    position: 'bottom'
   },
-  colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'],
-  height: 400,
-  toPercent: true,
-  measureUnit: 'porcentaje'
+  colors: undefined,
+  height: null,
+  measureUnit: 'total'
 };`;
 
   example5TypeScript = `// Métodos interactivos para el gráfico
@@ -418,9 +424,14 @@ togglePercentage(): void {
   this.chart.toPercentage();
 }
 
-// Exportar gráfico como Imagen (PNG por defecto)
-exportAsImage(): void {
+// Exportar gráfico como PNG
+exportAsPNG(): void {
   this.chart.export('png');
+}
+
+// Exportar gráfico como JPG
+exportAsJPG(): void {
+  this.chart.export('jpg');
 }
 `;
 
@@ -460,11 +471,11 @@ goalLine: Goal = {
   chartType: "line",
   text: "Objetivo 2024: 15,000 estudiantes",
   data: [
-    { Año: "2019", Valor: 15000 },
-    { Año: "2020", Valor: 15000 },
-    { Año: "2021", Valor: 15000 },
-    { Año: "2022", Valor: 15000 },
-    { Año: "2023", Valor: 15000 },
+    { year: "2010", valor: 1950000 },
+    { year: "2011", valor: 2000000 },
+    { year: "2012", valor: 2050000 },
+    { year: "2013", valor: 2100000 },
+    { year: "2014", valor: 2150000 },
   ],
 };
 
@@ -509,7 +520,7 @@ toggleGoal(): void {
   </button>
 </div>
 <div class="chart-container">
-  <libChart [dataset]="dataset1" [chartOptions]="chartConfig4" #chartInteractive></libChart>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive></libChart>
 </div>`;
 
   example6HTML = `<div class="goal-buttons mb-3">
@@ -542,8 +553,8 @@ interface ChartOptions {
   type: string;
   /** Título del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado y el valor debe corresponder al nombre de una de las dimensiones del conjunto de datos */
-  stacked: string | null;
+  /** Indica si el gráfico está apilado por una dimensión específica (ID), todas ('all') o ninguna (null) */
+  stacked: number | 'all' | null;
   /** Configuración del eje X */
   xAxis: {
     /** Ángulo de rotación de las etiquetas en grados */
@@ -637,6 +648,14 @@ interface ChartOptions {
   // Métodos interactivos para el gráfico
   togglePercentage(): void {
     this.chart.toPercentage();
+  }
+
+  exportAsPNG(): void {
+    this.chart.export("png");
+  }
+
+  exportAsJPG(): void {
+    this.chart.export("jpg");
   }
 
   // Método para alternar la visibilidad de la línea de meta

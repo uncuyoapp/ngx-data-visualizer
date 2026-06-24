@@ -160,9 +160,6 @@ export class ChartConfigEditorComponent implements OnInit {
                 suffix: [initialValues.tooltip.suffix],
                 showTotal: [initialValues.tooltip.showTotal]
             }),
-            legends: this.fb.group({
-                enabled: [initialValues.legends.enabled]
-            }),
             navigator: this.fb.group({
                 show: [initialValues.navigator?.show ?? false],
                 start: [initialValues.navigator?.start ?? null],
@@ -237,6 +234,26 @@ export class ChartConfigEditorComponent implements OnInit {
     }
 
     /**
+     * Realiza una combinación profunda (deep merge) de dos objetos.
+     * @private
+     */
+    private deepMerge(target: any, source: any): any {
+        if (!target) return source;
+        if (!source) return target;
+        const output = { ...target };
+        if (typeof target === 'object' && typeof source === 'object') {
+            Object.keys(source).forEach(key => {
+                if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                    output[key] = this.deepMerge(target[key], source[key]);
+                } else {
+                    output[key] = source[key];
+                }
+            });
+        }
+        return output;
+    }
+
+    /**
      * Configura la emisión automática de cambios cuando el formulario se modifica.
      * @private
      */
@@ -247,11 +264,11 @@ export class ChartConfigEditorComponent implements OnInit {
                 distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
             )
             .subscribe(value => {
-                // Realizamos un merge con las opciones actuales para no perder propiedades no editadas
-                const newOptions = {
-                    ...(this.options() || this.configFactory.getDefaultChartOptions()),
-                    ...value
-                };
+                // Realizamos un merge profundo con las opciones actuales para no perder propiedades no editadas (como legends.show)
+                const newOptions = this.deepMerge(
+                    this.options() || this.configFactory.getDefaultChartOptions(),
+                    value
+                );
                 this.optionsChange.emit(newOptions);
             });
     }

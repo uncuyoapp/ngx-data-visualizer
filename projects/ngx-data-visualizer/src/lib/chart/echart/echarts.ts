@@ -10,9 +10,9 @@ import {
 } from "../types/chart-configuration";
 import { AxisContext, AxisManager } from "./managers/axis-manager";
 import { ExportManager } from "./managers/export-manager";
+import { LayoutManager } from "./managers/layout-manager";
 import { SeriesManager } from "./managers/series-manager";
 import { TooltipManager } from "./managers/tooltip-manager";
-import { LayoutManager } from "./managers/layout-manager";
 import { SeriesConfigType } from "./types/echart-base";
 
 /**
@@ -131,7 +131,7 @@ export class EChart extends Chart {
    * @private
    */
   private setupFormatter(): void {
-    if (this.libraryOptions && this.libraryOptions.tooltip) {
+    if (this.libraryOptions?.tooltip) {
       (this.libraryOptions.tooltip as any).formatter = (params: any) =>
         this.tooltipManager.formatTooltip(params, this.libraryOptions);
     }
@@ -329,8 +329,47 @@ export class EChart extends Chart {
       (this.libraryOptions as any).legend = (this.libraryOptions as any).legend || {};
       (this.libraryOptions as any).legend.show = show;
     }
+
+    if (this.chartInstance) {
+      // 1. Modificar en caliente la visibilidad de la leyenda en ECharts
+      this.chartInstance.setOption({
+        legend: {
+          show: show
+        }
+      });
+
+      // 2. Recalcular grilla (grid) reactivamente usando LayoutManager
+      if (this.layoutManager) {
+        const layoutResult = this.layoutManager.configureLayout(this.libraryOptions, this.chartOptions, this.chartData);
+        // 3. Aplicar el grid/legend/series modificado en caliente
+        const optionsUpdate: any = {
+          legend: (this.libraryOptions as any).legend
+        };
+
+        if (this.chartOptions.type !== 'pie') {
+          optionsUpdate.grid = (this.libraryOptions as any).grid;
+        } else if (layoutResult.pie) {
+          const pieResult = layoutResult.pie;
+          const currentSeries = this.chartInstance.getOption()['series'];
+          if (Array.isArray(currentSeries)) {
+            optionsUpdate.series = currentSeries.map((s: any) => {
+              if (s.type === 'pie') {
+                return {
+                  ...s,
+                  center: pieResult.center,
+                  radius: pieResult.radius
+                };
+              }
+              return s;
+            });
+          }
+        }
+
+        this.chartInstance.setOption(optionsUpdate);
+      }
+    }
+
     this.invalidateCache();
-    this.render();
   }
 
   /**
@@ -420,7 +459,7 @@ export class EChart extends Chart {
   getExtremes(): { start: number; end: number } | null {
     if (!this.chartInstance) return null;
     const option = this.chartInstance.getOption() as Record<string, any>;
-    if (option && option['dataZoom'] && option['dataZoom'].length > 0) {
+    if (option?.['dataZoom']?.length > 0) {
       const dataZoom = option['dataZoom'][0];
       if (dataZoom.start != null && dataZoom.end != null) {
         return {
@@ -456,7 +495,7 @@ export class EChart extends Chart {
       }
       this.renderDebounceTimeout = window.setTimeout(() => {
         this.performRender();
-      }, this.RENDER_DEBOUNCE_MS);
+      }, this.RENDER_DEBOUNCE_MS) as any;
       return;
     }
     this.performRender();
@@ -470,8 +509,7 @@ export class EChart extends Chart {
     if (!this.chartInstance) return;
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
-    this.chartInstance.resize();
-    // this.chartInstance.clear();
+
     this.chartInstance.setOption(this.libraryOptions, {
       notMerge: true,
       lazyUpdate: true,
@@ -492,8 +530,8 @@ export class EChart extends Chart {
    */
   private generateConfiguration() {
     const ctx = {
-      chartType: this.libraryOptions["type"] as string,
-      isPie: this.chartOptions.type === "pie",
+      chartType: this.libraryOptions['type'] as string,
+      isPie: this.chartOptions.type === 'pie',
       toPercent: this.chartOptions.toPercent,
       stack: this.chartData.seriesConfig.stack,
       colors: this.chartOptions.colors,
@@ -503,19 +541,33 @@ export class EChart extends Chart {
       this.seriesManager.summarizeTotals(this.chartData.getSeries());
     }
 
+    let layoutResult;
     if (this.layoutManager) {
-      this.layoutManager.configureLayout(this.libraryOptions, this.chartOptions, this.chartData);
+      layoutResult = this.layoutManager.configureLayout(this.libraryOptions, this.chartOptions, this.chartData);
     }
 
     const mainSeries = this.seriesManager.configureSeries(
       this.chartData.getSeries(),
       ctx
     );
-    this.libraryOptions.series = [...mainSeries, ...this.addedSeries];
+
+    const allSeries = [...mainSeries, ...this.addedSeries];
+    this.libraryOptions.series = allSeries;
+
+    if (this.chartOptions.type === 'pie' && layoutResult?.pie) {
+      allSeries.forEach((s: any) => {
+        if (s.type === 'pie') {
+          s.center = layoutResult.pie.center;
+          s.radius = layoutResult.pie.radius;
+        }
+      });
+    }
+
     const axisCtx: AxisContext = {
       chartData: this.chartData,
       chartOptions: this.chartOptions,
       dataset: this.configuration.dataset,
+      layoutResult: layoutResult,
     };
     this.axisManager.configureAxis(this.libraryOptions, axisCtx);
   }

@@ -1,8 +1,16 @@
 import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
-import { EC_CHART_CONFIG_PREVIEW, MAX_TITLE_LIMIT_PIXELS } from "../../../types/constants";
+import { DEFAULT_OPTIONS, EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
 import { ChartOptions } from "../../../types/data.types";
 import { ParserOptions } from "../../types/parser-options";
+import { ConfigValidator } from "../../utils/config-validator";
+
+
+const DEPRECATED_LEGEND_PATHS = {
+  // "legends.show": 'La propiedad "legend.show" en la configuración estática está obsoleta. Utiliza el @Input() [showLegends] del componente en su lugar.',
+  // "legends.enabled": 'La propiedad "legend.show" en la configuración estática está obsoleta. Utiliza el @Input() [showLegends] del componente en su lugar.',
+  // "legend.show": 'La propiedad "legend.show" en la configuración estática está obsoleta. Utiliza el @Input() [showLegends] del componente en su lugar.'
+};
 
 /**
  * Clase encargada de analizar, formatear y estructurar las opciones de los gráficos ECharts.
@@ -48,6 +56,17 @@ export class EChartParser implements ParserOptions {
     libraryConfig: unknown,
   ): unknown {
     const echartsConfig = libraryConfig as EChartsOption & { type?: string };
+
+    // Validar configuración original
+    ConfigValidator.validate(config as any, DEFAULT_OPTIONS, DEPRECATED_LEGEND_PATHS);
+
+    // Ignorar configuración estática que intente ocultar la leyenda y forzar su visibilidad al inicializar
+    if (config?.legends) {
+      if (config.legends.show === false || config.legends.enabled === false) {
+        config.legends.show = true;
+        config.legends.enabled = true;
+      }
+    }
 
     // 1. Mapear tipo de gráfico
     this.parseType(echartsConfig, config);
@@ -99,17 +118,10 @@ export class EChartParser implements ParserOptions {
    * @private
    */
   private parseTitle(echartsConfig: EChartsOption, config: ChartOptions): void {
-    if (typeof config.title === "string" && config.title.trim().length > 0) {
+    if (typeof config.title === 'string' && config.title.trim().length > 0) {
       echartsConfig.title = {
         text: config.title,
-        left: "center",
-        top: "top",
         show: true,
-        textStyle: {
-          overflow: "truncate",
-          width: MAX_TITLE_LIMIT_PIXELS,
-          ellipsis: "...",
-        },
       };
     } else {
       echartsConfig.title = {
@@ -145,7 +157,7 @@ export class EChartParser implements ParserOptions {
       echartsConfig.dataZoom = [
         {
           show: config.navigator.show,
-          type: "slider",
+          type: 'slider',
           start: config.navigator.start ?? 0,
           end: config.navigator.end ?? 100,
           showDetail: false,

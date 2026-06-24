@@ -47,7 +47,7 @@ export class ChartFactory {
     }
 
     const mergedOptions = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
-    
+
     // Si el usuario no proveyó colores, usamos los del proveedor si existen
     if (!mergedOptions.colors && this.config?.defaultColors) {
       mergedOptions.colors = this.config.defaultColors;
@@ -171,8 +171,19 @@ export class ChartFactory {
     if (!options) {
       throw new Error("El parámetro options es requerido");
     }
-    return options.isPreview
+    const libraryOptions = options.isPreview
       ? (this.parserOptions.getPreviewOptions(options) as EChartsOption)
       : (this.parserOptions.getFullOptions(options) as EChartsOption);
+
+    // Configuración defensiva de tooltips para evitar recortes
+    if (libraryOptions?.tooltip) {
+      libraryOptions.tooltip = {
+        ...(libraryOptions.tooltip as any),
+        confine: true,
+        appendTo: 'body'
+      };
+    }
+
+    return libraryOptions;
   }
 }

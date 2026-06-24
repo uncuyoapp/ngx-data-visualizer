@@ -1,9 +1,9 @@
 import { Type } from "@angular/core";
 import { EChartsOption } from "echarts";
-import { EchartsComponent } from "../echart/echarts.component";
-import { ChartData } from "../utils/chart-data";
 import { Dataset } from "../../services/dataset";
 import { ChartOptions } from "../../types/data.types";
+import { EchartsComponent } from "../echart/echarts.component";
+import { ChartData } from "../utils/chart-data";
 
 /**
  * Interfaz base para las opciones de configuración de cualquier librería de gráficos.
@@ -66,6 +66,8 @@ export interface ChartConfiguration {
   preview: boolean;
   /** Configuración de las series del gráfico */
   seriesConfig: SeriesConfig;
+  /** Identificador único de instancia del componente gráfico */
+  instanceId?: string;
 }
 
 /**

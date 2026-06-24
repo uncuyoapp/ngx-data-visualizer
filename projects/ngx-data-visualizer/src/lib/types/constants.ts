@@ -67,7 +67,8 @@ export const ECharts = {
       left: "center",
     },
     legend: {
-      show: false,
+      show: true,
+      type: 'scroll'
     },
     yAxis: {
       name: "",
@@ -87,9 +88,8 @@ export const ECharts = {
       showDetail: false,
     },
     grid: {
-      left: 30,
-      right: 10,
-      containLabel: true,
+      outerBoundsMode: 'same',
+      outerBoundsContain: 'axisLabel',
     },
     textStyle: {
       fontFamily: "sans-serif",
@@ -485,7 +485,7 @@ export const DEFAULT_OPTIONS: ChartOptions = {
   },
   legends: {
     enabled: true,
-    show: false,
+    show: true,
     position: "",
   },
   navigator: {
@@ -503,16 +503,3 @@ export const DEFAULT_OPTIONS: ChartOptions = {
   isPreview: false,
   disableAutoUpdate: false,
 };
-
-/**
- * Límites de longitud de caracteres y dimensiones en píxeles para el truncamiento nativo
- * de títulos de gráficos y nombres de ejes en ECharts.
- */
-export const MAX_TITLE_LENGTH = 50;
-export const MAX_XAXIS_TITLE_LENGTH = 35;
-export const MAX_YAXIS_TITLE_LENGTH = 30;
-
-export const MAX_TITLE_LIMIT_PIXELS = 500;
-export const MAX_XAXIS_TITLE_LIMIT_PIXELS = 280; // ~35 caracteres * 8px
-export const MAX_YAXIS_TITLE_LIMIT_PIXELS = 240; // ~30 caracteres * 8px
-

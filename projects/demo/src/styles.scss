@@ -163,6 +163,52 @@ body,
     border-color: #29292e !important;
   }
 
+  /* Angular Material Form Fields y Select en Modo Oscuro */
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: #1a1a1e !important;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #374151 !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: #9ca3af !important;
+    }
+  }
+
+  .mat-mdc-select-value {
+    color: #e1e1e6 !important;
+  }
+
+  .mat-mdc-select-arrow {
+    color: #9ca3af !important;
+  }
+
+  .mat-mdc-option {
+    background-color: #1a1a1e !important;
+    color: #e1e1e6 !important;
+
+    &:hover {
+      background-color: #29292e !important;
+    }
+
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background-color: #29292e !important;
+
+      .mdc-list-item__primary-text {
+        color: var(--viz-primary, #3b82f6) !important;
+      }
+    }
+  }
+
+  .form-label.text-muted {
+    color: #9ca3af !important;
+  }
+
   .mat-mdc-tab-group {
     background-color: #1a1a1e !important;
 

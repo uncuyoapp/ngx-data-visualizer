@@ -60,6 +60,18 @@
       </div>
     </div>
 
+    <h3 class="mt-4">Opciones de Configuración Global de Tablas</h3>
+    <p>
+      Puedes personalizar el comportamiento global de las tablas pasando un objeto de configuración
+      opcional de tipo <code>TableVisualizerConfig</code> al proveedor:
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - Opciones globales</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="providerTableOptionsExampleCode"></code></pre>
+      </div>
+    </div>
+
     <div class="row mt-4">
       <div class="col-md-6">
         <h4>Solo para gráficos</h4>
@@ -203,6 +215,18 @@
             <td><span class="text-danger fw-bold">Requerido</span></td>
             <td>Dimensión seleccionada para realizar la segmentación y renderizado de un gráfico por cada ítem marcado
               como activo.</td>
+          </tr>
+          <tr>
+            <td><code>[options]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span></td>
+            <td><code>ChartOptions</code></td>
+            <td><span class="text-danger fw-bold">Requerido</span></td>
+            <td>Configuraciones visuales y de comportamiento específicas para el conjunto de gráficos segmentados.</td>
+          </tr>
+          <tr>
+            <td><code>[disableAutoUpdate]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Deshabilita la actualización automática de los gráficos segmentados ante cambios en el dataset.</td>
           </tr>
         </tbody>
       </table>

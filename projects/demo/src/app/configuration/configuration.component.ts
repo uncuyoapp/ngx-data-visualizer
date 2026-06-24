@@ -105,7 +105,21 @@ export const appConfig: ApplicationConfig = {
     provideDataVisualizerCharts({
       defaultColors: ['#1976d2', '#388e3c', '#f57c00', '#d32f2f'], // Colores por defecto para series
       defaultHeight: 400, // Alto predeterminado del gráfico (número o string como '400px')
-      defaultWidth: '100%' // Ancho predeterminado del gráfico
+      defaultWidth: '100%', // Ancho predeterminado del gráfico
+      debug: true // Habilita logs de depuración para gráficos en consola ([Chart]*)
+    })
+  ]
+};`;
+
+  providerTableOptionsExampleCode = `// app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideDataVisualizerTables } from '@uncuyoapp/ngx-data-visualizer';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ✅ Configuración global de tablas opcional
+    provideDataVisualizerTables({
+      debug: true // Habilita logs de depuración para tablas en consola ([Table]*)
     })
   ]
 };`;

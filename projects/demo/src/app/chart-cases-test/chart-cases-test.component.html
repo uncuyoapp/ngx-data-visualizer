@@ -31,8 +31,7 @@
           </div>
 
           <!-- Panel de Edición -->
-          <div
-            class="mb-3 p-3 bg-light-subtle rounded border border-light d-flex justify-content-between align-items-center shadow-sm">
+          <div class="control-switch-card mb-3 d-flex justify-content-between align-items-center">
             <div>
               <span class="fw-semibold d-block text-secondary-emphasis">Panel de Edición</span>
               <small class="text-muted">Muestra u oculta el panel de configuración integrado</small>
@@ -43,22 +42,8 @@
             </div>
           </div>
 
-          <!-- Mostrar/Ocultar Leyendas -->
-          <div
-            class="mb-3 p-3 bg-light-subtle rounded border border-light d-flex justify-content-between align-items-center shadow-sm">
-            <div>
-              <span class="fw-semibold d-block text-secondary-emphasis">Leyendas del Gráfico</span>
-              <small class="text-muted">Muestra u oculta las leyendas de las series</small>
-            </div>
-            <div class="form-check form-switch m-0">
-              <input class="form-check-input fs-4 cursor-pointer" type="checkbox" role="switch" id="toggleLegendsSwitch"
-                [checked]="showLegends" (change)="toggleLegends()">
-            </div>
-          </div>
-
           <!-- Ver Porcentajes / Valores -->
-          <div
-            class="mb-4 p-3 bg-light-subtle rounded border border-light d-flex justify-content-between align-items-center shadow-sm">
+          <div class="control-switch-card mb-4 d-flex justify-content-between align-items-center">
             <div>
               <span class="fw-semibold d-block text-secondary-emphasis">Visualización Porcentual</span>
               <small class="text-muted">Alterna entre valores nominales y porcentajes</small>
@@ -112,9 +97,8 @@
         </div>
 
         <div class="card-body px-4 py-4 d-flex flex-column justify-content-start">
-          <div class="chart-wrapper p-3 bg-white rounded border border-light shadow-sm mb-4">
-            <libChart [dataset]="activeDataset" [(chartOptions)]="chartConfig" [(showEditor)]="showEditor"
-              [showLegends]="showLegends" #casesChart>
+          <div class="chart-wrapper p-3 rounded shadow-sm mb-4">
+            <libChart [dataset]="activeDataset" [(chartOptions)]="chartConfig" [(showEditor)]="showEditor" #casesChart>
             </libChart>
           </div>
 

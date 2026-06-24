@@ -79,6 +79,17 @@
     align-items: center;
     justify-content: center;
     border-radius: 14px;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .control-switch-card {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
   }
 
   .cursor-pointer {
@@ -126,7 +137,7 @@
 }
 
 // Global Dark Mode Theme compatibility override
-[data-theme="dark"] {
+:host-context([data-theme='dark']) {
   .cases-test-page {
     .header-section {
       background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.15) 0%, rgba(var(--bs-success-rgb), 0.1) 100%);
@@ -136,6 +147,20 @@
     .chart-wrapper {
       background-color: #1b1b1f !important;
       border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .control-switch-card {
+      background-color: #1a1a1e !important;
+      border-color: #29292e !important;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+
+      .text-secondary-emphasis {
+        color: #ffffff !important;
+      }
+
+      .text-muted {
+        color: #9ca3af !important;
+      }
     }
 
     // Anulaciones del bloque de filtrado para uso no anidado

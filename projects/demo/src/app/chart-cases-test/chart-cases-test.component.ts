@@ -1,29 +1,29 @@
-import { CommonModule } from "@angular/common";
-import { ChangeDetectorRef, Component, ViewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSelectModule } from "@angular/material/select";
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import {
   ChartComponent,
   ChartOptions,
   Dataset,
   Dimension,
   Item,
-} from "ngx-data-visualizer";
+} from 'ngx-data-visualizer';
 
 // Importación directa de los datasets y dimensiones de prueba
-import testDataset1d from "../../assets/data/test-dataset-1d.json";
-import testDataset2d from "../../assets/data/test-dataset-2d.json";
-import testDataset3d from "../../assets/data/test-dataset-3d.json";
-import testDataset4d from "../../assets/data/test-dataset-4d.json";
-import testDataset5d from "../../assets/data/test-dataset-5d.json";
-import testDimensions from "../../assets/data/test-dimensions.json";
+import testDataset1d from '../../assets/data/test-dataset-1d.json';
+import testDataset2d from '../../assets/data/test-dataset-2d.json';
+import testDataset3d from '../../assets/data/test-dataset-3d.json';
+import testDataset4d from '../../assets/data/test-dataset-4d.json';
+import testDataset5d from '../../assets/data/test-dataset-5d.json';
+import testDimensions from '../../assets/data/test-dimensions.json';
 
 @Component({
-  selector: "app-chart-cases-test",
+  selector: 'app-chart-cases-test',
   standalone: true,
   imports: [
     CommonModule,
@@ -35,15 +35,13 @@ import testDimensions from "../../assets/data/test-dimensions.json";
     MatIconModule,
     ChartComponent,
   ],
-  templateUrl: "./chart-cases-test.component.html",
-  styleUrls: ["./chart-cases-test.component.scss"],
+  templateUrl: './chart-cases-test.component.html',
+  styleUrls: ['./chart-cases-test.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartCasesTestComponent {
   // Flag para controlar la visualización del editor nativo integrado
   showEditor = false;
-
-  // Flag para mostrar u ocultar las leyendas
-  showLegends = true;
 
   // Flag para saber si la vista porcentual está activa
   isPercentActive = false;
@@ -96,8 +94,8 @@ export class ChartCasesTestComponent {
 
   // Configuración por defecto adaptada a la Matriz de Casos
   chartConfig: ChartOptions = {
-    type: "column",
-    title: "Distribución de Prueba de Combinaciones",
+    type: 'column',
+    title: 'Distribución de Prueba de Combinaciones',
     stacked: null,
     xAxis: {
       rotateLabels: null,
@@ -105,7 +103,7 @@ export class ChartCasesTestComponent {
       secondLevel: null,
     },
     yAxis: {
-      title: "Cantidad / Valor Nominal",
+      title: 'Cantidad / Valor Nominal',
       max: null,
     },
     tooltip: {
@@ -118,28 +116,28 @@ export class ChartCasesTestComponent {
     legends: {
       enabled: false,
       show: false,
-      position: "bottom",
+      position: 'bottom',
     },
     navigator: {
       show: false,
       start: null,
       end: null,
     },
-    colors: ["#1976d2", "#388e3c", "#f57c00", "#d32f2f", "#673ab7", "#e91e63"],
+    colors: ['#1976d2', '#388e3c', '#f57c00', '#d32f2f', '#673ab7', '#e91e63'],
     width: null,
     height: 420,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
-    measureUnit: "unidades",
+    measureUnit: 'unidades',
     isPreview: false,
     disableAutoUpdate: false,
   };
 
-  @ViewChild("casesChart", { read: ChartComponent })
+  @ViewChild('casesChart', { read: ChartComponent })
   chartComponent!: ChartComponent;
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  private readonly cdr = inject(ChangeDetectorRef);
 
   /**
    * Cambia el dataset activo y reajusta firstLevel/secondLevel en chartOptions
@@ -189,7 +187,7 @@ export class ChartCasesTestComponent {
         break;
     }
 
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   /**
@@ -197,15 +195,7 @@ export class ChartCasesTestComponent {
    */
   toggleEditor(): void {
     this.showEditor = !this.showEditor;
-    this.cdr.detectChanges();
-  }
-
-  /**
-   * Alterna la visibilidad de las leyendas del gráfico
-   */
-  toggleLegends(): void {
-    this.showLegends = !this.showLegends;
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   /**
@@ -216,7 +206,7 @@ export class ChartCasesTestComponent {
     if (this.chartComponent) {
       this.chartComponent.toPercentage();
     }
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   /**
@@ -230,12 +220,12 @@ export class ChartCasesTestComponent {
    * Descarga la configuración activa del gráfico como un archivo JSON estructurado
    */
   downloadJson(): void {
-    const filename = `chart-config-cases-test.json`;
+    const filename = 'chart-config-cases-test.json';
     const jsonStr = this.chartOptionsJson;
-    const blob = new Blob([jsonStr], { type: "application/json" });
+    const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
@@ -265,7 +255,7 @@ export class ChartCasesTestComponent {
       })),
     };
     this.activeDataset.applyFilters(filtersConfig);
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   clearFilters(): void {
@@ -276,7 +266,7 @@ export class ChartCasesTestComponent {
       });
     });
     this.activeDataset.applyFilters({});
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   onDimensionChange(dimension: Dimension): void {
@@ -314,7 +304,7 @@ export class ChartCasesTestComponent {
     const id = dimension.id.toString();
     const current = this.collapsedDimensions[id] ?? true;
     this.collapsedDimensions[id] = !current;
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   isDimensionCollapsed(dimensionId: string): boolean {

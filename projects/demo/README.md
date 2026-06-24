@@ -29,6 +29,8 @@ La aplicación de demostración está organizada por rutas, donde cada una corre
 ├── multichart-demo/   # 📈 Ejemplos de múltiples gráficos
 ├── dashboard/         # 🎛️ Ejemplo de dashboard completo
 ├── full-example/      # 🔧 Integración completa de funcionalidades
+├── chart-cases-test/  # 🧪 Banco de pruebas de combinaciones y dimensiones
+├── size-test/         # 📏 Laboratorio de tamaños (responsividad y CSS)
 ├── home/              # 🏠 Página principal y navegación
 ├── app.component.ts   # Componente raíz
 ├── app.config.ts      # ⭐ Configuración de proveedores de la librería
@@ -67,6 +69,9 @@ Una vez que la aplicación esté en funcionamiento, podrás explorar las siguien
 - **📈 Demo de Múltiples Gráficos**: Ejemplos de `MultipleChartDirective`.
 - **🎛️ Dashboard**: Ejemplo de un dashboard completo.
 - **🔧 Ejemplo Completo**: Integración de todas las funcionalidades.
+- **🧪 Laboratorio de Pruebas**:
+  - **Configuraciones para gráficos**: Permite probar la librería con datasets de N-dimensiones (1D a 5D) y ver la configuración generada en tiempo real.
+  - **Medidas y responsive para gráficos**: Laboratorio de tamaños que valida las 4 formas de redimensionar el gráfico (TypeScript, Contenedores Flexibles, CSS Inline y SCSS Externo).
 
 ## 🛠️ Comandos Útiles
 

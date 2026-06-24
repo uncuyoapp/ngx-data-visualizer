@@ -17,13 +17,16 @@ import {
   signal,
 } from "@angular/core";
 
+import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
+import { EventBusService } from "../services/event-bus.service";
 import { TableOptions as TableOptionsType } from "../types/data.types";
+import { VisualizerEventType } from "../types/visualizer-event.types";
+import { injectAutoUpdate } from "../utils/auto-update.helper";
 import { ExcelService } from "./services/excel.service";
 import { TableService } from "./services/table.service";
 import { TableConfiguration, TableOptions } from "./types/table-base";
 import { TableHelperService } from "./utils/table-helper.service";
-import { injectAutoUpdate } from "../utils/auto-update.helper";
 
 @Component({
   selector: "libTable, [libTable]",
@@ -40,6 +43,9 @@ export class TableComponent implements OnDestroy {
   private readonly excelService = inject(ExcelService);
   private readonly overlay = inject(Overlay);
   private readonly elementRef = inject(ElementRef);
+  private readonly eventBus = inject(EventBusService);
+  private readonly auditService = inject(AuditService);
+  private readonly instanceId = `table-${Math.floor(Math.random() * 10000)}`;
 
   private readonly DEFAULT_EXPORT_NAME = "tabla";
 
@@ -141,6 +147,12 @@ export class TableComponent implements OnDestroy {
     const config = this.tableConfiguration();
     if (!config) return;
 
+    this.eventBus.emit({
+      type: VisualizerEventType.TABLE_CONFIGURE,
+      instanceId: this.instanceId,
+      payload: { columns: config.options.cols || [], rows: config.options.rows || [] }
+    });
+
     const { dataset, options } = config;
 
     const aliasMap: Record<string | number, string> = {};
@@ -181,6 +193,10 @@ export class TableComponent implements OnDestroy {
   }
 
   private render(pivotConfig: TableOptions): void {
+    this.eventBus.emit({
+      type: VisualizerEventType.TABLE_RENDER,
+      instanceId: this.instanceId
+    });
     const tableElement = this.pivotTable.nativeElement;
     const config = this.tableConfiguration();
     if (!config) return;
@@ -223,6 +239,11 @@ export class TableComponent implements OnDestroy {
    */
   public export(type: "html" | "xlsx", name: string = this.DEFAULT_EXPORT_NAME) {
     try {
+      this.eventBus.emit({
+        type: VisualizerEventType.TABLE_EXPORT,
+        instanceId: this.instanceId,
+        payload: { type, name }
+      });
       switch (type) {
         case "html":
           return this.getHtmlTable();

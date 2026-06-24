@@ -273,7 +273,7 @@ this.chartOptions = {
   height: null
 };
 ```
-*   **Comportamiento interno:** El componente establece su base en `100%` de ancho y alto, dejando que la hoja de estilos del consumidor (ej. un contenedor Flexbox) dicte la altura. ECharts escuchará reactivamente los cambios de pantalla del navegador y redibujará el lienzo de forma óptima.
+*   **Comportamiento interno:** El componente establece su base en `100%` delegando completamente la responsabilidad del layout al motor nativo de CSS (Flexbox/Grid). Esto elimina manipulaciones frágiles por JavaScript y previene colapsos a `0px` nativamente mediante la herencia fluida de propiedades. Una vez inicializado, el `ResizeObserver` interno de la directiva `ngx-echarts` (`[autoResize]="true"`) se encarga de escuchar los cambios en el contenedor CSS y adaptar el canvas al instante de forma inmaculada.
 
 #### 3. Variables de CSS Nativas (Custom Properties en Cascada)
 Puedes inyectar las variables directamente en la etiqueta HTML o en las hojas de estilo del consumidor sin necesidad de mutar las opciones en TypeScript:
@@ -375,6 +375,8 @@ providers: [
 
 - **Lazy Loading automático:** Los proveedores de la librería (`provideDataVisualizerCharts` y `provideDataVisualizerTables`) importan dinámicamente dependencias pesadas de forma diferida (como ECharts y librerías de PivotTable) para mejorar drásticamente el tiempo de carga de la aplicación.
 - **Detección OnPush & Signals:** Todos los componentes se ejecutan bajo la estrategia `ChangeDetectionStrategy.OnPush` y procesan los cambios de estado mediante señales reactivas (`signals` y `computed`), evitando renderizados innecesarios y garantizando una tasa de refresco ultra fluida.
+- **Ciclo de Inicialización Sincrónico y Unificado:** La inicialización de la infraestructura del gráfico (`EChart`) se realiza de forma sincrónica en el hook `ngOnInit`, eliminando condiciones de carrera. El renderizado lógico inicial se consolida en una única llamada nativa a `setOption` durante la emisión de `chartInit`.
+- **Desacoplamiento de Resize y Renderizado:** Se eliminaron las escuchas de resize personalizadas (como observers en el componente padre y listeners globales de ventana). La dimensión física del lienzo es controlada por el ResizeObserver de `ngx-echarts` con un debounce de 100ms sin desencadenar ciclos de reconstrucción lógica de datos, logrando un ahorro significativo de CPU y previniendo parpadeos.
 
 ---
 

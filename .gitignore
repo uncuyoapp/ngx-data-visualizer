@@ -52,3 +52,7 @@ GEMINI.md
 .agents/workflows/prepare-commits.md
 .agents/workflows/prepare-pr.md
 .agents/workflows/reporte-cambios.md
+
+#interaccion docs-hub
+/scratch/*
+/reportes/*

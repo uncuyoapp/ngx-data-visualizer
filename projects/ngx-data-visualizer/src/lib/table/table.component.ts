@@ -1,5 +1,4 @@
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
@@ -16,6 +15,7 @@ import {
   output,
   signal,
 } from "@angular/core";
+import { ConfigEditorOverlayService } from '../config-editor/services/config-editor-overlay.service';
 
 import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
@@ -41,10 +41,10 @@ export class TableComponent implements OnDestroy {
   private readonly tableService = inject(TableService);
   private readonly tableHelperService = inject(TableHelperService);
   private readonly excelService = inject(ExcelService);
-  private readonly overlay = inject(Overlay);
   private readonly elementRef = inject(ElementRef);
   private readonly eventBus = inject(EventBusService);
   private readonly auditService = inject(AuditService);
+  private readonly editorOverlayService = inject(ConfigEditorOverlayService);
   private readonly instanceId = `table-${Math.floor(Math.random() * 10000)}`;
 
   private readonly DEFAULT_EXPORT_NAME = "tabla";
@@ -304,40 +304,24 @@ export class TableComponent implements OnDestroy {
 
     const { TableConfigEditorComponent } = await import('../config-editor/table-config-editor/table-config-editor.component');
 
-    this.overlayRef = this.overlay.create({
-      hasBackdrop: false,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      positionStrategy: this.overlay.position()
-        .flexibleConnectedTo(this.elementRef.nativeElement)
-        .withPush(false)
-        .withPositions([
-          {
-            originX: 'end',
-            originY: 'top',
-            overlayX: 'end',
-            overlayY: 'top',
-            offsetX: -12,
-            offsetY: 12
-          }
-        ])
+    const { overlayRef, componentRef } = this.editorOverlayService.create({
+      elementRef: this.elementRef,
+      component: TableConfigEditorComponent,
+      dataset: this.dataset(),
+      options: this.internalOptions(),
+      onOptionsChange: (newOptions) => {
+        if (newOptions) {
+          this.internalOptions.set(newOptions);
+          this.tableOptionsChange.emit(newOptions);
+        }
+      },
+      onClose: () => {
+        this.showEditor.set(false);
+      }
     });
 
-    const portal = new ComponentPortal(TableConfigEditorComponent);
-    this.configEditorComponentRef = this.overlayRef.attach(portal);
-
-    this.configEditorComponentRef.setInput('dataset', this.dataset());
-    this.configEditorComponentRef.setInput('options', this.internalOptions());
-
-    this.configEditorComponentRef.instance.optionsChange
-      .subscribe((newOptions: TableOptionsType) => {
-        this.internalOptions.set(newOptions);
-        this.tableOptionsChange.emit(newOptions);
-      });
-
-    this.configEditorComponentRef.instance.close
-      .subscribe(() => {
-        this.showEditor.set(false);
-      });
+    this.overlayRef = overlayRef;
+    this.configEditorComponentRef = componentRef;
   }
 
   private destroyEditorComponent() {

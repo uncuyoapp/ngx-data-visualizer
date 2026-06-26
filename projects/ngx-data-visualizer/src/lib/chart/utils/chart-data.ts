@@ -20,7 +20,7 @@ export class ChartData {
     public dataProvider: DataProvider,
     public seriesConfig: SeriesConfig,
     private readonly colorPalette?: Map<string, string>,
-  ) {}
+  ) { }
 
   /**
    * @description Obtiene los valores únicos para una columna (clave) específica de los datos procesados.
@@ -68,9 +68,8 @@ export class ChartData {
         throw new Error("An error occurred when finding series");
       }
 
-      // Solo agregar el valor si es un número válido o null
       if (secondLevel) {
-        // Utilizamos concatenación con separador para evitar ambigüedades
+        // Agregamos el valor utilizando una clave combinada para evitar colisiones entre subcategorías distintas.
         actualSeries.data.set(firstLevel.concat(secondLevel), [
           secondLevel,
           valor,

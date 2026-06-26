@@ -11,6 +11,8 @@ export interface TooltipParams {
   value: number | string;
   /** Nombre de la serie */
   seriesName: string;
+  /** Índice de la serie */
+  seriesIndex: number;
   /** Índice del punto de datos */
   dataIndex: number;
   /** Marcador visual de la serie */
@@ -19,13 +21,6 @@ export interface TooltipParams {
   [key: string]: string | number;
 }
 
-/**
- * Interfaz para la configuración del tooltip
- */
-interface TooltipConfig {
-  /** Indica si se debe mostrar el total en el tooltip */
-  showTotal?: boolean;
-}
 
 /**
  * Clase administradora encargada de manejar y gestionar la lógica reactiva de los tooltips
@@ -35,6 +30,8 @@ interface TooltipConfig {
  * cantidad variable de decimales.
  */
 export class TooltipManager {
+  private hoveredSeriesIndex: number | null = null;
+
   /**
    * Constructor de la clase
    * @param decimals - Número de decimales a mostrar en los valores
@@ -43,7 +40,22 @@ export class TooltipManager {
   constructor(
     private decimals?: number | null,
     private suffix?: string | null
-  ) {}
+  ) { }
+
+  /**
+   * Actualiza el índice de la serie sobre la que está el mouse
+   * @param index - Índice de la serie o null
+   */
+  setHoveredSeriesIndex(index: number | null): void {
+    this.hoveredSeriesIndex = index;
+  }
+
+  /**
+   * Obtiene el índice de la serie sobre la que está el mouse
+   */
+  getHoveredSeriesIndex(): number | null {
+    return this.hoveredSeriesIndex;
+  }
 
   /**
    * Actualiza el sufijo del tooltip
@@ -102,33 +114,18 @@ export class TooltipManager {
     options: EChartsOption
   ): string {
     try {
-      let title = Array.isArray(params) ? params[0].name : params.name;
-      const dataIndex = Array.isArray(params)
-        ? params[0].dataIndex
-        : params.dataIndex;
+      const title = Array.isArray(params) ? params[0].name : params.name;
+      const dataIndex = Array.isArray(params) ? params[0].dataIndex : params.dataIndex;
 
-      if (Array.isArray(options.xAxis) && options.xAxis.length > 1) {
-        const xAxis1 = options.xAxis[1] as any;
-        const xAxis0 = options.xAxis[0] as any;
-        if (!xAxis1?.data || !xAxis0?.data) {
-          throw new Error('Datos de eje X no disponibles');
-        }
-        title = `${
-          xAxis1.data[
-            Math.floor(dataIndex / (xAxis0.data.length / xAxis1.data.length))
-          ]
-        } - ${title}`;
-      } else if (Array.isArray(options.yAxis) && options.yAxis.length > 1) {
-        const yAxis1 = options.yAxis[1] as any;
-        const yAxis0 = options.yAxis[0] as any;
-        if (!yAxis1?.data || !yAxis0?.data) {
-          throw new Error('Datos de eje Y no disponibles');
-        }
-        title = `${
-          yAxis1.data[
-            Math.floor(dataIndex / (yAxis0.data.length / yAxis1.data.length))
-          ]
-        } - ${title}`;
+      // Intentar obtener la categoría padre si existe una jerarquía de doble eje (en X o Y)
+      const parentX = this.getParentCategoryValue(options.xAxis as any[], dataIndex, 'X');
+      if (parentX !== null) {
+        return `${parentX} - ${title}`;
+      }
+
+      const parentY = this.getParentCategoryValue(options.yAxis as any[], dataIndex, 'Y');
+      if (parentY !== null) {
+        return `${parentY} - ${title}`;
       }
 
       return title;
@@ -136,6 +133,35 @@ export class TooltipManager {
       console.error('Error al formatear el título del tooltip:', error);
       return 'Error en el título';
     }
+  }
+
+  /**
+   * Resuelve el valor de la categoría padre (primer nivel) en una configuración de doble eje.
+   * Realiza el cálculo del índice proporcional según la relación de tamaños entre el eje primario y secundario.
+   * @param axes - Array de ejes (xAxis o yAxis)
+   * @param dataIndex - Índice del punto de datos actual
+   * @param axisName - Nombre identificatorio del eje ('X' o 'Y') para trazabilidad de errores
+   * @returns El nombre de la categoría del primer nivel, o null si no existe una configuración de doble eje.
+   * @private
+   */
+  private getParentCategoryValue(
+    axes: any[] | undefined,
+    dataIndex: number,
+    axisName: 'X' | 'Y'
+  ): string | null {
+    if (!Array.isArray(axes) || axes.length <= 1) {
+      return null;
+    }
+
+    const axis0 = axes[0];
+    const axis1 = axes[1];
+    if (!axis0?.data || !axis1?.data) {
+      throw new Error(`Datos de eje ${axisName} no disponibles`);
+    }
+
+    const ratio = axis0.data.length / axis1.data.length;
+    const parentIndex = Math.floor(dataIndex / ratio);
+    return axis1.data[parentIndex] !== undefined ? String(axis1.data[parentIndex]) : null;
   }
 
   /**
@@ -190,49 +216,102 @@ export class TooltipManager {
         throw new Error('Parámetros del tooltip no válidos');
       }
 
-      // Calcular el total primero, antes de formatear los valores
-      let total = 0;
-      const tooltipConfig = options.tooltip as TooltipConfig;
-      if (tooltipConfig?.showTotal) {
-        total = params.reduce((sum, param) => {
-          // Convertir el valor a número si es string
-          const numericValue =
-            typeof param.value === 'string'
-              ? parseFloat(param.value.replace(/[^\d.-]/g, ''))
-              : param.value;
+      // Resolver de forma segura las series del gráfico actuales
+      const seriesArray = Array.isArray(options.series)
+        ? options.series
+        : (options.series ? [options.series] : []);
 
-          if (isNaN(numericValue)) {
-            throw new Error(
-              'Valor no numérico encontrado al calcular el total'
-            );
-          }
-          return sum + numericValue;
-        }, 0);
+      // 1. Obtener la serie y pila sobre la que está posicionado el cursor (Foco)
+      // Si el usuario tiene seleccionado el hover en una serie particular, priorizamos esa serie.
+      // Si no, o si no hay valor para esa serie, tomamos la primera serie con valor válido.
+      let focusParam: TooltipParams | undefined;
+
+      if (this.hoveredSeriesIndex !== null && this.hoveredSeriesIndex !== undefined) {
+        focusParam = params.find(p => p.seriesIndex === this.hoveredSeriesIndex);
       }
 
-      // Ahora formatear los valores para mostrar
-      let list = params
+      if (!focusParam) {
+        focusParam = params.find(p => p.value !== null && p.value !== undefined && p.value !== '') || params[0];
+      }
+
+      const focusSeriesConfig = seriesArray[focusParam.seriesIndex] as any;
+      const activeStack = focusSeriesConfig?.stack;
+
+      // 2. Filtrado Físico de Series (DEC-012)
+      // Filtramos las series que se deben ocultar basándonos en el stack sobre el que está el cursor.
+      const filteredParams = params.filter(param => {
+        const seriesConfig = seriesArray[param.seriesIndex] as any;
+        if (!seriesConfig) return true;
+
+        // Regla de Excepción: Las líneas de referencia globales (líneas sin stack) se muestran siempre.
+        if (this.isReferenceSeries(seriesConfig)) {
+          return true;
+        }
+
+        // Regla de Stack: Si hay una pila activa, solo mostrar las series que pertenezcan a esa misma pila.
+        if (activeStack && seriesConfig.stack !== activeStack) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // 3. Separación y ordenamiento de series (Líneas de referencia al final)
+      const normalParams = filteredParams.filter(param => !this.isReferenceSeries(seriesArray[param.seriesIndex]));
+      const referenceParams = filteredParams.filter(param => this.isReferenceSeries(seriesArray[param.seriesIndex]));
+      const sortedParams = [...normalParams, ...referenceParams];
+
+      // 4. Cálculo de la sumatoria total (DEC-006)
+      // Calculamos la sumatoria para porcentajes y totales usando únicamente series normales visibles (no de referencia).
+      let totalSum = 0;
+      normalParams.forEach(param => {
+        const numericValue = this.parseNumericValue(param.value);
+        if (!isNaN(numericValue)) {
+          totalSum += numericValue;
+        }
+      });
+
+      // 5. Lectura de directivas visuales de configuración
+      const tooltipConfig = options.tooltip as any;
+      const showPercentage = !!tooltipConfig?.showPercentage;
+      const showTotal = !!tooltipConfig?.showTotal;
+
+      // 6. Construcción de los items HTML individuales del tooltip
+      let list = sortedParams
         .map(
-          (param) =>
-            `${param.marker}
-            <label class="series-name">${
-              param.seriesName
-            }</label>:<label class="value">${
-              param.value !== null && param.value !== undefined
-                ? this.formatValue(
-                    typeof param.value === 'string'
-                      ? parseFloat(param.value.replace(/[^\d.-]/g, ''))
-                      : param.value
-                  )
-                : '-'
-            }</label>`
+          (param) => {
+            const seriesConfig = seriesArray[param.seriesIndex] as any;
+            const isReferenceLine = this.isReferenceSeries(seriesConfig);
+            const val = this.parseNumericValue(param.value);
+
+            let valueText = '-';
+            if (!isNaN(val)) {
+              const valFormatted = this.formatValue(val);
+
+              // Si se solicita porcentaje y no es una línea de referencia, calculamos su cuota sobre el total
+              if (showPercentage && !isReferenceLine) {
+                const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
+                const percentageStr = (isNaN(percentage) || !isFinite(percentage))
+                  ? '0.00'
+                  : percentage.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  });
+                valueText = `${valFormatted} (${percentageStr}%)`;
+              } else {
+                valueText = valFormatted;
+              }
+            }
+
+            return `${param.marker} <label class="series-name">${param.seriesName}</label>:<label class="value">${valueText}</label>`;
+          }
         )
         .join('<br>');
 
-      // Agregar el total formateado si es necesario
-      if (tooltipConfig?.showTotal) {
+      // 7. Anexar el bloque del total acumulado si corresponde
+      if (showTotal) {
         list += `<hr><label class="summation">Total</label>:<label class="value">${this.formatValue(
-          total
+          totalSum
         )}</label>`;
       }
 
@@ -249,6 +328,31 @@ export class TooltipManager {
   }
 
   /**
+   * Convierte un valor de tipo texto o numérico a su equivalente numérico flotante.
+   * Remueve caracteres que no sean dígitos, signos o puntos decimales si recibe un string formateado.
+   * @param value - Valor de entrada
+   * @returns El número flotante o NaN si la conversión no es posible.
+   * @private
+   */
+  private parseNumericValue(value: number | string | null | undefined): number {
+    if (value === null || value === undefined) return NaN;
+    if (typeof value === 'number') return value;
+    const parsed = parseFloat(value.replace(/[^\d.-]/g, ''));
+    return isNaN(parsed) ? NaN : parsed;
+  }
+
+  /**
+   * Determina si una serie representa una línea de referencia global.
+   * Las líneas de referencia se caracterizan por ser de tipo 'line' y no tener una pila asignada (stack).
+   * @param seriesConfig - Configuración de la serie a evaluar
+   * @returns True si es una línea de referencia, False en caso contrario.
+   * @private
+   */
+  private isReferenceSeries(seriesConfig: any): boolean {
+    return !!(seriesConfig && seriesConfig.type === 'line' && !seriesConfig.stack);
+  }
+
+  /**
    * Formatea un valor numérico según la configuración
    * @param value - Valor a formatear
    * @returns Valor formateado como string
@@ -259,11 +363,7 @@ export class TooltipManager {
         return '-';
       }
 
-      // Convertir el valor a número si es string
-      const numericValue =
-        typeof value === 'string'
-          ? parseFloat(value.replace(/[^\d.-]/g, ''))
-          : value;
+      const numericValue = this.parseNumericValue(value);
 
       if (isNaN(numericValue)) {
         throw new Error('Valor no numérico');
@@ -272,13 +372,13 @@ export class TooltipManager {
       const returnValue =
         this.decimals !== null && this.decimals !== undefined
           ? numericValue.toLocaleString('es-AR', {
-              minimumFractionDigits: this.decimals,
-              maximumFractionDigits: this.decimals,
-              useGrouping: true,
-            })
+            minimumFractionDigits: this.decimals,
+            maximumFractionDigits: this.decimals,
+            useGrouping: true,
+          })
           : numericValue.toLocaleString('es-AR', {
-              useGrouping: true,
-            });
+            useGrouping: true,
+          });
       return this.suffix ? returnValue + ' ' + this.suffix : returnValue;
     } catch (error) {
       console.error('Error al formatear valor:', error);

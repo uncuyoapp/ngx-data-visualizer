@@ -8,12 +8,14 @@ import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
+    DestroyRef,
     effect,
     inject,
     input,
     OnInit,
     output
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     FormBuilder,
     FormGroup,
@@ -41,6 +43,7 @@ import { ConfigFactory } from '../services/config-factory.service';
 export class TableConfigEditorComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly configFactory = inject(ConfigFactory);
+    private readonly destroyRef = inject(DestroyRef);
 
     /** Conjunto de datos para obtener las dimensiones disponibles */
     dataset = input.required<Dataset>();
@@ -119,7 +122,8 @@ export class TableConfigEditorComponent implements OnInit {
         this.configForm.valueChanges
             .pipe(
                 debounceTime(300),
-                distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+                distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+                takeUntilDestroyed(this.destroyRef)
             )
             .subscribe(value => {
                 this.optionsChange.emit(value);

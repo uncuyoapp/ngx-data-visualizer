@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
+    DestroyRef,
     OnInit,
     computed,
     effect,
@@ -13,6 +14,7 @@ import {
     output,
     signal
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     FormBuilder,
     FormGroup,
@@ -34,8 +36,9 @@ import { ConfigFactory } from '../services/config-factory.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChartConfigEditorComponent implements OnInit {
-    private fb = inject(FormBuilder);
-    private configFactory = inject(ConfigFactory);
+    private readonly fb = inject(FormBuilder);
+    private readonly configFactory = inject(ConfigFactory);
+    private readonly destroyRef = inject(DestroyRef);
 
     /** Dataset para el gráfico */
     dataset = input.required<Dataset>();
@@ -184,7 +187,7 @@ export class ChartConfigEditorComponent implements OnInit {
 
         if (firstLevelControl) {
             this.firstLevelValue.set(firstLevelControl.value);
-            firstLevelControl.valueChanges.subscribe(val => {
+            firstLevelControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(val => {
                 this.firstLevelValue.set(val);
                 if (secondLevelControl && secondLevelControl.value !== null && Number(secondLevelControl.value) === Number(val)) {
                     secondLevelControl.setValue(null);
@@ -198,7 +201,7 @@ export class ChartConfigEditorComponent implements OnInit {
 
         if (secondLevelControl) {
             this.secondLevelValue.set(secondLevelControl.value);
-            secondLevelControl.valueChanges.subscribe(val => {
+            secondLevelControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(val => {
                 this.secondLevelValue.set(val);
                 // Si el stack coincide con el nuevo segundo nivel, lo reseteamos
                 if (stackedControl && stackedControl.value !== null && Number(stackedControl.value) === Number(val)) {
@@ -226,7 +229,7 @@ export class ChartConfigEditorComponent implements OnInit {
                 showPercentageControl.setValue(false, { emitEvent: false });
             }
 
-            sharedControl.valueChanges.subscribe(shared => {
+            sharedControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(shared => {
                 if (shared) {
                     showTotalControl.enable();
                     showPercentageControl.enable();
@@ -268,7 +271,8 @@ export class ChartConfigEditorComponent implements OnInit {
         this.configForm.valueChanges
             .pipe(
                 debounceTime(300),
-                distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+                distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+                takeUntilDestroyed(this.destroyRef)
             )
             .subscribe(value => {
                 // Realizamos un merge profundo con las opciones actuales para no perder propiedades no editadas (como legends.show)

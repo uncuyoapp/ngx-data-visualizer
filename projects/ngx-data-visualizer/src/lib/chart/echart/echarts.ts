@@ -179,6 +179,21 @@ export class EChart extends Chart {
     this.chartInstance.on("click", eventHandler);
     this.chartInstance.on("mouseover", eventHandler);
     this.chartInstance.on("mouseout", eventHandler);
+
+    // Guardar el índice de la serie hovered para el tooltip
+    this.chartInstance.on("mouseover", (params: any) => {
+      if (params && typeof params.seriesIndex === 'number') {
+        this.tooltipManager.setHoveredSeriesIndex(params.seriesIndex);
+      }
+    });
+
+    this.chartInstance.on("mouseout", (params: any) => {
+      if (params && typeof params.seriesIndex === 'number') {
+        if (this.tooltipManager.getHoveredSeriesIndex() === params.seriesIndex) {
+          this.tooltipManager.setHoveredSeriesIndex(null);
+        }
+      }
+    });
   }
 
   /**
@@ -331,6 +346,7 @@ export class EChart extends Chart {
     }
 
     if (this.chartInstance) {
+      this.hideTooltip();
       // 1. Modificar en caliente la visibilidad de la leyenda en ECharts
       this.chartInstance.setOption({
         legend: {
@@ -510,15 +526,34 @@ export class EChart extends Chart {
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
 
+    this.hideTooltip();
+
     this.chartInstance.setOption(this.libraryOptions, {
       notMerge: true,
-      lazyUpdate: true,
+      lazyUpdate: false,
     });
 
     if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
       setTimeout(() => {
         this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
       }, 100);
+    }
+  }
+
+  /**
+   * Oculta de manera segura el tooltip activo del gráfico de ECharts.
+   * Se utiliza antes de realizar re-renderizados o cambios significativos de diseño
+   * (como ocultar/mostrar la leyenda o recalcular el tamaño) para prevenir que
+   * el tooltip quede visible en una posición incorrecta o desalineado.
+   * @private
+   */
+  private hideTooltip(): void {
+    if (this.chartInstance) {
+      try {
+        this.chartInstance.dispatchAction({ type: 'hideTip' });
+      } catch (e) {
+        // Ignorar si falla al intentar ocultar el tooltip
+      }
     }
   }
 

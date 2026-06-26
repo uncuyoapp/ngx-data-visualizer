@@ -1,5 +1,4 @@
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
@@ -19,7 +18,7 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
-import { LegendComponent } from "../legend/legend.component";
+import { ConfigEditorOverlayService } from '../config-editor/services/config-editor-overlay.service';
 import { DATA_VISUALIZER_CONFIG } from "../providers";
 import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
@@ -45,19 +44,19 @@ import { GoalChartHelper } from "./utils/goal-chart.helper";
   exportAs: "libChart",
   templateUrl: "./chart.component.html",
   styleUrl: "./chart.component.scss",
-  imports: [CommonModule, EchartsComponent, LegendComponent],
+  imports: [CommonModule, EchartsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements OnDestroy {
   private readonly viewContainerRef = inject(ViewContainerRef);
   private readonly chartFactory = inject(ChartFactory);
-  private readonly overlay = inject(Overlay);
   private readonly chartUpdater = inject(ChartUpdater);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly elementRef = inject(ElementRef);
   private readonly globalConfig = inject(DATA_VISUALIZER_CONFIG, { optional: true });
   private readonly eventBus = inject(EventBusService);
   private readonly auditService = inject(AuditService);
+  private readonly editorOverlayService = inject(ConfigEditorOverlayService);
   private readonly instanceId = `chart-${Math.floor(Math.random() * 10000)}`;
 
   // ============================================
@@ -349,7 +348,7 @@ export class ChartComponent implements OnDestroy {
   /** Obtiene los valores extremos actuales del navegador del gráfico */
   public getExtremes(): { start: number; end: number } | null {
     const extremes = this._executeOnChart((chart) => chart.getExtremes());
-    return extremes ? (extremes as { start: number; end: number }) : null;
+    return extremes ?? null;
   }
 
   // ============================================
@@ -387,41 +386,24 @@ export class ChartComponent implements OnDestroy {
 
     const { ChartConfigEditorComponent } = await import('../config-editor/chart-config-editor/chart-config-editor.component');
 
-    this.overlayRef = this.overlay.create({
-      hasBackdrop: false,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      positionStrategy: this.overlay.position()
-        .flexibleConnectedTo(this.elementRef.nativeElement)
-        .withPush(false)
-        .withPositions([
-          {
-            originX: 'end',
-            originY: 'top',
-            overlayX: 'end',
-            overlayY: 'top',
-            offsetX: -12,
-            offsetY: 12
-          }
-        ])
+    const { overlayRef, componentRef } = this.editorOverlayService.create({
+      elementRef: this.elementRef,
+      component: ChartConfigEditorComponent,
+      dataset: this.dataset(),
+      options: this.internalOptions(),
+      onOptionsChange: (newOptions) => {
+        if (newOptions) {
+          this.internalOptions.set(newOptions);
+          this.chartOptionsChange.emit(newOptions);
+        }
+      },
+      onClose: () => {
+        this.showEditor.set(false);
+      }
     });
 
-    const portal = new ComponentPortal(ChartConfigEditorComponent);
-    this.configEditorComponentRef = this.overlayRef.attach(portal);
-
-    this.configEditorComponentRef.setInput('dataset', this.dataset());
-    this.configEditorComponentRef.setInput('options', this.internalOptions());
-    this.configEditorComponentRef.setInput('getExtremesFn', () => this.getExtremes());
-
-    this.configEditorComponentRef.instance.optionsChange
-      .subscribe((newOptions: ChartOptions) => {
-        this.internalOptions.set(newOptions);
-        this.chartOptionsChange.emit(newOptions);
-      });
-
-    this.configEditorComponentRef.instance.close
-      .subscribe(() => {
-        this.showEditor.set(false);
-      });
+    this.overlayRef = overlayRef;
+    this.configEditorComponentRef = componentRef;
   }
 
   private destroyEditorComponent() {

@@ -139,9 +139,10 @@ export class EChartParser implements ParserOptions {
    */
   private parseTooltip(echartsConfig: EChartsOption, config: ChartOptions): void {
     if (echartsConfig.tooltip && !Array.isArray(echartsConfig.tooltip)) {
-      const tooltip = echartsConfig.tooltip as { trigger?: string; showTotal?: boolean };
+      const tooltip = echartsConfig.tooltip as { trigger?: string; showTotal?: boolean; showPercentage?: boolean };
       tooltip.trigger = config.tooltip.shared ? "axis" : "item";
       tooltip.showTotal = config.tooltip.showTotal;
+      tooltip.showPercentage = config.tooltip.showPercentage;
     }
   }
 

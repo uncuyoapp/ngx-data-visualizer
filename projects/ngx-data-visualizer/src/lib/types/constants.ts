@@ -482,6 +482,7 @@ export const DEFAULT_OPTIONS: ChartOptions = {
     suffix: null,
     format: null,
     showTotal: false,
+    showPercentage: false,
   },
   legends: {
     enabled: true,

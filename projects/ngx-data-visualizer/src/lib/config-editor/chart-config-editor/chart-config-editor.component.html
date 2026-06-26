@@ -136,6 +136,10 @@
           <input type="checkbox" formControlName="showTotal" />
           <span>Mostrar Total</span>
         </label>
+        <label class="checkbox-label" [class.disabled]="!configForm.get('tooltip.shared')?.value">
+          <input type="checkbox" formControlName="showPercentage" />
+          <span>Mostrar Porcentaje</span>
+        </label>
         <div class="form-group">
           <label>Decimales</label>
           <input type="number" formControlName="decimals" min="0" max="4" />

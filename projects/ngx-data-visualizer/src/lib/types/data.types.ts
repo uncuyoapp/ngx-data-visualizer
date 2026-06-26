@@ -238,6 +238,8 @@ export interface ChartOptions {
     format: string | null;
     /** Indica si se debe mostrar el total en el tooltip cuando hay múltiples series */
     showTotal: boolean;
+    /** Indica si se debe mostrar el porcentaje en el tooltip */
+    showPercentage?: boolean;
   };
   /** Configuración de las leyendas - controla la visualización y posición de las leyendas */
   legends: {

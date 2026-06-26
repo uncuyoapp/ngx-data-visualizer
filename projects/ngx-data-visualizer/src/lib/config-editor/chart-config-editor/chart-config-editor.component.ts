@@ -158,7 +158,8 @@ export class ChartConfigEditorComponent implements OnInit {
                 shared: [initialValues.tooltip.shared],
                 decimals: [initialValues.tooltip.decimals],
                 suffix: [initialValues.tooltip.suffix],
-                showTotal: [initialValues.tooltip.showTotal]
+                showTotal: [initialValues.tooltip.showTotal],
+                showPercentage: [initialValues.tooltip.showPercentage ?? false]
             }),
             navigator: this.fb.group({
                 show: [initialValues.navigator?.show ?? false],
@@ -214,20 +215,26 @@ export class ChartConfigEditorComponent implements OnInit {
     private setupTooltipSync() {
         const sharedControl = this.configForm.get('tooltip.shared');
         const showTotalControl = this.configForm.get('tooltip.showTotal');
+        const showPercentageControl = this.configForm.get('tooltip.showPercentage');
 
-        if (sharedControl && showTotalControl) {
+        if (sharedControl && showTotalControl && showPercentageControl) {
             // Initial state
             if (!sharedControl.value) {
                 showTotalControl.disable({ emitEvent: false });
                 showTotalControl.setValue(false, { emitEvent: false });
+                showPercentageControl.disable({ emitEvent: false });
+                showPercentageControl.setValue(false, { emitEvent: false });
             }
 
             sharedControl.valueChanges.subscribe(shared => {
                 if (shared) {
                     showTotalControl.enable();
+                    showPercentageControl.enable();
                 } else {
                     showTotalControl.disable();
                     showTotalControl.setValue(false);
+                    showPercentageControl.disable();
+                    showPercentageControl.setValue(false);
                 }
             });
         }

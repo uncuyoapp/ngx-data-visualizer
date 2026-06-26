@@ -346,3 +346,12 @@ table.pvtTable {
     margin: 5px auto;
   }
 }
+
+// Estilos locales seguros para el pane del editor de configuración para liberar eventos de mouse en la ubicación inicial
+.viz-config-editor-pane {
+  pointer-events: none !important;
+
+  .config-editor-container {
+    pointer-events: auto;
+  }
+}

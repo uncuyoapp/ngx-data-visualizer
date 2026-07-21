@@ -13,7 +13,8 @@ import {
     inject,
     input,
     OnInit,
-    output
+    output,
+    signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -56,6 +57,16 @@ export class TableConfigEditorComponent implements OnInit {
 
     /** Emite cuando se solicita cerrar el editor */
     close = output<void>();
+
+    /** Paso actual del asistente (1 a 3) */
+    public readonly currentStep = signal<number>(1);
+
+    /** Lista de pasos del asistente */
+    public readonly steps = [
+        { label: 'Estructura Pivot' },
+        { label: 'Visualización y Formato' },
+        { label: 'Totales' }
+    ];
 
     /** Formulario de configuración */
     configForm!: FormGroup;
@@ -202,5 +213,37 @@ export class TableConfigEditorComponent implements OnInit {
             cols: this.selectedCols.map(d => d.id),
             rows: this.selectedRows.map(d => d.id)
         });
+    }
+
+    /**
+     * Avanza al siguiente paso del asistente, o finaliza si está en el último.
+     */
+    public nextStep(): void {
+        const step = this.currentStep();
+        if (step < this.steps.length) {
+            this.currentStep.set(step + 1);
+        } else {
+            this.close.emit();
+        }
+    }
+
+    /**
+     * Retrocede al paso anterior del asistente.
+     */
+    public prevStep(): void {
+        const step = this.currentStep();
+        if (step > 1) {
+            this.currentStep.set(step - 1);
+        }
+    }
+
+    /**
+     * Salta a un paso específico del asistente.
+     * @param step Número de paso (1 a N)
+     */
+    public goToStep(step: number): void {
+        if (step >= 1 && step <= this.steps.length) {
+            this.currentStep.set(step);
+        }
     }
 }

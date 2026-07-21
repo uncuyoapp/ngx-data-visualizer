@@ -52,14 +52,19 @@ export class ChartConfigEditorComponent implements OnInit {
     /** Emite cuando se solicita cerrar el editor */
     close = output<void>();
 
-    /** Función inyectada por la directiva para obtener los extremos del gráfico */
-    getExtremesFn = input<(() => { start: number; end: number } | null) | null>(null);
-
     /** Formulario de configuración */
     configForm!: FormGroup;
 
-    /** Tab activa actualmente */
-    public readonly activeTab = signal<string>('general');
+    /** Paso actual del asistente (1 a 4) */
+    public readonly currentStep = signal<number>(1);
+
+    /** Lista de pasos del asistente */
+    public readonly steps = [
+        { label: 'General' },
+        { label: 'Eje X y Navegador' },
+        { label: 'Eje Y y Apilado' },
+        { label: 'Tooltip' }
+    ];
 
     /** Señal interna para trackear el valor de firstLevel */
     private readonly firstLevelValue = signal<string | number | null>(null);
@@ -294,30 +299,38 @@ export class ChartConfigEditorComponent implements OnInit {
     }
 
     /**
-     * Cambia la pestaña activa del editor.
-     * @param tab Nombre de la pestaña.
+     * Avanza al siguiente paso del asistente, o finaliza si está en el último.
      */
-    public onTabChange(tab: string) {
-        this.activeTab.set(tab);
+    public nextStep(): void {
+        const step = this.currentStep();
+        if (step < this.steps.length) {
+            this.currentStep.set(step + 1);
+        } else {
+            this.close.emit();
+        }
     }
 
     /**
-     * Emite un evento para guardar los extremos actuales del navegador.
+     * Retrocede al paso anterior del asistente.
      */
-    public saveExtremes() {
-        const fn = this.getExtremesFn();
-        if (fn) {
-            const extremes = fn();
-            if (extremes) {
-                this.configForm.patchValue({
-                    navigator: {
-                        start: extremes.start,
-                        end: extremes.end
-                    }
-                }, { emitEvent: false });
-            }
+    public prevStep(): void {
+        const step = this.currentStep();
+        if (step > 1) {
+            this.currentStep.set(step - 1);
         }
     }
+
+    /**
+     * Salta a un paso específico del asistente.
+     * @param step Número de paso (1 a N)
+     */
+    public goToStep(step: number): void {
+        if (step >= 1 && step <= this.steps.length) {
+            this.currentStep.set(step);
+        }
+    }
+
+
 
     /**
      * Obtiene las dimensiones disponibles del dataset actual.

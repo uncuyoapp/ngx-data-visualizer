@@ -1,6 +1,6 @@
 import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
-import { DEFAULT_OPTIONS, EC_CHART_CONFIG_PREVIEW } from "../../../types/constants";
+import { DEFAULT_OPTIONS, EC_CHART_CONFIG_PREVIEW, ECharts } from "../../../types/constants";
 import { ChartOptions } from "../../../types/data.types";
 import { ParserOptions } from "../../types/parser-options";
 import { ConfigValidator } from "../../utils/config-validator";
@@ -98,16 +98,14 @@ export class EChartParser implements ParserOptions {
   }
 
   /**
-   * Configura la paleta de colores personalizada para las series en ECharts.
+   * Configura la paleta de colores personalizada o por defecto para las series en ECharts.
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts.
    * @param config Opciones del gráfico.
    * @private
    */
   private parseColors(echartsConfig: EChartsOption, config: ChartOptions): void {
-    if (config.colors) {
-      echartsConfig.color = config.colors;
-    }
+    echartsConfig.color = config.colors ?? [...ECharts.DEFAULT_PALETTE];
   }
 
   /**
@@ -139,8 +137,22 @@ export class EChartParser implements ParserOptions {
    */
   private parseTooltip(echartsConfig: EChartsOption, config: ChartOptions): void {
     if (echartsConfig.tooltip && !Array.isArray(echartsConfig.tooltip)) {
-      const tooltip = echartsConfig.tooltip as { trigger?: string; showTotal?: boolean; showPercentage?: boolean };
-      tooltip.trigger = config.tooltip.shared ? "axis" : "item";
+      const tooltip = echartsConfig.tooltip as {
+        trigger?: string;
+        showTotal?: boolean;
+        showPercentage?: boolean;
+        shared?: boolean;
+        axisPointer?: { type?: string };
+      };
+      if (config.type === 'pie') {
+        tooltip.trigger = 'item';
+        if (config.tooltip.shared) {
+          tooltip.axisPointer = { type: 'none' };
+        }
+      } else {
+        tooltip.trigger = config.tooltip.shared ? "axis" : "item";
+      }
+      tooltip.shared = config.tooltip.shared;
       tooltip.showTotal = config.tooltip.showTotal;
       tooltip.showPercentage = config.tooltip.showPercentage;
     }

@@ -1,6 +1,7 @@
-import { Injectable, Type, inject, Optional } from "@angular/core";
+import { inject, Injectable, Type } from "@angular/core";
 import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
+import { DATA_VISUALIZER_CONFIG } from "../../providers";
 import { Dataset } from "../../services/dataset";
 import { Filters } from "../../services/types";
 import { DEFAULT_OPTIONS, ECharts } from "../../types/constants";
@@ -11,7 +12,6 @@ import { ChartConfiguration } from "../types/chart-configuration";
 import { ParserOptions } from "../types/parser-options";
 import { ChartData } from "../utils/chart-data";
 import { ChartUpdater } from "./chart-updater.service";
-import { DATA_VISUALIZER_CONFIG, DataVisualizerConfig } from "../../providers";
 
 /**
  * Servicio de tipo "Fábrica" (Factory) para crear instancias de `ChartConfiguration`.

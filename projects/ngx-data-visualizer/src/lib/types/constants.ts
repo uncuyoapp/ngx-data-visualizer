@@ -198,17 +198,18 @@ export const ECharts = {
     },
   },
 
-  /** Colores predefinidos para series */
-  COLORS: {
-    PRIMARY: "#1976d2",
-    SECONDARY: "#dc004e",
-    SUCCESS: "#4caf50",
-    WARNING: "#ff9800",
-    DANGER: "#f44336",
-    INFO: "#2196f3",
-    LIGHT: "#f5f5f5",
-    DARK: "#212121",
-  },
+  /** Paleta de colores por defecto para secuencias de series y gráficos de torta */
+  DEFAULT_PALETTE: [
+    '#5470c6',
+    '#91cc75',
+    '#fac858',
+    '#ee6666',
+    '#73c0de',
+    '#3ba272',
+    '#fc8452',
+    '#9a60b4',
+    '#ea7ccc',
+  ] as string[],
 
   /** Tamaños predefinidos para gráficos */
   SIZES: {

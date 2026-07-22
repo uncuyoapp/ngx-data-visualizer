@@ -186,8 +186,15 @@ export const ECharts = {
       smooth: true,
     },
     pie: {
-      label: { show: true },
-      radius: "50%",
+      avoidLabelOverlap: false,
+      label: { 
+        show: true,
+        minShowLabelAngle: 3
+      },
+      labelLayout: {
+        hideOverlap: true
+      },
+      radius: ["0%", "70%"],
     },
   },
 

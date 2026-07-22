@@ -372,8 +372,8 @@ export class EChart extends Chart {
               if (s.type === 'pie') {
                 return {
                   ...s,
-                  center: pieResult.center,
-                  radius: pieResult.radius
+                  center: pieResult.center
+                  // radius no se sobreescribe: lo define EC_SERIES_CONFIG.pie
                 };
               }
               return s;
@@ -593,7 +593,7 @@ export class EChart extends Chart {
       allSeries.forEach((s: any) => {
         if (s.type === 'pie') {
           s.center = layoutResult.pie.center;
-          s.radius = layoutResult.pie.radius;
+          // radius no se sobreescribe: lo define EC_SERIES_CONFIG.pie con las unidades correctas de ECharts
         }
       });
     }

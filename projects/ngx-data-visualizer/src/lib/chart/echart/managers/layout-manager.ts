@@ -637,25 +637,17 @@ export class LayoutManager {
     const legendPosition = (options.legends?.position || 'bottom').toLowerCase();
 
     // 1. Calcular espacio libre consumido por cada lado
-    const titleSpace = hasTitle ? slotTotal(cfg.title) : 0;
-    const legendBottomSpace = (hasLegend && legendPosition === 'bottom') ? slotTotal(cfg.legend.bottom) : 0;
-    const legendLeftSpace = (hasLegend && legendPosition === 'left') ? slotTotal(cfg.legend.lateral) : 0;
-    const legendRightSpace = (hasLegend && legendPosition === 'right') ? slotTotal(cfg.legend.lateral) : 0;
+    // 1. Calcular porcentaje de ocupación vertical de título y leyenda
+    const topPct = hasTitle ? 12 : 5;
+    const bottomPct = (hasLegend && legendPosition === 'bottom') ? 15 : 5;
 
-    const topSpace = cfg.grid.marginTop + titleSpace;
-    const bottomSpace = cfg.grid.marginBottom + legendBottomSpace;
-    const leftSpace = cfg.grid.marginLeft + legendLeftSpace;
-    const rightSpace = cfg.grid.marginRight + legendRightSpace;
+    // 2. Calcular el centro Y en el espacio disponible exacto entre arriba (título/borde) y abajo (leyenda/borde)
+    const availableVertPct = 100 - topPct - bottomPct;
+    const centerYPct = Math.round(topPct + (availableVertPct / 2));
+    const centerXPct = 50;
 
-    const totalHoriz = leftSpace + rightSpace;
-    const totalVert = topSpace + bottomSpace;
-
-    // Centro: punto medio del espacio libre en %
-    const centerXPct = Math.round(leftSpace + (100 - totalHoriz) / 2);
-    const centerYPct = Math.round(topSpace + (100 - totalVert) / 2);
-
-    // Radio: factor sobre el menor espacio libre
-    const radiusPct = Math.round(Math.min(100 - totalHoriz, 100 - totalVert) / 2 * cfg.pie.radiusFactor);
+    // 3. Radio dinámico optimizado
+    const radiusPct = Math.min(65, Math.max(35, Math.round((availableVertPct / 2) * 0.82)));
 
     let orient: LayoutOrientation;
     let left: CoordinateValue;

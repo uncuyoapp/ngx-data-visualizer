@@ -43,14 +43,32 @@
           </div>
 
           <!-- Ver Porcentajes / Valores -->
-          <div class="control-switch-card mb-4 d-flex justify-content-between align-items-center">
-            <div>
-              <span class="fw-semibold d-block text-secondary-emphasis">Visualización Porcentual</span>
-              <small class="text-muted">Alterna entre valores nominales y porcentajes</small>
+          <div class="control-switch-card disabled-card mb-4">
+            <!-- Título de la acción visible -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold text-secondary-emphasis">Visualización Porcentual</span>
+              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 fw-semibold px-2 py-1">
+                <mat-icon fontIcon="lock" style="font-size: 13px; width: 13px; height: 13px; line-height: 13px;"></mat-icon>
+                Deshabilitado
+              </span>
             </div>
-            <div class="form-check form-switch m-0">
-              <input class="form-check-input fs-4 cursor-pointer" type="checkbox" role="switch" id="togglePercentSwitch"
-                [checked]="isPercentActive" (change)="togglePercentView()">
+
+            <!-- Contenedor del control con máscara protectora por encima -->
+            <div class="position-relative overflow-hidden rounded-3 p-2 border border-secondary-subtle">
+              <div class="d-flex justify-content-between align-items-center opacity-40">
+                <small class="text-muted">Alterna entre valores nominales y porcentajes</small>
+                <div class="form-check form-switch m-0 ms-2">
+                  <input class="form-check-input fs-4" type="checkbox" role="switch" id="togglePercentSwitch"
+                    [checked]="isPercentActive" (change)="togglePercentView()" disabled>
+                </div>
+              </div>
+
+              <!-- Máscara de bloqueo con la nota aclaratoria -->
+              <div class="disabled-overlay d-flex align-items-center justify-content-center px-3 py-2 text-center">
+                <small class="disabled-note fw-medium">
+                  Es necesario definir el comportamiento de esta funcionalidad antes de realizar pruebas sobre ella
+                </small>
+              </div>
             </div>
           </div>
 

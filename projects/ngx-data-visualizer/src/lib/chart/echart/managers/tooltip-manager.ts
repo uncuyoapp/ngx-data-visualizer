@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from 'echarts';
+import { ECharts } from '../../../types/constants';
 
 /**
  * Interfaz para los parámetros del tooltip
@@ -92,14 +93,214 @@ export class TooltipManager {
         throw new Error('Las opciones del gráfico son requeridas');
       }
 
+      const isPie = this.isPieChart(options);
+      const isShared = this.isTooltipShared(options);
+
+      if (isPie && isShared) {
+        return this.formatPieSharedTooltip(params, options);
+      }
+
       const title = this.formatTooltipTitle(params, options);
       return Array.isArray(params)
         ? this.formatMultipleParamsTooltip(params, title, options)
-        : this.formatSingleParamTooltip(params, title);
+        : this.formatSingleParamTooltip(params, title, options);
     } catch (error) {
       console.error('Error al formatear el tooltip:', error);
       return '<div class="ec-tooltip-error">Error al mostrar el tooltip</div>';
     }
+  }
+
+  /**
+   * Normaliza la propiedad series de EChartsOption a un array.
+   * @param options Opciones de ECharts
+   * @private
+   */
+  private getSeriesArray(options: EChartsOption): any[] {
+    if (!options.series) {
+      return [];
+    }
+    return Array.isArray(options.series) ? options.series : [options.series];
+  }
+
+  /**
+   * Determina si las opciones corresponden a un gráfico de torta.
+   * @param options Opciones de ECharts
+   * @private
+   */
+  private isPieChart(options: EChartsOption): boolean {
+    if ((options as any)?.type === 'pie') {
+      return true;
+    }
+    const seriesArray = this.getSeriesArray(options);
+    return seriesArray.some((s: any) => s?.type === 'pie');
+  }
+
+  /**
+   * Determina si el tooltip está configurado como compartido.
+   * @param options Opciones de ECharts
+   * @private
+   */
+  private isTooltipShared(options: EChartsOption): boolean {
+    const tooltipConfig = options.tooltip as any;
+    return tooltipConfig?.trigger === 'axis' || !!tooltipConfig?.shared;
+  }
+
+  /**
+   * Obtiene la serie principal de tipo pie.
+   * @param options Opciones de ECharts
+   * @private
+   */
+  private getPieSeries(options: EChartsOption): any {
+    const seriesArray = this.getSeriesArray(options);
+    if (seriesArray.length === 0) {
+      return undefined;
+    }
+    return seriesArray.find((s: any) => s?.type === 'pie') ?? seriesArray[0];
+  }
+
+  /**
+   * Formatea un valor porcentual como string en formato es-AR (ej: "12,50").
+   * @param percentage - Valor numérico del porcentaje
+   * @returns Porcentaje formateado con 2 decimales
+   * @private
+   */
+  private formatPercentageValue(percentage: number): string {
+    if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
+      return '0,00';
+    }
+    return percentage.toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  /**
+   * Genera la estructura HTML para la fila del total acumulado.
+   * @param totalSum - Suma total a mostrar
+   * @returns String HTML del bloque total o cadena vacía si no aplica.
+   * @private
+   */
+  private formatTotalHtml(totalSum: number): string {
+    return `<hr><label class="summation">Total</label>:<label class="value">${this.formatValue(totalSum)}</label>`;
+  }
+
+  /**
+   * Formatea un tooltip consolidado completo para todas las porciones de un gráfico de torta.
+   * @param params Parámetros recibidos del tooltip
+   * @param options Opciones de ECharts
+   * @private
+   */
+  private formatPieSharedTooltip(
+    params: TooltipParams | TooltipParams[],
+    options: EChartsOption
+  ): string {
+    const pieSeries = this.getPieSeries(options);
+    if (!pieSeries || !Array.isArray(pieSeries.data)) {
+      const title = this.formatTooltipTitle(params, options);
+      return Array.isArray(params)
+        ? this.formatMultipleParamsTooltip(params, title, options)
+        : this.formatSingleParamTooltip(params, title, options);
+    }
+
+    const seriesName = pieSeries.name || (Array.isArray(params) ? params[0]?.seriesName : params?.seriesName) || 'Torta';
+    const tooltipConfig = options.tooltip as any;
+    const showPercentage = !!tooltipConfig?.showPercentage;
+    const showTotal = !!tooltipConfig?.showTotal;
+
+    const pieData: any[] = pieSeries.data;
+    const totalSum = this.calculatePieTotal(pieData);
+
+    const palette = Array.isArray(options.color)
+      ? (options.color as string[])
+      : (ECharts.DEFAULT_PALETTE as string[]);
+
+    const list = pieData
+      .map((item, idx) => this.formatPieSliceItem(item, idx, totalSum, showPercentage, palette))
+      .join('<br>');
+
+    const totalHtml = showTotal ? this.formatTotalHtml(totalSum) : '';
+
+    return `
+      <div class="ec-tooltip">
+          <label class="title">${seriesName}</label><br>
+          ${list}
+          ${totalHtml}
+      </div>
+    `;
+  }
+
+  /**
+   * Calcula el total acumulado de las porciones de un gráfico de torta
+   * @param pieData - Arreglo de elementos de la serie de torta
+   * @returns Suma total numérica de los valores válidos
+   * @private
+   */
+  private calculatePieTotal(pieData: any[]): number {
+    let totalSum = 0;
+    pieData.forEach(item => {
+      const val = typeof item === 'object' && item !== null ? item.value : item;
+      const num = this.parseNumericValue(val);
+      if (!Number.isNaN(num)) {
+        totalSum += num;
+      }
+    });
+    return totalSum;
+  }
+
+  /**
+   * Formatea un elemento individual (porción) en la lista del tooltip de torta
+   * @param item - Datos de la porción
+   * @param idx - Índice de la porción
+   * @param totalSum - Suma total de las porciones
+   * @param showPercentage - Indica si se debe mostrar el porcentaje
+   * @param palette - Paleta de colores configurada
+   * @returns Marcador HTML formateado de la porción
+   * @private
+   */
+  private formatPieSliceItem(
+    item: any,
+    idx: number,
+    totalSum: number,
+    showPercentage: boolean,
+    palette: string[]
+  ): string {
+    const sliceName = (typeof item === 'object' && item !== null && item.name != null) ? item.name : `Porción ${idx + 1}`;
+    const rawVal = typeof item === 'object' && item !== null ? item.value : item;
+    const val = this.parseNumericValue(rawVal);
+
+    const valueText = this.formatPieSliceValueText(val, totalSum, showPercentage);
+
+    const color = (typeof item === 'object' && item?.itemStyle?.color)
+      ? item.itemStyle.color
+      : palette[idx % palette.length];
+
+    const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+
+    return `${marker} <label class="series-name">${sliceName}</label>:<label class="value">${valueText}</label>`;
+  }
+
+  /**
+   * Formatea el texto del valor de una porción de torta, incluyendo opcionalmente el porcentaje
+   * @param val - Valor numérico de la porción
+   * @param totalSum - Suma total de las porciones
+   * @param showPercentage - Indica si se debe mostrar el porcentaje
+   * @returns Cadena de texto formateada para el valor
+   * @private
+   */
+  private formatPieSliceValueText(val: number, totalSum: number, showPercentage: boolean): string {
+    if (Number.isNaN(val)) {
+      return '-';
+    }
+
+    const valFormatted = this.formatValue(val);
+    if (!showPercentage) {
+      return valFormatted;
+    }
+
+    const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
+    const percentageStr = this.formatPercentageValue(percentage);
+
+    return `${valFormatted} (${percentageStr}%)`;
   }
 
   /**
@@ -138,6 +339,7 @@ export class TooltipManager {
   /**
    * Resuelve el valor de la categoría padre (primer nivel) en una configuración de doble eje.
    * Realiza el cálculo del índice proporcional según la relación de tamaños entre el eje primario y secundario.
+   * Asume una relación uniforme de múltiplo entero entre la cantidad de elementos del eje 0 y eje 1.
    * @param axes - Array de ejes (xAxis o yAxis)
    * @param dataIndex - Índice del punto de datos actual
    * @param axisName - Nombre identificatorio del eje ('X' o 'Y') para trazabilidad de errores
@@ -168,34 +370,74 @@ export class TooltipManager {
    * Formatea el tooltip para un solo parámetro
    * @param param - Parámetro único del tooltip
    * @param title - Título del tooltip
+   * @param options - Opciones de configuración del gráfico
    * @returns HTML formateado del tooltip para un solo parámetro
    * @private
    */
   private formatSingleParamTooltip(
     param: TooltipParams,
-    title: string
+    title: string,
+    options?: EChartsOption
   ): string {
     try {
       if (!param) {
         throw new Error('Parámetro del tooltip no válido');
       }
 
-      const value =
-        param.value !== null && param.value !== undefined
-          ? this.formatValue(param.value)
-          : '-';
+      const tooltipConfig = options?.tooltip as any;
+      const showPercentage = !!tooltipConfig?.showPercentage;
+      const showTotal = !!tooltipConfig?.showTotal;
+      const isPie = options ? this.isPieChart(options) : false;
+
+      const pieSeries = (isPie && options && (showPercentage || showTotal)) ? this.getPieSeries(options) : null;
+      const totalSum = pieSeries ? this.calculatePieTotal(pieSeries?.data || []) : 0;
+
+      const rawVal = this.parseNumericValue(param.value);
+      let valueText = '-';
+
+      if (!Number.isNaN(rawVal)) {
+        const valFormatted = this.formatValue(rawVal);
+        if (showPercentage && isPie && options) {
+          const percentageStr = this.calculatePercentageString(param, rawVal, totalSum);
+          valueText = `${valFormatted} (${percentageStr}%)`;
+        } else {
+          valueText = valFormatted;
+        }
+      }
+
+      const totalHtml = (showTotal && isPie && options) ? this.formatTotalHtml(totalSum) : '';
 
       return `
         <div class="ec-tooltip">
             <label class="title">${title}</label><br>
             ${param.marker}
-            <label class="series-name">${param.seriesName}</label>:<label class="value">${value}</label>
-        </div>
+            <label class="series-name">${param.seriesName}</label>:<label class="value">${valueText}</label>
+            ${totalHtml}
+            </div>
       `;
     } catch (error) {
       console.error('Error al formatear tooltip de parámetro único:', error);
       return '<div class="ec-tooltip-error">Error en el tooltip</div>';
     }
+  }
+
+  /**
+   * Calcula el texto del porcentaje para una serie de tipo pie.
+   * Utiliza la propiedad `percent` provista nativamente por ECharts si está presente en el parámetro;
+   * de lo contrario, la calcula en base a la suma total de la serie.
+   * @private
+   */
+  private calculatePercentageString(param: TooltipParams, rawVal: number, totalSum: number): string {
+    let percentage: number;
+    if (typeof param['percent'] === 'number') {
+      percentage = param['percent'];
+    } else if (totalSum !== 0) {
+      percentage = (rawVal / totalSum) * 100;
+    } else {
+      percentage = 0;
+    }
+
+    return this.formatPercentageValue(percentage);
   }
 
   /**
@@ -217,9 +459,7 @@ export class TooltipManager {
       }
 
       // Resolver de forma segura las series del gráfico actuales
-      const seriesArray = Array.isArray(options.series)
-        ? options.series
-        : (options.series ? [options.series] : []);
+      const seriesArray = this.getSeriesArray(options);
 
       // 1. Obtener la serie y pila sobre la que está posicionado el cursor (Foco)
       // Si el usuario tiene seleccionado el hover en una serie particular, priorizamos esa serie.
@@ -230,9 +470,7 @@ export class TooltipManager {
         focusParam = params.find(p => p.seriesIndex === this.hoveredSeriesIndex);
       }
 
-      if (!focusParam) {
-        focusParam = params.find(p => p.value !== null && p.value !== undefined && p.value !== '') || params[0];
-      }
+      focusParam ??= params.find(p => p.value !== null && p.value !== undefined && p.value !== '') ?? params[0];
 
       const focusSeriesConfig = seriesArray[focusParam.seriesIndex] as any;
       const activeStack = focusSeriesConfig?.stack;
@@ -266,7 +504,7 @@ export class TooltipManager {
       let totalSum = 0;
       normalParams.forEach(param => {
         const numericValue = this.parseNumericValue(param.value);
-        if (!isNaN(numericValue)) {
+        if (!Number.isNaN(numericValue)) {
           totalSum += numericValue;
         }
       });
@@ -285,18 +523,13 @@ export class TooltipManager {
             const val = this.parseNumericValue(param.value);
 
             let valueText = '-';
-            if (!isNaN(val)) {
+            if (!Number.isNaN(val)) {
               const valFormatted = this.formatValue(val);
 
               // Si se solicita porcentaje y no es una línea de referencia, calculamos su cuota sobre el total
               if (showPercentage && !isReferenceLine) {
                 const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
-                const percentageStr = (isNaN(percentage) || !isFinite(percentage))
-                  ? '0.00'
-                  : percentage.toLocaleString('es-AR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  });
+                const percentageStr = this.formatPercentageValue(percentage);
                 valueText = `${valFormatted} (${percentageStr}%)`;
               } else {
                 valueText = valFormatted;
@@ -310,9 +543,7 @@ export class TooltipManager {
 
       // 7. Anexar el bloque del total acumulado si corresponde
       if (showTotal) {
-        list += `<hr><label class="summation">Total</label>:<label class="value">${this.formatValue(
-          totalSum
-        )}</label>`;
+        list += `<hr>${this.formatTotalHtml(totalSum).replace('<hr>', '')}`;
       }
 
       return `
@@ -335,10 +566,10 @@ export class TooltipManager {
    * @private
    */
   private parseNumericValue(value: number | string | null | undefined): number {
-    if (value === null || value === undefined) return NaN;
+    if (value === null || value === undefined) return Number.NaN;
     if (typeof value === 'number') return value;
-    const parsed = parseFloat(value.replace(/[^\d.-]/g, ''));
-    return isNaN(parsed) ? NaN : parsed;
+    const parsed = Number.parseFloat(value.replace(/[^\d.-]/g, ''));
+    return Number.isNaN(parsed) ? Number.NaN : parsed;
   }
 
   /**
@@ -349,7 +580,7 @@ export class TooltipManager {
    * @private
    */
   private isReferenceSeries(seriesConfig: any): boolean {
-    return !!(seriesConfig && seriesConfig.type === 'line' && !seriesConfig.stack);
+    return !!(seriesConfig?.type === 'line' && !seriesConfig.stack);
   }
 
   /**
@@ -365,8 +596,8 @@ export class TooltipManager {
 
       const numericValue = this.parseNumericValue(value);
 
-      if (isNaN(numericValue)) {
-        throw new Error('Valor no numérico');
+      if (Number.isNaN(numericValue)) {
+        throw new TypeError('Valor no numérico');
       }
 
       const returnValue =
@@ -386,3 +617,4 @@ export class TooltipManager {
     }
   }
 }
+

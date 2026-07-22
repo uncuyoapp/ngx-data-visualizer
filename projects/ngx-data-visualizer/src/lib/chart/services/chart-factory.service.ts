@@ -3,7 +3,7 @@ import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
 import { Dataset } from "../../services/dataset";
 import { Filters } from "../../services/types";
-import { DEFAULT_OPTIONS } from "../../types/constants";
+import { DEFAULT_OPTIONS, ECharts } from "../../types/constants";
 import { ChartOptions, Dimension } from "../../types/data.types";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
@@ -48,10 +48,8 @@ export class ChartFactory {
 
     const mergedOptions = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
 
-    // Si el usuario no proveyó colores, usamos los del proveedor si existen
-    if (!mergedOptions.colors && this.config?.defaultColors) {
-      mergedOptions.colors = this.config.defaultColors;
-    }
+    // Asignar colores según la jerarquía: opciones usuario -> proveedor global -> paleta por defecto
+    mergedOptions.colors = mergedOptions.colors ?? this.config?.defaultColors ?? [...ECharts.DEFAULT_PALETTE];
 
     const chartConfiguration: ChartConfiguration = {
       dataset,

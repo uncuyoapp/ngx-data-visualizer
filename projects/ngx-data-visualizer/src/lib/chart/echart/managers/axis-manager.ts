@@ -325,6 +325,7 @@ export class AxisManager {
       rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
       overflow: 'truncate',
       ellipsis: '...',
+      hideOverlap: false,
       width: isSecondaryAxis
         ? layoutResult.axis.secondLevelLabelMaxWidth
         : layoutResult.axis.firstLevelLabelMaxWidth

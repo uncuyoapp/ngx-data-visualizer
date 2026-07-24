@@ -15,6 +15,7 @@
  */
 
 import { EChartsOption } from 'echarts';
+import { ECharts } from '../../../types/constants';
 import { ChartOptions } from '../../../types/data.types';
 import { ChartData } from '../../utils/chart-data';
 
@@ -32,8 +33,7 @@ export interface SlotConfig {
 }
 
 /**
- * Configuración centralizada de todos los espaciados, alturas, anchos y márgenes
- * de diseño que rigen las dimensiones de los elementos del gráfico.
+ * Configuración de diseño específica para los ejes (categoría, valor y nivel dual).
  */
 export interface AxisLayoutConfig {
   /** Slot y límites para el título del eje de categorías (X en estándar, Y en barras). */
@@ -371,12 +371,13 @@ export class LayoutManager {
   public configureLayout(
     libraryOptions: EChartsOption,
     options: ChartOptions,
-    chartData: ChartData
+    chartData: ChartData,
+    containerWidth?: number
   ): LayoutResult {
     const isPie = options.type === 'pie';
     const result = isPie
       ? this.configurePieLayout(options)
-      : this.configureCartesianLayout(options, chartData);
+      : this.configureCartesianLayout(options, chartData, containerWidth);
 
     if (libraryOptions) {
       this.applyToEChartsOptions(libraryOptions, result, options);
@@ -393,10 +394,15 @@ export class LayoutManager {
    * 
    * @param options Opciones del gráfico.
    * @param chartData Datos del gráfico para determinar el eje dual.
+   * @param containerWidth Ancho del contenedor del gráfico en píxeles.
    * @returns Resultado del cálculo de layout.
    * @private
    */
-  private configureCartesianLayout(options: ChartOptions, chartData: ChartData): LayoutResult {
+  private configureCartesianLayout(
+    options: ChartOptions,
+    chartData: ChartData,
+    containerWidth?: number
+  ): LayoutResult {
     const cfg = this.config;
     const isBar = options.type === 'bar';
     const hasTitle = typeof options.title === 'string' && options.title.trim().length > 0;
@@ -414,14 +420,14 @@ export class LayoutManager {
     const catTitleSpace = hasCategoryTitle ? slotTotal(axisCfg.categoryTitle) : 0;
     const valTitleSpace = hasValueTitle ? slotTotal(axisCfg.valueTitle) : 0;
 
-    const grid = {
-      top: cfg.grid.marginTop + titleSpace,
-      bottom: cfg.grid.marginBottom,
-      left: cfg.grid.marginLeft,
-      right: cfg.grid.marginRight,
-      outerBoundsMode: 'same' as const,
-      outerBoundsContain: 'axisLabel' as const,
-    };
+    const grid = this.calculateCartesianGrid(
+      isBar,
+      titleSpace,
+      legendSpace,
+      navSpace,
+      catTitleSpace,
+      valTitleSpace
+    );
 
     // 2. Calcular offsets y gaps de ejes
     const rotateLabels = options.xAxis?.rotateLabels ?? 0;
@@ -432,29 +438,24 @@ export class LayoutManager {
       ? cfg.labels.baseHeight + axisCfg.valueTitle.marginBefore
       : axisCfg.valueTitle.marginBefore;
 
-    // 3. Inversión de Slots en Barras (sin duplicar el espacio de etiquetas)
-    if (isBar) {
-      // Gráfico de Barras: El eje de categorías es vertical (LEFT) y el de valores horizontal (BOTTOM)
-      grid.left += navSpace + catTitleSpace;
-      grid.bottom += valTitleSpace + legendSpace;
-    } else {
-      // Gráfico Estándar: El eje de categorías es horizontal (BOTTOM) y el de valores vertical (LEFT)
-      grid.bottom += catTitleSpace + navSpace + legendSpace;
-      grid.left += valTitleSpace;
-    }
-
-    // 4. Computar posiciones específicas
-    const titleTop = cfg.title.marginBefore;
-    const titleLeft = 'center';
-
+    // 3. Computar posiciones específicas
     const navigatorBottom = this.calculateNavigatorBottom(isBar, valTitleSpace, legendSpace);
+
+    // 4. Calcular ancho máximo dinámico de etiquetas de primer nivel (firstLevelLabelMaxWidth)
+    const firstLevelLabelMaxWidth = this.calculateFirstLevelLabelMaxWidth(
+      isBar,
+      containerWidth,
+      grid,
+      rotateLabels,
+      chartData
+    );
 
     return {
       grid,
       title: {
         show: hasTitle,
-        top: titleTop,
-        left: titleLeft,
+        top: cfg.title.marginBefore,
+        left: 'center',
         maxWidth: cfg.title.maxTruncateWidth,
       },
       legend: {
@@ -476,10 +477,113 @@ export class LayoutManager {
         dualLevelOffset,
         categoryTitleMaxWidth: axisCfg.categoryTitle.maxTruncateWidth,
         valueTitleMaxWidth: axisCfg.valueTitle.maxTruncateWidth,
-        firstLevelLabelMaxWidth: cfg.labels.maxWidth1stLevel,
+        firstLevelLabelMaxWidth,
         secondLevelLabelMaxWidth: cfg.labels.maxWidth2ndLevel,
       },
     };
+  }
+
+  /**
+   * Computa los márgenes y restricciones del contenedor del grid cartesiano.
+   * 
+   * @param isBar Indica si el gráfico es de tipo barra horizontal.
+   * @param titleSpace Espacio reservado para el título.
+   * @param legendSpace Espacio reservado para la leyenda.
+   * @param navSpace Espacio reservado para el navegador de datos.
+   * @param catTitleSpace Espacio reservado para el título del eje de categorías.
+   * @param valTitleSpace Espacio reservado para el título del eje de valores.
+   * @returns Estructura de márgenes e inclusión de etiquetas del grid.
+   * @private
+   */
+  private calculateCartesianGrid(
+    isBar: boolean,
+    titleSpace: number,
+    legendSpace: number,
+    navSpace: number,
+    catTitleSpace: number,
+    valTitleSpace: number
+  ) {
+    const cfg = this.config;
+    const grid = {
+      top: cfg.grid.marginTop + titleSpace,
+      bottom: cfg.grid.marginBottom,
+      left: cfg.grid.marginLeft,
+      right: cfg.grid.marginRight,
+      outerBoundsMode: 'same' as const,
+      outerBoundsContain: 'axisLabel' as const,
+    };
+
+    if (isBar) {
+      grid.left += navSpace + catTitleSpace;
+      grid.bottom += valTitleSpace + legendSpace;
+    } else {
+      grid.bottom += catTitleSpace + navSpace + legendSpace;
+      grid.left += valTitleSpace;
+    }
+
+    return grid;
+  }
+
+  /**
+   * Calcula el ancho máximo dinámico de las etiquetas de primer nivel (eje de categorías).
+   * 
+   * @param isBar Indica si el gráfico es de tipo barra horizontal.
+   * @param containerWidth Ancho disponible del contenedor en píxeles.
+   * @param grid Límites de márgenes izquierdo y derecho del grid.
+   * @param rotateLabels Inclinación en grados aplicada a las etiquetas.
+   * @param chartData Colección de datos procesados del gráfico.
+   * @returns Ancho máximo permitido en píxeles antes de truncar etiquetas.
+   * @private
+   */
+  private calculateFirstLevelLabelMaxWidth(
+    isBar: boolean,
+    containerWidth: number | undefined,
+    grid: { left: number; right: number },
+    rotateLabels: number,
+    chartData: ChartData
+  ): number {
+    const cfg = this.config;
+    if (isBar) {
+      return cfg.labels.maxWidth1stLevel;
+    }
+
+    const availableContainerWidth =
+      containerWidth && containerWidth > 0
+        ? containerWidth
+        : ECharts.DEFAULT_DIMENSIONS.WIDTH;
+    const usefulGridWidth = Math.max(100, availableContainerWidth - (grid.left + grid.right));
+
+    const x1 = chartData.seriesConfig.x1;
+    const x2 = chartData.seriesConfig.x2;
+    const items1 = x1 ? chartData.getItems(x1) : [];
+    const items2 = x2 ? chartData.getItems(x2) : [];
+    const categoryCount = x2 ? items1.length * items2.length : items1.length;
+
+    if (categoryCount <= 0) {
+      return cfg.labels.maxWidth1stLevel;
+    }
+
+    const cellWidth = usefulGridWidth / categoryCount;
+    const padding = 4;
+    const minWidth = 15;
+
+    if (rotateLabels === 0) {
+      return Math.max(
+        minWidth,
+        Math.min(cfg.labels.maxWidth1stLevel, Math.floor(cellWidth - padding))
+      );
+    }
+
+    const angleRad = (Math.abs(rotateLabels) * Math.PI) / 180;
+    const cosAngle = Math.cos(angleRad);
+    const projectedWidth = cosAngle > 0.1
+      ? (cellWidth / cosAngle) - padding
+      : cfg.labels.maxWidth1stLevel;
+
+    return Math.max(
+      minWidth,
+      Math.min(cfg.labels.maxWidth1stLevel, Math.floor(projectedWidth))
+    );
   }
 
   /**
@@ -496,22 +600,6 @@ export class LayoutManager {
       return this.config.grid.marginBottom + valTitleSpace + legendSpace;
     }
     return this.config.grid.marginBottom + legendSpace + this.config.navigator.marginBefore;
-  }
-
-  /**
-   * Calcula de forma trigonométrica el espacio extra que requieren las etiquetas
-   * cuando sufren una rotación (inclinación) para evitar que salgan de los bordes.
-   * 
-   * @param rotateLabels Grados de inclinación de la etiqueta.
-   * @returns Margen adicional en píxeles.
-   * @private
-   */
-  private calculateExtraOffset(rotateLabels: number): number {
-    if (rotateLabels === 0) {
-      return 0;
-    }
-    const angleRad = (Math.abs(rotateLabels) * Math.PI) / 180;
-    return Math.max(0, Math.sin(angleRad) * this.config.labels.maxWidth1stLevel - this.config.labels.baseHeight);
   }
 
   /**
@@ -575,24 +663,38 @@ export class LayoutManager {
   }
 
   /**
+   * Estima el ancho en píxeles que ocupará horizontalmente un conjunto de etiquetas de texto.
+   * Basado en la longitud máxima de caracteres (~7px/carácter) y acotado por el límite configurado.
+   * 
+   * @param items Lista de etiquetas a evaluar.
+   * @param maxWidth Ancho máximo permitido por la configuración.
+   * @returns Ancho estimado en píxeles.
+   * @private
+   */
+  private estimateLabelWidth(items: (string | number)[], maxWidth: number): number {
+    const maxChars = items.length > 0
+      ? Math.max(...items.map(item => String(item).length))
+      : 0;
+    return Math.max(30, Math.min(maxWidth, maxChars * 7 + 10));
+  }
+
+  /**
    * Estima el ancho en píxeles del primer nivel de etiquetas en gráficos de barra.
    * 
+   * @param chartData Datos procesados del gráfico.
+   * @returns Ancho estimado en píxeles.
    * @private
    */
   private estimateFirstLevelWidth(chartData: ChartData): number {
     const items1 = chartData.getItems(chartData.seriesConfig.x1);
-    const maxChars = items1.length > 0
-      ? Math.max(...items1.map(item => String(item).length))
-      : 0;
-    return Math.max(30, Math.min(
-      this.config.labels.maxWidth1stLevel,
-      maxChars * 7 + 10
-    ));
+    return this.estimateLabelWidth(items1, this.config.labels.maxWidth1stLevel);
   }
 
   /**
    * Estima el ancho en píxeles del segundo nivel de etiquetas en gráficos de barra.
    * 
+   * @param chartData Datos procesados del gráfico.
+   * @returns Ancho estimado en píxeles (o 0 si no hay eje dual).
    * @private
    */
   private estimateSecondLevelWidth(chartData: ChartData): number {
@@ -601,13 +703,7 @@ export class LayoutManager {
       return 0;
     }
     const items2 = chartData.getItems(x2);
-    const maxChars = items2.length > 0
-      ? Math.max(...items2.map(item => String(item).length))
-      : 0;
-    return Math.max(30, Math.min(
-      this.config.labels.maxWidth2ndLevel,
-      maxChars * 7 + 10
-    ));
+    return this.estimateLabelWidth(items2, this.config.labels.maxWidth2ndLevel);
   }
 
   /**
@@ -659,7 +755,6 @@ export class LayoutManager {
     const hasLegend = !!(options.legends?.enabled && options.legends?.show);
     const legendPosition = (options.legends?.position || 'bottom').toLowerCase();
 
-    // 1. Calcular espacio libre consumido por cada lado
     // 1. Calcular porcentaje de ocupación vertical de título y leyenda
     const topPct = hasTitle ? 12 : 5;
     const bottomPct = (hasLegend && legendPosition === 'bottom') ? 15 : 5;
@@ -766,29 +861,24 @@ export class LayoutManager {
       return;
     }
 
+    let g: any;
     if (Array.isArray(libraryOptions.grid)) {
       if (libraryOptions.grid.length === 0) {
         libraryOptions.grid.push({});
       }
-      const g = libraryOptions.grid[0] as any;
-      g.top = result.grid.top;
-      g.bottom = result.grid.bottom;
-      g.left = result.grid.left;
-      g.right = result.grid.right;
-      g.outerBoundsMode = result.grid.outerBoundsMode;
-      g.outerBoundsContain = result.grid.outerBoundsContain;
-      delete g.containLabel;
+      g = libraryOptions.grid[0];
     } else {
       libraryOptions.grid = libraryOptions.grid || {};
-      const g = libraryOptions.grid as any;
-      g.top = result.grid.top;
-      g.bottom = result.grid.bottom;
-      g.left = result.grid.left;
-      g.right = result.grid.right;
-      g.outerBoundsMode = result.grid.outerBoundsMode;
-      g.outerBoundsContain = result.grid.outerBoundsContain;
-      delete g.containLabel;
+      g = libraryOptions.grid;
     }
+
+    g.top = result.grid.top;
+    g.bottom = result.grid.bottom;
+    g.left = result.grid.left;
+    g.right = result.grid.right;
+    g.outerBoundsMode = result.grid.outerBoundsMode;
+    g.outerBoundsContain = result.grid.outerBoundsContain;
+    delete g.containLabel;
   }
 
   /**

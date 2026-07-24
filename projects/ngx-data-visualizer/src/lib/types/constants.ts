@@ -106,7 +106,7 @@ export const ECharts = {
     axisLabel: {
       interval: 0,
       rotate: 0,
-      hideOverlap: true,
+      hideOverlap: false,
       overflow: "truncate",
     },
     axisTick: {
@@ -187,7 +187,7 @@ export const ECharts = {
     },
     pie: {
       avoidLabelOverlap: false,
-      label: { 
+      label: {
         show: true,
         minShowLabelAngle: 3
       },
@@ -211,11 +211,10 @@ export const ECharts = {
     '#ea7ccc',
   ] as string[],
 
-  /** Tamaños predefinidos para gráficos */
-  SIZES: {
-    SMALL: { width: 400, height: 300 },
-    MEDIUM: { width: 600, height: 400 },
-    LARGE: { width: 800, height: 500 },
+  /** Dimensiones por defecto para gráficos como fallback cuando no hay dimensiones explícitas ni computables en el DOM */
+  DEFAULT_DIMENSIONS: {
+    WIDTH: 600,
+    HEIGHT: 400,
   },
 } as const;
 

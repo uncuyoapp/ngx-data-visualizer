@@ -176,11 +176,19 @@ export class AxisManager {
       margin: 8
     };
 
-    // Ticks conectan visualmente ambos niveles
+    // Estirar los ticks del Eje Primario (nivel 0, y=0) hacia abajo la distancia exacta del offset
+    // para que funcionen como divisores verticales continuos que conectan con el segundo nivel
+    xAxis[0].axisTick = {
+      ...(xAxis[0].axisTick || {}),
+      show: true,
+      length: layoutResult.axis.dualLevelOffset
+    };
+
+    // Ticks cortos estándar en el Eje Secundario (nivel 1) apuntando hacia afuera (inside: false)
+    // para enmarcar limpiamente los bloques de categorías superiores sin colisionar con el título
     xAxis[1].axisTick = {
       ...(xAxis[1].axisTick || {}),
       show: true,
-      length: layoutResult.axis.dualLevelOffset,
       inside: false
     };
 

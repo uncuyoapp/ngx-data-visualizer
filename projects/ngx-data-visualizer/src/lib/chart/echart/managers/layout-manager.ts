@@ -425,8 +425,7 @@ export class LayoutManager {
 
     // 2. Calcular offsets y gaps de ejes
     const rotateLabels = options.xAxis?.rotateLabels ?? 0;
-    const extraOffset = this.calculateExtraOffset(rotateLabels);
-    const dualLevelOffset = this.calculateDualLevelOffset(hasDualAxis, axisCfg, extraOffset, chartData);
+    const dualLevelOffset = this.calculateDualLevelOffset(hasDualAxis, axisCfg, rotateLabels, chartData);
 
     const categoryNameGap = this.calculateCategoryNameGap(hasDualAxis, isBar, axisCfg, dualLevelOffset, chartData);
     const valueNameGap = isBar
@@ -516,39 +515,63 @@ export class LayoutManager {
   }
 
   /**
-   * Computa el offset (desplazamiento) exacto requerido para posicionar el eje secundario
+   * Computa el offset (desplazamiento vertical) exacto requerido para posicionar el eje secundario
    * (segundo nivel) en gráficos con doble eje.
    * 
    * @param hasDualAxis Indica si el gráfico cuenta con un eje secundario activo.
    * @param axisCfg Configuración de diseño del eje correspondiente (column o bar).
-   * @param extraOffset Margen extra calculado previamente por inclinación de etiquetas.
-   * @param chartData Datos del gráfico para estimación en barras.
-   * @returns Offset final del eje secundario en píxeles.
+   * @param rotateLabels Grados de inclinación aplicados a las etiquetas del primer nivel.
+   * @param chartData Colección de datos procesados del gráfico.
+   * @returns Desplazamiento final en píxeles para el segundo eje y la longitud de ticks del primer nivel.
    * @private
    */
   private calculateDualLevelOffset(
     hasDualAxis: boolean,
     axisCfg: AxisLayoutConfig,
-    extraOffset: number,
+    rotateLabels: number,
     chartData: ChartData
   ): number {
     if (!hasDualAxis) {
       return 0;
     }
 
+    // 1. Obtener la longitud en caracteres del elemento más largo del primer nivel (x1)
+    const items1 = chartData.getItems(chartData.seriesConfig.x1);
+    const maxChars = items1.length > 0
+      ? Math.max(...items1.map(item => String(item).length))
+      : 0;
+
+    // 2. Calcular el desplazamiento base seguro sin rotación (margen mínimo estándar para texto horizontal)
     let baseOffset = axisCfg.dualLevel.baseOffset;
     if (baseOffset === 'auto') {
-      const items1 = chartData.getItems(chartData.seriesConfig.x1);
-      const maxChars = items1.length > 0
-        ? Math.max(...items1.map(item => String(item).length))
-        : 0;
       const gap = axisCfg.dualLevel.levelGap ?? 10;
       baseOffset = Math.max(30, Math.min(
         this.config.labels.maxWidth1stLevel,
         maxChars * 7 + gap
       ));
     }
-    return baseOffset + Math.round(extraOffset);
+
+    // 3. Si hay rotación de etiquetas (rotateLabels !== 0), proyectar la altura vertical requerida
+    if (rotateLabels !== 0) {
+      const angleRad = (Math.abs(rotateLabels) * Math.PI) / 180;
+
+      // Estimar el ancho horizontal real que ocupa el texto basado en sus caracteres (acotado al máximo permitido)
+      const estimatedWidth = Math.min(
+        this.config.labels.maxWidth1stLevel,
+        Math.max(30, maxChars * 7 + 10)
+      );
+
+      // Proyección trigonométrica del seno para obtener el consumo de altura vertical de las etiquetas inclinadas
+      const rotatedHeight = Math.sin(angleRad) * estimatedWidth;
+      const gap = axisCfg.dualLevel.levelGap ?? 12;
+      const rotatedOffset = Math.round(rotatedHeight + gap);
+
+      // FALLBACK DE SEGURIDAD: Para ángulos muy pequeños (ej. 2° o 5°), el cálculo por seno puede dar un valor
+      // menor al baseOffset. Usamos Math.max para garantizar que el offset nunca caiga por debajo del margen base.
+      return Math.max(baseOffset as number, rotatedOffset);
+    }
+
+    return baseOffset as number;
   }
 
   /**

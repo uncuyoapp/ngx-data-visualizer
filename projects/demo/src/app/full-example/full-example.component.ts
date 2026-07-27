@@ -386,20 +386,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Incluye validación para asegurar que al menos una dimensión esté seleccionada
    * @param dimension Dimensión que cambió de estado
    */
-  onDimensionChange(dimension: Dimension) {
-    // Contar cuántas dimensiones están actualmente seleccionadas
-    const selectedDimensions = this.dataset.dimensions.filter(
-      (d) => d.selected,
-    );
-
-    // Validación: debe haber al menos una dimensión seleccionada
-    if (selectedDimensions.length === 0) {
-      // Si no hay ninguna seleccionada, forzar la selección de esta dimensión
-      dimension.selected = true;
-      return;
-    }
-
-    // Si la validación pasa, aplicar filtros
+  onDimensionChange(_dimension: Dimension) {
     this.filter();
   }
 

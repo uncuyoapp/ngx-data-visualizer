@@ -269,16 +269,7 @@ export class ChartCasesTestComponent {
     this.cdr.markForCheck();
   }
 
-  onDimensionChange(dimension: Dimension): void {
-    const selectedDimensions = this.activeDataset.dimensions.filter(
-      (d) => d.selected,
-    );
-
-    if (selectedDimensions.length === 0) {
-      dimension.selected = true;
-      return;
-    }
-
+  onDimensionChange(_dimension: Dimension): void {
     this.filter();
   }
 

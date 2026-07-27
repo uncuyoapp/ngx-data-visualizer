@@ -3,11 +3,13 @@ import {
   ECharts,
   EChartsOption
 } from "echarts";
+import { EC_KPI_TITLE_CONFIG } from "../../types/constants";
 import { Chart } from "../types/chart";
 import {
   ChartConfiguration,
   EChartsLibraryOptions,
 } from "../types/chart-configuration";
+import { ChartLogicHelper } from "../utils/chart-logic.helper";
 import { AxisContext, AxisManager } from "./managers/axis-manager";
 import { ExportManager } from "./managers/export-manager";
 import { LayoutManager } from "./managers/layout-manager";
@@ -560,10 +562,66 @@ export class EChart extends Chart {
   /**
    * @description
    * Orquesta la creación de la configuración completa de ECharts.
-   * Llama a los métodos para configurar las series y los ejes antes de renderizar.
+   * Modifica `libraryOptions` según el número de dimensiones activas (DA).
    * @private
    */
-  private generateConfiguration() {
+  private generateConfiguration(): void {
+    if (ChartLogicHelper.isDaZero(this.configuration.dataset)) {
+      this.generateKpiConfiguration();
+      return;
+    }
+
+    this.restoreStandardTitle();
+    this.generateStandardConfiguration();
+  }
+
+  /**
+   * Configura las opciones de la biblioteca gráfica para mostrar la tarjeta KPI / Big Number (DA = 0).
+   * @private
+   */
+  private generateKpiConfiguration(): void {
+    const total = ChartLogicHelper.calculateConsolidatedTotal(this.chartData.dataProvider);
+    const text = ChartLogicHelper.formatKpiValue(total, this.chartOptions);
+    const subtext =
+      typeof this.chartOptions.yAxis?.title === "string" &&
+        this.chartOptions.yAxis.title.trim().length > 0
+        ? this.chartOptions.yAxis.title
+        : this.chartOptions.measureUnit ||
+        this.chartData.seriesConfig.measure ||
+        "Total";
+
+    this.libraryOptions.series = [];
+    this.libraryOptions.xAxis = { show: false };
+    this.libraryOptions.yAxis = { show: false };
+    this.libraryOptions.title = {
+      ...EC_KPI_TITLE_CONFIG,
+      text,
+      subtext,
+    };
+  }
+
+  /**
+   * Restaura la propiedad de título estándar en `libraryOptions` cuando no se encuentra en modo KPI.
+   * @private
+   */
+  private restoreStandardTitle(): void {
+    if (typeof this.chartOptions.title === 'string' && this.chartOptions.title.trim().length > 0) {
+      this.libraryOptions.title = {
+        text: this.chartOptions.title,
+        show: true,
+      };
+    } else {
+      this.libraryOptions.title = {
+        show: false,
+      };
+    }
+  }
+
+  /**
+   * Genera y aplica la configuración estándar (series, layout, ejes) para gráficos cartesianos/radiales (DA >= 1).
+   * @private
+   */
+  private generateStandardConfiguration(): void {
     const ctx = {
       chartType: this.libraryOptions['type'] as string,
       isPie: this.chartOptions.type === 'pie',
@@ -593,7 +651,6 @@ export class EChart extends Chart {
       allSeries.forEach((s: any) => {
         if (s.type === 'pie') {
           s.center = layoutResult.pie.center;
-          // radius no se sobreescribe: lo define EC_SERIES_CONFIG.pie con las unidades correctas de ECharts
         }
       });
     }

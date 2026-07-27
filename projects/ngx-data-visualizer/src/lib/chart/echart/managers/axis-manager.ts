@@ -3,6 +3,7 @@ import { Dataset } from '../../../services/dataset';
 import { EC_AXIS_CONFIG } from '../../../types/constants';
 import { ChartOptions } from '../../../types/data.types';
 import { ChartData } from '../../utils/chart-data';
+import { ChartLogicHelper } from '../../utils/chart-logic.helper';
 import { LayoutResult } from './layout-manager';
 import { SeriesManager } from './series-manager';
 import { TooltipManager } from './tooltip-manager';
@@ -47,8 +48,14 @@ export class AxisManager {
     libraryOptions: EChartsOption,
     context: AxisContext
   ): void {
-    const { chartOptions, chartData, layoutResult } = context;
+    const { chartOptions, chartData, dataset, layoutResult } = context;
     if (!layoutResult) return;
+
+    if (!chartData?.seriesConfig?.x1 || ChartLogicHelper.isDaZero(dataset)) {
+      libraryOptions.xAxis = { show: false };
+      libraryOptions.yAxis = { show: false };
+      return;
+    }
 
     const xAxis: any[] = [];
     const yAxis = this.createYAxis(chartOptions, layoutResult);

@@ -187,7 +187,7 @@ export const ECharts = {
     },
     pie: {
       avoidLabelOverlap: false,
-      label: { 
+      label: {
         show: true,
         minShowLabelAngle: 3
       },
@@ -195,6 +195,23 @@ export const ECharts = {
         hideOverlap: true
       },
       radius: ["0%", "70%"],
+    },
+  },
+
+  /** Configuración por defecto para el título de la tarjeta KPI / Big Number (DA = 0) */
+  KPI_TITLE_CONFIG: {
+    show: true,
+    left: "center",
+    top: "middle",
+    textStyle: {
+      fontSize: 48,
+      fontWeight: "bold",
+      fontFamily: "Outfit, Inter, sans-serif",
+      color: "#111827",
+    },
+    subtextStyle: {
+      fontSize: 14,
+      color: "#6B7280",
     },
   },
 
@@ -466,6 +483,7 @@ export const DANGEROUS_ATTRS = Security.DANGEROUS_ATTRS;
 export const EC_CHART_CONFIG_PREVIEW = ECharts.CHART_CONFIG_PREVIEW;
 export const EC_AXIS_CONFIG = ECharts.AXIS_CONFIG;
 export const EC_SERIES_CONFIG = ECharts.SERIES_CONFIG;
+export const EC_KPI_TITLE_CONFIG = ECharts.KPI_TITLE_CONFIG;
 
 /**
  * Opciones por defecto para la configuración del gráfico

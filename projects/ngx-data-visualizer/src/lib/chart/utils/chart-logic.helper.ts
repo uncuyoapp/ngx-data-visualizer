@@ -1,5 +1,7 @@
+import { DataProvider } from '../../services/data-provider';
 import { Dataset } from '../../services/dataset';
-import { DIMENSION_YEAR } from '../../types/constants';
+import { DIMENSION_VALUE, DIMENSION_YEAR } from '../../types/constants';
+import { ChartOptions } from '../../types/data.types';
 import { ChartConfiguration, SeriesConfig } from '../types/chart-configuration';
 
 /**
@@ -21,6 +23,63 @@ export class ChartLogicHelper {
       stack: seriesConfig.stack,
       measure: seriesConfig.measure,
     };
+  }
+
+  /**
+   * @description Determina si no hay dimensiones de análisis activas (DA = 0).
+   * @param dataset El `Dataset` a analizar.
+   * @returns `true` si todas las dimensiones están en rollUp / inactivas, `false` en caso contrario.
+   */
+  public static isDaZero(dataset?: Dataset): boolean {
+    if (!dataset) return false;
+    const allDimensions = dataset.getAllDimensions();
+    if (allDimensions.length === 0) return true;
+    const rollUp = dataset.dataProvider?.filters?.rollUp || [];
+    return allDimensions.every((dim) => {
+      const key = dataset.getDimensionKey(dim.id);
+      return key ? rollUp.includes(key) : true;
+    });
+  }
+
+  /**
+   * @description Calcula el valor total acumulado consolidado a partir de los datos procesados del `DataProvider`.
+   * @param dataProvider Instancia de `DataProvider`.
+   * @returns El total numérico de la columna de medida.
+   */
+  public static calculateConsolidatedTotal(dataProvider?: DataProvider): number {
+    if (!dataProvider) return 0;
+    const data = dataProvider.getData();
+    return data.reduce((acc, row) => {
+      const val = row[DIMENSION_VALUE];
+      const num = typeof val === 'number' ? val : Number.parseFloat(String(val ?? 0));
+      return acc + (Number.isNaN(num) ? 0 : num);
+    }, 0);
+  }
+
+  /**
+   * @description Formatea el valor total consolidado para ser mostrado en la tarjeta KPI.
+   * @param value El valor numérico a formatear.
+   * @param options Las opciones del gráfico (`ChartOptions`).
+   * @returns El valor formateado como string (ej. "$ 150,000.00" o "15.000,00 kg").
+   */
+  public static formatKpiValue(value: number, options?: ChartOptions): string {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return '0';
+    }
+    const decimals = options?.tooltip?.decimals ?? 2;
+    const formatted = value.toLocaleString('es-AR', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: true,
+    });
+    const suffix = options?.tooltip?.suffix ?? options?.measureUnit;
+    if (suffix) {
+      if (['$', '€', '£'].includes(suffix)) {
+        return `${suffix} ${formatted}`;
+      }
+      return `${formatted} ${suffix}`;
+    }
+    return formatted;
   }
 
   /**

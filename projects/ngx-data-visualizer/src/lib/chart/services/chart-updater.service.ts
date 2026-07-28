@@ -59,6 +59,13 @@ export class ChartUpdater {
     }
     chartConfiguration.chartData.seriesConfig =
       ChartLogicHelper.initializeSeriesConfig(seriesConfig);
+
+    if (ChartLogicHelper.isDaZero(dataset)) {
+      chartConfiguration.chartData.seriesConfig.x1 = "";
+      chartConfiguration.chartData.seriesConfig.x2 = undefined;
+      return;
+    }
+
     if (ChartLogicHelper.canUseAxis(seriesConfig.x1, rollUp)) {
       chartConfiguration.chartData.seriesConfig.x1 = seriesConfig.x1;
       if (
@@ -82,9 +89,8 @@ export class ChartUpdater {
         chartConfiguration.chartData.seriesConfig.x1 = availableDimension;
         chartConfiguration.chartData.seriesConfig.x2 = undefined;
       } else {
-        throw new Error(
-          "No se pudo encontrar una dimensión disponible para el eje X.",
-        );
+        chartConfiguration.chartData.seriesConfig.x1 = "";
+        chartConfiguration.chartData.seriesConfig.x2 = undefined;
       }
     }
   }
@@ -120,8 +126,8 @@ export class ChartUpdater {
         chartConfiguration.options.stacked === 'all'
           ? 'all'
           : typeof chartConfiguration.options.stacked === "number"
-          ? getDimensionKeyById(chartConfiguration.options.stacked) ?? null
-          : null,
+            ? getDimensionKeyById(chartConfiguration.options.stacked) ?? null
+            : null,
     };
 
     try {

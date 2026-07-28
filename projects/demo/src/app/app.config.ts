@@ -15,14 +15,13 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: "enabled" }),
     ),
     provideAnimations(),
-    provideDataVisualizerCharts(),
-    provideDataVisualizerTables(),
-    {
-      provide: DATA_VISUALIZER_CONFIG,
-      useValue: {
-        defaultHeight: 420,
-        defaultWidth: "100%",
-      },
-    },
+    provideDataVisualizerCharts({
+      debug: true,
+      defaultHeight: 420,
+      defaultWidth: "100%",
+    }),
+    provideDataVisualizerTables({
+      debug: true,
+    }),
   ],
 };

@@ -36,6 +36,9 @@ export class ChartData {
    * @returns Un array de objetos que representan las series de datos para la librería de gráficos.
    */
   public getSeries(): object[] {
+    if (!this.seriesConfig.x1) {
+      return [];
+    }
     const { stackKey, axis0, axis1, items, items2 } = this.extractVariables();
     const dataStruct = this.createDataStruct(items, items2);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

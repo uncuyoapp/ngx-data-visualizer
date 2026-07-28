@@ -332,4 +332,6 @@ export interface Series {
     /** Tipo de línea (ej: 'solid', 'dashed', 'dotted') */
     type?: string;
   };
+  /** Indica si la serie es una línea de referencia global o meta (goal) */
+  isReferenceSeries?: boolean;
 }

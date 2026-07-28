@@ -573,14 +573,14 @@ export class TooltipManager {
   }
 
   /**
-   * Determina si una serie representa una línea de referencia global.
-   * Las líneas de referencia se caracterizan por ser de tipo 'line' y no tener una pila asignada (stack).
+   * Determina si una serie representa una línea de referencia global o meta (goal).
+   * Se evalúa únicamente mediante la propiedad explícita `isReferenceSeries`.
    * @param seriesConfig - Configuración de la serie a evaluar
-   * @returns True si es una línea de referencia, False en caso contrario.
+   * @returns True si la serie tiene la propiedad isReferenceSeries en true, False en caso contrario.
    * @private
    */
   private isReferenceSeries(seriesConfig: any): boolean {
-    return !!(seriesConfig?.type === 'line' && !seriesConfig.stack);
+    return !!seriesConfig?.isReferenceSeries;
   }
 
   /**

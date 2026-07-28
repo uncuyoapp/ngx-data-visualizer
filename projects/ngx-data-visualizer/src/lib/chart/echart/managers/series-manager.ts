@@ -79,6 +79,7 @@ export class SeriesManager {
         symbol: series["symbol"],
         symbolSize: series["symbolSize"],
         lineStyle: series["lineStyle"],
+        isReferenceSeries: series.isReferenceSeries,
       };
 
       this.chartInstance.setOption({ series: [...currentSeries, formattedSeries] });

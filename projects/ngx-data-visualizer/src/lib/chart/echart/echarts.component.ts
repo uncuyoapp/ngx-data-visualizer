@@ -372,6 +372,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
           width: 2,
           type: "dashed",
         },
+        isReferenceSeries: true,
       };
       type SeriesType = keyof typeof EC_SERIES_CONFIG;
       if (seriesType in EC_SERIES_CONFIG) {

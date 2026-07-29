@@ -158,34 +158,27 @@ export class ChartCasesTestComponent {
       ds.applyFilters({});
     });
 
-    switch (datasetId) {
-      case 1:
-        this.activeDataset = this.dataset1;
-        this.chartConfig.xAxis.firstLevel = 0;
-        this.chartConfig.xAxis.secondLevel = null;
-        this.chartConfig.stacked = null;
-        break;
-      case 2:
-        this.activeDataset = this.dataset2;
-        this.chartConfig.xAxis.firstLevel = 0;
-        this.chartConfig.xAxis.secondLevel = null;
-        break;
-      case 3:
-        this.activeDataset = this.dataset3;
-        this.chartConfig.xAxis.firstLevel = 0;
-        this.chartConfig.xAxis.secondLevel = null;
-        break;
-      case 4:
-        this.activeDataset = this.dataset4;
-        this.chartConfig.xAxis.firstLevel = 0;
-        this.chartConfig.xAxis.secondLevel = null;
-        break;
-      case 5:
-        this.activeDataset = this.dataset5;
-        this.chartConfig.xAxis.firstLevel = 0;
-        this.chartConfig.xAxis.secondLevel = null;
-        break;
-    }
+    const datasetMap: Record<number, Dataset> = {
+      1: this.dataset1,
+      2: this.dataset2,
+      3: this.dataset3,
+      4: this.dataset4,
+      5: this.dataset5,
+    };
+
+    this.activeDataset = datasetMap[datasetId] ?? this.dataset2;
+
+    // Nueva referencia inmutable para que Angular detecte el cambio con OnPush
+    this.chartConfig = {
+      ...this.chartConfig,
+      type: 'column',
+      stacked: null,
+      xAxis: {
+        ...this.chartConfig.xAxis,
+        firstLevel: this.activeDataset.dimensions[0]?.id ?? 0,
+        secondLevel: null,
+      },
+    };
 
     this.cdr.markForCheck();
   }
@@ -232,7 +225,7 @@ export class ChartCasesTestComponent {
     a.click();
 
     // Limpieza
-    document.body.removeChild(a);
+    a.remove();
     window.URL.revokeObjectURL(url);
   }
 

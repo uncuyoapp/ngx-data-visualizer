@@ -1,8 +1,8 @@
 import { Subject } from "rxjs";
-import { DataProvider } from "./data-provider";
-import { Dimension, RowData, FiltersConfig } from "../types/data.types";
-import { Filters } from "./types";
 import { DIMENSION_VALUE } from '../types/constants';
+import { Dimension, FiltersConfig, RowData } from "../types/data.types";
+import { DataProvider } from "./data-provider";
+import { Filters } from "./types";
 
 /**
  * Clase que representa un conjunto de datos para visualización.
@@ -15,6 +15,8 @@ export class Dataset {
   public readonly dimensions: Dimension[];
   /** @description Flag para habilitar o deshabilitar la funcionalidad de roll-up. */
   public readonly enableRollUp: boolean;
+  /** @description Indica si el conjunto de datos representa valores porcentuales. */
+  public readonly isPercent: boolean;
   /** @description Los datos crudos (sin procesar) del conjunto de datos. */
   public readonly rowData: RowData[];
   /** @description Instancia del motor de procesamiento de datos. */
@@ -34,12 +36,14 @@ export class Dataset {
    * @param config.id - Identificador numérico opcional.
    * @param config.dimensions - Array con la definición de las dimensiones.
    * @param config.enableRollUp - Booleano para activar la funcionalidad de agrupación.
+   * @param config.isPercent - Booleano opcional que indica si los datos representan valores porcentuales.
    * @param config.rowData - Array con los datos de las filas.
    */
   constructor(config: {
     id?: number;
     dimensions: Dimension[];
-    enableRollUp: boolean;
+    enableRollUp?: boolean;
+    isPercent?: boolean;
     rowData: RowData[];
   }) {
     if (!config) {
@@ -49,7 +53,9 @@ export class Dataset {
     this.id = config.id;
     this.dimensions = this.validateDimensions(config.dimensions);
     this.rowData = config.rowData; // La validación de rowData se delega a DataProvider
-    this.enableRollUp = Boolean(config.enableRollUp);
+    this.isPercent = Boolean(config.isPercent);
+    // Invariante: si es porcentual, el roll-up se desactiva siempre
+    this.enableRollUp = this.isPercent ? false : Boolean(config.enableRollUp);
 
     this.buildDimensionMapAndValidate();
 

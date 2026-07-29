@@ -24,7 +24,7 @@ export function injectAutoUpdate(
     const ds = datasetSignal();
     const opts = optionsSignal();
 
-    if (ds && (!opts || !opts.disableAutoUpdate)) {
+    if (ds && (!opts?.disableAutoUpdate)) {
       let obs = ds.dataUpdated.asObservable();
       if (debounceMs > 0) {
         obs = obs.pipe(debounceTime(debounceMs));

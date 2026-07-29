@@ -23,14 +23,33 @@ import {
 } from '@angular/forms';
 import { saveAs } from 'file-saver';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { BackComponent } from '../../icons/back/back.component';
+import { CheckComponent } from '../../icons/check/check.component';
+import { CloseComponent } from '../../icons/close/close.component';
+import { ExportComponent } from '../../icons/export/export.component';
+import { ForwardComponent } from '../../icons/forward/forward.component';
+import { ResetComponent } from '../../icons/reset/reset.component';
 import { Dataset } from '../../services/dataset';
 import { ChartOptions, ChartType } from '../../types/data.types';
+import { ChartRulesRegistryService } from '../services/chart-rules-registry.service';
 import { ConfigFactory } from '../services/config-factory.service';
+import { isDimensionUsedInAxis } from '../strategies/base-chart-rules.strategy';
+import { ControlRuleContext, ControlState, WizardStep } from '../strategies/chart-type-rules.interface';
 
 @Component({
     selector: 'lib-chart-config-editor',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, DragDropModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        DragDropModule,
+        BackComponent,
+        ForwardComponent,
+        CloseComponent,
+        ResetComponent,
+        CheckComponent,
+        ExportComponent
+    ],
     templateUrl: './chart-config-editor.component.html',
     styleUrl: './chart-config-editor.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,6 +58,7 @@ export class ChartConfigEditorComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly configFactory = inject(ConfigFactory);
     private readonly destroyRef = inject(DestroyRef);
+    private readonly chartRulesRegistry = inject(ChartRulesRegistryService);
 
     /** Dataset para el gráfico */
     dataset = input.required<Dataset>();
@@ -50,21 +70,19 @@ export class ChartConfigEditorComponent implements OnInit {
     optionsChange = output<ChartOptions>();
 
     /** Emite cuando se solicita cerrar el editor */
-    close = output<void>();
+    closeEditor = output<void>();
 
     /** Formulario de configuración */
     configForm!: FormGroup;
 
-    /** Paso actual del asistente (1 a 4) */
+    /** Paso actual del asistente (1 a N) */
     public readonly currentStep = signal<number>(1);
 
-    /** Lista de pasos del asistente */
-    public readonly steps = [
-        { label: 'General' },
-        { label: 'Eje X y Navegador' },
-        { label: 'Eje Y y Apilado' },
-        { label: 'Tooltip' }
-    ];
+    /** Tipo de gráfico seleccionado actualmente */
+    protected readonly selectedType = signal<ChartType>('column');
+
+    /** Mapa de estados de los controles (enabled/disabled + hints) */
+    public readonly controlStatesMap = signal<Map<string, ControlState>>(new Map());
 
     /** Señal interna para trackear el valor de firstLevel */
     private readonly firstLevelValue = signal<string | number | null>(null);
@@ -72,20 +90,32 @@ export class ChartConfigEditorComponent implements OnInit {
     /** Señal interna para trackear el valor de secondLevel */
     private readonly secondLevelValue = signal<string | number | null>(null);
 
-    /** Tipos de gráficos disponibles */
-    protected readonly chartTypes: { value: ChartType; label: string }[] = [
-        { value: 'column', label: 'Columnas' },
-        { value: 'line', label: 'Líneas' },
-        { value: 'spline', label: 'Líneas Curvas (Spline)' },
-        { value: 'pie', label: 'Circular' },
-        { value: 'bar', label: 'Barras' },
-        { value: 'area', label: 'Área' },
-        { value: 'areaspline', label: 'Área Curva (Spline)' }
-    ];
+    /** Opciones de tipo de gráfico computadas con estado de habilitación según el dataset */
+    protected readonly chartTypeOptions = computed(() => {
+        const currentDataset = this.dataset();
+        return this.chartRulesRegistry.getAllStrategies().map(strategy => ({
+            value: strategy.type,
+            label: strategy.label,
+            disabled: !strategy.isSupported(currentDataset),
+            disabledReason: strategy.getDisabledReason(currentDataset)
+        }));
+    });
 
-    /**
-     * Inicializa el componente y sus efectos reactivos.
-     */
+    /** Pasos del wizard adaptados dinámicamente según el gráfico y dataset */
+    public readonly activeSteps = computed<WizardStep[]>(() => {
+        const type = this.selectedType();
+        const currentDataset = this.dataset();
+        const strategy = this.chartRulesRegistry.getStrategy(type);
+        return strategy.getSteps(currentDataset, this.configForm?.value);
+    });
+
+    /** Etiqueta del paso activo actual */
+    protected readonly currentStepLabel = computed(() => {
+        const steps = this.activeSteps();
+        const index = this.currentStep() - 1;
+        return steps[index]?.label || '';
+    });
+
     constructor() {
         this.initializeEffects();
     }
@@ -93,7 +123,7 @@ export class ChartConfigEditorComponent implements OnInit {
     /** Dimensiones disponibles para el segundo nivel del eje X (excluye la seleccionada en el primero) */
     protected readonly availableSecondLevelDimensions = computed(() => {
         const firstLevelId = this.firstLevelValue();
-        if (firstLevelId === null || firstLevelId === undefined) {
+        if (firstLevelId === null || firstLevelId === undefined || String(firstLevelId) === '') {
             return this.dimensions;
         }
         const firstLevelStr = String(firstLevelId);
@@ -105,39 +135,77 @@ export class ChartConfigEditorComponent implements OnInit {
         const firstLevelId = this.firstLevelValue();
         const secondLevelId = this.secondLevelValue();
 
-        return this.dimensions.filter(dim => {
-            const isUsedInX = (firstLevelId !== null && Number(dim.id) === Number(firstLevelId)) ||
-                (secondLevelId !== null && Number(dim.id) === Number(secondLevelId));
-            return !isUsedInX;
-        });
+        return this.dimensions.filter(dim => !isDimensionUsedInAxis(dim.id, firstLevelId, secondLevelId));
     });
 
-    /**
-     * Ciclo de vida de inicialización de Angular.
-     */
+    /** Indica si la estrategia del tipo de gráfico activo permite apilado por dimensiones individuales */
+    protected readonly allowDimensionStacking = computed(() => {
+        const type = this.selectedType();
+        const strategy = this.chartRulesRegistry.getStrategy(type);
+        return strategy.allowDimensionStacking ?? true;
+    });
+
     ngOnInit() {
         this.initForm();
     }
 
     /**
-     * Inicializa los efectos reactivos para sincronizar el estado.
+     * Inicializa los efectos reactivos para reiniciar las opciones cuando cambia la referencia del dataset.
      */
     private initializeEffects() {
-        // Sincronizar formulario cuando cambian las opciones externas o el dataset
+        let previousDataset: Dataset | null = null;
         effect(() => {
-            const currentOptions = this.options();
-            // Accedemos a dataset() para reaccionar a cambios
-            this.dataset();
+            const currentDataset = this.dataset();
 
-            if (this.configForm && currentOptions) {
-                this.configForm.patchValue(currentOptions, { emitEvent: false });
-                // Sincronizar señales laterales para filtros de dimensiones
-                if (currentOptions.xAxis) {
-                    this.firstLevelValue.set(currentOptions.xAxis.firstLevel);
-                    this.secondLevelValue.set(currentOptions.xAxis.secondLevel);
+            if (this.configForm && currentDataset) {
+                if (previousDataset && previousDataset !== currentDataset) {
+                    this.resetToDefaults();
                 }
+                previousDataset = currentDataset;
             }
         }, { allowSignalWrites: true });
+    }
+
+    /**
+     * Reinicializa las opciones de configuración a las por defecto cuando el dataset cambia,
+     * re-evalúa las reglas del formulario y emite la nueva configuración limpia.
+     * @private
+     */
+    private resetToDefaults() {
+        if (!this.configForm) return;
+
+        const defaults = this.configFactory.getDefaultChartOptions();
+        const currentDataset = this.dataset();
+        const dims = currentDataset?.dimensions || [];
+
+        if (dims.length > 0) {
+            defaults.xAxis = defaults.xAxis || {};
+            defaults.xAxis.firstLevel = dims[0].id;
+        }
+
+        this.configForm.patchValue(defaults, { emitEvent: false });
+        this.selectedType.set(defaults.type || 'column');
+        if (dims.length > 0) {
+            this.firstLevelValue.set(dims[0].id);
+        }
+        this.secondLevelValue.set(null);
+
+        this.evaluateRules();
+        this.emitCurrentOptions();
+    }
+
+    /**
+     * Emite la configuración actual del formulario hacia el exterior.
+     * @private
+     */
+    private emitCurrentOptions() {
+        if (!this.configForm) return;
+        const value = this.configForm.getRawValue();
+        const newOptions = this.deepMerge(
+            this.options() || this.configFactory.getDefaultChartOptions(),
+            value
+        );
+        this.optionsChange.emit(newOptions);
     }
 
     /**
@@ -153,21 +221,21 @@ export class ChartConfigEditorComponent implements OnInit {
             title: [initialValues.title],
             stacked: [initialValues.stacked],
             xAxis: this.fb.group({
-                disableAutoTitle: [initialValues.xAxis.disableAutoTitle ?? false],
-                firstLevel: [initialValues.xAxis.firstLevel, Validators.required],
-                secondLevel: [initialValues.xAxis.secondLevel],
-                rotateLabels: [initialValues.xAxis.rotateLabels ?? 0]
+                disableAutoTitle: [initialValues.xAxis?.disableAutoTitle ?? false],
+                firstLevel: [initialValues.xAxis?.firstLevel, Validators.required],
+                secondLevel: [initialValues.xAxis?.secondLevel],
+                rotateLabels: [initialValues.xAxis?.rotateLabels ?? 0]
             }),
             yAxis: this.fb.group({
-                title: [initialValues.yAxis.title],
-                max: [initialValues.yAxis.max]
+                title: [initialValues.yAxis?.title],
+                max: [initialValues.yAxis?.max]
             }),
             tooltip: this.fb.group({
-                shared: [initialValues.tooltip.shared],
-                decimals: [initialValues.tooltip.decimals],
-                suffix: [initialValues.tooltip.suffix],
-                showTotal: [initialValues.tooltip.showTotal],
-                showPercentage: [initialValues.tooltip.showPercentage ?? false]
+                shared: [initialValues.tooltip?.shared],
+                decimals: [initialValues.tooltip?.decimals],
+                suffix: [initialValues.tooltip?.suffix],
+                showTotal: [initialValues.tooltip?.showTotal],
+                showPercentage: [initialValues.tooltip?.showPercentage ?? false]
             }),
             navigator: this.fb.group({
                 show: [initialValues.navigator?.show ?? false],
@@ -176,9 +244,10 @@ export class ChartConfigEditorComponent implements OnInit {
             })
         });
 
+        this.selectedType.set(initialValues.type || 'column');
         this.setupAutoUpdate();
         this.setupXAxisSync();
-        this.setupTooltipSync();
+        this.evaluateRules();
     }
 
     /**
@@ -194,11 +263,10 @@ export class ChartConfigEditorComponent implements OnInit {
             this.firstLevelValue.set(firstLevelControl.value);
             firstLevelControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(val => {
                 this.firstLevelValue.set(val);
-                if (secondLevelControl && secondLevelControl.value !== null && Number(secondLevelControl.value) === Number(val)) {
+                if (secondLevelControl && secondLevelControl.value !== null && String(secondLevelControl.value) === String(val)) {
                     secondLevelControl.setValue(null);
                 }
-                // Si el stack coincide con el nuevo primer nivel, lo reseteamos
-                if (stackedControl && stackedControl.value !== null && Number(stackedControl.value) === Number(val)) {
+                if (stackedControl && stackedControl.value !== null && String(stackedControl.value) === String(val)) {
                     stackedControl.setValue(null);
                 }
             });
@@ -208,8 +276,7 @@ export class ChartConfigEditorComponent implements OnInit {
             this.secondLevelValue.set(secondLevelControl.value);
             secondLevelControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(val => {
                 this.secondLevelValue.set(val);
-                // Si el stack coincide con el nuevo segundo nivel, lo reseteamos
-                if (stackedControl && stackedControl.value !== null && Number(stackedControl.value) === Number(val)) {
+                if (stackedControl && stackedControl.value !== null && String(stackedControl.value) === String(val)) {
                     stackedControl.setValue(null);
                 }
             });
@@ -217,34 +284,55 @@ export class ChartConfigEditorComponent implements OnInit {
     }
 
     /**
-     * Configura la sincronización del tooltip (ej. habilitar/deshabilitar totales según sea compartido).
+     * Evalúa las reglas de control según la estrategia activa y actualiza el formulario y la UI.
      * @private
      */
-    private setupTooltipSync() {
-        const sharedControl = this.configForm.get('tooltip.shared');
-        const showTotalControl = this.configForm.get('tooltip.showTotal');
-        const showPercentageControl = this.configForm.get('tooltip.showPercentage');
+    private evaluateRules() {
+        if (!this.configForm) return;
 
-        if (sharedControl && showTotalControl && showPercentageControl) {
-            // Initial state
-            if (!sharedControl.value) {
-                showTotalControl.disable({ emitEvent: false });
-                showTotalControl.setValue(false, { emitEvent: false });
-                showPercentageControl.disable({ emitEvent: false });
-                showPercentageControl.setValue(false, { emitEvent: false });
-            }
+        const currentDataset = this.dataset();
+        const formValue = this.configForm.getRawValue();
+        const chartType = (formValue.type as ChartType) || 'column';
+        if (this.selectedType() !== chartType) {
+            this.selectedType.set(chartType);
+        }
 
-            sharedControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(shared => {
-                if (shared) {
-                    showTotalControl.enable();
-                    showPercentageControl.enable();
-                } else {
-                    showTotalControl.disable();
-                    showTotalControl.setValue(false);
-                    showPercentageControl.disable();
-                    showPercentageControl.setValue(false);
+        const strategy = this.chartRulesRegistry.getStrategy(chartType);
+        const rules = strategy.getControlRules();
+        const context: ControlRuleContext = {
+            chartType,
+            dataset: currentDataset,
+            formValue
+        };
+
+        const newStatesMap = new Map<string, ControlState>();
+
+        Object.keys(rules).forEach(path => {
+            const evaluator = rules[path];
+            const state = evaluator(context);
+            newStatesMap.set(path, state);
+
+            const control = this.configForm.get(path);
+            if (control) {
+                if (!state.enabled) {
+                    if (control.enabled) {
+                        control.disable({ emitEvent: false });
+                    }
+                    if (state.valueOnDisable !== undefined && control.value !== state.valueOnDisable) {
+                        control.setValue(state.valueOnDisable, { emitEvent: false });
+                    }
+                } else if (control.disabled) {
+                    control.enable({ emitEvent: false });
                 }
-            });
+            }
+        });
+
+        this.controlStatesMap.set(newStatesMap);
+
+        // Reajustar paso actual si queda fuera del rango activo
+        const stepsCount = this.activeSteps().length;
+        if (this.currentStep() > stepsCount) {
+            this.currentStep.set(Math.max(1, stepsCount));
         }
     }
 
@@ -252,16 +340,20 @@ export class ChartConfigEditorComponent implements OnInit {
      * Realiza una combinación profunda (deep merge) de dos objetos.
      * @private
      */
-    private deepMerge(target: any, source: any): any {
-        if (!target) return source;
+    private deepMerge<T extends object>(target: T, source: Record<string, unknown>): T {
+        if (!target) return source as unknown as T;
         if (!source) return target;
         const output = { ...target };
         if (typeof target === 'object' && typeof source === 'object') {
+            const targetObj = output as Record<string, unknown>;
             Object.keys(source).forEach(key => {
-                if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-                    output[key] = this.deepMerge(target[key], source[key]);
+                // Nota: Los valores primitivos o null/arrays se asignan directamente en la rama 'else',
+                // permitiendo que un valor null en source sobreescriba objetos o valores previos en target.
+                const val = source[key];
+                if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
+                    targetObj[key] = this.deepMerge((targetObj[key] || {}) as object, val as Record<string, unknown>);
                 } else {
-                    output[key] = source[key];
+                    targetObj[key] = val;
                 }
             });
         }
@@ -273,19 +365,25 @@ export class ChartConfigEditorComponent implements OnInit {
      * @private
      */
     private setupAutoUpdate() {
+        // Escuchar inmediatamente los cambios de tipo o controles para re-evaluar reglas síncronamente
+        this.configForm.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(val => {
+                if (val.type && val.type !== this.selectedType()) {
+                    this.selectedType.set(val.type);
+                }
+                this.evaluateRules();
+            });
+
+        // Emitir hacia el contenedor padre con debounce
         this.configForm.valueChanges
             .pipe(
-                debounceTime(300),
+                debounceTime(200),
                 distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
                 takeUntilDestroyed(this.destroyRef)
             )
-            .subscribe(value => {
-                // Realizamos un merge profundo con las opciones actuales para no perder propiedades no editadas (como legends.show)
-                const newOptions = this.deepMerge(
-                    this.options() || this.configFactory.getDefaultChartOptions(),
-                    value
-                );
-                this.optionsChange.emit(newOptions);
+            .subscribe(() => {
+                this.emitCurrentOptions();
             });
     }
 
@@ -293,7 +391,7 @@ export class ChartConfigEditorComponent implements OnInit {
      * Exporta la configuración actual como un archivo JSON descargable.
      */
     public exportConfig() {
-        const config = this.configForm.value;
+        const config = this.configForm.getRawValue();
         const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
         saveAs(blob, `config-chart-${Date.now()}.json`);
     }
@@ -303,10 +401,10 @@ export class ChartConfigEditorComponent implements OnInit {
      */
     public nextStep(): void {
         const step = this.currentStep();
-        if (step < this.steps.length) {
+        if (step < this.activeSteps().length) {
             this.currentStep.set(step + 1);
         } else {
-            this.close.emit();
+            this.closeEditor.emit();
         }
     }
 
@@ -325,12 +423,10 @@ export class ChartConfigEditorComponent implements OnInit {
      * @param step Número de paso (1 a N)
      */
     public goToStep(step: number): void {
-        if (step >= 1 && step <= this.steps.length) {
+        if (step >= 1 && step <= this.activeSteps().length) {
             this.currentStep.set(step);
         }
     }
-
-
 
     /**
      * Obtiene las dimensiones disponibles del dataset actual.

@@ -25,6 +25,12 @@ import {
 } from '@angular/forms';
 import { saveAs } from 'file-saver';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { BackComponent } from '../../icons/back/back.component';
+import { CheckComponent } from '../../icons/check/check.component';
+import { CloseComponent } from '../../icons/close/close.component';
+import { ExportComponent } from '../../icons/export/export.component';
+import { ForwardComponent } from '../../icons/forward/forward.component';
+import { ResetComponent } from '../../icons/reset/reset.component';
 import { Dataset } from '../../services/dataset';
 import { Dimension, TableOptions } from '../../types/data.types';
 import { ConfigFactory } from '../services/config-factory.service';
@@ -36,7 +42,17 @@ import { ConfigFactory } from '../services/config-factory.service';
 @Component({
     selector: 'lib-table-config-editor',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, DragDropModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        DragDropModule,
+        BackComponent,
+        ForwardComponent,
+        CloseComponent,
+        ResetComponent,
+        CheckComponent,
+        ExportComponent
+    ],
     templateUrl: './table-config-editor.component.html',
     styleUrl: './table-config-editor.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -56,7 +72,7 @@ export class TableConfigEditorComponent implements OnInit {
     optionsChange = output<TableOptions>();
 
     /** Emite cuando se solicita cerrar el editor */
-    close = output<void>();
+    closeEditor = output<void>();
 
     /** Paso actual del asistente (1 a 3) */
     public readonly currentStep = signal<number>(1);
@@ -223,7 +239,7 @@ export class TableConfigEditorComponent implements OnInit {
         if (step < this.steps.length) {
             this.currentStep.set(step + 1);
         } else {
-            this.close.emit();
+            this.closeEditor.emit();
         }
     }
 

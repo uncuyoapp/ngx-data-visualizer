@@ -6,19 +6,10 @@
       </div>
       <div class="actions">
         <button type="button" class="btn-icon" (click)="exportConfig()" title="Exportar JSON">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
+          <lib-icon-export [width]="16" [height]="16"></lib-icon-export>
         </button>
-        <button type="button" class="btn-icon editor-close-btn" (click)="close.emit()" title="Cerrar Editor">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+        <button type="button" class="btn-icon editor-close-btn" (click)="closeEditor.emit()" title="Cerrar Editor">
+          <lib-icon-close [width]="16" [height]="16"></lib-icon-close>
         </button>
       </div>
     </div>
@@ -27,167 +18,228 @@
   <div class="wizard-progress-container">
     <div class="wizard-steps">
       <div class="wizard-progress-line-container">
-        <div class="wizard-progress-bar" [style.width.%]="(currentStep() - 1) / (steps.length - 1) * 100"></div>
+        <div class="wizard-progress-bar"
+          [style.width.%]="activeSteps().length > 1 ? ((currentStep() - 1) / (activeSteps().length - 1)) * 100 : 100">
+        </div>
       </div>
-      <div *ngFor="let step of steps; let i = index" 
-        class="wizard-step-pill"
-        [class.active]="currentStep() === i + 1"
-        [class.completed]="currentStep() > i + 1"
-        (click)="goToStep(i + 1)"
+      <button type="button" *ngFor="let step of activeSteps(); let i = index" class="wizard-step-pill"
+        [class.active]="currentStep() === i + 1" [class.completed]="currentStep() > i + 1" (click)="goToStep(i + 1)"
         [title]="step.label">
         {{ i + 1 }}
-      </div>
+      </button>
     </div>
     <div class="wizard-step-label">
-      Paso {{ currentStep() }} de {{ steps.length }}: <span class="accent-step">{{ steps[currentStep() - 1].label }}</span>
+      Paso {{ currentStep() }} de {{ activeSteps().length }}: <span class="accent-step">{{ currentStepLabel() }}</span>
     </div>
   </div>
 
   <form *ngIf="configForm" [formGroup]="configForm" class="editor-content">
-    <!-- Paso 1: General -->
-    <div *ngIf="currentStep() === 1" class="tab-pane">
+    <!-- Paso: General -->
+    <div [hidden]="activeSteps()[currentStep() - 1].id !== 'general'" class="tab-pane">
       <div class="control-section-card">
         <div class="form-group">
-          <label>Título del Gráfico</label>
+          <label for="chart-title">Título del Gráfico</label>
           <div class="input-clearable-container">
-            <input type="text" formControlName="title" placeholder="Ej: Evolución de matrícula" />
-            <button type="button" class="btn-clear" (click)="configForm.get('title')?.setValue('')" *ngIf="configForm.get('title')?.value" title="Limpiar">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+            <input id="chart-title" type="text" maxlength="150" formControlName="title"
+              placeholder="Ej: Evolución de matrícula" />
+            <button type="button" class="btn-clear" (click)="configForm.get('title')?.setValue('')"
+              *ngIf="configForm.get('title')?.value" title="Limpiar">
+              <lib-icon-close [width]="14" [height]="14"></lib-icon-close>
             </button>
           </div>
           <small class="info-text">Dejar vacío para desactivar</small>
         </div>
         <div class="form-group">
-          <label>Tipo de Gráfico</label>
-          <select formControlName="type">
-            <option *ngFor="let chart of chartTypes" [value]="chart.value">{{ chart.label }}</option>
+          <label for="chart-type">Tipo de Gráfico</label>
+          <select id="chart-type" formControlName="type">
+            <option *ngFor="let chart of chartTypeOptions()" [value]="chart.value" [disabled]="chart.disabled"
+              [title]="chart.disabledReason || ''">
+              {{ chart.label }} {{ chart.disabled ? '(No disponible)' : '' }}
+            </option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Paso 2: Eje X y Navegador -->
-    <div *ngIf="currentStep() === 2" class="tab-pane">
+    <!-- Paso: Eje X y Navegador -->
+    <div [hidden]="activeSteps()[currentStep() - 1].id !== 'xaxis'" class="tab-pane">
       <div class="control-section-card" formGroupName="xAxis">
-        <label class="switch-container">
+        <label class="switch-container"
+          [class.disabled]="controlStatesMap().get('xAxis.disableAutoTitle')?.enabled === false">
           <span class="switch-text">Deshabilitar título automático</span>
           <input type="checkbox" formControlName="disableAutoTitle" />
           <span class="switch-slider"></span>
         </label>
+        <small *ngIf="controlStatesMap().get('xAxis.disableAutoTitle')?.disabledReason as reason"
+          class="disabled-hint-text">
+          {{ reason }}
+        </small>
+
         <div class="form-group">
-          <label>Nivel Principal</label>
-          <select formControlName="firstLevel">
+          <label for="chart-xaxis-first-level">Nivel Principal</label>
+          <select id="chart-xaxis-first-level" formControlName="firstLevel">
             <option *ngFor="let dim of dimensions" [ngValue]="dim.id">
               {{ dim.nameView }}
             </option>
           </select>
+          <small *ngIf="controlStatesMap().get('xAxis.firstLevel')?.disabledReason as reason"
+            class="disabled-hint-text">
+            {{ reason }}
+          </small>
         </div>
+
         <div class="form-group">
-          <label>Nivel Secundario</label>
-          <select formControlName="secondLevel">
+          <label for="chart-xaxis-second-level">Nivel Secundario</label>
+          <select id="chart-xaxis-second-level" formControlName="secondLevel">
             <option [ngValue]="null">Ninguno</option>
             <option *ngFor="let dim of availableSecondLevelDimensions()" [ngValue]="dim.id">
               {{ dim.nameView }}
             </option>
           </select>
+          <small *ngIf="controlStatesMap().get('xAxis.secondLevel')?.disabledReason as reason"
+            class="disabled-hint-text">
+            {{ reason }}
+          </small>
         </div>
+
         <div class="form-group">
           <div class="label-with-value">
-            <label>Rotación de etiquetas</label>
+            <label for="chart-xaxis-rotate-labels">Rotación de etiquetas</label>
             <span class="badge-value">{{ configForm.get('xAxis.rotateLabels')?.value }}°</span>
           </div>
-          <input type="range" formControlName="rotateLabels" min="-90" max="90" step="1" class="slider" />
+          <input id="chart-xaxis-rotate-labels" type="range" formControlName="rotateLabels" min="-90" max="90" step="1"
+            class="slider" />
+          <small *ngIf="controlStatesMap().get('xAxis.rotateLabels')?.disabledReason as reason"
+            class="disabled-hint-text">
+            {{ reason }}
+          </small>
         </div>
       </div>
 
       <!-- Card Navegador -->
       <div class="control-section-card" formGroupName="navigator">
-        <label class="switch-container">
+        <label class="switch-container" [class.disabled]="controlStatesMap().get('navigator.show')?.enabled === false">
           <span class="switch-text">Mostrar Navegador</span>
           <input type="checkbox" formControlName="show" />
           <span class="switch-slider"></span>
         </label>
+        <small *ngIf="controlStatesMap().get('navigator.show')?.disabledReason as reason" class="disabled-hint-text">
+          {{ reason }}
+        </small>
       </div>
     </div>
 
-    <!-- Paso 3: Eje Y y Apilado -->
-    <div *ngIf="currentStep() === 3" class="tab-pane">
+    <!-- Paso: Eje Y y Apilado -->
+    <div [hidden]="activeSteps()[currentStep() - 1].id !== 'yaxis'" class="tab-pane">
       <!-- Card Eje Y -->
       <div class="control-section-card" formGroupName="yAxis">
         <div class="form-group">
-          <label>Título Eje Y</label>
+          <label for="chart-yaxis-title">Título Eje Y</label>
           <div class="input-clearable-container">
-            <input type="text" formControlName="title" placeholder="Ej: Cantidad de estudiantes" />
-            <button type="button" class="btn-clear" (click)="configForm.get('yAxis.title')?.setValue('')" *ngIf="configForm.get('yAxis.title')?.value" title="Limpiar">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+            <input id="chart-yaxis-title" type="text" maxlength="150" formControlName="title"
+              placeholder="Ej: Cantidad de estudiantes" />
+            <button type="button" class="btn-clear" (click)="configForm.get('yAxis.title')?.setValue('')"
+              *ngIf="configForm.get('yAxis.title')?.value" title="Limpiar">
+              <lib-icon-close [width]="14" [height]="14"></lib-icon-close>
             </button>
           </div>
-          <small class="info-text">Dejar vacío para desactivar</small>
+          <small *ngIf="controlStatesMap().get('yAxis.title')?.disabledReason as reason; else yTitleInfo"
+            class="disabled-hint-text">
+            {{ reason }}
+          </small>
+          <ng-template #yTitleInfo>
+            <small class="info-text">Dejar vacío para desactivar</small>
+          </ng-template>
         </div>
         <div class="form-group">
-          <label>Valor Máximo</label>
-          <input type="number" formControlName="max" placeholder="Auto" />
+          <label for="chart-yaxis-max">Valor Máximo</label>
+          <input id="chart-yaxis-max" type="number" formControlName="max" placeholder="Auto" />
+          <small *ngIf="controlStatesMap().get('yAxis.max')?.disabledReason as reason" class="disabled-hint-text">
+            {{ reason }}
+          </small>
         </div>
       </div>
 
       <!-- Card Apilado -->
       <div class="control-section-card">
         <div class="form-group mb-0">
-          <label>Apilado (Stacked)</label>
-          <select formControlName="stacked">
+          <label for="chart-stacked">Apilado (Stacked)</label>
+          <select id="chart-stacked" formControlName="stacked">
             <option [ngValue]="null">Ninguno</option>
             <option [ngValue]="'all'">Único</option>
-            <option *ngFor="let dim of availableStackedDimensions()" [ngValue]="dim.id">
-              {{ dim.nameView }}
-            </option>
+            <ng-container *ngIf="allowDimensionStacking() && availableStackedDimensions().length > 1">
+              <option *ngFor="let dim of availableStackedDimensions()" [ngValue]="dim.id">
+                {{ dim.nameView }}
+              </option>
+            </ng-container>
           </select>
+          <small *ngIf="controlStatesMap().get('stacked')?.disabledReason as reason; else stackedInfo"
+            class="disabled-hint-text">
+            {{ reason }}
+          </small>
+          <ng-template #stackedInfo>
+            <small class="info-text">
+              "Único" genera una sola pila apilando todas las dimensiones restantes. Al seleccionar una dimensión, crea
+              una pila por cada uno de sus ítems.
+            </small>
+          </ng-template>
         </div>
       </div>
     </div>
 
-    <!-- Paso 4: Tooltip -->
-    <div *ngIf="currentStep() === 4" class="tab-pane">
+    <!-- Paso: Tooltip -->
+    <div [hidden]="activeSteps()[currentStep() - 1].id !== 'tooltip'" class="tab-pane">
       <div class="control-section-card" formGroupName="tooltip">
-        <label class="switch-container">
+        <label class="switch-container" [class.disabled]="controlStatesMap().get('tooltip.shared')?.enabled === false">
           <span class="switch-text">Compartido</span>
           <input type="checkbox" formControlName="shared" />
           <span class="switch-slider"></span>
         </label>
-        
-        <label class="switch-container" [class.disabled]="!configForm.get('tooltip.shared')?.value">
+        <small *ngIf="controlStatesMap().get('tooltip.shared')?.disabledReason as reason" class="disabled-hint-text">
+          {{ reason }}
+        </small>
+
+        <label class="switch-container"
+          [class.disabled]="controlStatesMap().get('tooltip.showTotal')?.enabled === false">
           <span class="switch-text">Mostrar Total</span>
           <input type="checkbox" formControlName="showTotal" />
           <span class="switch-slider"></span>
         </label>
-        
-        <label class="switch-container" [class.disabled]="!configForm.get('tooltip.shared')?.value">
+        <small *ngIf="controlStatesMap().get('tooltip.showTotal')?.disabledReason as reason" class="disabled-hint-text">
+          {{ reason }}
+        </small>
+
+        <label class="switch-container"
+          [class.disabled]="controlStatesMap().get('tooltip.showPercentage')?.enabled === false">
           <span class="switch-text">Mostrar Porcentaje</span>
           <input type="checkbox" formControlName="showPercentage" />
           <span class="switch-slider"></span>
         </label>
-        
+        <small *ngIf="controlStatesMap().get('tooltip.showPercentage')?.disabledReason as reason"
+          class="disabled-hint-text">
+          {{ reason }}
+        </small>
+
         <div class="form-grid-2">
           <div class="form-group">
-            <label>Decimales</label>
-            <input type="number" formControlName="decimals" min="0" max="4" />
+            <label for="chart-tooltip-decimals">Decimales</label>
+            <input id="chart-tooltip-decimals" type="number" formControlName="decimals" min="0" max="4" />
           </div>
           <div class="form-group">
-            <label>Sufijo</label>
+            <label for="chart-tooltip-suffix">Sufijo</label>
             <div class="input-clearable-container">
-              <input type="text" formControlName="suffix" placeholder="Ej: %" />
-              <button type="button" class="btn-clear" (click)="configForm.get('tooltip.suffix')?.setValue('')" *ngIf="configForm.get('tooltip.suffix')?.value" title="Limpiar">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+              <input id="chart-tooltip-suffix" type="text" maxlength="35" formControlName="suffix"
+                placeholder="Ej: %" />
+              <button type="button" class="btn-clear" (click)="configForm.get('tooltip.suffix')?.setValue('')"
+                *ngIf="configForm.get('tooltip.suffix')?.value && controlStatesMap().get('tooltip.suffix')?.enabled !== false"
+                title="Limpiar">
+                <lib-icon-close [width]="14" [height]="14"></lib-icon-close>
               </button>
             </div>
+            <small *ngIf="controlStatesMap().get('tooltip.suffix')?.disabledReason as reason"
+              class="disabled-hint-text">
+              {{ reason }}
+            </small>
           </div>
         </div>
       </div>
@@ -197,19 +249,13 @@
   <!-- Pie de navegación del Wizard -->
   <div class="wizard-footer">
     <button type="button" class="btn-prev" (click)="prevStep()" [disabled]="currentStep() === 1">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
+      <lib-icon-back [width]="14" [height]="14"></lib-icon-back>
       <span>Anterior</span>
     </button>
     <button type="button" class="btn-next" (click)="nextStep()">
-      <span>{{ currentStep() === steps.length ? 'Finalizar' : 'Siguiente' }}</span>
-      <svg *ngIf="currentStep() < steps.length" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-      <svg *ngIf="currentStep() === steps.length" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
+      <span>{{ currentStep() === activeSteps().length ? 'Finalizar' : 'Siguiente' }}</span>
+      <lib-icon-forward *ngIf="currentStep() < activeSteps().length" [width]="14" [height]="14"></lib-icon-forward>
+      <lib-icon-check *ngIf="currentStep() === activeSteps().length" [width]="14" [height]="14"></lib-icon-check>
     </button>
   </div>
 </div>

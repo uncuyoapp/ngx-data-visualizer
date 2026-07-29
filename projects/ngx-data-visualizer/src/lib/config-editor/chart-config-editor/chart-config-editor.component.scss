@@ -7,10 +7,10 @@
 .form-section-title {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--viz-primary, #3182ce);
+  color: var(--viz-editor-primary, #0450ff);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid rgba(var(--table-hover, 49, 130, 206), 0.1);
+  border-bottom: 1px solid var(--viz-editor-primary-light, rgba(4, 80, 255, 0.1));
 }

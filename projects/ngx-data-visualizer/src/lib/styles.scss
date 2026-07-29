@@ -33,6 +33,48 @@
   --viz-transition-duration-fast: 0.2s;
   --viz-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
+  // ============================================
+  // TOKENS ESPECÍFICOS DE EDITORES (CONFIG-EDITOR)
+  // ============================================
+  --viz-editor-primary: var(--table-hover, #0450ff);
+  --viz-editor-primary-contrast: var(--table-hover-contrast, #ffffff);
+  --viz-editor-primary-light: rgba(4, 80, 255, 0.1);
+  --viz-editor-focus-ring: 0 0 0 3px rgba(4, 80, 255, 0.2);
+
+  --viz-editor-bg: var(--viz-bg-overlay, rgba(255, 255, 255, 0.9));
+  --viz-editor-bg-subcard: rgba(255, 255, 255, 0.45);
+  --viz-editor-bg-drag-handle: rgba(4, 80, 255, 0.06);
+
+  --viz-editor-text: #333333;
+  --viz-editor-text-muted: #666666;
+  --viz-editor-text-disabled: #a0aec0;
+  --viz-editor-warning: #d69e2e;
+  --viz-editor-danger: #e53e3e;
+  --viz-editor-danger-light: rgba(229, 62, 62, 0.1);
+
+  --viz-editor-input-bg: rgba(255, 255, 255, 0.65);
+  --viz-editor-input-bg-focus: #ffffff;
+  --viz-editor-input-bg-disabled: rgba(226, 232, 240, 0.75);
+  --viz-editor-input-border: rgba(0, 0, 0, 0.1);
+  --viz-editor-input-border-focus: var(--viz-editor-primary);
+  --viz-editor-input-border-disabled: rgba(160, 174, 192, 0.35);
+
+  --viz-editor-switch-bg-off: #cbd5e0;
+  --viz-editor-switch-bg-on: var(--viz-editor-primary);
+
+  --viz-editor-wizard-bar-bg: #e2e8f0;
+  --viz-editor-wizard-step-bg: #ffffff;
+  --viz-editor-wizard-step-border: #cbd5e0;
+  --viz-editor-wizard-step-active-bg: var(--viz-editor-primary);
+  --viz-editor-wizard-step-active-border: var(--viz-editor-primary);
+
+  --viz-editor-border: #e6e6e6;
+  --viz-editor-border-subtle: rgba(0, 0, 0, 0.05);
+  --viz-editor-border-glass: rgba(255, 255, 255, 0.3);
+  --viz-editor-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --viz-editor-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --viz-editor-radius: 8px;
+
   // Tamaños y espaciado
   --table-font-size: 12pt;
   --table-header-font-size: 14pt;

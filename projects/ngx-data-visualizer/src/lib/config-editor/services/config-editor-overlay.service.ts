@@ -68,7 +68,7 @@ export class ConfigEditorOverlayService {
       config.onOptionsChange(newOptions);
     });
 
-    const subClose = componentRef.instance.close.subscribe(() => {
+    const subClose = componentRef.instance.closeEditor.subscribe(() => {
       config.onClose();
     });
 

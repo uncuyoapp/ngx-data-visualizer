@@ -16,6 +16,7 @@ import {
   model,
   output,
   signal,
+  untracked,
   viewChild,
 } from "@angular/core";
 import { ConfigEditorOverlayService } from '../config-editor/services/config-editor-overlay.service';
@@ -137,7 +138,6 @@ export class ChartComponent implements OnDestroy {
   }
 
 
-
   // ============================================
   // ESTADOS Y SEÑALES INTERNAS
   // ============================================
@@ -201,7 +201,18 @@ export class ChartComponent implements OnDestroy {
   // ============================================
 
   constructor() {
-    // Sincronizar internalOptions cuando el input chartOptions cambie desde afuera
+    this.syncOptionsFromInput();
+    this.syncOnDatasetChange();
+    this.watchChartConfiguration();
+    this.watchEditorVisibility();
+    this.watchLegendsVisibility();
+    this.setupAutoUpdate();
+  }
+
+  /**
+   * Sincroniza internalOptions cuando el input chartOptions cambia externamente.
+   */
+  private syncOptionsFromInput(): void {
     effect(() => {
       const opts = this.chartOptions();
       this.eventBus.emit({
@@ -211,8 +222,31 @@ export class ChartComponent implements OnDestroy {
       });
       this.internalOptions.set(opts);
     }, { allowSignalWrites: true });
+  }
 
-    // Efecto reactivo principal
+  /**
+   * Maneja el cambio de referencia del dataset:
+   * 1. Propaga el nuevo dataset al editor en overlay si se encuentra abierto.
+   * 2. Resincroniza opciones internas para prevenir combinaciones inválidas (ej. 'pie' con dataset multidimensional).
+   */
+  private syncOnDatasetChange(): void {
+    let prevDatasetRef: Dataset | null = null;
+    effect(() => {
+      const ds = this.dataset();
+      if (this.configEditorComponentRef) {
+        this.configEditorComponentRef.setInput('dataset', ds);
+      }
+      if (prevDatasetRef && prevDatasetRef !== ds) {
+        this.internalOptions.set(untracked(() => this.chartOptions()));
+      }
+      prevDatasetRef = ds;
+    }, { allowSignalWrites: true });
+  }
+
+  /**
+   * Efecto reactivo principal de inicialización y renderizado del gráfico.
+   */
+  private watchChartConfiguration(): void {
     effect(() => {
       const config = this.chartConfiguration();
       const echart = this.echart();
@@ -246,10 +280,12 @@ export class ChartComponent implements OnDestroy {
         }
       }
     }, { allowSignalWrites: true });
+  }
 
-
-
-    // Reactivamente abrir/cerrar el editor según el input showEditor
+  /**
+   * Abre o cierra reactivamente el editor de configuración según el input showEditor.
+   */
+  private watchEditorVisibility(): void {
     effect(() => {
       const show = this.showEditor();
       if (show) {
@@ -258,8 +294,12 @@ export class ChartComponent implements OnDestroy {
         this.destroyEditorComponent();
       }
     }, { allowSignalWrites: true });
+  }
 
-    // Reactivamente alternar la visibilidad de las leyendas nativas
+  /**
+   * Alterna reactivamente la visibilidad de las leyendas nativas del gráfico.
+   */
+  private watchLegendsVisibility(): void {
     effect(() => {
       const show = this.showLegends();
       const chart = this._mainChart();
@@ -267,8 +307,12 @@ export class ChartComponent implements OnDestroy {
         chart.toggleLegendVisibility(show);
       }
     });
+  }
 
-    // Registrar la suscripción automática para actualizar los datos en caliente
+  /**
+   * Registra la suscripción para actualizar los datos en caliente.
+   */
+  private setupAutoUpdate(): void {
     injectAutoUpdate(
       () => this.dataset(),
       () => this.internalOptions(),

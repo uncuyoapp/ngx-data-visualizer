@@ -75,6 +75,35 @@
   --viz-editor-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --viz-editor-radius: 8px;
 
+  // ============================================
+  // TOKENS ESPECÍFICOS DEL TOOLTIP (EC-TOOLTIP)
+  // ============================================
+  --viz-tooltip-font-family: inherit;
+  --viz-tooltip-font-size: 12px;
+  --viz-tooltip-line-height: 1.4;
+  --viz-tooltip-text-color: #333333;
+  --viz-tooltip-divider-color: #c3c3c3;
+
+  // Anchos Máximos por Cantidad de Columnas
+  --viz-tooltip-max-width-cols-1: 450px;
+  --viz-tooltip-max-width-cols-2: 650px;
+  --viz-tooltip-max-width-cols-3: 900px;
+  --viz-tooltip-max-width-mobile: 320px;
+  --viz-tooltip-col-min-width: 180px;
+
+  // Espaciados y Gaps
+  --viz-tooltip-header-margin-bottom: 6px;
+  --viz-tooltip-body-gap: 4px;
+  --viz-tooltip-grid-gap: 6px 16px;
+  --viz-tooltip-item-gap: 6px;
+  --viz-tooltip-footer-margin-top: 6px;
+  --viz-tooltip-footer-hr-margin: 4px 0 6px 0;
+
+  // Pesos de Fuentes
+  --viz-tooltip-header-font-weight: bold;
+  --viz-tooltip-value-font-weight: bold;
+  --viz-tooltip-total-font-weight: bold;
+
   // Tamaños y espaciado
   --table-font-size: 12pt;
   --table-header-font-size: 14pt;
@@ -131,7 +160,6 @@
   --table-data-border-radius: 1rem;
 }
 
-
 // Estilos de la tabla pivot
 table.pvtTable {
   // Propiedades base
@@ -164,7 +192,6 @@ table.pvtTable {
   }
 
   tbody {
-
     tr,
     td {
       text-align: var(--table-data-text-align);
@@ -203,7 +230,8 @@ table.pvtTable {
 
     transform: translateZ(0);
     outline-offset: calc((var(--table-label-border-width) / 2) * -1);
-    outline: var(--table-label-border-width) var(--table-label-border-style) var(--table-label-border-color);
+    outline: var(--table-label-border-width) var(--table-label-border-style)
+      var(--table-label-border-color);
     text-align: center;
     padding: var(--table-label-padding);
     border-radius: var(--table-label-border-radius);
@@ -221,14 +249,19 @@ table.pvtTable {
 
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
 
     tr {
-
       .pvtCorner:first-of-type,
       .pvtAxisLabel:first-of-type {
         &::before {
@@ -242,14 +275,19 @@ table.pvtTable {
   tbody {
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4)
+          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
 
     tr {
-
       .pvtRowLabel:left,
       .pvtTotalLabel:first-of-type {
         &::before {
@@ -278,7 +316,8 @@ table.pvtTable {
   }
 
   .pvtCorner {
-    border: var(--table-border-width) var(--table-border-style) var(--table-border-color) !important;
+    border: var(--table-border-width) var(--table-border-style)
+      var(--table-border-color) !important;
     background: var(--table-data-bg);
     outline: var(--table-data-bg);
   }
@@ -293,7 +332,8 @@ table.pvtTable {
     vertical-align: middle;
     padding: var(--table-cell-padding);
     // box-shadow: var(--table-cell-box-shadow);
-    border: var(--table-data-border-width) var(--table-data-border-style) var(--table-data-border-color);
+    border: var(--table-data-border-width) var(--table-data-border-style)
+      var(--table-data-border-color);
     border-radius: var(--table-data-border-radius);
   }
 
@@ -318,7 +358,9 @@ table.pvtTable {
 
     color: var(--table-label-hover-contrast);
     z-index: 2;
-    outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style) var(--table-label-hover-border-color);
+    outline: var(--table-label-hover-border-width)
+      var(--table-label-hover-border-style)
+      var(--table-label-hover-border-color);
   }
 
   .header-hovered-cell {
@@ -336,7 +378,8 @@ table.pvtTable {
   .data-hovered {
     background-color: var(--table-data-hover);
     color: var(--table-data-hover-contrast);
-    border: var(--table-data-hover-border-width) var(--table-data-hover-border-style) var(--table-data-hover-border-color);
+    border: var(--table-data-hover-border-width)
+      var(--table-data-hover-border-style) var(--table-data-hover-border-color);
   }
 
   .pvtCorner,
@@ -359,33 +402,125 @@ table.pvtTable {
   }
 }
 
-// Estilos del tooltip
+// Estilos del tooltip responsivo y multicolumna (DEC-014)
 .ec-tooltip {
-  .title {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--viz-tooltip-max-width-cols-1);
+  font-family: var(--viz-tooltip-font-family);
+  font-size: var(--viz-tooltip-font-size);
+  line-height: var(--viz-tooltip-line-height);
+  color: var(--viz-tooltip-text-color);
+
+  &.ec-tooltip-cols-1 {
+    max-width: var(--viz-tooltip-max-width-cols-1);
+  }
+
+  &.ec-tooltip-cols-2 {
+    max-width: var(--viz-tooltip-max-width-cols-2);
+  }
+
+  &.ec-tooltip-cols-3 {
+    max-width: var(--viz-tooltip-max-width-cols-3);
+  }
+
+  .ec-tooltip-header {
     width: 100%;
-    font-weight: bold;
-    border-bottom: 1px solid #c3c3c3;
-    text-align: center;
-    display: inline-block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--viz-tooltip-header-margin-bottom);
+
+    .title {
+      width: 100%;
+      font-weight: var(--viz-tooltip-header-font-weight);
+      border-bottom: 1px solid var(--viz-tooltip-divider-color);
+      text-align: center;
+      display: block;
+      padding-bottom: 4px;
+    }
   }
 
-  .series-name {
-    margin-bottom: 0.2rem;
+  .ec-tooltip-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viz-tooltip-body-gap);
   }
 
-  .value {
-    font-weight: bold;
-    margin-left: 10px;
-    float: right;
+  .ec-tooltip-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--viz-tooltip-item-gap);
+    white-space: nowrap;
+
+    .marker {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .series-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .value {
+      font-weight: var(--viz-tooltip-value-font-weight);
+      margin-left: 8px;
+    }
   }
 
-  .summation {
-    font-weight: bold;
+  .ec-tooltip-footer {
+    width: 100%;
+    margin-top: var(--viz-tooltip-footer-margin-top);
+
+    hr {
+      margin: var(--viz-tooltip-footer-hr-margin);
+      border: 0;
+      border-top: 1px solid var(--viz-tooltip-divider-color);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      font-weight: var(--viz-tooltip-total-font-weight);
+
+      .summation {
+        font-weight: var(--viz-tooltip-total-font-weight);
+      }
+
+      .value {
+        font-weight: var(--viz-tooltip-total-font-weight);
+        margin-left: 4px;
+      }
+    }
   }
 
-  hr {
-    margin: 5px auto;
+  // --- Modificadores de Múltiples Columnas (DEC-014) ---
+  &.ec-tooltip-multicol {
+    .ec-tooltip-body {
+      display: grid;
+      grid-template-columns: repeat(var(--tooltip-cols, 1), minmax(var(--viz-tooltip-col-min-width), 1fr));
+      gap: var(--viz-tooltip-grid-gap);
+    }
+
+    // Adaptabilidad a pantallas medianas y estrechas
+    @media (max-width: 850px) {
+      &.ec-tooltip-cols-3 {
+        max-width: var(--viz-tooltip-max-width-cols-2);
+        .ec-tooltip-body {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      max-width: var(--viz-tooltip-max-width-mobile) !important;
+      .ec-tooltip-body {
+        grid-template-columns: 1fr !important;
+      }
+    }
   }
 }
 

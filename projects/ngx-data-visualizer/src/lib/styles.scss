@@ -1,5 +1,6 @@
 @forward "./variables";
 @use "./variables" as *;
+@use "./config-editor/editor-base";
 
 :root {
   // Valores por defecto

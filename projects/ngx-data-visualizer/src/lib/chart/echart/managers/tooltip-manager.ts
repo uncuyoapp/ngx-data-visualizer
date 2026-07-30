@@ -513,43 +513,68 @@ export class TooltipManager {
       const tooltipConfig = options.tooltip as any;
       const showPercentage = !!tooltipConfig?.showPercentage;
       const showTotal = !!tooltipConfig?.showTotal;
+      const threshold = tooltipConfig?.columnThreshold ?? 10;
+      const maxCols = tooltipConfig?.maxColumns ?? 3;
 
-      // 6. Construcción de los items HTML individuales del tooltip
-      let list = sortedParams
-        .map(
-          (param) => {
-            const seriesConfig = seriesArray[param.seriesIndex] as any;
-            const isReferenceLine = this.isReferenceSeries(seriesConfig);
-            const val = this.parseNumericValue(param.value);
+      // 6. Cálculo adaptativo del número de columnas (DEC-014)
+      const totalItems = sortedParams.length;
+      const columnsCount = Math.min(maxCols, Math.max(1, Math.ceil(totalItems / threshold)));
+      const multicolClass = columnsCount > 1 ? 'ec-tooltip-multicol' : '';
+      const colsClass = `ec-tooltip-cols-${columnsCount}`;
 
-            let valueText = '-';
-            if (!Number.isNaN(val)) {
-              const valFormatted = this.formatValue(val);
+      // 7. Construcción de items HTML individuales
+      const itemsHtml = sortedParams.map(param => {
+        const seriesConfig = seriesArray[param.seriesIndex] as any;
+        const isReferenceLine = this.isReferenceSeries(seriesConfig);
+        const val = this.parseNumericValue(param.value);
 
-              // Si se solicita porcentaje y no es una línea de referencia, calculamos su cuota sobre el total
-              if (showPercentage && !isReferenceLine) {
-                const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
-                const percentageStr = this.formatPercentageValue(percentage);
-                valueText = `${valFormatted} (${percentageStr}%)`;
-              } else {
-                valueText = valFormatted;
-              }
-            }
+        let valueText = '-';
+        if (!Number.isNaN(val)) {
+          const valFormatted = this.formatValue(val);
 
-            return `${param.marker} <label class="series-name">${param.seriesName}</label>:<label class="value">${valueText}</label>`;
+          // Si se solicita porcentaje y no es una línea de referencia, calculamos su cuota sobre el total
+          if (showPercentage && !isReferenceLine) {
+            const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
+            const percentageStr = this.formatPercentageValue(percentage);
+            valueText = `${valFormatted} (${percentageStr}%)`;
+          } else {
+            valueText = valFormatted;
           }
-        )
-        .join('<br>');
+        }
 
-      // 7. Anexar el bloque del total acumulado si corresponde
+        return `
+          <div class="ec-tooltip-item">
+            <span class="marker">${param.marker}</span>
+            <span class="series-name">${param.seriesName}:</span>
+            <span class="value">${valueText}</span>
+          </div>
+        `;
+      }).join('');
+
+      // 8. Footer del Total (Alineado a la derecha ocupando 100% del ancho)
+      let totalHtml = '';
       if (showTotal) {
-        list += `<hr>${this.formatTotalHtml(totalSum).replace('<hr>', '')}`;
+        totalHtml = `
+          <div class="ec-tooltip-footer">
+            <hr>
+            <div class="total-row">
+              <span class="summation">Total</span>:
+              <span class="value">${this.formatValue(totalSum)}</span>
+            </div>
+          </div>
+        `;
       }
 
+      // 9. Renderizado Final Autocontenido
       return `
-        <div class="ec-tooltip">
-            <label class="title">${title}</label><br>
-            ${list}
+        <div class="ec-tooltip ${multicolClass} ${colsClass}" style="--tooltip-cols: ${columnsCount};">
+          <div class="ec-tooltip-header">
+            <span class="title">${title}</span>
+          </div>
+          <div class="ec-tooltip-body">
+            ${itemsHtml}
+          </div>
+          ${totalHtml}
         </div>
       `;
     } catch (error) {

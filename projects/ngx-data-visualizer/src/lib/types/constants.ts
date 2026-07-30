@@ -508,6 +508,8 @@ export const DEFAULT_OPTIONS: ChartOptions = {
     format: null,
     showTotal: false,
     showPercentage: false,
+    columnThreshold: 10,
+    maxColumns: 3,
   },
   legends: {
     enabled: true,

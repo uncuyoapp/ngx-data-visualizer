@@ -240,6 +240,10 @@ export interface ChartOptions {
     showTotal: boolean;
     /** Indica si se debe mostrar el porcentaje en el tooltip */
     showPercentage?: boolean;
+    /** Umbral de series para activar la maquetación en múltiples columnas */
+    columnThreshold?: number;
+    /** Cantidad máxima permitida de columnas en el tooltip (default: 3) */
+    maxColumns?: number;
   };
   /** Configuración de las leyendas - controla la visualización y posición de las leyendas */
   legends: {

@@ -181,7 +181,15 @@ export class TooltipManager {
    * @private
    */
   private formatTotalHtml(totalSum: number): string {
-    return `<hr><label class="summation">Total</label>:<label class="value">${this.formatValue(totalSum)}</label>`;
+    return `
+      <div class="ec-tooltip-footer">
+        <hr>
+        <div class="total-row">
+          <span class="summation">Total</span>:
+          <span class="value">${this.formatValue(totalSum)}</span>
+        </div>
+      </div>
+    `;
   }
 
   /**
@@ -214,17 +222,21 @@ export class TooltipManager {
       ? (options.color as string[])
       : (ECharts.DEFAULT_PALETTE as string[]);
 
-    const list = pieData
+    const itemsHtml = pieData
       .map((item, idx) => this.formatPieSliceItem(item, idx, totalSum, showPercentage, palette))
-      .join('<br>');
+      .join('');
 
     const totalHtml = showTotal ? this.formatTotalHtml(totalSum) : '';
 
     return `
       <div class="ec-tooltip">
-          <label class="title">${seriesName}</label><br>
-          ${list}
-          ${totalHtml}
+        <div class="ec-tooltip-header">
+          <span class="title">${seriesName}</span>
+        </div>
+        <div class="ec-tooltip-body">
+          ${itemsHtml}
+        </div>
+        ${totalHtml}
       </div>
     `;
   }
@@ -274,9 +286,15 @@ export class TooltipManager {
       ? item.itemStyle.color
       : palette[idx % palette.length];
 
-    const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+    const marker = `<span class="marker" style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
 
-    return `${marker} <label class="series-name">${sliceName}</label>:<label class="value">${valueText}</label>`;
+    return `
+      <div class="ec-tooltip-item">
+        ${marker}
+        <span class="series-name">${sliceName}:</span>
+        <span class="value">${valueText}</span>
+      </div>
+    `;
   }
 
   /**
@@ -409,11 +427,18 @@ export class TooltipManager {
 
       return `
         <div class="ec-tooltip">
-            <label class="title">${title}</label><br>
-            ${param.marker}
-            <label class="series-name">${param.seriesName}</label>:<label class="value">${valueText}</label>
-            ${totalHtml}
+          <div class="ec-tooltip-header">
+            <span class="title">${title}</span>
+          </div>
+          <div class="ec-tooltip-body">
+            <div class="ec-tooltip-item">
+              <span class="marker">${param.marker}</span>
+              <span class="series-name">${param.seriesName}:</span>
+              <span class="value">${valueText}</span>
             </div>
+          </div>
+          ${totalHtml}
+        </div>
       `;
     } catch (error) {
       console.error('Error al formatear tooltip de parámetro único:', error);

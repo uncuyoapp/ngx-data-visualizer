@@ -155,6 +155,9 @@ export class EChartParser implements ParserOptions {
       tooltip.shared = config.tooltip.shared;
       tooltip.showTotal = config.tooltip.showTotal;
       tooltip.showPercentage = config.tooltip.showPercentage;
+      tooltip.axisPointer = {
+        type: 'none'
+      };
     }
   }
 

@@ -36,39 +36,36 @@ export class ConfigurationComponent implements AfterViewInit {
 
   importCode = `import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// Importaciones de ngx-data-visualizer
+// Importaciones de @uncuyoapp/ngx-data-visualizer
 import {
-  ChartComponent, // componente para renderizado de gráficos
-  TableComponent, // componente para renderizado de tablas
-  MultipleChartComponent, // componente para renderizado de múltiples gráficos
-  Dataset, // clase para definicion del conjunto de datos
-  Dimension, // interface para las dimensiones de los datos
-  Item, // interface para los items de las dimensiones
-  RowData, // interface de fila de datos
-  ChartOptions, // opciones de configuración de gráfico
-  TableOptions, // opciones de configuración de tablas
-  Goal, // interface para definir una meta en un gráfico
-  TableSorter, // interface para ordenamiento en tablas
-  FiltersConfig // interface para aplicar filtros a los datos
+  ChartComponent,          // Componente standalone para renderizado de gráficos
+  TableComponent,          // Componente standalone para renderizado de tablas
+  MultipleChartComponent,  // Componente standalone para gráficos múltiples
+  Dataset,                 // Modelo de datos reactivo
+  Dimension,               // Interfaz para las dimensiones de datos
+  Item,                    // Interfaz para ítems de dimensiones
+  RowData,                 // Interfaz de fila de datos
+  ChartOptions,            // Opciones de configuración de gráficos
+  TableOptions,            // Opciones de configuración de tablas
+  Series,                  // Interfaz para series de datos
+  Goal,                    // Interfaz para definir metas/objetivos
+  EventBusService,         // Bus reactivo de eventos del ciclo de vida
+  VisualizerEventType      // Enum de tipos de eventos emitidos
 } from '@uncuyoapp/ngx-data-visualizer';
 
 @Component({
-  selector: 'app-example',
+  selector: 'app-ejemplo',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
     ChartComponent,
     TableComponent,
     MultipleChartComponent
   ],
-  templateUrl: './example.component.html',
-  styleUrl: './example.component.scss'
+  templateUrl: './ejemplo.component.html'
 })
-export class ExampleComponent implements OnInit {
+export class EjemploComponent implements OnInit {
   // ... tu implementación
 }`;
 
@@ -124,6 +121,61 @@ export const appConfig: ApplicationConfig = {
   ]
 };`;
 
+  eventBusExampleCode = `import { Component, inject, OnInit } from '@angular/core';
+import { EventBusService, VisualizerEventType } from '@uncuyoapp/ngx-data-visualizer';
+
+@Component({
+  selector: 'app-analytics-logger',
+  standalone: true,
+  template: \`<p>Escuchando eventos del bus reactivo...</p>\`
+})
+export class AnalyticsLoggerComponent implements OnInit {
+  private readonly eventBus = inject(EventBusService);
+
+  ngOnInit(): void {
+    // Escuchar evento específico de renderizado de gráfico completado
+    this.eventBus.on(VisualizerEventType.CHART_RENDER_COMPLETE).subscribe(event => {
+      console.log(\`Gráfico renderizado con éxito. ID instancia: \${event.instanceId}\`);
+    });
+
+    // Escuchar la totalidad del flujo de eventos
+    this.eventBus.events$.subscribe(event => {
+      console.log('Bus Event:', event.type, event.payload);
+    });
+  }
+}`;
+
+  auditExampleCode = `// 1. Vía Inyección de Dependencias en app.config.ts
+provideDataVisualizerCharts({ debug: true })
+
+// 2. Vía LocalStorage en el navegador (ejecutar en consola JS)
+localStorage.setItem('ngx-viz-debug', '*');       // Audita todos los eventos
+localStorage.setItem('ngx-viz-debug', '[Chart]*'); // Audita solo eventos de gráficos
+
+// 3. Vía URL Query Parameters
+// https://tu-aplicacion.com/?ngx-viz-debug=*`;
+
+  designTokensExampleCode = `// en src/styles.scss
+:root {
+  --viz-primary: #0450ff;          /* Color de énfasis principal */
+  --viz-primary-contrast: #ffffff; /* Contraste para el color primario */
+  --viz-bg-card: #ffffff;          /* Fondo para tarjetas de gráficos */
+  --viz-bg-overlay: rgba(255, 255, 255, 0.85); /* Fondo para overlays CDK */
+  --viz-text: #333333;             /* Texto principal */
+  --viz-text-muted: #666666;       /* Texto secundario */
+  --viz-border-color: #e6e6e6;     /* Color de bordes */
+  --viz-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Soporte para Modo Oscuro */
+[data-theme="dark"] {
+  --viz-bg-card: #1e1e24;
+  --viz-bg-overlay: rgba(30, 30, 36, 0.90);
+  --viz-text: #f3f4f6;
+  --viz-text-muted: #9ca3af;
+  --viz-border-color: #374151;
+}`;
+
   installationCode = `# Instalar la librería y sus dependencias
 npm install @uncuyoapp/ngx-data-visualizer echarts ngx-echarts pivottable jquery
 
@@ -165,12 +217,25 @@ class Dataset {
   public readonly dimensions: Dimension[];
   /** Flag para habilitar o deshabilitar la funcionalidad de roll-up. */
   public readonly enableRollUp: boolean;
+  /** Indica si el conjunto de datos representa valores porcentuales (desactiva roll-up). */
+  public readonly isPercent: boolean;
   /** Los datos crudos (sin procesar) del conjunto de datos. */
   public readonly rowData: RowData[];
   /** (Avanzado) Instancia del motor de procesamiento de datos subyacente. */
   public readonly dataProvider: DataProvider;
   /** Un 'Subject' de RxJS que emite 'true' cuando los datos se actualizan. */
   public readonly dataUpdated = new Subject<boolean>();
+
+  /**
+   * Crea una instancia de Dataset.
+   */
+  constructor(config: {
+    id?: number;
+    dimensions: Dimension[];
+    enableRollUp?: boolean;
+    isPercent?: boolean;
+    rowData: RowData[];
+  }) { /* ... */ }
 
   /**
    * Aplica una configuración de filtros y/o roll-up al DataProvider.

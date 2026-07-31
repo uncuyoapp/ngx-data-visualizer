@@ -223,7 +223,8 @@
             <td>Configuraciones visuales y de comportamiento específicas para el conjunto de gráficos segmentados.</td>
           </tr>
           <tr>
-            <td><code>[disableAutoUpdate]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span></td>
+            <td><code>[disableAutoUpdate]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span>
+            </td>
             <td><code>boolean</code></td>
             <td><code>false</code></td>
             <td>Deshabilita la actualización automática de los gráficos segmentados ante cambios en el dataset.</td>
@@ -345,8 +346,59 @@
       <i class="fas fa-info-circle"></i>
       <span>
         El componente <code>MultipleChartComponent</code> delega la personalización de configuraciones de forma masiva a
-        las directivas de gráficos hijas, por lo que no expone métodos públicos adicionales.
+        los componentes de gráficos hijos, por lo que no expone métodos públicos adicionales.
       </span>
+    </div>
+  </section>
+  <hr />
+
+  <!-- Sección de Bus de Eventos y Auditoría -->
+  <section class="my-5">
+    <h2>Sistema de Eventos y Auditoría</h2>
+    <p>
+      La librería incluye una infraestructura reactiva centralizada para monitorear, auditar e integrar los eventos del
+      ciclo de vida de los componentes con herramientas externas de analítica o logs.
+    </p>
+
+    <h3>1. Uso de <code>EventBusService</code></h3>
+    <p>
+      Puedes inyectar <code>EventBusService</code> en cualquier servicio o componente para escuchar eventos con tipado
+      estricto:
+    </p>
+    <div class="card bg-light mb-4 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - Suscripción al EventBus</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="eventBusExampleCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>2. Depuración en Consola con <code>AuditService</code></h3>
+    <p>
+      El servicio <code>AuditService</code> permite auditar eventos formateados en la consola del navegador. Se puede
+      activar mediante tres vías:
+    </p>
+    <div class="card bg-light mb-4 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript / Bash - Modos de activación de auditoría</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="auditExampleCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+
+  <!-- Sección de Estilos y Design Tokens -->
+  <section class="my-5">
+    <h2>Personalización Visual y Design Tokens (Variables CSS)</h2>
+    <p>
+      El sistema de estilos utiliza una arquitectura basada en <strong>CSS Custom Properties</strong> (Variables CSS)
+      que permite personalizar la apariencia visual y adaptar temas sin romper la encapsulación de los componentes
+      Angular.
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">SCSS - Sobreescritura de Tokens Globales y Modo Oscuro</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-scss" [textContent]="designTokensExampleCode"></code></pre>
+      </div>
     </div>
   </section>
   <hr />
@@ -403,7 +455,7 @@
     <h2>Ejemplos prácticos de uso</h2>
     <p class="section-description">
       Una vez configurado el dataset, puedes explorar ejemplos detallados de uso
-      de cada directiva. Cada sección incluye documentación específica,
+      de cada componente. Cada sección incluye documentación específica,
       configuraciones disponibles y ejemplos prácticos con código fuente
       completo.
     </p>

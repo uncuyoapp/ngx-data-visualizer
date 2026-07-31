@@ -96,8 +96,8 @@ export class AxisManager {
 
   /**
    * Crea la configuración base para el Eje Y del gráfico.
-   * En Echarts el eje de valores suele representarse con tipo 'value' y delega el 
-   * formato del índice a la configuración designada en el Tooltip.
+   * En ECharts el eje de valores se representa con tipo 'value' y formatea las marcas
+   * de forma nativa sin concatenar sufijos (los cuales se reservan para el Tooltip).
    */
   private createYAxis(chartOptions: ChartOptions, layoutResult: LayoutResult): any {
     const yAxisTitle = chartOptions.yAxis.title;
@@ -123,9 +123,6 @@ export class AxisManager {
         ellipsis: '...',
       },
       max: chartOptions.yAxis.max,
-      axisLabel: {
-        formatter: (value: string) => this.tooltipManager.formatValue(value),
-      },
       tooltip: {
         show: true,
       },

@@ -11,6 +11,7 @@ import {
   inject,
 } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatIconModule } from "@angular/material/icon";
 import cloneDeep from "lodash.clonedeep";
 import {
   ChartComponent,
@@ -45,6 +46,7 @@ import optionsTable from "../../assets/data/table-options-dash.json";
     TableComponent,
     FormsModule,
     ReactiveFormsModule,
+    MatIconModule,
   ],
   templateUrl: "./dashboard.component.html",
   styleUrl: "./dashboard.component.scss",
@@ -99,6 +101,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   /** Referencias a los elementos de librería */
   @ViewChild("tableFull", { read: TableComponent }) tableFull!: TableComponent;
 
+  /** Año filtrado para los gráficos secundarios */
+  lastYear = "2018";
+
+  /** Lista de años disponibles para el selector de gráficos secundarios */
+  availableYears: string[] = [];
+
+  /** Año seleccionado actualmente en el selector de gráficos secundarios */
+  selectedYear = "2018";
+
   // ============================================
   // INICIALIZACIÓN
   // ============================================
@@ -106,6 +117,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const dimensions = dimensionsData as Dimension[];
     const rowData = data as RowData[];
+
+    const yearDim = dimensions.find((d) => d.id === 0 || d.name === "Año");
+    if (yearDim && yearDim.items && yearDim.items.length > 0) {
+      this.availableYears = yearDim.items.map((item) => item.name);
+      this.selectedYear = yearDim.items[yearDim.items.length - 1].name;
+      this.lastYear = this.selectedYear;
+    }
 
     // Configuración de estilos para la tabla
     this.themeService.updateTheme(
@@ -116,10 +134,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     );
 
     // Configuración del gráfico 1 (pie chart por sectores)
-    this.chartOptionsOne.filterLastYear = true;
     this.chartOptionsOne.type = "pie";
     this.chartOptionsOne.xAxis.firstLevel = 117;
     this.chartOptionsOne.legends.show = false;
+    this.chartOptionsOne.height = 240;
+    this.chartOptionsOne.tooltip.showPercentage = true;
 
     this.datasetOne = new Dataset({
       dimensions,
@@ -133,10 +152,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     };
 
     // Configuración del gráfico 2 (pie chart por condición)
-    this.chartOptionsTwo.filterLastYear = true;
     this.chartOptionsTwo.type = "pie";
     this.chartOptionsTwo.xAxis.firstLevel = 54;
     this.chartOptionsTwo.legends.show = false;
+    this.chartOptionsTwo.height = 240;
+    this.chartOptionsTwo.tooltip.showPercentage = true;
 
     this.datasetTwo = new Dataset({
       dimensions,
@@ -150,11 +170,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     };
 
     // Configuración del gráfico 3 (pie chart por departamentos)
-    this.chartOptionsThree.filterLastYear = true;
     this.chartOptionsThree.type = "pie";
     this.chartOptionsThree.xAxis.firstLevel = 12;
     this.chartOptionsThree.tooltip.shared = false;
     this.chartOptionsThree.legends.show = false;
+    this.chartOptionsThree.height = 240;
+    this.chartOptionsThree.tooltip.showPercentage = true;
 
     this.datasetThree = new Dataset({
       dimensions,
@@ -187,10 +208,58 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dimensions.forEach((dimension) => {
       this.collapsedDimensions[dimension.id.toString()] = true;
     });
+
+    // Aplicar filtros iniciales con el año seleccionado
+    this.applyPieFilters();
   }
 
   ngAfterViewInit(): void {
     this.updateIndeterminateStates();
+  }
+
+  /**
+   * Cambia el año seleccionado para los gráficos secundarios
+   */
+  selectYear(year: string): void {
+    this.selectedYear = year;
+    this.lastYear = year;
+    this.applyPieFilters();
+  }
+
+  /**
+   * Aplica los filtros específicos a los 3 gráficos circulares secundarios fijando el año seleccionado
+   */
+  applyPieFilters(): void {
+    const pieFilter = this.dimensions.map((dimension) => {
+      if (
+        dimension.id === 0 ||
+        dimension.name === "Año" ||
+        dimension.nameView === "Año"
+      ) {
+        return {
+          name: dimension.nameView,
+          items: [this.selectedYear],
+        };
+      }
+      return {
+        name: dimension.nameView,
+        items: dimension.items
+          .filter((item) => item.selected)
+          .map((item) => item.name),
+      };
+    });
+
+    const datasetFilterOne = this.datasetOne.dataProvider.filters;
+    datasetFilterOne.filter = [...cloneDeep(pieFilter)];
+    this.datasetOne.applyFilters(datasetFilterOne);
+
+    const datasetFilterTwo = this.datasetTwo.dataProvider.filters;
+    datasetFilterTwo.filter = [...cloneDeep(pieFilter)];
+    this.datasetTwo.applyFilters(datasetFilterTwo);
+
+    const datasetFilterThree = this.datasetThree.dataProvider.filters;
+    datasetFilterThree.filter = [...cloneDeep(pieFilter)];
+    this.datasetThree.applyFilters(datasetFilterThree);
   }
 
   // ============================================
@@ -201,6 +270,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
    * Función de filtrado original - se ejecuta cuando cambian los checkboxes de la barra superior
    */
   filter(): void {
+    // Aplicar filtros al gráfico principal y tabla
     const filter = this.dimensions.map((dimension) => ({
       name: dimension.nameView,
       items: dimension.items
@@ -208,22 +278,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         .map((item) => item.name),
     }));
 
-    // Aplicar filtros a todos los datasets manteniendo la lógica original
-    const datasetFilterOne = this.datasetOne.dataProvider.filters;
-    datasetFilterOne.filter = [...cloneDeep(filter)];
-    this.datasetOne.applyFilters(datasetFilterOne);
-
-    const datasetFilterTwo = this.datasetTwo.dataProvider.filters;
-    datasetFilterTwo.filter = [...cloneDeep(filter)];
-    this.datasetTwo.applyFilters(datasetFilterTwo);
-
-    const datasetFilterThree = this.datasetThree.dataProvider.filters;
-    datasetFilterThree.filter = [...cloneDeep(filter)];
-    this.datasetThree.applyFilters(datasetFilterThree);
-
     const datasetFilterFour = this.datasetFour.dataProvider.filters;
     datasetFilterFour.filter = [...cloneDeep(filter)];
     this.datasetFour.applyFilters(datasetFilterFour);
+
+    // Aplicar filtros a los gráficos circulares preservando el año seleccionado
+    this.applyPieFilters();
   }
 
   // ============================================

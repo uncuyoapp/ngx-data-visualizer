@@ -7,59 +7,138 @@
   width: 100%;
 }
 
+/* ===========================================
+   SECCIÓN UNIFICADA DE GRÁFICOS SECUNDARIOS
+   =========================================== */
+
+.secondary-charts-section {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.year-selector-header {
+  width: 100%;
+}
+
+.year-pills {
+  .year-pill-btn {
+    border-radius: 20px;
+    padding: 0.25rem 0.85rem;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #4b5563;
+    background-color: #f3f4f6;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #e5e7eb;
+      color: #1f2937;
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background-color: #0d6efd;
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(13, 110, 253, 0.35);
+    }
+  }
+}
+
+/* Modo oscuro para la sección secundaria */
+[data-theme="dark"] {
+  .secondary-charts-section {
+    background-color: #1a1a1e !important;
+    border-color: #29292e !important;
+  }
+
+  .year-pills {
+    .year-pill-btn {
+      color: #c4c4cc;
+      background-color: #25252a;
+
+      &:hover {
+        background-color: #323238;
+        color: #ffffff;
+      }
+
+      &.active {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      }
+    }
+  }
+}
+
 .dashboard {
-  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 
   /* Elementos base */
   .element {
-    padding: 0.5rem;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
     border-radius: 0.75rem;
     background-color: #f8f9fa;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    overflow: hidden;
     transition:
       box-shadow 0.3s ease,
       transform 0.2s ease;
 
     &:hover {
-      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.12);
       transform: translateY(-2px);
     }
   }
 
-  /* Gráfico principal - ocupa todo el ancho, altura destacada */
-  .four {
-    flex: 0 0 45%;
-    width: 100%;
-  }
-
-  /* Tabla principal - ocupa todo el ancho, altura media */
-  .five {
-    flex: 0 0 35%;
-    width: 100%;
-  }
-
   /* Contenedor de gráficos secundarios */
   .secondary-charts {
-    flex: 0 0 10%;
     display: flex;
-    gap: 10px;
-    min-height: 180px;
-
-    .chart {
-      height: 120px;
-    }
+    gap: 16px;
+    width: 100%;
+    flex: 0 0 auto;
 
     .one,
     .two,
     .three {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 290px;
     }
+
+    .chart {
+      width: 100%;
+      height: 240px;
+      min-height: 240px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  /* Gráfico principal - ocupa todo el ancho */
+  .four {
+    width: 100%;
+    min-height: 380px;
+    flex: 0 0 auto;
+  }
+
+  /* Tabla principal - ocupa todo el ancho */
+  .five {
+    width: 100%;
+    min-height: 350px;
+    flex: 0 0 auto;
   }
 }
 
@@ -74,19 +153,21 @@
   }
 
   .dashboard {
-    gap: 10px;
-
-    .four {
-      flex: 0 0 40%;
-    }
-
-    .five {
-      flex: 0 0 35%;
-    }
+    gap: 12px;
 
     .secondary-charts {
-      flex: 0 0 25%;
-      min-height: 200px;
+      gap: 12px;
+
+      .one,
+      .two,
+      .three {
+        min-height: 280px;
+      }
+
+      .chart {
+        height: 230px;
+        min-height: 230px;
+      }
     }
   }
 }
@@ -98,27 +179,22 @@
   }
 
   .dashboard {
-    height: calc(100% - 120px);
-    gap: 8px;
-
-    .four {
-      flex: 0 0 35%;
-    }
-
-    .five {
-      flex: 0 0 30%;
-    }
+    gap: 12px;
 
     .secondary-charts {
-      flex: 0 0 35%;
       flex-direction: column;
-      min-height: auto;
+      gap: 12px;
 
       .one,
       .two,
       .three {
-        flex: 1;
-        min-height: 120px;
+        width: 100%;
+        min-height: 290px;
+      }
+
+      .chart {
+        height: 240px;
+        min-height: 240px;
       }
     }
   }
@@ -131,17 +207,7 @@
   }
 
   .dashboard {
-    gap: 5px;
-
-    .secondary-charts {
-      gap: 5px;
-
-      .one,
-      .two,
-      .three {
-        min-height: 100px;
-      }
-    }
+    gap: 10px;
   }
 }
 

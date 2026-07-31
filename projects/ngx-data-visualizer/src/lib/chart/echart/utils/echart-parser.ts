@@ -60,14 +60,6 @@ export class EChartParser implements ParserOptions {
     // Validar configuración original
     ConfigValidator.validate(config as any, DEFAULT_OPTIONS, DEPRECATED_LEGEND_PATHS);
 
-    // Ignorar configuración estática que intente ocultar la leyenda y forzar su visibilidad al inicializar
-    if (config?.legends) {
-      if (config.legends.show === false || config.legends.enabled === false) {
-        config.legends.show = true;
-        config.legends.enabled = true;
-      }
-    }
-
     // 1. Mapear tipo de gráfico
     this.parseType(echartsConfig, config);
 

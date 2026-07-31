@@ -48,6 +48,15 @@ export class ChartFactory {
 
     const mergedOptions = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
 
+    // En inicialización limpia para datasets 1D sin preferencia explícita, ocultar leyendas por defecto
+    if (dataset.dimensions?.length === 1 && options?.legends?.show === undefined) {
+      mergedOptions.legends = {
+        ...mergedOptions.legends,
+        show: false,
+        enabled: false,
+      };
+    }
+
     // Asignar colores según la jerarquía: opciones usuario -> proveedor global -> paleta por defecto
     mergedOptions.colors = mergedOptions.colors ?? this.config?.defaultColors ?? [...ECharts.DEFAULT_PALETTE];
 

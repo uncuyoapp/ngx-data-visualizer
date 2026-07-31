@@ -202,8 +202,9 @@ export class MultichartDemoComponent implements AfterViewInit {
  *
  * ENTRADAS REQUERIDAS:
  * - [dataset]: Dataset con los datos a visualizar
- * - [options]: ChartOptions estándar (igual que libChart)
+ * - [options]: ChartOptions estándar (igual que en ChartComponent)
  * - [splitDimension]: Dimension por la cual dividir los gráficos
+ * - [disableAutoUpdate]: boolean (opcional, deshabilita actualización de datos)
  *
  * CONFIGURACIÓN DE LA DIMENSIÓN:
  * La dimensión debe tener ítems con 'selected: true' para generar gráficos.

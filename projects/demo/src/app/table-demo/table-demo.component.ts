@@ -414,6 +414,13 @@ interface TableOptions {
     | "percentOfTotal"
     | "percentOfRow"
     | "percentOfColumn";
+  /** Atributos derivados personalizados para la tabla pivot */
+  derivedAttributes?: Record<
+    string,
+    (record: Record<string, unknown>) => unknown
+  >;
+  /** Indica si se desabilita la actualización automática de la tabla */
+  disableAutoUpdate?: boolean;
 }
 
 /**

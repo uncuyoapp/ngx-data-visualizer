@@ -584,7 +584,13 @@ interface ChartOptions {
     /** Formato personalizado para los valores */
     format: string | null,
     /** Indica si se muestra el total en el tooltip */
-    showTotal: boolean
+    showTotal: boolean,
+    /** Indica si se debe mostrar el porcentaje en el tooltip */
+    showPercentage?: boolean,
+    /** Umbral de series para activar la maquetación en múltiples columnas */
+    columnThreshold?: number,
+    /** Cantidad máxima de columnas permitidas en el tooltip */
+    maxColumns?: number
   },
   /** Configuración de las leyendas */
   legends: {

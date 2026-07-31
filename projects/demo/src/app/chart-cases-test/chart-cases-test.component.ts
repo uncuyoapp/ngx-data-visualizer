@@ -178,6 +178,11 @@ export class ChartCasesTestComponent {
         firstLevel: this.activeDataset.dimensions[0]?.id ?? 0,
         secondLevel: null,
       },
+      legends: {
+        show: datasetId !== 1,
+        enabled: datasetId !== 1,
+        position: 'bottom',
+      }
     };
 
     this.cdr.markForCheck();

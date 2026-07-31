@@ -1,14 +1,16 @@
-<div class="test-bench">
-  <h1 class="mb-4">Medidas y responsive para gráficos</h1>
-  <p class="text-muted mb-5">Esta pantalla prueba las 4 formas de configurar el tamaño de ECharts según el README.</p>
+<div class="container-fluid py-4 test-bench">
+  <h1 class="fw-bold mb-2">Medidas y responsive para gráficos</h1>
+  <p class="text-muted mb-4">Esta pantalla prueba la adaptación del motor de gráficos ante distintas dimensiones de
+    contenedor y configuraciones de tamaño.</p>
 
   <div class="case-card shadow-sm">
-    <h3 class="d-flex align-items-center gap-2"><span class="badge bg-primary">Caso 1</span> Tamaño Fijo por TypeScript
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 1</span> Tamaño Fijo por TypeScript
     </h3>
     <p class="text-muted"><code>chartOptions = &#123; width: 600, height: 400 &#125;</code></p>
-    <div class="alert alert-info py-2">
+    <div class="alert alert-info py-2 mb-3">
       <strong>Qué esperar:</strong> El gráfico debe medir <strong>exactamente 600x400 px</strong> y no encogerse aunque
-      achiques la ventana (provocará scroll horizontal).
+      se reduzca la ventana (provocando scroll horizontal).
     </div>
     <div style="border: 1px solid red; display: inline-block;">
       <libChart [dataset]="dataset" [chartOptions]="config1"></libChart>
@@ -16,11 +18,12 @@
   </div>
 
   <div class="case-card shadow-sm">
-    <h3 class="d-flex align-items-center gap-2"><span class="badge bg-primary">Caso 2</span> 100% Responsivo (Flexible
-      Container)</h3>
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 2</span> 100% Responsivo en Contenedor Flexible
+    </h3>
     <p class="text-muted"><code>chartOptions = &#123; width: null, height: null &#125;</code> dentro de un contenedor
       flexible.</p>
-    <div class="alert alert-info py-2">
+    <div class="alert alert-info py-2 mb-3">
       <strong>Qué esperar:</strong> Arrastra la esquina inferior derecha del cuadro punteado. El gráfico debe
       redibujarse <strong>fluidamente</strong> para ocupar siempre el 100% del contenedor sin desbordes.
     </div>
@@ -30,9 +33,11 @@
   </div>
 
   <div class="case-card shadow-sm">
-    <h3 class="d-flex align-items-center gap-2"><span class="badge bg-primary">Caso 3</span> Variables CSS Inline</h3>
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 3</span> Variables CSS Inline
+    </h3>
     <p class="text-muted"><code>style="--viz-chart-height: 250px; --viz-chart-width: 80%;"</code></p>
-    <div class="alert alert-info py-2">
+    <div class="alert alert-info py-2 mb-3">
       <strong>Qué esperar:</strong> El gráfico debe tener un alto estricto de <strong>250px</strong> y un ancho que sea
       el <strong>80%</strong> de la pantalla.
     </div>
@@ -43,9 +48,11 @@
   </div>
 
   <div class="case-card shadow-sm">
-    <h3 class="d-flex align-items-center gap-2"><span class="badge bg-primary">Caso 4</span> SCSS Externo</h3>
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 4</span> SCSS Externo
+    </h3>
     <p class="text-muted">Clase CSS externa que aplica variables y flexbox al contenedor padre.</p>
-    <div class="alert alert-info py-2">
+    <div class="alert alert-info py-2 mb-3">
       <strong>Qué esperar:</strong> El cuadro verde tiene 400px de alto. El gráfico debe ocupar ese 100% (<strong>400px
         verticales</strong>) y exactamente la <strong>mitad (50%)</strong> del ancho de la pantalla.
     </div>

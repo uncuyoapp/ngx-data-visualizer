@@ -1,0 +1,60 @@
+<div class="container-fluid py-4 test-bench">
+  <h1 class="fw-bold mb-2">Medidas y responsive para tablas</h1>
+  <p class="text-muted mb-4">Esta pantalla prueba la adaptación de la tabla ante distintas dimensiones de contenedor,
+    comportamiento sticky y scroll.</p>
+
+  <div class="case-card shadow-sm">
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 1</span> Contenedor Fijo con Scroll Interno y Sticky Header
+    </h3>
+    <p class="text-muted"><code>height: 300px; overflow: auto;</code></p>
+    <div class="alert alert-info py-2 mb-3">
+      <strong>Qué esperar:</strong> La tabla se renderiza dentro del contenedor con scroll. Los encabezados de filas y
+      columnas deben permanecer fijos (<strong>sticky</strong>) al desplazarse vertical u horizontalmente.
+    </div>
+    <div class="fixed-scroll-container">
+      <libTable [dataset]="dataset" [tableOptions]="tableConfig"></libTable>
+    </div>
+  </div>
+
+  <div class="case-card shadow-sm">
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 2</span> 100% Responsivo en Contenedor Flexible
+    </h3>
+    <p class="text-muted">Contenedor redimensionable manualmente.</p>
+    <div class="alert alert-info py-2 mb-3">
+      <strong>Qué esperar:</strong> Arrastra la esquina inferior derecha del cuadro punteado. La tabla debe ajustarse
+      fluidamente al ancho y alto del contenedor.
+    </div>
+    <div class="resizable-container">
+      <libTable [dataset]="dataset" [tableOptions]="tableConfig"></libTable>
+    </div>
+  </div>
+
+  <div class="case-card shadow-sm">
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 3</span> Ancho Restringido con Scroll Horizontal
+    </h3>
+    <p class="text-muted"><code>max-width: 450px; overflow-x: auto;</code></p>
+    <div class="alert alert-info py-2 mb-3">
+      <strong>Qué esperar:</strong> El contenedor limita el ancho a 450px. Si la tabla sobrepasa ese tamaño, debe
+      ofrecer scrollbar horizontal sin romper el maquetado exterior.
+    </div>
+    <div class="narrow-container">
+      <libTable [dataset]="dataset" [tableOptions]="tableConfig"></libTable>
+    </div>
+  </div>
+
+  <div class="case-card shadow-sm">
+    <h3 class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary">Caso 4</span> SCSS Externo y Contenedor Estilizado
+    </h3>
+    <p class="text-muted">Clase SCSS externa que aplica estilos de bordes, sombra y dimensiones al contenedor.</p>
+    <div class="alert alert-info py-2 mb-3">
+      <strong>Qué esperar:</strong> El marco verde de 400px de alto contiene la tabla utilizando el 100% de su espacio.
+    </div>
+    <div class="global-styled-table">
+      <libTable [dataset]="dataset" [tableOptions]="tableConfig"></libTable>
+    </div>
+  </div>
+</div>

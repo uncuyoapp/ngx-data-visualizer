@@ -6,14 +6,14 @@ import testDataset1d from '../../assets/data/test-dataset-1d.json';
 import testDimensions from '../../assets/data/test-dimensions.json';
 
 @Component({
-  selector: 'app-size-test',
+  selector: 'app-chart-sizes-test',
   standalone: true,
   imports: [CommonModule, ChartComponent],
-  templateUrl: './size-test.component.html',
-  styleUrls: ['./size-test.component.scss'],
+  templateUrl: './chart-sizes-test.component.html',
+  styleUrls: ['./chart-sizes-test.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SizeTestComponent {
+export class ChartSizesTestComponent {
   dataset = new Dataset({
     id: 1,
     rowData: testDataset1d,

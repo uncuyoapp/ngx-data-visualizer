@@ -6,7 +6,7 @@
         <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
           <h3 class="fw-semibold text-secondary-emphasis d-flex align-items-center gap-2 m-0">
             <mat-icon fontIcon="tune" class="text-primary"></mat-icon>
-            Controles de Prueba
+            Controles de Prueba de Tablas
           </h3>
         </div>
 
@@ -32,53 +32,46 @@
 
           <!-- Panel de Edición -->
           <div class="control-switch-card mb-3 d-flex justify-content-between align-items-center">
-            <label for="toggleEditorSwitch" class="cursor-pointer mb-0 me-2">
-              <span class="fw-semibold d-block text-secondary-emphasis">Panel de Edición</span>
-              <small class="text-muted d-block">Muestra u oculta el panel de configuración integrado</small>
-            </label>
+            <div>
+              <label for="toggleEditorSwitch" class="fw-semibold d-block text-secondary-emphasis cursor-pointer">Panel
+                de Edición</label>
+              <small class="text-muted">Muestra u oculta el panel de configuración integrado</small>
+            </div>
             <div class="form-check form-switch m-0">
               <input class="form-check-input fs-4 cursor-pointer" type="checkbox" role="switch" id="toggleEditorSwitch"
                 [checked]="showEditor" [attr.aria-checked]="showEditor" (change)="toggleEditor()">
             </div>
           </div>
 
-          <!-- Ver Porcentajes / Valores -->
-          <div class="control-switch-card disabled-card mb-4">
-            <!-- Título de la acción visible -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="fw-semibold text-secondary-emphasis">Visualización Porcentual</span>
-              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 fw-semibold px-2 py-1">
-                <mat-icon fontIcon="lock" style="font-size: 13px; width: 13px; height: 13px; line-height: 13px;"></mat-icon>
-                Deshabilitado
-              </span>
-            </div>
-
-            <!-- Contenedor del control con máscara protectora por encima -->
-            <div class="position-relative overflow-hidden rounded-3 p-2 border border-secondary-subtle">
-              <div class="d-flex justify-content-between align-items-center opacity-40">
-                <label for="togglePercentSwitch" class="mb-0 me-2">
-                  <small class="text-muted d-block">Alterna entre valores nominales y porcentajes</small>
-                </label>
-                <div class="form-check form-switch m-0 ms-2">
-                  <input class="form-check-input fs-4" type="checkbox" role="switch" id="togglePercentSwitch"
-                    [checked]="isPercentActive" [attr.aria-checked]="isPercentActive" (change)="togglePercentView()" disabled>
-                </div>
-              </div>
-
-              <!-- Máscara de bloqueo con la nota aclaratoria -->
-              <div class="disabled-overlay d-flex align-items-center justify-content-center px-3 py-2 text-center">
-                <small class="disabled-note fw-medium">
-                  Es necesario definir el comportamiento de esta funcionalidad antes de realizar pruebas sobre ella
-                </small>
-              </div>
+          <!-- Modo de Visualización (Nominal / Porcentajes) -->
+          <div class="control-switch-card mb-3">
+            <span class="fw-semibold d-block text-secondary-emphasis mb-2">Modo de Visualización de Valores</span>
+            <div class="d-flex flex-wrap gap-2">
+              <button mat-flat-button [color]="tableConfig.valueDisplay === 'nominal' ? 'primary' : 'basic'"
+                (click)="onValueDisplayChange('nominal')" class="btn-sm">
+                Nominal
+              </button>
+              <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
+                (click)="onValueDisplayChange('percentOfTotal')" class="btn-sm">
+                % Total
+              </button>
+              <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
+                (click)="onValueDisplayChange('percentOfRow')" class="btn-sm">
+                % Fila
+              </button>
+              <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
+                (click)="onValueDisplayChange('percentOfColumn')" class="btn-sm">
+                % Columna
+              </button>
             </div>
           </div>
 
-          <!-- Inspección del chartConfig en Vivo -->
+
+          <!-- Inspección del tableConfig en Vivo -->
           <div class="mb-4 d-flex flex-column" style="flex: 1; min-height: 250px;">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="form-label text-muted fw-medium m-0">
-                2. Configuración en Tiempo Real (chartConfig):
+                2. Configuración en Tiempo Real (tableConfig):
               </span>
               <span
                 class="badge rounded-pill bg-success-subtle text-success border border-success-subtle py-1 px-2 d-flex align-items-center gap-1">
@@ -89,7 +82,7 @@
             <div
               class="json-viewer-container flex-grow-1 p-3 rounded bg-dark border border-secondary border-opacity-25 shadow-inner">
               <pre
-                class="m-0 text-success-emphasis text-monospace font-monospace"><code class="json-code">{{ chartOptionsJson }}</code></pre>
+                class="m-0 text-success-emphasis text-monospace font-monospace"><code class="json-code">{{ tableOptionsJson }}</code></pre>
             </div>
           </div>
 
@@ -102,14 +95,14 @@
       </div>
     </div>
 
-    <!-- Columna Derecha: Gráfico en Vivo -->
+    <!-- Columna Derecha: Tabla en Vivo -->
     <div class="col-xl-8 col-lg-7">
       <div class="card card-premium shadow-lg border-0 h-100">
         <div
           class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
           <h3 class="fw-semibold text-secondary-emphasis d-flex align-items-center gap-2 m-0">
-            <mat-icon fontIcon="query_stats" class="text-success"></mat-icon>
-            Visualización Activa
+            <mat-icon fontIcon="table_chart" class="text-success"></mat-icon>
+            Visualización Activa de Tabla
           </h3>
           <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
             ID del Dataset: {{ activeDataset.id }}
@@ -117,9 +110,9 @@
         </div>
 
         <div class="card-body px-4 py-4 d-flex flex-column justify-content-start">
-          <div class="chart-wrapper p-3 rounded shadow-sm mb-4">
-            <libChart [dataset]="activeDataset" [(chartOptions)]="chartConfig" [(showEditor)]="showEditor" #casesChart>
-            </libChart>
+          <div class="table-wrapper p-3 rounded shadow-sm mb-4" style="overflow: auto; max-height: 550px;">
+            <libTable [dataset]="activeDataset" [(tableOptions)]="tableConfig" [(showEditor)]="showEditor" #casesTable>
+            </libTable>
           </div>
 
           <!-- Bloque de Filtrado y Agrupamiento -->
@@ -144,7 +137,7 @@
                   <div class="dimension-header pb-2 border-bottom mb-2">
                     <div class="form-check">
                       <input type="checkbox" class="form-check-input cursor-pointer" [(ngModel)]="dimension.selected"
-                        (change)="onDimensionChange(dimension)" [id]="'dim-' + dimension.id" />
+                        (change)="onDimensionChange()" [id]="'dim-' + dimension.id" />
                       <label class="form-check-label fw-semibold cursor-pointer text-secondary-emphasis"
                         [for]="'dim-' + dimension.id">
                         {{ dimension.name }}

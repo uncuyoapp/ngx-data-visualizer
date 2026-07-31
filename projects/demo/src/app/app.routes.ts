@@ -1,13 +1,15 @@
 import { Routes } from "@angular/router";
 import { ChartCasesTestComponent } from "./chart-cases-test/chart-cases-test.component";
 import { ChartDemoComponent } from "./chart-demo/chart-demo.component";
+import { ChartSizesTestComponent } from "./chart-sizes-test/chart-sizes-test.component";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { FullExampleComponent } from "./full-example/full-example.component";
 import { HomeComponent } from "./home/home.component";
 import { MultichartDemoComponent } from "./multichart-demo/multichart-demo.component";
+import { TableCasesTestComponent } from "./table-cases-test/table-cases-test.component";
 import { TableDemoComponent } from "./table-demo/table-demo.component";
-import { SizeTestComponent } from "./size-test/size-test.component";
+import { TableSizesTestComponent } from "./table-sizes-test/table-sizes-test.component";
 
 export const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -18,5 +20,9 @@ export const routes: Routes = [
   { path: "configuration", component: ConfigurationComponent },
   { path: "multichart-demo", component: MultichartDemoComponent },
   { path: "chart-cases-test", component: ChartCasesTestComponent },
-  { path: "size-test", component: SizeTestComponent },
+  { path: "chart-sizes-test", component: ChartSizesTestComponent },
+  { path: "size-test", redirectTo: "chart-sizes-test", pathMatch: "full" },
+  { path: "table-cases-test", component: TableCasesTestComponent },
+  { path: "table-sizes-test", component: TableSizesTestComponent },
 ];
+

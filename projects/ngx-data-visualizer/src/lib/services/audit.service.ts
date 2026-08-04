@@ -80,7 +80,9 @@ export class AuditService implements OnDestroy {
         if (ls === '*' || ls === 'true') return true;
         if (ls.split(',').some(p => this.matchPattern(type, p.trim()))) return true;
       }
-    } catch { }
+    } catch {
+      // Ignorar errores al acceder a localStorage en entornos SSR o restringidos
+    }
 
     // 2. Chequeo por URL Query Params
     try {
@@ -90,7 +92,9 @@ export class AuditService implements OnDestroy {
         if (urlVal === '*' || urlVal === 'true') return true;
         if (urlVal.split(',').some(p => this.matchPattern(type, p.trim()))) return true;
       }
-    } catch { }
+    } catch {
+      // Ignorar errores al acceder a URLSearchParams en entornos sin objeto window
+    }
 
     // 3. Chequeo por configuración estática de providers (DI)
     return Array.from(AuditService.activePatterns).some(p => this.matchPattern(type, p));
@@ -104,7 +108,7 @@ export class AuditService implements OnDestroy {
    */
   private processEvent(event: AppEvent): void {
     const safePayload = this.safeSerialize(event.payload);
-    const auditedEvent = { ...event, payload: safePayload };
+    const auditedEvent = { ...event, payload: safePayload as unknown } as AppEvent;
 
     this.printToConsole(auditedEvent);
 
@@ -150,17 +154,17 @@ export class AuditService implements OnDestroy {
    * @param obj Objeto a serializar/sanitizar.
    * @returns Una copia limpia y serializable del objeto.
    */
-  private safeSerialize(obj: any): any {
+  private safeSerialize(obj: unknown): unknown {
     if (obj === undefined || obj === null) return obj;
     if (typeof obj !== 'object') return obj;
 
-    const seen = new WeakSet();
-    const clean = (val: any, depth = 0): any => {
+    const seen = new WeakSet<object>();
+    const clean = (val: unknown, depth = 0): unknown => {
       if (depth > 2) return '[Object (Trunked Depth)]';
       if (val === null || typeof val !== 'object') return val;
-      if (seen.has(val)) return '[Circular Reference]';
+      if (seen.has(val as object)) return '[Circular Reference]';
 
-      seen.add(val);
+      seen.add(val as object);
 
       if (Array.isArray(val)) {
         if (val.length > 20) {
@@ -169,9 +173,10 @@ export class AuditService implements OnDestroy {
         return val.map(i => clean(i, depth + 1));
       }
 
-      const res: any = {};
-      for (const key of Object.keys(val)) {
-        res[key] = clean(val[key], depth + 1);
+      const res: Record<string, unknown> = {};
+      const objVal = val as Record<string, unknown>;
+      for (const key of Object.keys(objVal)) {
+        res[key] = clean(objVal[key], depth + 1);
       }
       return res;
     };

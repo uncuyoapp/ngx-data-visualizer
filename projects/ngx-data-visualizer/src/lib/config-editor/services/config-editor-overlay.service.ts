@@ -5,7 +5,7 @@ import { Dataset } from '../../services/dataset';
 
 export interface ConfigEditorOverlayOptions<TConfig> {
   elementRef: ElementRef;
-  component: ComponentType<any>;
+  component: ComponentType<unknown>;
   dataset: Dataset;
   options: TConfig;
   onOptionsChange: (newOptions: TConfig) => void;
@@ -19,7 +19,7 @@ export class ConfigEditorOverlayService {
   private readonly overlay = inject(Overlay);
   private nextZIndex = 1000; // Z-index base inicial para apilar editores
 
-  create<TConfig>(config: ConfigEditorOverlayOptions<TConfig>): { overlayRef: OverlayRef; componentRef: ComponentRef<any> } {
+  create<TConfig>(config: ConfigEditorOverlayOptions<TConfig>): { overlayRef: OverlayRef; componentRef: ComponentRef<unknown> } {
     const overlayRef = this.overlay.create({
       hasBackdrop: false,
       panelClass: 'viz-config-editor-pane',
@@ -64,11 +64,15 @@ export class ConfigEditorOverlayService {
     nativeEl.addEventListener('touchstart', bringToFront);
 
     // Suscripción a los outputs del componente dinámico
-    const subOptions = componentRef.instance.optionsChange.subscribe((newOptions: TConfig) => {
+    const instance = componentRef.instance as unknown as {
+      optionsChange: { subscribe: (cb: (newOptions: TConfig) => void) => { unsubscribe: () => void } };
+      closeEditor: { subscribe: (cb: () => void) => { unsubscribe: () => void } };
+    };
+    const subOptions = instance.optionsChange.subscribe((newOptions: TConfig) => {
       config.onOptionsChange(newOptions);
     });
 
-    const subClose = componentRef.instance.closeEditor.subscribe(() => {
+    const subClose = instance.closeEditor.subscribe(() => {
       config.onClose();
     });
 

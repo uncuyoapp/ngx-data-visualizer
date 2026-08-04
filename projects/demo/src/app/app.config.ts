@@ -1,10 +1,9 @@
 import { ApplicationConfig } from "@angular/core";
-import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import { provideAnimations } from "@angular/platform-browser/animations";
+import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import {
   provideDataVisualizerCharts,
   provideDataVisualizerTables,
-  DATA_VISUALIZER_CONFIG,
 } from "ngx-data-visualizer";
 import { routes } from "./app.routes";
 

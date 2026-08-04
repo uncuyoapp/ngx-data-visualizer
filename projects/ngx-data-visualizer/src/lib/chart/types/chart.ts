@@ -1,4 +1,5 @@
-import { ChartOptions } from "../../types/data.types";
+import { ChartOptions, PercentTransformationResult } from "../../types/data.types";
+
 import { ChartData } from "../utils/chart-data";
 import { ChartConfiguration, ChartError } from "./chart-configuration";
 
@@ -97,7 +98,10 @@ export abstract class Chart {
   abstract hide(): void;
 
   /** Alterna el modo de visualización de porcentajes */
-  abstract togglePercentMode(): void;
+  abstract togglePercentMode(enable?: boolean): PercentTransformationResult;
+
+  /** Consulta si el gráfico se encuentra en modo porcentual */
+  abstract isPercentMode(): boolean;
 
   /** Alterna la visibilidad de la leyenda nativa del gráfico */
   abstract toggleLegendVisibility(show: boolean): void;

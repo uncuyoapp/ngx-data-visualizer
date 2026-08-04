@@ -339,3 +339,18 @@ export interface Series {
   /** Indica si la serie es una línea de referencia global o meta (goal) */
   isReferenceSeries?: boolean;
 }
+
+export type PercentErrorCode =
+  | 'SINGLE_SERIES'
+  | 'ALREADY_PERCENT'
+  | 'KPI_NO_DIMENSION'
+  | 'INTRINSIC_PERCENT'
+  | 'NEGATIVE_VALUES_STACKED'
+  | 'EMPTY_DATASET';
+
+export interface PercentTransformationResult {
+  success: boolean;
+  code?: PercentErrorCode;
+  message?: string;
+}
+

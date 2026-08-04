@@ -25,7 +25,7 @@ import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
 import { EventBusService } from "../services/event-bus.service";
 import { Filters } from "../services/types";
-import { ChartOptions, Goal, Series } from "../types/data.types";
+import { ChartOptions, Goal, PercentTransformationResult, Series } from "../types/data.types";
 import { VisualizerEventType } from "../types/visualizer-event.types";
 import { injectAutoUpdate } from "../utils/auto-update.helper";
 import { EchartsComponent } from "./echart/echarts.component";
@@ -371,8 +371,15 @@ export class ChartComponent implements OnDestroy {
   }
 
   /** Cambia la visualización del gráfico a modo porcentual. */
-  public toPercentage(): void {
-    this._executeOnChart((chart) => chart.togglePercentMode());
+  public toPercentage(enable?: boolean): PercentTransformationResult {
+    const res = this._executeOnChart((chart) => chart.togglePercentMode(enable));
+    return res ?? { success: false, message: 'La instancia principal del gráfico no está inicializada.' };
+  }
+
+  /** Consulta si el gráfico se encuentra en modo porcentual. */
+  public isPercentMode(): boolean {
+    const res = this._executeOnChart((chart) => chart.isPercentMode());
+    return !!res;
   }
 
   /** Exporta el gráfico actual a un formato específico ('png' o 'jpg'). */

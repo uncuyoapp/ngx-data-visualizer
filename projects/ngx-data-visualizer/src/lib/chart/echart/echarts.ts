@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ECharts, EChartsOption } from 'echarts';
 import { EC_KPI_TITLE_CONFIG, ECharts as EChartsConstants } from '../../types/constants';
+import { PercentTransformationResult } from '../../types/data.types';
 import { Chart } from '../types/chart';
 import { ChartConfiguration, EChartsLibraryOptions } from '../types/chart-configuration';
 import { ChartLogicHelper } from '../utils/chart-logic.helper';
@@ -10,6 +11,7 @@ import { LayoutManager } from './managers/layout-manager';
 import { SeriesManager } from './managers/series-manager';
 import { TooltipManager } from './managers/tooltip-manager';
 import { SeriesConfigType } from './types/echart-base';
+import { PercentTransformer } from './utils/percent-transformer';
 
 /**
  * @description
@@ -53,6 +55,9 @@ export class EChart extends Chart {
 
   /** Manejador de distribución espacial y cálculo de grilla (layout). */
   private layoutManager!: LayoutManager;
+
+  /** Módulo de transformación y validación de modo porcentual */
+  private readonly percentTransformer = new PercentTransformer();
 
   /** Nombre identificador heredado de la clase base. */
   override name: string = '';
@@ -148,6 +153,10 @@ export class EChart extends Chart {
     this.configuration = config;
     this.libraryOptions = config.libraryOptions;
     this.chartOptions = config.options;
+
+    if (!config.options?.toPercent && this.percentTransformer?.isProcessed()) {
+      this.percentTransformer.process(this, false);
+    }
 
     if (this.tooltipManager) {
       this.tooltipManager.updateDecimals(this.chartOptions.tooltip.decimals);
@@ -310,21 +319,22 @@ export class EChart extends Chart {
   hide(): void { }
 
   /**
-   * Alterna el modo porcentual del gráfico
-   * @throws {Error} Si el gráfico no está en modo apilado
+   * Alterna el modo porcentual del gráfico delegando en el PercentTransformer
    */
-  togglePercentMode(): void {
-    if (!this.chartData.seriesConfig.stack) {
-      throw new Error("El modo porcentual requiere series apiladas");
+  override togglePercentMode(enable?: boolean): PercentTransformationResult {
+    const result = this.percentTransformer.process(this, enable);
+    if (result.success) {
+      this.invalidateCache();
+      this.render();
     }
-    this.chartOptions.toPercent = !this.chartOptions.toPercent;
-    this.invalidateCache();
-    if (this.chartOptions.toPercent) {
-      this.enablePercentMode();
-    } else {
-      this.disablePercentMode();
-    }
-    this.render();
+    return result;
+  }
+
+  /**
+   * Indica si el gráfico se encuentra en modo porcentual
+   */
+  override isPercentMode(): boolean {
+    return !!this.chartOptions?.toPercent;
   }
 
   /**
@@ -560,6 +570,13 @@ export class EChart extends Chart {
    * @private
    */
   private generateConfiguration(): void {
+    if (this.chartOptions.toPercent) {
+      const validationError = this.percentTransformer.validate(this);
+      if (validationError) {
+        this.percentTransformer.process(this, false);
+      }
+    }
+
     if (ChartLogicHelper.isDaZero(this.configuration.dataset)) {
       this.generateKpiConfiguration();
       return;
@@ -616,6 +633,10 @@ export class EChart extends Chart {
    * @private
    */
   private generateStandardConfiguration(): void {
+    if (this.chartOptions.toPercent && !this.percentTransformer.isProcessed()) {
+      this.percentTransformer.process(this, true);
+    }
+
     const ctx = {
       chartType: this.libraryOptions['type'] as string,
       isPie: this.chartOptions.type === 'pie',

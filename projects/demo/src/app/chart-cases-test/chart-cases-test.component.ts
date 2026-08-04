@@ -12,6 +12,7 @@ import {
   Dataset,
   Dimension,
   Item,
+  PercentTransformationResult,
 } from 'ngx-data-visualizer';
 
 // Importación directa de los datasets y dimensiones de prueba
@@ -45,6 +46,9 @@ export class ChartCasesTestComponent {
 
   // Flag para saber si la vista porcentual está activa
   isPercentActive = false;
+
+  // Resultado de la última transformación porcentual
+  percentResult: PercentTransformationResult | null = null;
 
   // Datasets tipados e instanciados
   dataset1 = new Dataset({
@@ -143,9 +147,21 @@ export class ChartCasesTestComponent {
    * Cambia el dataset activo y reajusta firstLevel/secondLevel en chartOptions
    * de acuerdo con las dimensiones del dataset elegido para evitar errores de renderizado.
    */
+  private syncPercentState(): void {
+    if (this.chartComponent) {
+      this.isPercentActive = this.chartComponent.isPercentMode();
+    }
+  }
+
   onDatasetChange(datasetId: number): void {
+    if (this.chartComponent?.isPercentMode()) {
+      this.chartComponent.toPercentage(false);
+    }
+
     this.selectedDatasetId = datasetId;
     this.showEditor = false;
+    this.isPercentActive = false;
+    this.percentResult = null;
 
     // Resetear los filtros de TODOS los datasets para arrancar limpios
     [this.dataset1, this.dataset2, this.dataset3, this.dataset4, this.dataset5].forEach(ds => {
@@ -173,10 +189,15 @@ export class ChartCasesTestComponent {
       ...this.chartConfig,
       type: 'column',
       stacked: null,
+      toPercent: false,
       xAxis: {
         ...this.chartConfig.xAxis,
         firstLevel: this.activeDataset.dimensions[0]?.id ?? 0,
         secondLevel: null,
+      },
+      yAxis: {
+        title: 'Cantidad / Valor Nominal',
+        max: null,
       },
       legends: {
         show: datasetId !== 1,
@@ -185,7 +206,10 @@ export class ChartCasesTestComponent {
       }
     };
 
-    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.syncPercentState();
+      this.cdr.markForCheck();
+    });
   }
 
   /**
@@ -200,9 +224,10 @@ export class ChartCasesTestComponent {
    * Alterna entre visualización de valores nominales y porcentajes
    */
   togglePercentView(): void {
-    this.isPercentActive = !this.isPercentActive;
     if (this.chartComponent) {
-      this.chartComponent.toPercentage();
+      const res = this.chartComponent.toPercentage(this.isPercentActive);
+      this.percentResult = res;
+      this.syncPercentState();
     }
     this.cdr.markForCheck();
   }
@@ -253,7 +278,10 @@ export class ChartCasesTestComponent {
       })),
     };
     this.activeDataset.applyFilters(filtersConfig);
-    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.syncPercentState();
+      this.cdr.markForCheck();
+    });
   }
 
   clearFilters(): void {
@@ -264,7 +292,10 @@ export class ChartCasesTestComponent {
       });
     });
     this.activeDataset.applyFilters({});
-    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.syncPercentState();
+      this.cdr.markForCheck();
+    });
   }
 
   onDimensionChange(): void {

@@ -23,7 +23,7 @@ export type VisualizerEvent =
   | {
     type: VisualizerEventType.CHART_INIT;
     instanceId: string;
-    payload: { datasetId?: string | number; chartOptions: any };
+    payload: { datasetId?: string | number; chartOptions: unknown };
   }
   | {
     type: VisualizerEventType.CHART_CONFIG_CHANGE;
@@ -48,7 +48,7 @@ export type VisualizerEvent =
   | {
     type: VisualizerEventType.CHART_VIEW_INIT;
     instanceId: string;
-    payload: { initOptions: any };
+    payload: { initOptions: unknown };
   }
   | {
     type: VisualizerEventType.CHART_VIEW_READY;
@@ -68,7 +68,7 @@ export type VisualizerEvent =
   | {
     type: VisualizerEventType.CHART_LAYOUT_CONFIGURE;
     instanceId: string;
-    payload: { chartType?: string; hasTitle: boolean; hasLegend: boolean; grid?: any; pie?: any };
+    payload: { chartType?: string; hasTitle: boolean; hasLegend: boolean; grid?: unknown; pie?: unknown };
   }
   | {
     type: VisualizerEventType.CHART_SERIES_CONFIGURE;
@@ -83,7 +83,7 @@ export type VisualizerEvent =
   | {
     type: VisualizerEventType.TABLE_INIT;
     instanceId: string;
-    payload: { datasetId?: string | number; tableOptions: any };
+    payload: { datasetId?: string | number; tableOptions: unknown };
   }
   | {
     type: VisualizerEventType.TABLE_CONFIGURE;

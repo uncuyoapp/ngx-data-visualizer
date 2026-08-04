@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  OnDestroy,
   QueryList,
   ViewChildren,
   computed,
@@ -23,6 +22,7 @@ import { ChartWrapperComponent } from "./components/chart-wrapper/chart-wrapper.
  * Se mantiene el selector y la exportación retrocompatible para evitar breaking-changes.
  */
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: "libMultipleChart, [libMultipleChart]",
   standalone: true,
   exportAs: "libMultipleChart",
@@ -31,7 +31,7 @@ import { ChartWrapperComponent } from "./components/chart-wrapper/chart-wrapper.
   styleUrl: "./multiple-chart.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MultipleChartComponent implements OnDestroy {
+export class MultipleChartComponent {
   /** Conjunto de datos para los gráficos. */
   dataset = input.required<Dataset>();
 
@@ -103,10 +103,6 @@ export class MultipleChartComponent implements OnDestroy {
         inline: "center",
       });
     }
-  }
-
-  ngOnDestroy(): void {
-    // Angular limpia automáticamente los efectos reactivos y los componentes declarados en plantilla.
   }
 }
 

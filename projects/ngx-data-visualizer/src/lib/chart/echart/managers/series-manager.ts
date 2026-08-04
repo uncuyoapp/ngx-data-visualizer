@@ -19,8 +19,8 @@ export interface SeriesContext {
  * selección interactiva de series. Adicionalmente, computa valores acumulados para visualizaciones en porcentajes.
  */
 export class SeriesManager {
-  /** Array de acumulación por cada índice de datos a través de todas las series. Usado para gráficos porcentuales. */
-  private totals: number[] = [];
+  /** Diccionario de acumulación por clave de pila y por cada índice de datos. Usado para gráficos porcentuales. */
+  private totals: Record<string, number[]> = {};
   /** Valor máximo hallado en las series dibujadas. Utilizado para calcular la separación dinámica del Label (NameGap). */
   private maxValue: number = 0;
 
@@ -31,11 +31,13 @@ export class SeriesManager {
   constructor(private readonly chartInstance: ECharts) { }
 
   /**
-   * Obtiene los totales acumulados por todas las series para cada índice respectivo en el eje.
-   * Necesario para dibujar los gráficos porcentuales apilados.
+   * Obtiene los totales acumulados por todas las series para una pila específica.
    */
-  public getTotals(): number[] {
-    return this.totals;
+  public getTotals(stackKey: string = 'default'): number[] | Record<string, number[]> {
+    if (stackKey && this.totals[stackKey]) {
+      return this.totals[stackKey];
+    }
+    return this.totals['default'] || this.totals;
   }
 
   /**
@@ -159,13 +161,15 @@ export class SeriesManager {
       const configKey = EC_SERIES_CONFIG[originalType as ObjectKey] ? originalType : s.type;
       Object.assign(s, EC_SERIES_CONFIG[configKey as ObjectKey] || {});
 
-      // Process Data
-      s.data = this.processSeriesDataPayload(s.data, context);
-
       // Ensure Stack
       if (!s.stack && context.stack) {
         s.stack = context.stack;
       }
+
+      const stackKey = s.stack || context.stack || 'default';
+
+      // Process Data
+      s.data = this.processSeriesDataPayload(s.data, context, stackKey);
 
       // Ensure visible
       s.visible = true;
@@ -178,46 +182,57 @@ export class SeriesManager {
    * Procesa estructuralmente una dupla matriz de valores para retornar la transformación pertinente. 
    * Extrae simultáneamente el valor Máximo detectado para cálculos futuros de layout.
    * Si las opciones refieren a modo porcentual, computa el porcentaje frente a todos los `totals` generados de antemano.
-   * Si es Pie Chart lo decodifica a `{name, value}` al estilo objeto iterador.
+   * Preserva el valor nominal original en la propiedad `nominalValue` del objeto retornado.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private processSeriesDataPayload(data: any[], context: SeriesContext) {
+  private processSeriesDataPayload(data: any[], context: SeriesContext, stackKey: string = 'default') {
+    const stackTotals = this.totals[stackKey] || this.totals['default'] || [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((v: any, i) => {
-      const numericVal = parseFloat(v[1]) || 0;
+      const numericVal = Number.parseFloat(v[1]) || 0;
       this.maxValue = Math.max(this.maxValue, numericVal);
+      const totalForIdx = stackTotals[i] || 1;
 
       if (!context.isPie) {
-        return context.toPercent
-          ? (numericVal * 100) / (this.totals[i] || 1)
-          : v[1];
+        if (context.toPercent) {
+          const porcentaje = (numericVal * 100) / (totalForIdx || 1);
+          return {
+            value: porcentaje,
+            nominalValue: numericVal,
+          };
+        }
+        return v[1];
       } else {
+        const porcentaje = (numericVal * 100) / (totalForIdx || 1);
         return {
           name: v[0],
-          value: context.toPercent
-            ? (numericVal * 100) / (this.totals[i] || 1)
-            : v[1]
+          value: context.toPercent ? porcentaje : v[1],
+          ...(context.toPercent ? { nominalValue: numericVal } : {}),
         };
       }
     });
   }
 
   /**
-   * Recorre recursivamente todas las series para acumular sus valores respectivos por el índice de su columna de datos. 
-   * Asigna localmente la matriz numérica en `options.totals` para su posterior uso en renderizaciones apiladas o porcentuales.
+   * Recorre recursivamente todas las series para acumular sus valores respectivos por clave de apilamiento e índice.
    * @param series - Array bruto de series que se pretenden graficar.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public summarizeTotals(series: Array<any>): void {
-    this.totals = [];
+    this.totals = {};
     series.forEach((s) => {
+      const stackKey = s.stack || 'default';
+      if (!this.totals[stackKey]) {
+        this.totals[stackKey] = [];
+      }
+      const stackTotals = this.totals[stackKey];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ((s.data as Array<any>) || []).forEach((v: any, i) => {
-        const val = parseFloat(v[1]) || 0;
-        if (!this.totals[i]) {
-          this.totals[i] = val;
+        const val = Number.parseFloat(v[1]) || 0;
+        if (stackTotals[i] === undefined) {
+          stackTotals[i] = val;
         } else {
-          this.totals[i] += val;
+          stackTotals[i] += val;
         }
       });
     });

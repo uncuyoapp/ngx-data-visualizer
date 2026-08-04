@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EChartsOption } from 'echarts';
 import { ECharts } from '../../../types/constants';
 
@@ -8,8 +7,8 @@ import { ECharts } from '../../../types/constants';
 export interface TooltipParams {
   /** Nombre del punto de datos */
   name: string;
-  /** Valor del punto de datos */
-  value: number | string;
+  /** Valor del punto de datos (escalar o diccionario estructurado) */
+  value: number | string | Record<string, unknown>;
   /** Nombre de la serie */
   seriesName: string;
   /** Índice de la serie */
@@ -18,10 +17,11 @@ export interface TooltipParams {
   dataIndex: number;
   /** Marcador visual de la serie */
   marker: string;
-  /** Propiedades adicionales */
-  [key: string]: string | number;
+  /** Objeto de datos nativo o personalizado provisto por ECharts */
+  data?: Record<string, unknown> | unknown[];
+  /** Propiedades dinámicas adicionales provistas por ECharts */
+  [key: string]: unknown;
 }
-
 
 /**
  * Clase administradora encargada de manejar y gestionar la lógica reactiva de los tooltips
@@ -115,11 +115,13 @@ export class TooltipManager {
    * @param options Opciones de ECharts
    * @private
    */
-  private getSeriesArray(options: EChartsOption): any[] {
+  private getSeriesArray(options: EChartsOption): Record<string, unknown>[] {
     if (!options.series) {
       return [];
     }
-    return Array.isArray(options.series) ? options.series : [options.series];
+    return Array.isArray(options.series)
+      ? (options.series as Record<string, unknown>[])
+      : [options.series as Record<string, unknown>];
   }
 
   /**
@@ -128,11 +130,11 @@ export class TooltipManager {
    * @private
    */
   private isPieChart(options: EChartsOption): boolean {
-    if ((options as any)?.type === 'pie') {
+    if ((options as Record<string, unknown>)?.['type'] === 'pie') {
       return true;
     }
     const seriesArray = this.getSeriesArray(options);
-    return seriesArray.some((s: any) => s?.type === 'pie');
+    return seriesArray.some((s) => s?.['type'] === 'pie');
   }
 
   /**
@@ -141,8 +143,8 @@ export class TooltipManager {
    * @private
    */
   private isTooltipShared(options: EChartsOption): boolean {
-    const tooltipConfig = options.tooltip as any;
-    return tooltipConfig?.trigger === 'axis' || !!tooltipConfig?.shared;
+    const tooltipConfig = options.tooltip as Record<string, unknown> | undefined;
+    return tooltipConfig?.['trigger'] === 'axis' || !!tooltipConfig?.['shared'];
   }
 
   /**
@@ -150,12 +152,12 @@ export class TooltipManager {
    * @param options Opciones de ECharts
    * @private
    */
-  private getPieSeries(options: EChartsOption): any {
+  private getPieSeries(options: EChartsOption): Record<string, unknown> | undefined {
     const seriesArray = this.getSeriesArray(options);
     if (seriesArray.length === 0) {
       return undefined;
     }
-    return seriesArray.find((s: any) => s?.type === 'pie') ?? seriesArray[0];
+    return seriesArray.find((s) => s?.['type'] === 'pie') ?? seriesArray[0];
   }
 
   /**
@@ -203,26 +205,26 @@ export class TooltipManager {
     options: EChartsOption
   ): string {
     const pieSeries = this.getPieSeries(options);
-    if (!pieSeries || !Array.isArray(pieSeries.data)) {
+    const pieData = pieSeries?.['data'];
+    if (!pieSeries || !Array.isArray(pieData)) {
       const title = this.formatTooltipTitle(params, options);
       return Array.isArray(params)
         ? this.formatMultipleParamsTooltip(params, title, options)
         : this.formatSingleParamTooltip(params, title, options);
     }
 
-    const seriesName = pieSeries.name || (Array.isArray(params) ? params[0]?.seriesName : params?.seriesName) || 'Torta';
-    const tooltipConfig = options.tooltip as any;
-    const showPercentage = !!tooltipConfig?.showPercentage;
-    const showTotal = !!tooltipConfig?.showTotal;
+    const seriesName = (pieSeries['name'] as string) || (Array.isArray(params) ? params[0]?.seriesName : params?.seriesName) || 'Torta';
+    const tooltipConfig = options.tooltip as Record<string, unknown> | undefined;
+    const showPercentage = !!tooltipConfig?.['showPercentage'];
+    const showTotal = !!tooltipConfig?.['showTotal'];
 
-    const pieData: any[] = pieSeries.data;
-    const totalSum = this.calculatePieTotal(pieData);
+    const totalSum = this.calculatePieTotal(pieData as unknown[]);
 
     const palette = Array.isArray(options.color)
       ? (options.color as string[])
       : (ECharts.DEFAULT_PALETTE as string[]);
 
-    const itemsHtml = pieData
+    const itemsHtml = (pieData as unknown[])
       .map((item, idx) => this.formatPieSliceItem(item, idx, totalSum, showPercentage, palette))
       .join('');
 
@@ -247,10 +249,10 @@ export class TooltipManager {
    * @returns Suma total numérica de los valores válidos
    * @private
    */
-  private calculatePieTotal(pieData: any[]): number {
+  private calculatePieTotal(pieData: unknown[]): number {
     let totalSum = 0;
     pieData.forEach(item => {
-      const val = typeof item === 'object' && item !== null ? item.value : item;
+      const val = typeof item === 'object' && item !== null ? (item as Record<string, unknown>)['value'] : item;
       const num = this.parseNumericValue(val);
       if (!Number.isNaN(num)) {
         totalSum += num;
@@ -270,21 +272,26 @@ export class TooltipManager {
    * @private
    */
   private formatPieSliceItem(
-    item: any,
+    item: unknown,
     idx: number,
     totalSum: number,
     showPercentage: boolean,
     palette: string[]
   ): string {
-    const sliceName = (typeof item === 'object' && item !== null && item.name != null) ? item.name : `Porción ${idx + 1}`;
-    const rawVal = typeof item === 'object' && item !== null ? item.value : item;
+    const itemObj = (typeof item === 'object' && item !== null) ? (item as Record<string, unknown>) : null;
+    const rawName = itemObj?.['name'];
+    const sliceName =
+      typeof rawName === 'string' || typeof rawName === 'number'
+        ? String(rawName)
+        : `Porción ${idx + 1}`;
+    const rawVal = itemObj ? itemObj['value'] : item;
     const val = this.parseNumericValue(rawVal);
 
     const valueText = this.formatPieSliceValueText(val, totalSum, showPercentage);
 
-    const color = (typeof item === 'object' && item?.itemStyle?.color)
-      ? item.itemStyle.color
-      : palette[idx % palette.length];
+    const itemStyle = itemObj?.['itemStyle'] as Record<string, unknown> | undefined;
+    const rawColor = itemStyle?.['color'];
+    const color = typeof rawColor === 'string' ? rawColor : palette[idx % palette.length];
 
     const marker = `<span class="marker" style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
 
@@ -337,12 +344,12 @@ export class TooltipManager {
       const dataIndex = Array.isArray(params) ? params[0].dataIndex : params.dataIndex;
 
       // Intentar obtener la categoría padre si existe una jerarquía de doble eje (en X o Y)
-      const parentX = this.getParentCategoryValue(options.xAxis as any[], dataIndex, 'X');
+      const parentX = this.getParentCategoryValue(options.xAxis as Record<string, unknown>[], dataIndex, 'X');
       if (parentX !== null) {
         return `${parentX} - ${title}`;
       }
 
-      const parentY = this.getParentCategoryValue(options.yAxis as any[], dataIndex, 'Y');
+      const parentY = this.getParentCategoryValue(options.yAxis as Record<string, unknown>[], dataIndex, 'Y');
       if (parentY !== null) {
         return `${parentY} - ${title}`;
       }
@@ -365,7 +372,7 @@ export class TooltipManager {
    * @private
    */
   private getParentCategoryValue(
-    axes: any[] | undefined,
+    axes: Record<string, unknown>[] | undefined,
     dataIndex: number,
     axisName: 'X' | 'Y'
   ): string | null {
@@ -375,13 +382,15 @@ export class TooltipManager {
 
     const axis0 = axes[0];
     const axis1 = axes[1];
-    if (!axis0?.data || !axis1?.data) {
+    const axis0Data = axis0?.['data'] as unknown[] | undefined;
+    const axis1Data = axis1?.['data'] as unknown[] | undefined;
+    if (!axis0Data || !axis1Data) {
       throw new Error(`Datos de eje ${axisName} no disponibles`);
     }
 
-    const ratio = axis0.data.length / axis1.data.length;
+    const ratio = axis0Data.length / axis1Data.length;
     const parentIndex = Math.floor(dataIndex / ratio);
-    return axis1.data[parentIndex] !== undefined ? String(axis1.data[parentIndex]) : null;
+    return axis1Data[parentIndex] !== undefined ? String(axis1Data[parentIndex]) : null;
   }
 
   /**
@@ -402,15 +411,16 @@ export class TooltipManager {
         throw new Error('Parámetro del tooltip no válido');
       }
 
-      const tooltipConfig = options?.tooltip as any;
-      const showPercentage = !!tooltipConfig?.showPercentage;
-      const showTotal = !!tooltipConfig?.showTotal;
+      const tooltipConfig = options?.tooltip as Record<string, unknown> | undefined;
+      const showPercentage = !!tooltipConfig?.['showPercentage'];
+      const showTotal = !!tooltipConfig?.['showTotal'];
       const isPie = options ? this.isPieChart(options) : false;
 
       const pieSeries = (isPie && options && (showPercentage || showTotal)) ? this.getPieSeries(options) : null;
-      const totalSum = pieSeries ? this.calculatePieTotal(pieSeries?.data || []) : 0;
+      const pieData = pieSeries?.['data'];
+      const totalSum = pieData && Array.isArray(pieData) ? this.calculatePieTotal(pieData as unknown[]) : 0;
 
-      const rawVal = this.parseNumericValue(param.value);
+      const rawVal = this.parseNumericValue(param.data ?? param.value);
       let valueText = '-';
 
       if (!Number.isNaN(rawVal)) {
@@ -455,7 +465,7 @@ export class TooltipManager {
   private calculatePercentageString(param: TooltipParams, rawVal: number, totalSum: number): string {
     let percentage: number;
     if (typeof param['percent'] === 'number') {
-      percentage = param['percent'];
+      percentage = param['percent'] as number;
     } else if (totalSum !== 0) {
       percentage = (rawVal / totalSum) * 100;
     } else {
@@ -497,13 +507,13 @@ export class TooltipManager {
 
       focusParam ??= params.find(p => p.value !== null && p.value !== undefined && p.value !== '') ?? params[0];
 
-      const focusSeriesConfig = seriesArray[focusParam.seriesIndex] as any;
-      const activeStack = focusSeriesConfig?.stack;
+      const focusSeriesConfig = seriesArray[focusParam.seriesIndex];
+      const activeStack = focusSeriesConfig?.['stack'];
 
       // 2. Filtrado Físico de Series (DEC-012)
       // Filtramos las series que se deben ocultar basándonos en el stack sobre el que está el cursor.
       const filteredParams = params.filter(param => {
-        const seriesConfig = seriesArray[param.seriesIndex] as any;
+        const seriesConfig = seriesArray[param.seriesIndex];
         if (!seriesConfig) return true;
 
         // Regla de Excepción: Las líneas de referencia globales (líneas sin stack) se muestran siempre.
@@ -512,7 +522,7 @@ export class TooltipManager {
         }
 
         // Regla de Stack: Si hay una pila activa, solo mostrar las series que pertenezcan a esa misma pila.
-        if (activeStack && seriesConfig.stack !== activeStack) {
+        if (activeStack && seriesConfig['stack'] !== activeStack) {
           return false;
         }
 
@@ -528,18 +538,18 @@ export class TooltipManager {
       // Calculamos la sumatoria para porcentajes y totales usando únicamente series normales visibles (no de referencia).
       let totalSum = 0;
       normalParams.forEach(param => {
-        const numericValue = this.parseNumericValue(param.value);
+        const numericValue = this.parseNumericValue(param.data ?? param.value);
         if (!Number.isNaN(numericValue)) {
           totalSum += numericValue;
         }
       });
 
       // 5. Lectura de directivas visuales de configuración
-      const tooltipConfig = options.tooltip as any;
-      const showPercentage = !!tooltipConfig?.showPercentage;
-      const showTotal = !!tooltipConfig?.showTotal;
-      const threshold = tooltipConfig?.columnThreshold ?? 10;
-      const maxCols = tooltipConfig?.maxColumns ?? 3;
+      const tooltipConfig = options.tooltip as Record<string, unknown> | undefined;
+      const showPercentage = !!tooltipConfig?.['showPercentage'];
+      const showTotal = !!tooltipConfig?.['showTotal'];
+      const threshold = (tooltipConfig?.['columnThreshold'] as number | undefined) ?? 10;
+      const maxCols = (tooltipConfig?.['maxColumns'] as number | undefined) ?? 3;
 
       // 6. Cálculo adaptativo del número de columnas (DEC-014)
       const totalItems = sortedParams.length;
@@ -549,9 +559,9 @@ export class TooltipManager {
 
       // 7. Construcción de items HTML individuales
       const itemsHtml = sortedParams.map(param => {
-        const seriesConfig = seriesArray[param.seriesIndex] as any;
+        const seriesConfig = seriesArray[param.seriesIndex];
         const isReferenceLine = this.isReferenceSeries(seriesConfig);
-        const val = this.parseNumericValue(param.value);
+        const val = this.parseNumericValue(param.data ?? param.value);
 
         let valueText = '-';
         if (!Number.isNaN(val)) {
@@ -559,7 +569,13 @@ export class TooltipManager {
 
           // Si se solicita porcentaje y no es una línea de referencia, calculamos su cuota sobre el total
           if (showPercentage && !isReferenceLine) {
-            const percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
+            let percentage: number;
+            const paramDataObj = param.data as Record<string, unknown> | undefined;
+            if (paramDataObj && typeof paramDataObj === 'object' && 'value' in paramDataObj && typeof paramDataObj['value'] === 'number') {
+              percentage = paramDataObj['value'] as number;
+            } else {
+              percentage = totalSum !== 0 ? (val / totalSum) * 100 : 0;
+            }
             const percentageStr = this.formatPercentageValue(percentage);
             valueText = `${valFormatted} (${percentageStr}%)`;
           } else {
@@ -609,17 +625,42 @@ export class TooltipManager {
   }
 
   /**
-   * Convierte un valor de tipo texto o numérico a su equivalente numérico flotante.
+   * Extrae y convierte el valor numérico desde un objeto de datos (revisando `nominalValue` o `value`).
+   * @param obj - Objeto de entrada
+   * @returns El valor numérico extraído o NaN.
+   * @private
+   */
+  private parseObjectValue(obj: Record<string, unknown>): number {
+    const rawVal = obj['nominalValue'] ?? obj['value'];
+    if (typeof rawVal === 'number') return rawVal;
+    if (typeof rawVal === 'string') {
+      return Number.parseFloat(rawVal.replace(/[^\d.-]/g, ''));
+    }
+    if (typeof rawVal === 'object' && rawVal !== null && rawVal !== obj) {
+      return this.parseObjectValue(rawVal as Record<string, unknown>);
+    }
+    return Number.NaN;
+  }
+
+  /**
+   * Convierte un valor de tipo texto o numérico u objeto de datos a su equivalente numérico flotante.
+   * Si recibe un objeto, extrae `nominalValue` o `value`.
    * Remueve caracteres que no sean dígitos, signos o puntos decimales si recibe un string formateado.
    * @param value - Valor de entrada
    * @returns El número flotante o NaN si la conversión no es posible.
    * @private
    */
-  private parseNumericValue(value: number | string | null | undefined): number {
-    if (value === null || value === undefined) return Number.NaN;
+  private parseNumericValue(value: unknown): number {
+    if (value == null) return Number.NaN;
     if (typeof value === 'number') return value;
-    const parsed = Number.parseFloat(value.replace(/[^\d.-]/g, ''));
-    return Number.isNaN(parsed) ? Number.NaN : parsed;
+    if (typeof value === 'string') {
+      return Number.parseFloat(value.replace(/[^\d.-]/g, ''));
+    }
+    if (typeof value === 'object') {
+      return this.parseObjectValue(value as Record<string, unknown>);
+    }
+
+    return Number.NaN;
   }
 
   /**
@@ -629,8 +670,8 @@ export class TooltipManager {
    * @returns True si la serie tiene la propiedad isReferenceSeries en true, False en caso contrario.
    * @private
    */
-  private isReferenceSeries(seriesConfig: any): boolean {
-    return !!seriesConfig?.isReferenceSeries;
+  private isReferenceSeries(seriesConfig?: Record<string, unknown>): boolean {
+    return !!seriesConfig?.['isReferenceSeries'];
   }
 
   /**
@@ -667,4 +708,3 @@ export class TooltipManager {
     }
   }
 }
-

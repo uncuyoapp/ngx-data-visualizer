@@ -144,7 +144,7 @@
                   <div class="dimension-header pb-2 border-bottom mb-2">
                     <div class="form-check">
                       <input type="checkbox" class="form-check-input cursor-pointer" [(ngModel)]="dimension.selected"
-                        (change)="onDimensionChange(dimension)" [id]="'dim-' + dimension.id" />
+                        (change)="onDimensionChange()" [id]="'dim-' + dimension.id" />
                       <label class="form-check-label fw-semibold cursor-pointer text-secondary-emphasis"
                         [for]="'dim-' + dimension.id">
                         {{ dimension.name }}

@@ -267,7 +267,7 @@ export class ChartCasesTestComponent {
     this.cdr.markForCheck();
   }
 
-  onDimensionChange(_dimension: Dimension): void {
+  onDimensionChange(): void {
     this.filter();
   }
 

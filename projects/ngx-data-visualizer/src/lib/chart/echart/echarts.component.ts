@@ -208,7 +208,7 @@ export class EchartsComponent implements OnInit, OnDestroy {
       this.mainChart.instance.off("finished");
       this.mainChart.instance.off("legendselectchanged");
 
-      let finishedDebounceTimer: any;
+      let finishedDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
       // Listener para el fin del renderizado
       this.mainChart.instance.on("finished", () => {
@@ -287,7 +287,8 @@ export class EchartsComponent implements OnInit, OnDestroy {
           // Para gráficos de torta, emitimos cada rebanada como una "serie virtual" 
           // para que la leyenda pueda mostrarlas individualmente.
           const pieSeries = series[0];
-          typedSeries = (pieSeries.data as any[]).map((d: any, dataIndex: number) => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          typedSeries = ((pieSeries.data || []) as any[]).map((d: any, dataIndex: number) => ({
             name: d.name || "",
             color: this.getSafeColor({ seriesIndex: 0, dataIndex }, "#000000"),
             visible: true,
@@ -326,13 +327,11 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @param fallbackColor Color a retornar en caso de error o si no se encuentra el visual.
    * @returns El color en formato string.
    */
-  private getSafeColor(finder: any, fallbackColor: string): string {
+  private getSafeColor(finder: object, fallbackColor: string): string {
     try {
       if (!this.mainChart?.instance) return fallbackColor;
-      return (
-        (this.mainChart.instance as any).getVisual(finder, "color") ||
-        fallbackColor
-      );
+      const instance = this.mainChart.instance as unknown as { getVisual?: (finder: object, visual: string) => string };
+      return instance.getVisual?.(finder, "color") || fallbackColor;
     } catch {
       return fallbackColor;
     }

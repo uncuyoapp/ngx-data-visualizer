@@ -11,8 +11,8 @@ export class ConfigValidator {
    * @param prefix Prefijo para los mensajes de log.
    */
   public static validate(
-    config: Record<string, any>,
-    validReference: Record<string, any>,
+    config: Record<string, unknown>,
+    validReference: Record<string, unknown>,
     deprecatedPaths: Record<string, string>,
     prefix = "[ngx-data-visualizer]"
   ): void {
@@ -29,7 +29,7 @@ export class ConfigValidator {
    * Verifica si las rutas deprecadas se encuentran presentes en el objeto de configuración.
    */
   private static checkDeprecatedPaths(
-    config: Record<string, any>,
+    config: Record<string, unknown>,
     deprecatedPaths: Record<string, string>,
     prefix: string
   ): void {
@@ -44,8 +44,8 @@ export class ConfigValidator {
    * Verifica recursivamente si existen propiedades que no pertenecen al objeto de referencia.
    */
   private static checkUnknownProperties(
-    config: Record<string, any>,
-    reference: Record<string, any>,
+    config: Record<string, unknown>,
+    reference: Record<string, unknown>,
     currentPath: string,
     prefix: string
   ): void {
@@ -60,16 +60,19 @@ export class ConfigValidator {
         continue;
       }
 
+      const configVal = config[key];
+      const refVal = reference[key];
+
       // Si es un objeto, validar recursivamente
       if (
-        config[key] !== null &&
-        typeof config[key] === "object" &&
-        !Array.isArray(config[key]) &&
-        reference[key] !== null &&
-        typeof reference[key] === "object" &&
-        !Array.isArray(reference[key])
+        configVal !== null &&
+        typeof configVal === "object" &&
+        !Array.isArray(configVal) &&
+        refVal !== null &&
+        typeof refVal === "object" &&
+        !Array.isArray(refVal)
       ) {
-        this.checkUnknownProperties(config[key], reference[key], path, prefix);
+        this.checkUnknownProperties(configVal as Record<string, unknown>, refVal as Record<string, unknown>, path, prefix);
       }
     }
   }
@@ -77,15 +80,15 @@ export class ConfigValidator {
   /**
    * Determina de forma segura si un objeto tiene una propiedad anidada.
    */
-  private static hasNestedProperty(obj: any, path: string): boolean {
+  private static hasNestedProperty(obj: unknown, path: string): boolean {
     if (!obj) return false;
     const parts = path.split(".");
-    let current = obj;
+    let current = obj as Record<string, unknown>;
     for (const part of parts) {
       if (current === null || typeof current !== "object" || !(part in current)) {
         return false;
       }
-      current = current[part];
+      current = current[part] as Record<string, unknown>;
     }
     return true;
   }

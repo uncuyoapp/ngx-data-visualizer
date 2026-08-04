@@ -57,6 +57,7 @@ export class AxisManager {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const xAxis: any[] = [];
     const yAxis = this.createYAxis(chartOptions, layoutResult);
 
@@ -65,8 +66,7 @@ export class AxisManager {
         xAxis,
         chartData.seriesConfig.x1,
         chartData.seriesConfig.x2,
-        context,
-        libraryOptions
+        context
       );
     } else {
       this.configureSingleXAxis(xAxis, context);
@@ -99,6 +99,7 @@ export class AxisManager {
    * En ECharts el eje de valores se representa con tipo 'value' y formatea las marcas
    * de forma nativa sin concatenar sufijos (los cuales se reservan para el Tooltip).
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private createYAxis(chartOptions: ChartOptions, layoutResult: LayoutResult): any {
     const yAxisTitle = chartOptions.yAxis.title;
     const name = typeof yAxisTitle === 'string' && yAxisTitle.trim().length > 0 ? yAxisTitle : undefined;
@@ -135,11 +136,11 @@ export class AxisManager {
    * agrupaciones secundarias. Instancia dos ejes paralelos modificando el objeto de entrada `xAxis`.
    */
   private configureDualXAxis(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     xAxis: any[],
     x1: string,
     x2: string,
-    context: AxisContext,
-    libraryOptions: EChartsOption
+    context: AxisContext
   ) {
     const { chartData, layoutResult } = context;
     if (!layoutResult) return;
@@ -203,16 +204,13 @@ export class AxisManager {
   /**
    * Helper para extrapolar los ítems de las agrupaciones del Eje X Primario
    */
-  private createDataX1(items1: any[], items2: any[]): string[] {
-    return new Array<string>().concat(...new Array(items1.length).fill(items2));
+  private createDataX1(items1: (string | number)[], items2: (string | number)[]): (string | number)[] {
+    return new Array<string | number>().concat(...new Array(items1.length).fill(items2));
   }
 
-  /**
-   * Helper para extrapolar los ítems del Eje X Secundario basado en si posee un visualizador scrollable
-   */
-  private createDataX2(items1: any[], items2: any[], context: AxisContext): string[] {
+  private createDataX2(items1: (string | number)[], items2: (string | number)[], context: AxisContext): (string | number)[] {
     return context.chartOptions.navigator.show
-      ? new Array<string>().concat(
+      ? new Array<string | number>().concat(
         ...items1.map((i) => new Array(items2.length).fill(i)),
       )
       : items1;
@@ -221,6 +219,7 @@ export class AxisManager {
   /**
    * Agrega la configuración de un Único Eje X para el gráfico actual al listado.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configureSingleXAxis(xAxis: any[], context: AxisContext) {
     const { chartData } = context;
     const dataX1 = chartData.getItems(chartData.seriesConfig.x1);
@@ -231,8 +230,9 @@ export class AxisManager {
    * Aplica la personalización visual detallada que comparten tanto el Eje X Secundario como Primario.
    */
   private configureAxisOptions(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axisOptions: any,
-    data: any[],
+    data: unknown[],
     context: AxisContext,
     isSecondaryAxis: boolean = false
   ) {
@@ -244,7 +244,7 @@ export class AxisManager {
     axisOptions.show = chartOptions.type !== 'pie';
     axisOptions.triggerEvent = true;
     axisOptions.data = data;
-    axisOptions.axisTick.show = true;
+    axisOptions.axisTick = { ...(axisOptions.axisTick || {}), show: true };
     axisOptions.tooltip = { show: true };
 
     // 2. Resolver y asignar el nombre (título) del eje
@@ -293,6 +293,7 @@ export class AxisManager {
   /**
    * Configura las propiedades de truncado y estilo en negrita para el título del eje.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configureAxisTitleTruncate(axisOptions: any, isBar: boolean, layoutResult: LayoutResult): void {
     const maxWidth = isBar ? layoutResult.axis.valueTitleMaxWidth : layoutResult.axis.categoryTitleMaxWidth;
     axisOptions.nameTruncate = {
@@ -302,10 +303,8 @@ export class AxisManager {
     axisOptions.nameTextStyle = { fontWeight: 'bold' };
   }
 
-  /**
-   * Configura la alineación, rotación y distancia del título del eje según el tipo de gráfico.
-   */
   private configureAxisTitleLayout(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axisOptions: any,
     isBar: boolean,
     layoutResult: LayoutResult
@@ -315,10 +314,8 @@ export class AxisManager {
     axisOptions.nameRotate = isBar ? 90 : 0;
   }
 
-  /**
-   * Configura el formateado, ancho máximo y la rotación selectiva para las etiquetas del eje.
-   */
   private configureAxisLabels(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axisOptions: any,
     chartOptions: ChartOptions,
     isSecondaryAxis: boolean,
@@ -336,16 +333,15 @@ export class AxisManager {
     };
   }
 
-  /**
-   * Configura la cuadrícula splitArea y el desplazamiento (offset) del eje secundario.
-   */
   private configureSecondaryAxisLayout(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axisOptions: any,
     chartData: ChartData,
     chartType: string,
     isSecondaryAxis: boolean,
     layoutResult: LayoutResult
   ): void {
+    axisOptions.splitArea = axisOptions.splitArea || {};
     axisOptions.splitArea.show = !isSecondaryAxis && !chartData.seriesConfig.x2;
 
     if (isSecondaryAxis) {

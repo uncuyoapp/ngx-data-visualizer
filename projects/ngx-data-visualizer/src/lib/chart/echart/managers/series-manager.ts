@@ -1,6 +1,6 @@
 import { ECharts } from "echarts";
 import { EC_SERIES_CONFIG } from "../../../types/constants";
-import { SeriesConfigType, SeriesData } from "../types/echart-base";
+import { SeriesConfigType } from "../types/echart-base";
 
 /**
  * Interface con el contexto necesario para configurar las series
@@ -28,7 +28,7 @@ export class SeriesManager {
    * Crea la instancia gestora de las Series de EChart.
    * @param chartInstance - Referencia a la instancia de renderizado nativa de ECharts.
    */
-  constructor(private readonly chartInstance: ECharts) {}
+  constructor(private readonly chartInstance: ECharts) { }
 
   /**
    * Obtiene los totales acumulados por todas las series para cada índice respectivo en el eje.
@@ -68,7 +68,7 @@ export class SeriesManager {
     }
     try {
       const currentSeries = this.getSeries();
-      
+
       const formattedSeries: SeriesConfigType = {
         ...series,
         type: series.type || "line",
@@ -144,13 +144,14 @@ export class SeriesManager {
    * @param context - Contexto visual general del Chart encapsulado en `SeriesContext`
    * @returns El subconjunto de series procesado y transformado en formato EChartsOption
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public configureSeries(series: any[], context: SeriesContext): any[] {
     this.maxValue = 0; // reset maxValue calculation
 
-    return series.map((s, index) => {
+    return series.map((s) => {
       const originalType = context.chartType; // Ej: "area"
       s.type = this.getMappedChartType(originalType); // Ej: "line"
-      
+
       // Assign Config
       type ObjectKey = keyof typeof EC_SERIES_CONFIG;
       // Usamos el originalType para buscar la config específica (ej: areaStyle de "area") 
@@ -179,8 +180,10 @@ export class SeriesManager {
    * Si las opciones refieren a modo porcentual, computa el porcentaje frente a todos los `totals` generados de antemano.
    * Si es Pie Chart lo decodifica a `{name, value}` al estilo objeto iterador.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private processSeriesDataPayload(data: any[], context: SeriesContext) {
-    return data.map((v, i) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.map((v: any, i) => {
       const numericVal = parseFloat(v[1]) || 0;
       this.maxValue = Math.max(this.maxValue, numericVal);
 
@@ -189,8 +192,8 @@ export class SeriesManager {
           ? (numericVal * 100) / (this.totals[i] || 1)
           : v[1];
       } else {
-        return { 
-          name: v[0], 
+        return {
+          name: v[0],
           value: context.toPercent
             ? (numericVal * 100) / (this.totals[i] || 1)
             : v[1]
@@ -204,10 +207,12 @@ export class SeriesManager {
    * Asigna localmente la matriz numérica en `options.totals` para su posterior uso en renderizaciones apiladas o porcentuales.
    * @param series - Array bruto de series que se pretenden graficar.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public summarizeTotals(series: Array<any>): void {
     this.totals = [];
     series.forEach((s) => {
-      (s.data as Array<any>).forEach((v, i) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((s.data as Array<any>) || []).forEach((v: any, i) => {
         const val = parseFloat(v[1]) || 0;
         if (!this.totals[i]) {
           this.totals[i] = val;

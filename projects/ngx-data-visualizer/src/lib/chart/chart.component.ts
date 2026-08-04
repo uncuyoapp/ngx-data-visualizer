@@ -40,6 +40,7 @@ import { GoalChartHelper } from "./utils/goal-chart.helper";
  * controles reactivos y el editor de configuración.
  */
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: "libChart, [libChart]",
   standalone: true,
   exportAs: "libChart",
@@ -149,7 +150,7 @@ export class ChartComponent implements OnDestroy {
   series = signal<Series[]>([]);
 
   /** Instancia del editor de configuración inyectado en el overlay */
-  private configEditorComponentRef?: ComponentRef<any>;
+  private configEditorComponentRef?: ComponentRef<unknown>;
 
   /** Referencia al overlay de CDK para el editor */
   private overlayRef?: OverlayRef;
@@ -473,7 +474,7 @@ export class ChartComponent implements OnDestroy {
 
   private hideGoal(): void {
     if (this.mainChart) {
-      this.mainChart.delSeries({ name: "Meta" } as any);
+      this.mainChart.delSeries({ name: "Meta" });
     }
     const { savedSeriesConfig, savedFilters } = this.goalChartHelper.hideGoal();
     const config = this.chartConfiguration();

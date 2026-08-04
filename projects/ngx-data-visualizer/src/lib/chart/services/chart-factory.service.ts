@@ -185,7 +185,7 @@ export class ChartFactory {
     // Configuración defensiva de tooltips para evitar recortes
     if (libraryOptions?.tooltip) {
       libraryOptions.tooltip = {
-        ...(libraryOptions.tooltip as any),
+        ...(libraryOptions.tooltip as Record<string, unknown>),
         confine: true,
         appendTo: 'body'
       };

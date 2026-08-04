@@ -58,7 +58,8 @@ export class EChartParser implements ParserOptions {
     const echartsConfig = libraryConfig as EChartsOption & { type?: string };
 
     // Validar configuración original
-    ConfigValidator.validate(config as any, DEFAULT_OPTIONS, DEPRECATED_LEGEND_PATHS);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ConfigValidator.validate(config as any, DEFAULT_OPTIONS as any, DEPRECATED_LEGEND_PATHS);
 
     // 1. Mapear tipo de gráfico
     this.parseType(echartsConfig, config);

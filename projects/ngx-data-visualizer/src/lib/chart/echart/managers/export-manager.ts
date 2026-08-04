@@ -74,10 +74,12 @@ export class ExportManager {
    * @private
    */
   private getFileName(extension: string): string {
-    const options = this.chartInstance.getOption() as any;
+    const options = (this.chartInstance.getOption() || {}) as Record<string, unknown>;
     // ECharts puede tener title como objeto o array de objetos
-    const titleOption = Array.isArray(options.title) ? options.title[0] : options.title;
-    const titleText = titleOption?.text || 'grafico';
+    const titleOption = Array.isArray(options['title'])
+      ? (options['title'] as Record<string, unknown>[])[0]
+      : (options['title'] as Record<string, unknown>);
+    const titleText = (titleOption?.['text'] as string) || 'grafico';
 
     // Limpiar el título para usarlo como nombre de archivo
     const safeTitle = titleText

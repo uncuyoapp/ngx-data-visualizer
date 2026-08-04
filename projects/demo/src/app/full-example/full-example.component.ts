@@ -386,7 +386,7 @@ export class FullExampleComponent implements OnInit, AfterViewInit {
    * Incluye validación para asegurar que al menos una dimensión esté seleccionada
    * @param dimension Dimensión que cambió de estado
    */
-  onDimensionChange(_dimension: Dimension) {
+  onDimensionChange() {
     this.filter();
   }
 

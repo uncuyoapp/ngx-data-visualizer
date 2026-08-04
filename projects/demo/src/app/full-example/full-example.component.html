@@ -97,7 +97,7 @@
               <!-- Cabecera de dimensión -->
               <div class="dimension-header">
                 <div class="form-check">
-                  <input type="checkbox" [(ngModel)]="dimension.selected" (change)="onDimensionChange(dimension)"
+                  <input type="checkbox" [(ngModel)]="dimension.selected" (change)="onDimensionChange()"
                     class="form-check-input" [id]="'dimension' + dimension.id" />
                   <label class="form-check-label" [for]="'dimension' + dimension.id">
                     {{ dimension.name }}

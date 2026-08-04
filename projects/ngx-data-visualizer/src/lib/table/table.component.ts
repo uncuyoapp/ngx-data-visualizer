@@ -29,6 +29,7 @@ import { TableConfiguration, TableOptions } from "./types/table-base";
 import { TableHelperService } from "./utils/table-helper.service";
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: "libTable, [libTable]",
   standalone: true,
   exportAs: "libTable",
@@ -81,7 +82,7 @@ export class TableComponent implements OnDestroy {
   private overlayRef?: OverlayRef;
 
   /** Instancia del editor de configuración inyectado en el overlay */
-  private configEditorComponentRef?: ComponentRef<any>;
+  private configEditorComponentRef?: ComponentRef<unknown>;
 
 
 
@@ -96,7 +97,7 @@ export class TableComponent implements OnDestroy {
     if (!ds || !opts) return null;
     return {
       dataset: ds,
-      options: opts as any,
+      options: opts as TableOptions,
     };
   });
 

@@ -20,3 +20,19 @@ $z-index-inner: 9;
   }
 
 }
+
+:host ::ng-deep .pvt-cell-tooltip,
+.pvt-cell-tooltip {
+  position: absolute;
+  z-index: var(--table-cell-tooltip-z-index, 1000);
+  background: var(--table-cell-tooltip-bg, rgba(15, 23, 42, 0.9));
+  color: var(--table-cell-tooltip-color, #f8fafc);
+  padding: var(--table-cell-tooltip-padding, 6px 12px);
+  border-radius: var(--table-cell-tooltip-radius, 6px);
+  font-size: var(--table-cell-tooltip-font-size, 12px);
+  font-weight: var(--table-cell-tooltip-font-weight, 500);
+  pointer-events: none;
+  box-shadow: var(--table-cell-tooltip-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+  border: var(--table-cell-tooltip-border, 1px solid rgba(255, 255, 255, 0.1));
+  white-space: nowrap;
+}

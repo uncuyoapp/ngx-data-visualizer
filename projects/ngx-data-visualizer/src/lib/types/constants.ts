@@ -198,22 +198,38 @@ export const ECharts = {
     },
   },
 
-  /** Configuración por defecto para el título de la tarjeta KPI / Big Number (DA = 0) */
-  KPI_TITLE_CONFIG: {
-    show: true,
-    left: "center",
-    top: "middle",
-    textStyle: {
-      fontSize: 48,
-      fontWeight: "bold",
-      fontFamily: "Outfit, Inter, sans-serif",
-      color: "#111827",
+  /** Configuración estática por defecto para la tarjeta KPI / Big Number (DA = 0) en graphic */
+  KPI_GRAPHIC_CONFIG: [
+    {
+      type: "group",
+      left: "center",
+      top: "center",
+      children: [
+        {
+          type: "text",
+          style: {
+            text: "",
+            fill: "#111827",
+            fontSize: 48,
+            fontWeight: "bold",
+            fontFamily: "Outfit, Inter, sans-serif",
+            textAlign: "center",
+          },
+        },
+        {
+          type: "text",
+          top: 55,
+          style: {
+            text: "",
+            fill: "#6B7280",
+            fontSize: 14,
+            fontFamily: "Outfit, Inter, sans-serif",
+            textAlign: "center",
+          },
+        },
+      ],
     },
-    subtextStyle: {
-      fontSize: 14,
-      color: "#6B7280",
-    },
-  },
+  ],
 
   /** Paleta de colores por defecto para secuencias de series y gráficos de torta */
   DEFAULT_PALETTE: [
@@ -227,6 +243,22 @@ export const ECharts = {
     '#9a60b4',
     '#ea7ccc',
   ] as string[],
+
+  /** Configuración por defecto para el mensaje gráfico cuando no hay datos para mostrar */
+  NO_DATA_GRAPHIC_CONFIG: [
+    {
+      type: "text",
+      left: "center",
+      top: "center",
+      style: {
+        text: "Sin datos para mostrar",
+        fill: "#888888",
+        fontSize: 16,
+        fontWeight: "500",
+        fontFamily: "Outfit, Inter, sans-serif",
+      },
+    },
+  ],
 
   /** Dimensiones por defecto para gráficos como fallback cuando no hay dimensiones explícitas ni computables en el DOM */
   DEFAULT_DIMENSIONS: {
@@ -482,7 +514,8 @@ export const DANGEROUS_ATTRS = Security.DANGEROUS_ATTRS;
 export const EC_CHART_CONFIG_PREVIEW = ECharts.CHART_CONFIG_PREVIEW;
 export const EC_AXIS_CONFIG = ECharts.AXIS_CONFIG;
 export const EC_SERIES_CONFIG = ECharts.SERIES_CONFIG;
-export const EC_KPI_TITLE_CONFIG = ECharts.KPI_TITLE_CONFIG;
+export const EC_KPI_GRAPHIC_CONFIG = ECharts.KPI_GRAPHIC_CONFIG;
+export const EC_NO_DATA_GRAPHIC_CONFIG = ECharts.NO_DATA_GRAPHIC_CONFIG;
 
 /**
  * Opciones por defecto para la configuración del gráfico

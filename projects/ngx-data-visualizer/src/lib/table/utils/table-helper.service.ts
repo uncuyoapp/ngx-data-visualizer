@@ -69,6 +69,16 @@ export class TableHelperService {
     this.setupAutoScroll(element);
     // Agregar el manejo de hover en cabeceras
     this.setupHeaderHover(element);
+
+    // Configurar tooltip flotante en celdas para vistas porcentuales
+    const isPercentView =
+      config.valueDisplay && config.valueDisplay !== "nominal";
+    const isSingleMode = (config.displayMode ?? "single") === "single";
+    const isTooltipEnabled = config.showCellTooltip !== false;
+
+    if (isPercentView && isSingleMode && isTooltipEnabled) {
+      this.setupCellTooltips(element, config);
+    }
   }
 
   /**
@@ -437,30 +447,41 @@ export class TableHelperService {
    */
   private configurePivot(config: TableOptions) {
     const $ = this.jQueryService.$;
-    const aggregators = $.pivotUtilities.aggregators;
+    const tpl = ($.pivotUtilities as any).aggregatorTemplates;
     const numberFormat = $.pivotUtilities.numberFormat;
 
-    // Configurar el formato de números con decimales y sufijo
-    const intFormat = numberFormat({
+    // Configurar el formato de números nominales (sin sufijo para almacenar en data-raw-value)
+    const rawNominalFormat = numberFormat({
+      digitsAfterDecimal: config.digitsAfterDecimal ?? 0,
+      suffix: "",
+    });
+
+    // Formato nominal completo con sufijo para el modo de visualización nominal
+    const fullNominalFormat = numberFormat({
       digitsAfterDecimal: config.digitsAfterDecimal ?? 0,
       suffix: config.suffix || "",
+    });
+
+    // Formato de porcentaje exclusivo
+    const pctFormat = numberFormat({
+      digitsAfterDecimal: config.percentDigitsAfterDecimal ?? 1,
+      scaler: 100,
+      suffix: "%",
     });
 
     let aggregator;
     switch (config.valueDisplay) {
       case "percentOfTotal":
-        aggregator = aggregators["Sum as Fraction of Total"];
+        aggregator = tpl.fractionOf(tpl.sum(rawNominalFormat), "total", pctFormat);
         break;
       case "percentOfRow":
-        aggregator = aggregators["Sum as Fraction of Rows"];
+        aggregator = tpl.fractionOf(tpl.sum(rawNominalFormat), "row", pctFormat);
         break;
       case "percentOfColumn":
-        aggregator = aggregators["Sum as Fraction of Columns"];
+        aggregator = tpl.fractionOf(tpl.sum(rawNominalFormat), "col", pctFormat);
         break;
       default: // 'nominal' o indefinido
-        aggregator = ($.pivotUtilities as any).aggregatorTemplates.sum(
-          intFormat,
-        );
+        aggregator = tpl.sum(fullNominalFormat);
         break;
     }
 
@@ -481,7 +502,109 @@ export class TableHelperService {
             this.hoverFunction(e, filter),
         },
       },
+      renderer: (pivotData: any, opts: any) => {
+        const defaultRenderer = $.pivotUtilities.renderers["Table"];
+        const table = defaultRenderer(pivotData, opts) as unknown as HTMLElement;
+        if (table && typeof table.querySelector === "function") {
+          this.attachRawValuesToTable(table, pivotData);
+        }
+        return table;
+      },
     };
+  }
+
+  /**
+   * Asocia el valor nominal original a cada celda td.pvtVal mediante el atributo DOM data-raw-value.
+   * @param table Elemento HTML de la tabla pivote generada.
+   * @param pivotData Datos de PivotTable.
+   * @private
+   */
+  private attachRawValuesToTable(table: HTMLElement, pivotData: any): void {
+    const rowKeys = pivotData.getRowKeys();
+    const colKeys = pivotData.getColKeys();
+
+    rowKeys.forEach((rowKey: any[], i: number) => {
+      colKeys.forEach((colKey: any[], j: number) => {
+        const agg = pivotData.getAggregator(rowKey, colKey);
+        const rawVal = agg.inner ? agg.inner.value() : agg.value();
+        const formattedRaw =
+          agg.inner?.format ? agg.inner.format(rawVal) : rawVal;
+        const td = table.querySelector(`td.pvtVal.row${i}.col${j}`);
+        if (td && formattedRaw !== null && formattedRaw !== undefined) {
+          td.setAttribute("data-raw-value", String(formattedRaw));
+        }
+      });
+    });
+  }
+
+  /**
+   * Vincula eventos de mouseenter y mouseleave a las celdas td.pvtVal para mostrar el tooltip flotante con el valor nominal.
+   * @param element Elemento HTML que contiene la tabla.
+   * @param config Opciones de la tabla.
+   * @private
+   */
+  private setupCellTooltips(
+    element: HTMLDivElement,
+    config: TableOptions,
+  ): void {
+    const $ = this.jQueryService.$;
+    let suffix = '';
+    if (config.suffix) {
+      suffix = config.suffix.startsWith(' ') ? config.suffix : ` ${config.suffix}`;
+    }
+
+
+    $(element)
+      .find("td.pvtVal")
+      .on("mouseenter", (e: any) => {
+        const td = e.currentTarget as HTMLElement;
+        if (!td) return;
+        const rawValue = td.getAttribute("data-raw-value");
+        if (!rawValue) return;
+
+        $(element).find(".pvt-cell-tooltip").remove();
+
+        const tooltip = document.createElement("div");
+        tooltip.className = "pvt-cell-tooltip";
+        tooltip.textContent = `Nominal: ${rawValue}${suffix}`;
+
+        element.appendChild(tooltip);
+
+        const tdRect = td.getBoundingClientRect();
+        const containerRect = element.getBoundingClientRect();
+
+        let top =
+          tdRect.top -
+          containerRect.top +
+          element.scrollTop -
+          tooltip.offsetHeight -
+          6;
+
+        if (top < element.scrollTop) {
+          top =
+            tdRect.bottom -
+            containerRect.top +
+            element.scrollTop +
+            6;
+        }
+
+        const left =
+          tdRect.left -
+          containerRect.left +
+          element.scrollLeft +
+          tdRect.width / 2 -
+          tooltip.offsetWidth / 2;
+
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+      })
+      .on("mouseleave", function () {
+        $(element).find(".pvt-cell-tooltip").remove();
+      });
+
+    $(element).on("scroll", () => {
+      $(element).find(".pvt-cell-tooltip").remove();
+    });
   }
 
   /**

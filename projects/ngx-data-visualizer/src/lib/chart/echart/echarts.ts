@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ECharts, EChartsOption } from 'echarts';
-import { EC_KPI_TITLE_CONFIG, ECharts as EChartsConstants } from '../../types/constants';
+import cloneDeep from 'lodash.clonedeep';
+import { EC_KPI_GRAPHIC_CONFIG, EC_NO_DATA_GRAPHIC_CONFIG, ECharts as EChartsConstants } from '../../types/constants';
 import { PercentTransformationResult } from '../../types/data.types';
 import { Chart } from '../types/chart';
 import { ChartConfiguration, EChartsLibraryOptions } from '../types/chart-configuration';
@@ -11,7 +12,6 @@ import { LayoutManager } from './managers/layout-manager';
 import { SeriesManager } from './managers/series-manager';
 import { TooltipManager } from './managers/tooltip-manager';
 import { SeriesConfigType } from './types/echart-base';
-import { EChartParser } from './utils/echart-parser';
 import { PercentTransformer } from './utils/percent-transformer';
 
 /**
@@ -472,12 +472,18 @@ export class EChart extends Chart {
       }
     }
 
+    const hasRows = !!this.chartData?.dataProvider?.getData()?.length;
+    if (!hasRows) {
+      this.generateNoDataConfiguration();
+      return;
+    }
+
     if (ChartLogicHelper.isDaZero(this.configuration.dataset)) {
       this.generateKpiConfiguration();
       return;
     }
 
-    this.restoreStandardTitle();
+    delete (this.libraryOptions as any).graphic;
     this.generateStandardConfiguration();
   }
 
@@ -499,19 +505,13 @@ export class EChart extends Chart {
     this.libraryOptions.series = [];
     this.libraryOptions.xAxis = { show: false };
     this.libraryOptions.yAxis = { show: false };
-    this.libraryOptions.title = {
-      ...EC_KPI_TITLE_CONFIG,
-      text,
-      subtext,
-    };
-  }
-
-  /**
-   * Restaura la propiedad de título estándar en `libraryOptions` cuando no se encuentra en modo KPI.
-   * @private
-   */
-  private restoreStandardTitle(): void {
-    EChartParser.parseTitle(this.libraryOptions, this.chartOptions);
+    delete (this.libraryOptions as any).grid;
+    delete (this.libraryOptions as any).legend;
+    delete (this.libraryOptions as any).dataZoom;
+    const kpiGraphic = cloneDeep(EC_KPI_GRAPHIC_CONFIG) as unknown as any[];
+    kpiGraphic[0].children[0].style.text = text;
+    kpiGraphic[0].children[1].style.text = subtext;
+    (this.libraryOptions as any).graphic = kpiGraphic;
   }
 
   /**
@@ -570,6 +570,21 @@ export class EChart extends Chart {
       layoutResult: layoutResult,
     };
     this.axisManager.configureAxis(this.libraryOptions, axisCtx);
+  }
+
+  /**
+   * Configura las opciones de la biblioteca cuando no existen datos para graficar.
+   * Oculta los ejes X e Y y despliega un mensaje 'Sin datos para mostrar'.
+   * @private
+   */
+  private generateNoDataConfiguration(): void {
+    this.libraryOptions.series = [];
+    this.libraryOptions.xAxis = { show: false };
+    this.libraryOptions.yAxis = { show: false };
+    delete (this.libraryOptions as any).grid;
+    delete (this.libraryOptions as any).legend;
+    delete (this.libraryOptions as any).dataZoom;
+    (this.libraryOptions as any).graphic = EC_NO_DATA_GRAPHIC_CONFIG;
   }
 
   /**

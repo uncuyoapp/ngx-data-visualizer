@@ -379,16 +379,29 @@ export class AxisManager {
     isSecondaryAxis: boolean,
     layoutResult: LayoutResult
   ): void {
-    axisOptions.axisLabel = {
-      ...(axisOptions.axisLabel || {}),
-      rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
-      overflow: 'truncate',
-      ellipsis: '...',
-      hideOverlap: false,
-      width: isSecondaryAxis
-        ? layoutResult.axis.secondLevelLabelMaxWidth
-        : layoutResult.axis.firstLevelLabelMaxWidth
-    };
+    const hasNavigator = !!chartOptions.navigator?.show;
+
+    if (hasNavigator) {
+      axisOptions.axisLabel = {
+        ...(axisOptions.axisLabel || {}),
+        rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
+        hideOverlap: true,
+      };
+      delete axisOptions.axisLabel.overflow;
+      delete axisOptions.axisLabel.ellipsis;
+      delete axisOptions.axisLabel.width;
+    } else {
+      axisOptions.axisLabel = {
+        ...(axisOptions.axisLabel || {}),
+        rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
+        overflow: 'truncate',
+        ellipsis: '...',
+        hideOverlap: false,
+        width: isSecondaryAxis
+          ? layoutResult.axis.secondLevelLabelMaxWidth
+          : layoutResult.axis.firstLevelLabelMaxWidth
+      };
+    }
   }
 
   /**

@@ -135,6 +135,12 @@ export interface TableOptions {
   | "percentOfTotal"
   | "percentOfRow"
   | "percentOfColumn";
+  /** Define la estructura de despliegue de celdas: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
+  displayMode?: "single" | "multiMetric";
+  /** Indica si se debe habilitar el tooltip flotante en celdas porcentuales (default: true) */
+  showCellTooltip?: boolean;
+  /** Número de decimales a mostrar exclusivamente en vistas porcentuales (default: 1) */
+  percentDigitsAfterDecimal?: number;
   /** Atributos derivados para la tabla pivot */
   derivedAttributes?: Record<
     string,

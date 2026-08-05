@@ -1,7 +1,7 @@
 import { ChartOptions, PercentTransformationResult } from "../../types/data.types";
 
 import { ChartData } from "../utils/chart-data";
-import { ChartConfiguration, ChartError } from "./chart-configuration";
+import { ChartConfiguration } from "./chart-configuration";
 
 /**
  * Clase abstracta base para la implementación de diferentes tipos de gráficos.
@@ -85,18 +85,6 @@ export abstract class Chart {
    */
   abstract getOptions(): object;
 
-  /**
-   * Expande el gráfico al ancho especificado
-   * @param width - Ancho deseado (número o string con unidades)
-   */
-  abstract expand(width: number | string): void;
-
-  /** Condensa el gráfico a su tamaño mínimo */
-  abstract condense(): void;
-
-  /** Oculta el gráfico */
-  abstract hide(): void;
-
   /** Alterna el modo de visualización de porcentajes */
   abstract togglePercentMode(enable?: boolean): PercentTransformationResult;
 
@@ -125,22 +113,4 @@ export abstract class Chart {
    * @throws {ChartError} Si hay un error al liberar los recursos
    */
   abstract dispose(): void;
-
-  /**
-   * Método de utilidad para manejar errores comunes
-   * @protected
-   */
-  protected handleError(operation: string, error: unknown): never {
-    if (error instanceof Error) {
-      throw new ChartError(
-        `Error durante la operación '${operation}': ${error.message}`,
-        `CHART_${operation.toUpperCase()}_ERROR`,
-        error,
-      );
-    }
-    throw new ChartError(
-      `Error desconocido durante la operación '${operation}'`,
-      `CHART_${operation.toUpperCase()}_ERROR`,
-    );
-  }
 }

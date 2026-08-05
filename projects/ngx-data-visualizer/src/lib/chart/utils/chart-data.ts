@@ -61,7 +61,7 @@ export class ChartData {
       const rawValue = row[DIMENSION_VALUE];
       const valor =
         rawValue !== null && rawValue !== undefined
-          ? parseFloat(String(rawValue))
+          ? Number.parseFloat(String(rawValue))
           : null;
 
       if (!firstLevel) {
@@ -160,26 +160,20 @@ export class ChartData {
     axis1: string,
     palette: Map<string, string> | undefined,
   ) {
-    let nameSeries: string = "";
+    let nameSeries = "";
     let stack: string | undefined;
     let firstLevel: string | undefined;
     let secondLevel: string | undefined;
     let color: string | undefined;
 
-    Object.entries(row).forEach(([key, value]) => {
-      // Aseguramos que value sea string
+    for (const [key, value] of Object.entries(row)) {
       const valueStr = String(value);
 
       switch (key) {
         case stackKey:
           stack = valueStr;
-          nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-
-          // Manejo seguro de colores desde la paleta
-          if (!color && palette) {
-            const paletteColor = palette.get(valueStr);
-            if (paletteColor) color = paletteColor;
-          }
+          nameSeries = this.appendSeriesName(nameSeries, valueStr);
+          color = this.resolveColor(color, valueStr, palette);
           break;
 
         case axis0:
@@ -191,27 +185,36 @@ export class ChartData {
           break;
 
         case DIMENSION_VALUE:
-          nameSeries =
-            nameSeries === "" ? (this.seriesConfig.measure ?? "") : nameSeries;
+          nameSeries = nameSeries || (this.seriesConfig.measure ?? "");
           break;
 
         default:
-          nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-
-          // Actualizar stack solo si la clave corresponde a stackKey
-          if (key === stackKey) {
-            stack = valueStr;
-          }
-
-          // Manejo seguro de colores desde la paleta
-          if (!color && palette) {
-            const paletteColor = palette.get(valueStr);
-            if (paletteColor) color = paletteColor;
-          }
+          nameSeries = this.appendSeriesName(nameSeries, valueStr);
+          color = this.resolveColor(color, valueStr, palette);
           break;
       }
-    });
+    }
 
     return { nameSeries, stack, firstLevel, secondLevel, color };
+  }
+
+  /**
+   * @description Agrega una parte al nombre de la serie usando un separador visual.
+   * @private
+   */
+  private appendSeriesName(currentName: string, value: string): string {
+    return currentName ? `${currentName} → ${value}` : value;
+  }
+
+  /**
+   * @description Resuelve el color de la serie desde la paleta si aún no ha sido asignado.
+   * @private
+   */
+  private resolveColor(
+    currentColor: string | undefined,
+    value: string,
+    palette?: Map<string, string>,
+  ): string | undefined {
+    return currentColor ?? palette?.get(value);
   }
 }

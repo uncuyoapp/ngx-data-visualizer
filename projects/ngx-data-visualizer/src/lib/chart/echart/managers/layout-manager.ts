@@ -1,5 +1,6 @@
 /**
  * @fileoverview
+ * @description
  * Administrador de diseño (Layout) para los gráficos del motor ECharts.
  * Se encarga de particionar y distribuir de manera secuencial los diferentes
  * componentes visuales (título, leyenda, grilla, navegador de datos/dataZoom y ejes)
@@ -26,45 +27,45 @@ import { ChartOptions } from '../../../types/data.types';
 import { ChartData } from '../../utils/chart-data';
 
 /**
- * Representa la configuración atómica de dimensiones para un elemento individual de diseño.
- * Cada elemento visual se modela como una "ranura" con sus respectivos márgenes.
+ * @description Representa la configuración atómica de dimensiones para un elemento individual de diseño.
+ * Cada elemento visual se modela como una "ranura" (slot) con sus respectivos márgenes.
  */
 export interface SlotConfig {
-  /** Espacio libre en píxeles antes del elemento (ej. margen superior para apilado vertical). */
+  /** @description Espacio libre en píxeles antes del elemento (ej. margen superior para apilado vertical). */
   marginBefore: number;
-  /** Tamaño nominal en píxeles que ocupa el componente (alto o ancho según la orientación). */
+  /** @description Tamaño nominal en píxeles que ocupa el componente (alto o ancho según la orientación). */
   size: number;
-  /** Espacio de separación en píxeles posterior al elemento (ej. margen inferior). */
+  /** @description Espacio de separación en píxeles posterior al elemento (ej. margen inferior). */
   marginAfter: number;
 }
 
 /**
- * Configuración de diseño específica para los ejes (categoría, valor y nivel dual).
+ * @description Configuración de diseño específica para los ejes (categoría, valor y nivel dual).
  */
 export interface AxisLayoutConfig {
-  /** Slot y límites para el título del eje de categorías (X en estándar, Y en barras). */
+  /** @description Slot y límites para el título del eje de categorías (X en estándar, Y en barras). */
   categoryTitle: SlotConfig & {
     maxTruncateWidth: number;
   };
-  /** Slot y límites para el título del eje de valores (Y en estándar, X en barras). */
+  /** @description Slot y límites para el título del eje de valores (Y en estándar, X en barras). */
   valueTitle: SlotConfig & {
     maxTruncateWidth: number;
   };
-  /** Configuración para gráficos de doble nivel (eje dual). */
+  /** @description Configuración para gráficos de doble nivel (eje dual). */
   dualLevel: {
-    /** Desplazamiento base en píxeles para el segundo eje para evitar colisiones. */
+    /** @description Desplazamiento base en píxeles para el segundo eje para evitar colisiones. */
     baseOffset: number | 'auto';
-    /** Separación extra (aire) en píxeles entre el primer y segundo nivel. */
+    /** @description Separación extra (aire) en píxeles entre el primer y segundo nivel. */
     levelGap?: number;
   };
 }
 
 /**
- * Configuración centralizada de todos los espaciados, alturas, anchos y márgenes
+ * @description Configuración centralizada de todos los espaciados, alturas, anchos y márgenes
  * de diseño que rigen las dimensiones de los elementos del gráfico.
  */
 export interface LayoutConfig {
-  /** Márgenes base externos (padding del contenedor principal hacia la grilla). */
+  /** @description Márgenes base externos (padding del contenedor principal hacia la grilla). */
   grid: {
     marginTop: number;
     marginBottom: number;
@@ -72,48 +73,48 @@ export interface LayoutConfig {
     marginRight: number;
   };
 
-  /** Configuración del slot para el título del gráfico. */
+  /** @description Configuración del slot para el título del gráfico. */
   title: SlotConfig & {
-    /** Ancho máximo en píxeles permitido antes de truncar el texto con puntos suspensivos. */
+    /** @description Ancho máximo en píxeles permitido antes de truncar el texto con puntos suspensivos. */
     maxTruncateWidth: number;
   };
 
-  /** Configuración del slot para las leyendas del gráfico. */
+  /** @description Configuración del slot para las leyendas del gráfico. */
   legend: {
-    /** Dimensiones aplicadas cuando la leyenda se posiciona horizontalmente (ej. bottom). */
+    /** @description Dimensiones aplicadas cuando la leyenda se posiciona horizontalmente (ej. bottom). */
     bottom: SlotConfig;
-    /** Dimensiones aplicadas cuando la leyenda se posiciona en los laterales (ej. left/right en pie charts). */
+    /** @description Dimensiones aplicadas cuando la leyenda se posiciona en los laterales (ej. left/right en pie charts). */
     lateral: SlotConfig;
   };
 
-  /** Configuración del slot para el slider de navegación (navigator/dataZoom). */
+  /** @description Configuración del slot para el slider de navegación (navigator/dataZoom). */
   navigator: SlotConfig;
 
-  /** Límites globales de dimensiones de las etiquetas (labels) de los ejes. */
+  /** @description Límites globales de dimensiones de las etiquetas (labels) de los ejes. */
   labels: {
-    /** Ancho máximo en píxeles de etiquetas del primer nivel antes de truncar. */
+    /** @description Ancho máximo en píxeles de etiquetas del primer nivel antes de truncar. */
     maxWidth1stLevel: number;
-    /** Ancho máximo en píxeles de etiquetas del segundo nivel antes de truncar. */
+    /** @description Ancho máximo en píxeles de etiquetas del segundo nivel antes de truncar. */
     maxWidth2ndLevel: number;
-    /** Altura base estimada de una etiqueta estándar horizontal. */
+    /** @description Altura base estimada de una etiqueta estándar horizontal. */
     baseHeight: number;
   };
 
-  /** Estrategia de diseño para gráficos estándar (Column/Line/Area/etc). */
+  /** @description Estrategia de diseño para gráficos estándar (Column/Line/Area/etc). */
   column: AxisLayoutConfig;
 
-  /** Estrategia de diseño para gráficos de barras horizontales (Bar). */
+  /** @description Estrategia de diseño para gráficos de barras horizontales (Bar). */
   bar: AxisLayoutConfig;
 
-  /** Configuración específica de espaciado para el gráfico de torta (Pie). */
+  /** @description Configuración específica de espaciado para el gráfico de torta (Pie). */
   pie: {
-    /** Coeficiente multiplicador (0.0 a 1.0) para ajustar el tamaño del radio del Pie al espacio libre. */
+    /** @description Coeficiente multiplicador (0.0 a 1.0) para ajustar el tamaño del radio del Pie al espacio libre. */
     radiusFactor: number;
   };
 }
 
 /**
- * Configuración por defecto del sistema de layout.
+ * @description Configuración por defecto del sistema de layout.
  * Define la estructura espacial inicial que se usará para realizar las sumas secuenciales de slots.
  */
 export const DEFAULT_LAYOUT_CONFIG: LayoutConfig = {
@@ -192,22 +193,23 @@ export const DEFAULT_LAYOUT_CONFIG: LayoutConfig = {
 };
 
 /**
- * Orientaciones posibles de los componentes visuales en ECharts.
+ * @description Orientaciones posibles de los componentes visuales en ECharts.
  */
 export type LayoutOrientation = 'horizontal' | 'vertical';
 
 /**
- * Representa un valor de coordenadas en ECharts que puede ser numérico (píxeles absolutos)
+ * @description Representa un valor de coordenadas en ECharts que puede ser numérico (píxeles absolutos)
  * o de tipo texto (porcentajes o cadenas clave de posición como 'center', 'middle').
  */
 export type CoordinateValue = string | number;
 
 /**
- * Interfaz resultante del cálculo del layout.
+ * @description Interfaz resultante del cálculo del layout.
  * Contiene todas las directrices, márgenes y posiciones computadas de manera unificada
  * que serán aplicadas en ECharts y consumidas por otros manejadores (como AxisManager).
  */
 export interface LayoutResult {
+  /** @description Configuración de márgenes del área de grilla principal. */
   grid: {
     top: number;
     bottom: number;
@@ -219,7 +221,7 @@ export interface LayoutResult {
     outerBoundsContain: 'axisLabel' | 'all' | 'none';
   };
 
-  /** Configuración y posición resultante para el título principal. */
+  /** @description Configuración y posición resultante para el título principal. */
   title: {
     show: boolean;
     top: number;
@@ -227,7 +229,7 @@ export interface LayoutResult {
     maxWidth: number;
   };
 
-  /** Configuración resultante de posicionamiento para la leyenda del gráfico. */
+  /** @description Configuración resultante de posicionamiento para la leyenda del gráfico. */
   legend: {
     show: boolean;
     orient: LayoutOrientation;
@@ -237,7 +239,7 @@ export interface LayoutResult {
     bottom?: CoordinateValue;
   };
 
-  /** Configuración resultante de posicionamiento y visualización para el control de dataZoom (navigator). */
+  /** @description Configuración resultante de posicionamiento y visualización para el control de dataZoom (navigator). */
   navigator: {
     show: boolean;
     orient: LayoutOrientation;
@@ -248,7 +250,7 @@ export interface LayoutResult {
     axisIndex: number | number[];
   };
 
-  /** Valores calculados para el dimensionamiento y distancias de los ejes. */
+  /** @description Valores calculados para el dimensionamiento y distancias de los ejes. */
   axis: {
     /** Separación del título del eje de categorías respecto a su línea de eje. */
     categoryNameGap: number;
@@ -266,7 +268,7 @@ export interface LayoutResult {
     secondLevelLabelMaxWidth: number;
   };
 
-  /** Coordenadas de posicionamiento específicos para gráficos radiales (Pie Chart). */
+  /** @description Coordenadas de posicionamiento específicos para gráficos radiales (Pie Chart). */
   pie?: {
     /** Punto de coordenadas del centro de la torta: [X%, Y%] */
     center: [string, string];
@@ -276,10 +278,9 @@ export interface LayoutResult {
 }
 
 /**
- * Función utilitaria pura que calcula la suma total del espacio que ocupa un slot.
- * Representa la fórmula matemática: marginBefore + size + marginAfter
- * 
- * @param slot Estructura del slot a calcular.
+ * @description Función utilitaria pura que calcula la suma total del espacio que ocupa un slot.
+ * Representa la fórmula matemática: marginBefore + size + marginAfter.
+ * @param slot - Estructura del slot a calcular.
  * @returns Ancho o alto total del slot en píxeles.
  */
 function slotTotal(slot: SlotConfig): number {
@@ -287,9 +288,8 @@ function slotTotal(slot: SlotConfig): number {
 }
 
 /**
- * Función utilitaria pura para garantizar la conversión segura de una propiedad a Array.
- * 
- * @param item Elemento individual, array o undefined a normalizar.
+ * @description Función utilitaria pura para garantizar la conversión segura de una propiedad a Array.
+ * @param item - Elemento individual, array o undefined a normalizar.
  * @returns Array siempre inicializado.
  */
 function ensureArray<T>(item: T | T[] | undefined): T[] {
@@ -300,10 +300,9 @@ function ensureArray<T>(item: T | T[] | undefined): T[] {
 }
 
 /**
- * Estima la anchura horizontal en píxeles que ocupará un conjunto de etiquetas de texto.
- * 
- * @param items Lista de elementos a evaluar.
- * @param maxWidth Límite máximo permitido.
+ * @description Estima la anchura horizontal en píxeles que ocupará un conjunto de etiquetas de texto.
+ * @param items - Lista de elementos a evaluar.
+ * @param maxWidth - Límite máximo permitido.
  * @returns Ancho estimado en píxeles.
  */
 function estimateTextWidth(items: (string | number)[], maxWidth: number): number {
@@ -314,13 +313,18 @@ function estimateTextWidth(items: (string | number)[], maxWidth: number): number
 }
 
 /**
- * Contexto inmutable de entrada transmitido a las estrategias de maquetado cartesiano.
+ * @description Contexto inmutable de entrada transmitido a las estrategias de maquetado cartesiano.
  */
 export interface LayoutContext {
+  /** @description Opciones genéricas del gráfico. */
   options: ChartOptions;
+  /** @description Datos procesados del gráfico. */
   chartData: ChartData;
+  /** @description Configuración de layout activa. */
   config: LayoutConfig;
+  /** @description Configuración específica de layout para los ejes. */
   axisCfg: AxisLayoutConfig;
+  /** @description Espacios ocupados calculados por componente. */
   spaces: {
     titleSpace: number;
     legendSpace: number;
@@ -328,21 +332,24 @@ export interface LayoutContext {
     catTitleSpace: number;
     valTitleSpace: number;
   };
+  /** @description Offset para el segundo nivel de eje dual. */
   dualLevelOffset: number;
+  /** @description Indica si el gráfico posee eje dual. */
   hasDualAxis: boolean;
+  /** @description Ancho opcional del contenedor. */
   containerWidth?: number;
+  /** @description Ángulo de rotación de etiquetas. */
   rotateLabels: number;
 }
 
 /**
- * Contrato de la Estrategia de Maquetado Cartesiano por Tipo de Gráfico (Patrón Estrategia).
+ * @description Contrato de la Estrategia de Maquetado Cartesiano por Tipo de Gráfico (Patrón Estrategia).
  */
 export interface ICartesianLayoutStrategy {
   /**
-   * Calcula el desplazamiento offset necesario para el eje secundario en agrupaciones de doble nivel.
-   * 
-   * @param ctx Contexto actual de diseño.
-   * @param estimateSecondWidth Función opcional para estimar el ancho del 2do nivel.
+   * @description Calcula el desplazamiento offset necesario para el eje secundario en agrupaciones de doble nivel.
+   * @param ctx - Contexto actual de diseño.
+   * @param estimateSecondWidth - Función opcional para estimar el ancho del 2do nivel.
    * @returns Offset en píxeles.
    */
   calculateDualLevelOffset(
@@ -351,10 +358,9 @@ export interface ICartesianLayoutStrategy {
   ): number;
 
   /**
-   * Calcula las dimensiones del contenedor principal del gráfico (Grid).
-   * 
-   * @param ctx Contexto actual de diseño.
-   * @param estimateFirstWidth Función opcional para estimar el ancho del 1er nivel.
+   * @description Calcula las dimensiones del contenedor principal del gráfico (Grid).
+   * @param ctx - Contexto actual de diseño.
+   * @param estimateFirstWidth - Función opcional para estimar el ancho del 1er nivel.
    * @returns Objeto de márgenes top, bottom, left, right y restricciones de ECharts 6.
    */
   calculateGrid(
@@ -370,9 +376,8 @@ export interface ICartesianLayoutStrategy {
   };
 
   /**
-   * Calcula la posición y orientación del navegador de datos (dataZoom).
-   * 
-   * @param ctx Contexto actual de diseño.
+   * @description Calcula la posición y orientación del navegador de datos (dataZoom).
+   * @param ctx - Contexto actual de diseño.
    * @returns Configuración del componente navigator.
    */
   calculateNavigator(ctx: LayoutContext): {
@@ -384,10 +389,9 @@ export interface ICartesianLayoutStrategy {
   };
 
   /**
-   * Calcula la separación `nameGap` del título del eje de categorías respecto a su línea de eje.
-   * 
-   * @param ctx Contexto actual de diseño.
-   * @param estimateFirstWidth Función opcional para estimar el ancho del 1er nivel.
+   * @description Calcula la separación `nameGap` del título del eje de categorías respecto a su línea de eje.
+   * @param ctx - Contexto actual de diseño.
+   * @param estimateFirstWidth - Función opcional para estimar el ancho del 1er nivel.
    * @returns Distancia en píxeles para `nameGap`.
    */
   calculateCategoryNameGap(
@@ -396,18 +400,16 @@ export interface ICartesianLayoutStrategy {
   ): number;
 
   /**
-   * Calcula la separación `nameGap` del título del eje de valores respecto a su línea de eje.
-   * 
-   * @param ctx Contexto actual de diseño.
+   * @description Calcula la separación `nameGap` del título del eje de valores respecto a su línea de eje.
+   * @param ctx - Contexto actual de diseño.
    * @returns Distancia en píxeles para `nameGap`.
    */
   calculateValueNameGap(ctx: LayoutContext): number;
 
   /**
-   * Calcula el ancho máximo permitido antes de truncar etiquetas del primer nivel.
-   * 
-   * @param ctx Contexto actual de diseño.
-   * @param grid Dimensiones calculadas del grid.
+   * @description Calcula el ancho máximo permitido antes de truncar etiquetas del primer nivel.
+   * @param ctx - Contexto actual de diseño.
+   * @param grid - Dimensiones calculadas del grid.
    * @returns Ancho máximo en píxeles.
    */
   calculateFirstLevelLabelMaxWidth(
@@ -417,9 +419,15 @@ export interface ICartesianLayoutStrategy {
 }
 
 /**
- * Estrategia de maquetado para gráficos de columnas verticales (y derivados: line, area).
+ * @description Estrategia de maquetado para gráficos de columnas verticales (y derivados: line, area).
  */
 export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
+  /**
+   * @description Calcula el desplazamiento offset para el eje secundario en gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Offset numérico en píxeles.
+   * @public
+   */
   calculateDualLevelOffset(ctx: LayoutContext): number {
     if (!ctx.hasDualAxis) {
       return 0;
@@ -449,6 +457,12 @@ export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
     return baseOffset as number;
   }
 
+  /**
+   * @description Calcula la grilla (grid) para gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Márgenes y propiedades de la grilla.
+   * @public
+   */
   calculateGrid(ctx: LayoutContext) {
     const cfg = ctx.config;
     return {
@@ -461,6 +475,12 @@ export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
     };
   }
 
+  /**
+   * @description Calcula el navegador (navigator/dataZoom) para gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Configuración del componente navigator.
+   * @public
+   */
   calculateNavigator(ctx: LayoutContext) {
     const bottom = ctx.config.grid.marginBottom + ctx.spaces.legendSpace + ctx.config.navigator.marginBefore;
     return {
@@ -472,6 +492,12 @@ export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
     };
   }
 
+  /**
+   * @description Calcula la separación `nameGap` del título de categorías en gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Distancia en píxeles.
+   * @public
+   */
   calculateCategoryNameGap(ctx: LayoutContext): number {
     const marginBefore = ctx.axisCfg.categoryTitle.marginBefore;
     if (ctx.hasDualAxis) {
@@ -480,10 +506,23 @@ export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
     return ctx.config.labels.baseHeight + marginBefore;
   }
 
+  /**
+   * @description Calcula la separación `nameGap` del título de valores en gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Distancia en píxeles.
+   * @public
+   */
   calculateValueNameGap(ctx: LayoutContext): number {
     return ctx.axisCfg.valueTitle.marginBefore;
   }
 
+  /**
+   * @description Calcula el ancho máximo de etiqueta del primer nivel en gráficos de columna.
+   * @param ctx - Contexto actual de diseño.
+   * @param grid - Márgenes del grid.
+   * @returns Ancho máximo en píxeles.
+   * @public
+   */
   calculateFirstLevelLabelMaxWidth(
     ctx: LayoutContext,
     grid: { left: number; right: number }
@@ -534,11 +573,18 @@ export class ColumnLayoutStrategy implements ICartesianLayoutStrategy {
 }
 
 /**
- * Estrategia de maquetado para gráficos de barras horizontales (Bar).
+ * @description Estrategia de maquetado para gráficos de barras horizontales (Bar).
  * Calcula el offset de eje secundario en función del ancho real de las etiquetas del 2do nivel
  * para evitar colisiones horizontales con el 1er nivel.
  */
 export class BarLayoutStrategy implements ICartesianLayoutStrategy {
+  /**
+   * @description Calcula el desplazamiento offset para el eje secundario en gráficos de barra.
+   * @param ctx - Contexto actual de diseño.
+   * @param estimateSecondWidth - Función para estimar el ancho del segundo nivel.
+   * @returns Offset numérico en píxeles.
+   * @public
+   */
   calculateDualLevelOffset(
     ctx: LayoutContext,
     estimateSecondWidth: (chartData: ChartData) => number
@@ -551,6 +597,12 @@ export class BarLayoutStrategy implements ICartesianLayoutStrategy {
     return Math.max(45, Math.round(secondLevelWidth + gap));
   }
 
+  /**
+   * @description Calcula las dimensiones del grid para gráficos de barra horizontal.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Configuración del grid.
+   * @public
+   */
   calculateGrid(
     ctx: LayoutContext
   ) {
@@ -574,6 +626,12 @@ export class BarLayoutStrategy implements ICartesianLayoutStrategy {
     };
   }
 
+  /**
+   * @description Calcula la configuración del navigator para gráficos de barra horizontal.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Configuración del navigator.
+   * @public
+   */
   calculateNavigator(ctx: LayoutContext) {
     return {
       show: !!ctx.options.navigator?.show,
@@ -584,6 +642,13 @@ export class BarLayoutStrategy implements ICartesianLayoutStrategy {
     };
   }
 
+  /**
+   * @description Calcula la separación `nameGap` del título de categorías en gráficos de barra.
+   * @param ctx - Contexto actual de diseño.
+   * @param estimateFirstWidth - Función opcional para estimar el ancho del primer nivel.
+   * @returns Separación en píxeles.
+   * @public
+   */
   calculateCategoryNameGap(
     ctx: LayoutContext,
     estimateFirstWidth?: (chartData: ChartData) => number
@@ -597,17 +662,29 @@ export class BarLayoutStrategy implements ICartesianLayoutStrategy {
     return estFirst + marginBefore;
   }
 
+  /**
+   * @description Calcula la separación `nameGap` del título de valores en gráficos de barra.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Separación en píxeles.
+   * @public
+   */
   calculateValueNameGap(ctx: LayoutContext): number {
     return ctx.config.labels.baseHeight + ctx.axisCfg.valueTitle.marginBefore;
   }
 
+  /**
+   * @description Calcula el ancho máximo de etiqueta del primer nivel en gráficos de barra.
+   * @param ctx - Contexto actual de diseño.
+   * @returns Ancho máximo en píxeles.
+   * @public
+   */
   calculateFirstLevelLabelMaxWidth(ctx: LayoutContext): number {
     return ctx.config.labels.maxWidth1stLevel;
   }
 }
 
 /**
- * Registro y fábrica de estrategias de maquetado por tipo de gráfico.
+ * @description Registro y fábrica de estrategias de maquetado por tipo de gráfico.
  */
 export class LayoutStrategyRegistry {
   private static readonly strategies: Record<string, ICartesianLayoutStrategy> = {
@@ -617,12 +694,19 @@ export class LayoutStrategyRegistry {
     area: new ColumnLayoutStrategy(),
   };
 
+  /**
+   * @description Obtiene la estrategia de maquetado adecuada para el tipo de gráfico especificado.
+   * @param type - Tipo de gráfico (ej: 'bar', 'column', 'line', 'area').
+   * @returns Instancia de la estrategia ICartesianLayoutStrategy correspondiente.
+   * @public static
+   */
   public static getStrategy(type: string): ICartesianLayoutStrategy {
     return this.strategies[type] || this.strategies['column'];
   }
 }
 
 /**
+ * @description
  * Gestor encargado de la orquestación, cálculo y asignación de layouts para gráficos de ECharts.
  * Divide los flujos de dibujo en dos grandes estrategias:
  *   - Cartesianos (Grupo A estándar y Grupo B horizontal de barras): Comparten lógica a través de inversión de slots.
@@ -633,9 +717,8 @@ export class LayoutManager {
   public readonly config: LayoutConfig;
 
   /**
-   * Inicializa la clase y realiza una copia profunda para mezclar configuraciones de layout.
-   * 
-   * @param config Objeto parcial de configuración para sobreescribir los valores por defecto.
+   * @description Inicializa la clase y realiza una copia profunda para mezclar configuraciones de layout.
+   * @param config - Objeto parcial de configuración para sobreescribir los valores por defecto.
    */
   constructor(config: Partial<LayoutConfig> = {}) {
     this.config = {
@@ -701,14 +784,15 @@ export class LayoutManager {
   }
 
   /**
-   * Método de orquestación principal del layout.
+   * @description Método de orquestación principal del layout.
    * Ejecuta el análisis espacial de acuerdo al tipo de gráfico y mapea el resultado 
    * de vuelta en las opciones nativas de ECharts.
-   * 
-   * @param libraryOptions Opciones de ECharts que serán modificadas de forma directa.
-   * @param options Opciones de configuración provistas por el usuario.
-   * @param chartData Estructuras procesadas de datos y agrupaciones de la serie.
+   * @param libraryOptions - Opciones de ECharts que serán modificadas de forma directa.
+   * @param options - Opciones de configuración provistas por el usuario.
+   * @param chartData - Estructuras procesadas de datos y agrupaciones de la serie.
+   * @param containerWidth - Ancho opcional del contenedor del gráfico en píxeles.
    * @returns Un objeto `LayoutResult` con los datos calculados de distribución espacial.
+   * @public
    */
   public configureLayout(
     libraryOptions: EChartsOption,
@@ -729,14 +813,12 @@ export class LayoutManager {
   }
 
   /**
-   * Estrategia de cálculo de diseño para gráficos cartesianos (estándar y barras horizontales).
+   * @description Estrategia de cálculo de diseño para gráficos cartesianos (estándar y barras horizontales).
    * Determina los espacios ocupados por el título, la leyenda inferior, el navigator (dataZoom)
-   * y los títulos de los ejes. Realiza la rotación/inversión de los slots según corresponda si 
-   * es un gráfico de barras horizontales (ejes Y e X invertidos).
-   * 
-   * @param options Opciones del gráfico.
-   * @param chartData Datos del gráfico para determinar el eje dual.
-   * @param containerWidth Ancho del contenedor del gráfico en píxeles.
+   * y los títulos de los ejes. Realiza la rotación/inversión de los slots según corresponda.
+   * @param options - Opciones del gráfico.
+   * @param chartData - Datos del gráfico para determinar el eje dual.
+   * @param containerWidth - Ancho del contenedor del gráfico en píxeles.
    * @returns Resultado del cálculo de layout.
    * @private
    */
@@ -836,16 +918,11 @@ export class LayoutManager {
     };
   }
 
-
-
-
-
   /**
-   * Estima el ancho en píxeles que ocupará horizontalmente un conjunto de etiquetas de texto.
+   * @description Estima el ancho en píxeles que ocupará horizontalmente un conjunto de etiquetas de texto.
    * Basado en la longitud máxima de caracteres (~7px/carácter) y acotado por el límite configurado.
-   * 
-   * @param items Lista de etiquetas a evaluar.
-   * @param maxWidth Ancho máximo permitido por la configuración.
+   * @param items - Lista de etiquetas a evaluar.
+   * @param maxWidth - Ancho máximo permitido por la configuración.
    * @returns Ancho estimado en píxeles.
    * @private
    */
@@ -854,9 +931,8 @@ export class LayoutManager {
   }
 
   /**
-   * Estima el ancho en píxeles del primer nivel de etiquetas en gráficos de barra.
-   * 
-   * @param chartData Datos procesados del gráfico.
+   * @description Estima el ancho en píxeles del primer nivel de etiquetas en gráficos de barra.
+   * @param chartData - Datos procesados del gráfico.
    * @returns Ancho estimado en píxeles.
    * @private
    */
@@ -866,9 +942,8 @@ export class LayoutManager {
   }
 
   /**
-   * Estima el ancho en píxeles del segundo nivel de etiquetas en gráficos de barra.
-   * 
-   * @param chartData Datos procesados del gráfico.
+   * @description Estima el ancho en píxeles del segundo nivel de etiquetas en gráficos de barra.
+   * @param chartData - Datos procesados del gráfico.
    * @returns Ancho estimado en píxeles (o 0 si no hay eje dual).
    * @private
    */
@@ -882,12 +957,11 @@ export class LayoutManager {
   }
 
   /**
-   * Estrategia de cálculo de diseño para gráficos radiales (Pie Chart / Torta).
+   * @description Estrategia de cálculo de diseño para gráficos radiales (Pie Chart / Torta).
    * En este caso no se utiliza grilla/grid. El pie se posiciona ajustando dinámicamente
    * su coordenada de centro [X, Y] y su radio en función del espacio ocupado por el
    * título y la leyenda (que puede posicionarse en 'left', 'bottom' o 'right').
-   * 
-   * @param options Opciones del gráfico.
+   * @param options - Opciones del gráfico.
    * @returns Resultado del cálculo de layout para Pie.
    * @private
    */
@@ -976,12 +1050,11 @@ export class LayoutManager {
   }
 
   /**
-   * Mapea y aplica los valores calculados del LayoutResult sobre el objeto nativo 
+   * @description Mapea y aplica los valores calculados del LayoutResult sobre el objeto nativo 
    * de opciones de configuración de la librería ECharts.
-   * 
-   * @param libraryOptions Objeto de configuración a mutar de ECharts.
-   * @param result Directrices del layout calculadas previamente.
-   * @param options Configuración original del gráfico.
+   * @param libraryOptions - Objeto de configuración a mutar de ECharts.
+   * @param result - Directrices del layout calculadas previamente.
+   * @param options - Configuración original del gráfico.
    * @private
    */
   private applyToEChartsOptions(libraryOptions: EChartsOption, result: LayoutResult, options: ChartOptions): void {
@@ -993,9 +1066,11 @@ export class LayoutManager {
   }
 
   /**
-   * Aplica los márgenes de grid calculados al objeto de opciones de ECharts.
+   * @description Aplica los márgenes de grid calculados al objeto de opciones de ECharts.
    * Si es gráfico de Pie, elimina la propiedad grid ya que no corresponde.
-   * 
+   * @param libraryOptions - Objeto de opciones de ECharts.
+   * @param result - Resultado del cálculo de layout.
+   * @param isPie - Indica si es un gráfico de torta.
    * @private
    */
   private applyGridOptions(libraryOptions: EChartsOption, result: LayoutResult, isPie: boolean): void {
@@ -1022,8 +1097,9 @@ export class LayoutManager {
   }
 
   /**
-   * Aplica el posicionamiento y formato del título al objeto de opciones de ECharts.
-   * 
+   * @description Aplica el posicionamiento y formato del título al objeto de opciones de ECharts.
+   * @param libraryOptions - Objeto de opciones de ECharts.
+   * @param result - Resultado del cálculo de layout.
    * @private
    */
   private applyTitleOptions(libraryOptions: EChartsOption, result: LayoutResult): void {
@@ -1047,8 +1123,9 @@ export class LayoutManager {
   }
 
   /**
-   * Aplica la orientación, visibilidad y posiciones exactas de la leyenda al objeto de opciones de ECharts.
-   * 
+   * @description Aplica la orientación, visibilidad y posiciones exactas de la leyenda al objeto de opciones de ECharts.
+   * @param libraryOptions - Objeto de opciones de ECharts.
+   * @param result - Resultado del cálculo de layout.
    * @private
    */
   private applyLegendOptions(libraryOptions: EChartsOption, result: LayoutResult): void {
@@ -1087,8 +1164,9 @@ export class LayoutManager {
   }
 
   /**
-   * Configura y aplica los parámetros del navegador (dataZoom slider) al objeto de opciones de ECharts.
-   * 
+   * @description Configura y aplica los parámetros del navegador (dataZoom slider) al objeto de opciones de ECharts.
+   * @param libraryOptions - Objeto de opciones de ECharts.
+   * @param result - Resultado del cálculo de layout.
    * @private
    */
   private applyNavigatorOptions(libraryOptions: EChartsOption, result: LayoutResult): void {

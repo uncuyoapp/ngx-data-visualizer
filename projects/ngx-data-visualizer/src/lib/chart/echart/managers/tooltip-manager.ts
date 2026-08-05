@@ -2,28 +2,29 @@ import { EChartsOption } from 'echarts';
 import { ECharts } from '../../../types/constants';
 
 /**
- * Interfaz para los parámetros del tooltip
+ * @description Interfaz para definir la estructura de los parámetros del tooltip en ECharts.
  */
 export interface TooltipParams {
-  /** Nombre del punto de datos */
+  /** @description Nombre del punto de datos */
   name: string;
-  /** Valor del punto de datos (escalar o diccionario estructurado) */
+  /** @description Valor del punto de datos (escalar o diccionario estructurado) */
   value: number | string | Record<string, unknown>;
-  /** Nombre de la serie */
+  /** @description Nombre de la serie */
   seriesName: string;
-  /** Índice de la serie */
+  /** @description Índice de la serie */
   seriesIndex: number;
-  /** Índice del punto de datos */
+  /** @description Índice del punto de datos */
   dataIndex: number;
-  /** Marcador visual de la serie */
+  /** @description Marcador visual HTML de la serie */
   marker: string;
-  /** Objeto de datos nativo o personalizado provisto por ECharts */
+  /** @description Objeto de datos nativo o personalizado provisto por ECharts */
   data?: Record<string, unknown> | unknown[];
-  /** Propiedades dinámicas adicionales provistas por ECharts */
+  /** @description Propiedades dinámicas adicionales provistas por ECharts */
   [key: string]: unknown;
 }
 
 /**
+ * @description
  * Clase administradora encargada de manejar y gestionar la lógica reactiva de los tooltips
  * (cuadros de información flotantes) en los gráficos generados con ECharts.
  * Proporciona el mecanismo principal para formatear y personalizar la visualización de datos numéricos
@@ -34,9 +35,9 @@ export class TooltipManager {
   private hoveredSeriesIndex: number | null = null;
 
   /**
-   * Constructor de la clase
-   * @param decimals - Número de decimales a mostrar en los valores
-   * @param suffix - Sufijo a agregar a los valores (ej: %, $, etc.)
+   * @description Crea una instancia de TooltipManager.
+   * @param decimals - Número opcional de decimales a mostrar en los valores.
+   * @param suffix - Sufijo opcional a agregar a los valores (ej: %, $, etc.).
    */
   constructor(
     private decimals?: number | null,
@@ -44,41 +45,47 @@ export class TooltipManager {
   ) { }
 
   /**
-   * Actualiza el índice de la serie sobre la que está el mouse
-   * @param index - Índice de la serie o null
+   * @description Actualiza el índice de la serie sobre la que está posicionado el cursor.
+   * @param index - Índice numérico de la serie o null cuando se quita el foco.
+   * @public
    */
   setHoveredSeriesIndex(index: number | null): void {
     this.hoveredSeriesIndex = index;
   }
 
   /**
-   * Obtiene el índice de la serie sobre la que está el mouse
+   * @description Obtiene el índice de la serie sobre la que está posicionado el cursor.
+   * @returns El índice numérico de la serie seleccionada o null si no hay foco.
+   * @public
    */
   getHoveredSeriesIndex(): number | null {
     return this.hoveredSeriesIndex;
   }
 
   /**
-   * Actualiza el sufijo del tooltip
-   * @param newSuffix - Nuevo sufijo a utilizar
+   * @description Actualiza el sufijo a utilizar en los valores del tooltip.
+   * @param newSuffix - Nuevo sufijo a utilizar o null para removerlo.
+   * @public
    */
   updateSuffix(newSuffix: string | null): void {
     this.suffix = newSuffix;
   }
 
   /**
-   * Actualiza la cantidad de decimales a mostrar en el tooltip
-   * @param newDecimals - Nueva cantidad de decimales
+   * @description Actualiza la cantidad de decimales a mostrar en los valores del tooltip.
+   * @param newDecimals - Nueva cantidad de decimales o null para formato por defecto.
+   * @public
    */
   updateDecimals(newDecimals: number | null): void {
     this.decimals = newDecimals;
   }
 
   /**
-   * Formatea el tooltip según los parámetros recibidos
-   * @param params - Parámetros del tooltip (puede ser uno o múltiples)
-   * @param options - Opciones de configuración del gráfico
-   * @returns HTML formateado del tooltip
+   * @description Formatea el contenido completo del tooltip según los parámetros y opciones recibidos.
+   * @param params - Parámetros del punto de datos o arreglo de parámetros en gráficos múltiples/compartidos.
+   * @param options - Opciones de configuración del gráfico ECharts.
+   * @returns Cadena de texto HTML formateada lista para renderizar en el tooltip.
+   * @public
    */
   formatTooltip(
     params: TooltipParams | TooltipParams[],
@@ -111,8 +118,9 @@ export class TooltipManager {
   }
 
   /**
-   * Normaliza la propiedad series de EChartsOption a un array.
-   * @param options Opciones de ECharts
+   * @description Normaliza la propiedad series de EChartsOption a un arreglo de objetos.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Arreglo de series normalizadas como objetos.
    * @private
    */
   private getSeriesArray(options: EChartsOption): Record<string, unknown>[] {
@@ -125,8 +133,9 @@ export class TooltipManager {
   }
 
   /**
-   * Determina si las opciones corresponden a un gráfico de torta.
-   * @param options Opciones de ECharts
+   * @description Determina si las opciones de ECharts corresponden a un gráfico de torta (pie).
+   * @param options - Opciones de configuración de ECharts.
+   * @returns True si el gráfico es de tipo torta, False en caso contrario.
    * @private
    */
   private isPieChart(options: EChartsOption): boolean {
@@ -138,8 +147,9 @@ export class TooltipManager {
   }
 
   /**
-   * Determina si el tooltip está configurado como compartido.
-   * @param options Opciones de ECharts
+   * @description Determina si el tooltip está configurado como compartido (trigger axis o shared).
+   * @param options - Opciones de configuración de ECharts.
+   * @returns True si el tooltip es compartido, False en caso contrario.
    * @private
    */
   private isTooltipShared(options: EChartsOption): boolean {
@@ -148,8 +158,9 @@ export class TooltipManager {
   }
 
   /**
-   * Obtiene la serie principal de tipo pie.
-   * @param options Opciones de ECharts
+   * @description Obtiene la serie principal de tipo torta (pie) a partir de las opciones.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Objeto de configuración de la serie de tipo pie o undefined.
    * @private
    */
   private getPieSeries(options: EChartsOption): Record<string, unknown> | undefined {
@@ -161,9 +172,9 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea un valor porcentual como string en formato es-AR (ej: "12,50").
-   * @param percentage - Valor numérico del porcentaje
-   * @returns Porcentaje formateado con 2 decimales
+   * @description Formatea un valor porcentual numérico a formato de texto es-AR (ej: "12,50").
+   * @param percentage - Valor numérico del porcentaje.
+   * @returns Porcentaje formateado con 2 decimales.
    * @private
    */
   private formatPercentageValue(percentage: number): string {
@@ -177,9 +188,9 @@ export class TooltipManager {
   }
 
   /**
-   * Genera la estructura HTML para la fila del total acumulado.
-   * @param totalSum - Suma total a mostrar
-   * @returns String HTML del bloque total o cadena vacía si no aplica.
+   * @description Genera la estructura HTML para la fila del total acumulado en el pie del tooltip.
+   * @param totalSum - Suma total acumulada a mostrar.
+   * @returns Cadena HTML del bloque total o cadena vacía si no aplica.
    * @private
    */
   private formatTotalHtml(totalSum: number): string {
@@ -195,9 +206,10 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea un tooltip consolidado completo para todas las porciones de un gráfico de torta.
-   * @param params Parámetros recibidos del tooltip
-   * @param options Opciones de ECharts
+   * @description Formatea un tooltip consolidado completo para todas las porciones de un gráfico de torta.
+   * @param params - Parámetros recibidos del tooltip.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Cadena HTML del tooltip completo del gráfico de torta.
    * @private
    */
   private formatPieSharedTooltip(
@@ -244,9 +256,9 @@ export class TooltipManager {
   }
 
   /**
-   * Calcula el total acumulado de las porciones de un gráfico de torta
-   * @param pieData - Arreglo de elementos de la serie de torta
-   * @returns Suma total numérica de los valores válidos
+   * @description Calcula el total acumulado numérico de las porciones de un gráfico de torta.
+   * @param pieData - Arreglo de elementos de datos de la serie de torta.
+   * @returns Suma total numérica de los valores válidos.
    * @private
    */
   private calculatePieTotal(pieData: unknown[]): number {
@@ -262,13 +274,13 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea un elemento individual (porción) en la lista del tooltip de torta
-   * @param item - Datos de la porción
-   * @param idx - Índice de la porción
-   * @param totalSum - Suma total de las porciones
-   * @param showPercentage - Indica si se debe mostrar el porcentaje
-   * @param palette - Paleta de colores configurada
-   * @returns Marcador HTML formateado de la porción
+   * @description Formatea un elemento individual (porción) en la lista del tooltip de torta.
+   * @param item - Datos de la porción.
+   * @param idx - Índice de la porción.
+   * @param totalSum - Suma total de las porciones.
+   * @param showPercentage - Indica si se debe calcular y mostrar el porcentaje.
+   * @param palette - Paleta de colores configurada para las series.
+   * @returns Estructura HTML de la porción formateada.
    * @private
    */
   private formatPieSliceItem(
@@ -305,11 +317,11 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea el texto del valor de una porción de torta, incluyendo opcionalmente el porcentaje
-   * @param val - Valor numérico de la porción
-   * @param totalSum - Suma total de las porciones
-   * @param showPercentage - Indica si se debe mostrar el porcentaje
-   * @returns Cadena de texto formateada para el valor
+   * @description Formatea el texto del valor de una porción de torta, incluyendo opcionalmente el porcentaje.
+   * @param val - Valor numérico de la porción.
+   * @param totalSum - Suma total acumulada de las porciones.
+   * @param showPercentage - Indica si se debe incluir el porcentaje.
+   * @returns Cadena de texto formateada para el valor de la porción.
    * @private
    */
   private formatPieSliceValueText(val: number, totalSum: number, showPercentage: boolean): string {
@@ -329,10 +341,10 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea el título del tooltip
-   * @param params - Parámetros del tooltip
-   * @param options - Opciones de configuración del gráfico
-   * @returns Título formateado del tooltip
+   * @description Formatea el título o encabezado principal del tooltip.
+   * @param params - Parámetro único o arreglo de parámetros del tooltip.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Título formateado del tooltip.
    * @private
    */
   private formatTooltipTitle(
@@ -362,12 +374,12 @@ export class TooltipManager {
   }
 
   /**
-   * Resuelve el valor de la categoría padre (primer nivel) en una configuración de doble eje.
+   * @description Resuelve el valor de la categoría padre (primer nivel) en una configuración de doble eje.
    * Realiza el cálculo del índice proporcional según la relación de tamaños entre el eje primario y secundario.
    * Asume una relación uniforme de múltiplo entero entre la cantidad de elementos del eje 0 y eje 1.
-   * @param axes - Array de ejes (xAxis o yAxis)
-   * @param dataIndex - Índice del punto de datos actual
-   * @param axisName - Nombre identificatorio del eje ('X' o 'Y') para trazabilidad de errores
+   * @param axes - Arreglo de ejes (xAxis o yAxis).
+   * @param dataIndex - Índice del punto de datos actual.
+   * @param axisName - Nombre identificatorio del eje ('X' o 'Y') para trazabilidad de errores.
    * @returns El nombre de la categoría del primer nivel, o null si no existe una configuración de doble eje.
    * @private
    */
@@ -394,11 +406,11 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea el tooltip para un solo parámetro
-   * @param param - Parámetro único del tooltip
-   * @param title - Título del tooltip
-   * @param options - Opciones de configuración del gráfico
-   * @returns HTML formateado del tooltip para un solo parámetro
+   * @description Formatea la estructura HTML del tooltip para un único punto de datos.
+   * @param param - Parámetro único del punto de datos.
+   * @param title - Título formateado a mostrar en el encabezado.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Estructura HTML formateada del tooltip.
    * @private
    */
   private formatSingleParamTooltip(
@@ -457,9 +469,13 @@ export class TooltipManager {
   }
 
   /**
-   * Calcula el texto del porcentaje para una serie de tipo pie.
+   * @description Calcula el texto del porcentaje para una serie de tipo torta.
    * Utiliza la propiedad `percent` provista nativamente por ECharts si está presente en el parámetro;
    * de lo contrario, la calcula en base a la suma total de la serie.
+   * @param param - Parámetro del tooltip a evaluar.
+   * @param rawVal - Valor numérico crudo del punto de datos.
+   * @param totalSum - Suma total acumulada.
+   * @returns Cadena formateada del porcentaje.
    * @private
    */
   private calculatePercentageString(param: TooltipParams, rawVal: number, totalSum: number): string {
@@ -476,11 +492,11 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea el tooltip para múltiples parámetros
-   * @param params - Array de parámetros del tooltip
-   * @param title - Título del tooltip
-   * @param options - Opciones de configuración del gráfico
-   * @returns HTML formateado del tooltip para múltiples parámetros
+   * @description Formatea la estructura HTML del tooltip para múltiples puntos de datos (gráficos apilados o compartidos).
+   * @param params - Arreglo de parámetros de los puntos de datos del tooltip.
+   * @param title - Título formateado a mostrar en el encabezado.
+   * @param options - Opciones de configuración de ECharts.
+   * @returns Estructura HTML formateada del tooltip múltiple.
    * @private
    */
   private formatMultipleParamsTooltip(
@@ -625,9 +641,9 @@ export class TooltipManager {
   }
 
   /**
-   * Extrae y convierte el valor numérico desde un objeto de datos (revisando `nominalValue` o `value`).
-   * @param obj - Objeto de entrada
-   * @returns El valor numérico extraído o NaN.
+   * @description Extrae y convierte el valor numérico desde un objeto de datos (revisando `nominalValue` o `value`).
+   * @param obj - Objeto de entrada de datos.
+   * @returns El valor numérico extraído o NaN si no es convertible.
    * @private
    */
   private parseObjectValue(obj: Record<string, unknown>): number {
@@ -643,11 +659,11 @@ export class TooltipManager {
   }
 
   /**
-   * Convierte un valor de tipo texto o numérico u objeto de datos a su equivalente numérico flotante.
+   * @description Convierte un valor de tipo texto, numérico u objeto de datos a su equivalente numérico flotante.
    * Si recibe un objeto, extrae `nominalValue` o `value`.
-   * Remueve caracteres que no sean dígitos, signos o puntos decimales si recibe un string formateado.
-   * @param value - Valor de entrada
-   * @returns El número flotante o NaN si la conversión no es posible.
+   * Remueve caracteres no numéricos excepto signos y puntos decimales si recibe un string formateado.
+   * @param value - Valor de entrada a convertir.
+   * @returns El número flotante resultante o NaN si la conversión no es posible.
    * @private
    */
   private parseNumericValue(value: unknown): number {
@@ -664,10 +680,10 @@ export class TooltipManager {
   }
 
   /**
-   * Determina si una serie representa una línea de referencia global o meta (goal).
+   * @description Determina si una serie representa una línea de referencia global o meta (goal).
    * Se evalúa únicamente mediante la propiedad explícita `isReferenceSeries`.
-   * @param seriesConfig - Configuración de la serie a evaluar
-   * @returns True si la serie tiene la propiedad isReferenceSeries en true, False en caso contrario.
+   * @param seriesConfig - Objeto de configuración de la serie a evaluar.
+   * @returns True si la serie representa una línea de referencia, False en caso contrario.
    * @private
    */
   private isReferenceSeries(seriesConfig?: Record<string, unknown>): boolean {
@@ -675,9 +691,10 @@ export class TooltipManager {
   }
 
   /**
-   * Formatea un valor numérico según la configuración
-   * @param value - Valor a formatear
-   * @returns Valor formateado como string
+   * @description Formatea un valor numérico o texto según la configuración de decimales y sufijos del manager.
+   * @param value - Valor numérico o texto a formatear.
+   * @returns Valor formateado como cadena de texto en formato es-AR.
+   * @public
    */
   public formatValue(value: number | string): string {
     try {

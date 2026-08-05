@@ -14,12 +14,12 @@ import {
 import { ECharts, EChartsOption } from "echarts";
 import { NgxEchartsModule } from "ngx-echarts";
 import { EventBusService } from "../../services/event-bus.service";
-import { EC_SERIES_CONFIG } from "../../types/constants";
 import { Series } from "../../types/data.types";
 import { VisualizerEventType } from "../../types/visualizer-event.types";
 import { Chart } from "../types/chart";
 import { ChartConfiguration } from "../types/chart-configuration";
 import { ChartData } from "../utils/chart-data";
+import { GoalChartHelper } from "../utils/goal-chart.helper";
 import { EChart } from "./echarts";
 
 /**
@@ -112,10 +112,10 @@ export class EchartsComponent implements OnInit, OnDestroy {
    */
   public ngOnDestroy(): void {
     this.isDestroyed = true;
-    if (this.mainChart?.instance) {
+    if (this.mainChart) {
       try {
         this.ngZone.runOutsideAngular(() => {
-          this.mainChart.instance.dispose();
+          this.mainChart.dispose();
         });
       } catch (error) {
         console.warn("Error al destruir la instancia de ECharts:", error);
@@ -346,41 +346,6 @@ export class EchartsComponent implements OnInit, OnDestroy {
    * @throws {Error} Si `chartData` no se proporciona.
    */
   public getGoalSeries(chartData: ChartData, chartType: string): Series {
-    if (!chartData) {
-      throw new Error("El parámetro chartData es requerido");
-    }
-    try {
-      const data = chartData.dataProvider.getData();
-      const goalData = data.map((row) => {
-        const value = row["valor"];
-        return typeof value === "number" ? value : 0;
-      });
-      const seriesType = chartType === "column" ? "bar" : chartType;
-      const goalSeries: Series = {
-        name: "Meta",
-        color: "black",
-        visible: true,
-        data: goalData,
-        smooth: true,
-        stacking: undefined,
-        chartType: chartType,
-        type: seriesType,
-        symbol: "circle",
-        symbolSize: 6,
-        lineStyle: {
-          width: 2,
-          type: "dashed",
-        },
-        isReferenceSeries: true,
-      };
-      type SeriesType = keyof typeof EC_SERIES_CONFIG;
-      if (seriesType in EC_SERIES_CONFIG) {
-        Object.assign(goalSeries, EC_SERIES_CONFIG[seriesType as SeriesType]);
-      }
-      return goalSeries;
-    } catch (error) {
-      console.error("Error al generar la serie de meta:", error);
-      throw new Error("No se pudo generar la serie de meta");
-    }
+    return GoalChartHelper.createGoalSeries(chartData, chartType);
   }
 }

@@ -11,6 +11,7 @@ import { LayoutManager } from './managers/layout-manager';
 import { SeriesManager } from './managers/series-manager';
 import { TooltipManager } from './managers/tooltip-manager';
 import { SeriesConfigType } from './types/echart-base';
+import { EChartParser } from './utils/echart-parser';
 import { PercentTransformer } from './utils/percent-transformer';
 
 /**
@@ -77,15 +78,6 @@ export class EChart extends Chart {
   /** Lista de series añadidas dinámicamente en caliente. */
   private addedSeries: SeriesConfigType[] = [];
 
-  /** Copia del sufijo original de tooltip para restauración tras modo porcentual. */
-  private suffixSaved: string | null = '';
-
-  /** Copia de la cantidad original de decimales para restauración tras modo porcentual. */
-  private decimalsSaved: number | null = null;
-
-  /** Copia del valor máximo del eje Y para restauración tras modo porcentual. */
-  private savedYAxisMaxValue: number | null = null;
-
   /** Caché para memoización de opciones calculadas. */
   private readonly optionsCache: Map<string, EChartsOption> = new Map();
 
@@ -118,7 +110,7 @@ export class EChart extends Chart {
     this.chartInstance = instance;
     this.exportManager = new ExportManager(instance);
     this.seriesManager = new SeriesManager(instance);
-    this.axisManager = new AxisManager(this.tooltipManager, this.seriesManager);
+    this.axisManager = new AxisManager(this.seriesManager);
     this.layoutManager = new LayoutManager();
 
     this.setupEventHandlers();
@@ -174,15 +166,6 @@ export class EChart extends Chart {
   private setupEventHandlers(): void {
     if (!this.chartInstance) return;
 
-    // Usar un solo listener para múltiples eventos
-    const eventHandler = this.debounce(() => {
-      this.handleChartEvent();
-    }, 100);
-
-    this.chartInstance.on('click', eventHandler);
-    this.chartInstance.on('mouseover', eventHandler);
-    this.chartInstance.on('mouseout', eventHandler);
-
     // Guardar el índice de la serie hovered para el tooltip
     this.chartInstance.on('mouseover', (params: any) => {
       if (params && typeof params.seriesIndex === 'number') {
@@ -200,15 +183,6 @@ export class EChart extends Chart {
   }
 
   /**
-   * Manejo optimizado de eventos del gráfico
-   * @private
-   */
-  private handleChartEvent(): void {
-    // Implementar lógica de manejo de eventos aquí
-    // Evitar operaciones costosas durante eventos frecuentes
-  }
-
-  /**
    * Métodos de gestión del ciclo de vida del gráfico
    * Limpia los recursos y cierra la instancia del gráfico
    */
@@ -218,7 +192,9 @@ export class EChart extends Chart {
     }
     this.optionsCache.clear();
     this.addedSeries = [];
-    this.chartInstance.dispose();
+    if (this.chartInstance && !this.chartInstance.isDisposed()) {
+      this.chartInstance.dispose();
+    }
   }
 
   /**
@@ -303,20 +279,6 @@ export class EChart extends Chart {
     this.seriesManager.handleSelection(series);
   }
 
-  /**
-   * Expande el gráfico para mejor visualización
-   */
-  expand(): void { }
-
-  /**
-   * Condensa el gráfico
-   */
-  condense(): void { }
-
-  /**
-   * Oculta el gráfico
-   */
-  hide(): void { }
 
   /**
    * Alterna el modo porcentual del gráfico delegando en el PercentTransformer
@@ -392,73 +354,6 @@ export class EChart extends Chart {
     this.invalidateCache();
   }
 
-  /**
-   * Habilita el modo porcentual.
-   * @private
-   */
-  private enablePercentMode(): void {
-    this.ensureStackedSeries();
-    this.suffixSaved = this.chartOptions.tooltip.suffix;
-    this.decimalsSaved = this.chartOptions.tooltip.decimals;
-    this.chartOptions.tooltip.suffix = '%';
-    this.chartOptions.tooltip.decimals = 2;
-    this.tooltipManager.updateSuffix('%');
-    this.tooltipManager.updateDecimals(2);
-    this.seriesManager.summarizeTotals(this.chartData.getSeries());
-    this.saveAndSetYAxisMax(100);
-  }
-
-  /**
-   * Deshabilita el modo porcentual.
-   * @private
-   */
-  private disablePercentMode(): void {
-    this.unstackSeriesIfNotStacked();
-    this.chartOptions.tooltip.suffix = this.suffixSaved;
-    this.chartOptions.tooltip.decimals = this.decimalsSaved;
-    this.tooltipManager.updateSuffix(this.suffixSaved);
-    this.tooltipManager.updateDecimals(this.decimalsSaved);
-    this.restoreYAxisMax();
-  }
-
-  /**
-   * Asegura que las series estén apiladas.
-   * @private
-   */
-  private ensureStackedSeries(): void {
-    this.chartData.seriesConfig.stack ??= 'stack';
-  }
-
-  /**
-   * Desapila las series si no están configuradas como apiladas.
-   * @private
-   */
-  private unstackSeriesIfNotStacked(): void {
-    if (!this.chartOptions.stacked) {
-      this.chartData.seriesConfig.stack = null;
-    }
-  }
-
-  /**
-   * Guarda y establece el valor máximo del eje Y.
-   * @param maxValue - Valor máximo a establecer.
-   * @private
-   */
-  private saveAndSetYAxisMax(maxValue: number): void {
-    if (this.chartOptions.yAxis.max) {
-      this.savedYAxisMaxValue = this.chartOptions.yAxis.max;
-    }
-    this.chartOptions.yAxis.max = maxValue;
-  }
-
-  /**
-   * Restaura el valor máximo del eje Y.
-   * @private
-   */
-  private restoreYAxisMax(): void {
-    this.chartOptions.yAxis.max = this.savedYAxisMaxValue;
-    this.savedYAxisMaxValue = null;
-  }
 
   /**
    * Establece los extremos del zoom (dataZoom) en el gráfico.
@@ -616,16 +511,7 @@ export class EChart extends Chart {
    * @private
    */
   private restoreStandardTitle(): void {
-    if (typeof this.chartOptions.title === 'string' && this.chartOptions.title.trim().length > 0) {
-      this.libraryOptions.title = {
-        text: this.chartOptions.title,
-        show: true,
-      };
-    } else {
-      this.libraryOptions.title = {
-        show: false,
-      };
-    }
+    EChartParser.parseTitle(this.libraryOptions, this.chartOptions);
   }
 
   /**

@@ -8,7 +8,6 @@ import {
   ElementRef,
   HostBinding,
   OnDestroy,
-  ViewContainerRef,
   computed,
   effect,
   inject,
@@ -50,7 +49,7 @@ import { GoalChartHelper } from "./utils/goal-chart.helper";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements OnDestroy {
-  private readonly viewContainerRef = inject(ViewContainerRef);
+
   private readonly chartFactory = inject(ChartFactory);
   private readonly chartUpdater = inject(ChartUpdater);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -146,8 +145,13 @@ export class ChartComponent implements OnDestroy {
   /** Opciones internas "en vivo" para el gráfico */
   internalOptions = signal<ChartOptions | null>(null);
 
-  /** Señal que contiene las series actuales del gráfico para comunicación externa. */
-  series = signal<Series[]>([]);
+  /**
+   * Signal de solo lectura con las series actuales del gráfico.
+   * Se actualiza automáticamente cuando EchartsComponent emite cambios de series.
+   * Los consumidores externos pueden leer este signal para reaccionar a cambios.
+   */
+  private readonly _series = signal<Series[]>([]);
+  readonly series = this._series.asReadonly();
 
   /** Instancia del editor de configuración inyectado en el overlay */
   private configEditorComponentRef?: ComponentRef<unknown>;
@@ -334,6 +338,8 @@ export class ChartComponent implements OnDestroy {
       type: VisualizerEventType.CHART_RENDER_START,
       instanceId: this.instanceId
     });
+    // rAF ejecuta fuera del tracking de signals de Angular, por lo que
+    // markForCheck() es necesario para garantizar que OnPush repinte el template.
     requestAnimationFrame(() => {
       this.echart()?.renderChart(config);
       this.cdr.markForCheck();
@@ -403,24 +409,9 @@ export class ChartComponent implements OnDestroy {
     return extremes ?? null;
   }
 
-  // ============================================
-  // EVENTOS DE MANEJO DE SERIES Y LEYENDAS (TEMPLATE)
-  // ============================================
-
-  public onSelectSeries(seriesElement: Series): void {
-    if (this.mainChart) {
-      this.mainChart.selectSeries(seriesElement);
-    }
-  }
-
-  public onHoverSeries(seriesElement: Series): void {
-    if (this.mainChart) {
-      this.mainChart.hoverSeries(seriesElement);
-    }
-  }
-
+  /** Callback del template: actualiza el signal interno de series y emite el output. */
   public onSeriesChange(series: Series[]): void {
-    this.series.set(series);
+    this._series.set(series);
     this.seriesChange.emit(series);
   }
 
@@ -515,12 +506,13 @@ export class ChartComponent implements OnDestroy {
   // ============================================
 
   ngOnDestroy(): void {
+    // El overlay vive fuera del DOM del componente y debe cerrarse explícitamente.
     this.destroyEditorComponent();
     if (this.mainChart) {
+      // Limpia renderDebounceTimeout, optionsCache y la instancia de ECharts.
       this.mainChart.dispose();
       this.mainChart = null;
     }
-    this.viewContainerRef.clear();
   }
 }
 

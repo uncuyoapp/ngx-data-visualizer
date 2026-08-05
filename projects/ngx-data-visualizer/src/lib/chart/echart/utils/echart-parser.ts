@@ -28,7 +28,7 @@ export class EChartParser implements ParserOptions {
    * @returns Un objeto de opciones preconfigurado para vista previa.
    */
   public getPreviewOptions(config: ChartOptions): unknown {
-    const options = this.mergeOptions({}, true);
+    const options = this.mergeOptions({});
     return this.applyChartConfigurations(config, options);
   }
 
@@ -39,7 +39,7 @@ export class EChartParser implements ParserOptions {
    * @returns Un objeto con la configuración final completa del gráfico.
    */
   public getFullOptions(config: ChartOptions): unknown {
-    const options = this.mergeOptions({}, false);
+    const options = this.mergeOptions({});
     return this.applyChartConfigurations(config, options);
   }
 
@@ -62,19 +62,19 @@ export class EChartParser implements ParserOptions {
     ConfigValidator.validate(config as any, DEFAULT_OPTIONS as any, DEPRECATED_LEGEND_PATHS);
 
     // 1. Mapear tipo de gráfico
-    this.parseType(echartsConfig, config);
+    EChartParser.parseType(echartsConfig, config);
 
     // 2. Mapear colores de series
-    this.parseColors(echartsConfig, config);
+    EChartParser.parseColors(echartsConfig, config);
 
     // 3. Mapear título del gráfico
-    this.parseTitle(echartsConfig, config);
+    EChartParser.parseTitle(echartsConfig, config);
 
     // 4. Mapear comportamiento del tooltip
-    this.parseTooltip(echartsConfig, config);
+    EChartParser.parseTooltip(echartsConfig, config);
 
     // 5. Mapear comportamiento y estado del navegador (dataZoom)
-    this.parseNavigator(echartsConfig, config);
+    EChartParser.parseNavigator(echartsConfig, config);
 
     return echartsConfig;
   }
@@ -84,9 +84,8 @@ export class EChartParser implements ParserOptions {
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts extendido con la propiedad type.
    * @param config Opciones del gráfico.
-   * @private
    */
-  private parseType(echartsConfig: EChartsOption & { type?: string }, config: ChartOptions): void {
+  public static parseType(echartsConfig: EChartsOption & { type?: string }, config: ChartOptions): void {
     echartsConfig.type = config.type;
   }
 
@@ -95,9 +94,8 @@ export class EChartParser implements ParserOptions {
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts.
    * @param config Opciones del gráfico.
-   * @private
    */
-  private parseColors(echartsConfig: EChartsOption, config: ChartOptions): void {
+  public static parseColors(echartsConfig: EChartsOption, config: ChartOptions): void {
     echartsConfig.color = config.colors ?? [...ECharts.DEFAULT_PALETTE];
   }
 
@@ -106,9 +104,8 @@ export class EChartParser implements ParserOptions {
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts.
    * @param config Opciones del gráfico.
-   * @private
    */
-  private parseTitle(echartsConfig: EChartsOption, config: ChartOptions): void {
+  public static parseTitle(echartsConfig: EChartsOption, config: ChartOptions): void {
     if (typeof config.title === 'string' && config.title.trim().length > 0) {
       echartsConfig.title = {
         text: config.title,
@@ -126,9 +123,8 @@ export class EChartParser implements ParserOptions {
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts.
    * @param config Opciones del gráfico.
-   * @private
    */
-  private parseTooltip(echartsConfig: EChartsOption, config: ChartOptions): void {
+  public static parseTooltip(echartsConfig: EChartsOption, config: ChartOptions): void {
     if (echartsConfig.tooltip && !Array.isArray(echartsConfig.tooltip)) {
       const tooltip = echartsConfig.tooltip as {
         trigger?: string;
@@ -159,9 +155,8 @@ export class EChartParser implements ParserOptions {
    * 
    * @param echartsConfig Referencia al objeto de opciones nativo de ECharts.
    * @param config Opciones del gráfico.
-   * @private
    */
-  private parseNavigator(echartsConfig: EChartsOption, config: ChartOptions): void {
+  public static parseNavigator(echartsConfig: EChartsOption, config: ChartOptions): void {
     if (config.navigator) {
       echartsConfig.dataZoom = [
         {
@@ -179,17 +174,12 @@ export class EChartParser implements ParserOptions {
    * Combina un conjunto de opciones personalizadas con las opciones por defecto de la biblioteca.
    * 
    * @param config Opciones personalizadas provistas.
-   * @param preview Indica si se deben usar las opciones reducidas para la vista previa rápida.
    * @returns Un clon profundo de la combinación de opciones base y personalizadas.
    * @private
    */
-  private mergeOptions(config: Partial<EChartsOption>, preview?: boolean): EChartsOption {
-    const defaultOptions = preview
-      ? EC_CHART_CONFIG_PREVIEW
-      : EC_CHART_CONFIG_PREVIEW;
-
+  private mergeOptions(config: Partial<EChartsOption>): EChartsOption {
     const renderOptions: EChartsOption = {
-      ...cloneDeep(defaultOptions),
+      ...cloneDeep(EC_CHART_CONFIG_PREVIEW),
       ...config,
     };
     return renderOptions;

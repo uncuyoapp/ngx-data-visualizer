@@ -3,17 +3,23 @@ import { EC_SERIES_CONFIG } from "../../../types/constants";
 import { SeriesConfigType } from "../types/echart-base";
 
 /**
- * Interface con el contexto necesario para configurar las series
+ * @description Interfaz que define el contexto y parámetros necesarios para la configuración de las series.
  */
 export interface SeriesContext {
+  /** @description Tipo identificatorio del gráfico (ej: "bar", "line", "area"). */
   chartType: string;
+  /** @description Indica si el gráfico es de tipo torta (pie). */
   isPie: boolean;
+  /** @description Indica si los valores deben transformarse a representación porcentual. */
   toPercent: boolean;
+  /** @description Clave opcional de apilamiento para agrupar series. */
   stack?: string | null;
+  /** @description Paleta de colores opcional asignada a las series. */
   colors?: string[];
 }
 
 /**
+ * @description
  * Clase administradora encargada de todo lo referido al manejo y transformación de las Series
  * en los gráficos de ECharts. Acuña responsabilidades sobre adición, eliminación y 
  * selección interactiva de series. Adicionalmente, computa valores acumulados para visualizaciones en porcentajes.
@@ -25,13 +31,16 @@ export class SeriesManager {
   private maxValue: number = 0;
 
   /**
-   * Crea la instancia gestora de las Series de EChart.
+   * @description Crea la instancia del gestor de series de ECharts.
    * @param chartInstance - Referencia a la instancia de renderizado nativa de ECharts.
    */
   constructor(private readonly chartInstance: ECharts) { }
 
   /**
-   * Obtiene los totales acumulados por todas las series para una pila específica.
+   * @description Obtiene los totales acumulados por todas las series para una pila específica o por defecto.
+   * @param stackKey - Clave opcional de la pila a consultar (por defecto 'default').
+   * @returns Arreglo de totales acumulados por índice o mapa de todas las pilas.
+   * @public
    */
   public getTotals(stackKey: string = 'default'): number[] | Record<string, number[]> {
     if (stackKey && this.totals[stackKey]) {
@@ -41,15 +50,18 @@ export class SeriesManager {
   }
 
   /**
-   * Obtiene el valor máximo numérico hallado iterándolo sobre todas las series renderizadas.
+   * @description Obtiene el valor máximo numérico hallado iterando sobre todas las series renderizadas.
+   * @returns El valor máximo numérico hallado.
+   * @public
    */
   public getMaxValue(): number {
     return this.maxValue;
   }
 
   /**
-   * Obtiene todas las series del gráfico
-   * @returns Array con la configuración de todas las series
+   * @description Obtiene todas las series actualmente configuradas en la instancia de ECharts.
+   * @returns Arreglo con la configuración de todas las series.
+   * @public
    */
   getSeries(): SeriesConfigType[] {
     return (
@@ -58,8 +70,9 @@ export class SeriesManager {
   }
 
   /**
-   * Añade una nueva serie al gráfico
-   * @param series - Configuración de la serie a añadir
+   * @description Añade una nueva serie al gráfico de ECharts.
+   * @param series - Objeto de configuración de la serie a añadir.
+   * @public
    */
   addSeries(series: SeriesConfigType): void {
     if (!this.chartInstance) {
@@ -91,8 +104,9 @@ export class SeriesManager {
   }
 
   /**
-   * Elimina una serie del gráfico
-   * @param series - Configuración de la serie a eliminar
+   * @description Elimina una serie del gráfico según su nombre.
+   * @param series - Objeto de configuración de la serie a eliminar.
+   * @public
    */
   deleteSeries(series: SeriesConfigType): void {
     const currentSeries = this.getSeries();
@@ -102,8 +116,9 @@ export class SeriesManager {
   }
 
   /**
-   * Maneja el hover de una serie
-   * @param series - Serie sobre la que se realiza el hover
+   * @description Maneja la interacción de hover (foco/resaltado) sobre una serie.
+   * @param series - Serie sobre la que se realiza la acción de hover.
+   * @public
    */
   handleHover(series: SeriesConfigType): void {
     if (series.hover) {
@@ -118,8 +133,9 @@ export class SeriesManager {
   }
 
   /**
-   * Maneja la selección de una serie
-   * @param series - Serie a seleccionar/deseleccionar
+   * @description Maneja la selección/deselección interactiva de una serie en la leyenda.
+   * @param series - Serie a seleccionar o deseleccionar.
+   * @public
    */
   handleSelection(series: SeriesConfigType): void {
     if (series.visible) {
@@ -137,14 +153,13 @@ export class SeriesManager {
   }
 
   /**
-   * Orquesta el formato estructural de las series. Muta su formato interno 
+   * @description Orquesta el formato estructural de las series. Muta su formato interno 
    * inyectando las configuraciones constantes (`EC_SERIES_CONFIG`) requeridas por la biblioteca, 
    * calcula los valores porcentuales y asigna propiedades visuales tales como color y apilamiento.
-   * Modifica el arreglo interno in-place.
-   * 
-   * @param series - Listado con la configuración funcional y de valores de las series
-   * @param context - Contexto visual general del Chart encapsulado en `SeriesContext`
-   * @returns El subconjunto de series procesado y transformado en formato EChartsOption
+   * @param series - Listado con la configuración funcional y de valores de las series.
+   * @param context - Contexto visual general del gráfico encapsulado en `SeriesContext`.
+   * @returns El subconjunto de series procesado y transformado en formato EChartsOption.
+   * @public
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public configureSeries(series: any[], context: SeriesContext): any[] {
@@ -179,10 +194,15 @@ export class SeriesManager {
   }
 
   /**
-   * Procesa estructuralmente una dupla matriz de valores para retornar la transformación pertinente. 
-   * Extrae simultáneamente el valor Máximo detectado para cálculos futuros de layout.
-   * Si las opciones refieren a modo porcentual, computa el porcentaje frente a todos los `totals` generados de antemano.
-   * Preserva el valor nominal original en la propiedad `nominalValue` del objeto retornado.
+   * @description Procesa estructuralmente una matriz de valores para retornar la transformación pertinente. 
+   * Extrae simultáneamente el valor máximo detectado para cálculos de layout.
+   * Si las opciones refieren a modo porcentual, computa el porcentaje frente a los totales previamente calculados.
+   * Preserva el valor nominal original en la propiedad `nominalValue`.
+   * @param data - Matriz de datos de entrada de la serie.
+   * @param context - Contexto de las series.
+   * @param stackKey - Clave de la pila activa (por defecto 'default').
+   * @returns Arreglo de datos formateados para ECharts.
+   * @private
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private processSeriesDataPayload(data: any[], context: SeriesContext, stackKey: string = 'default') {
@@ -214,8 +234,9 @@ export class SeriesManager {
   }
 
   /**
-   * Recorre recursivamente todas las series para acumular sus valores respectivos por clave de apilamiento e índice.
-   * @param series - Array bruto de series que se pretenden graficar.
+   * @description Recorre recursivamente todas las series para acumular sus valores respectivos por clave de apilamiento e índice.
+   * @param series - Arreglo de series a procesar.
+   * @public
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public summarizeTotals(series: Array<any>): void {
@@ -239,8 +260,11 @@ export class SeriesManager {
   }
 
   /**
-   * Mapea y traduce de forma determinística la convención de tipos de gráficas usada por 
-   * NGX Visualizer Data (p., ej., `column`, `area`) hacia las claves interpretables por ECharts (`bar`, `line`, etc).
+   * @description Mapea y traduce la convención de tipos de gráficos usada por la aplicación 
+   * hacia las claves interpretables por ECharts (`bar`, `line`, etc.).
+   * @param type - Tipo de gráfico de origen.
+   * @returns Tipo de gráfico equivalente interpretable por ECharts.
+   * @private
    */
   private getMappedChartType(type: string): string {
     switch (type) {

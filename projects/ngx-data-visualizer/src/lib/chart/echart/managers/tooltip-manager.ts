@@ -526,7 +526,7 @@ export class TooltipManager {
       const focusSeriesConfig = seriesArray[focusParam.seriesIndex];
       const activeStack = focusSeriesConfig?.['stack'];
 
-      // 2. Filtrado Físico de Series (DEC-012)
+      // 2. Filtrado Físico de Series 
       // Filtramos las series que se deben ocultar basándonos en el stack sobre el que está el cursor.
       const filteredParams = params.filter(param => {
         const seriesConfig = seriesArray[param.seriesIndex];
@@ -550,7 +550,7 @@ export class TooltipManager {
       const referenceParams = filteredParams.filter(param => this.isReferenceSeries(seriesArray[param.seriesIndex]));
       const sortedParams = [...normalParams, ...referenceParams];
 
-      // 4. Cálculo de la sumatoria total (DEC-006)
+      // 4. Cálculo de la sumatoria total 
       // Calculamos la sumatoria para porcentajes y totales usando únicamente series normales visibles (no de referencia).
       let totalSum = 0;
       normalParams.forEach(param => {
@@ -567,7 +567,7 @@ export class TooltipManager {
       const threshold = (tooltipConfig?.['columnThreshold'] as number | undefined) ?? 10;
       const maxCols = (tooltipConfig?.['maxColumns'] as number | undefined) ?? 3;
 
-      // 6. Cálculo adaptativo del número de columnas (DEC-014)
+      // 6. Cálculo adaptativo del número de columnas 
       const totalItems = sortedParams.length;
       const columnsCount = Math.min(maxCols, Math.max(1, Math.ceil(totalItems / threshold)));
       const multicolClass = columnsCount > 1 ? 'ec-tooltip-multicol' : '';

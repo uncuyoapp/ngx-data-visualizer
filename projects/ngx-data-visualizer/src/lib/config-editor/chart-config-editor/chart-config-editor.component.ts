@@ -28,13 +28,13 @@ import { CheckComponent } from '../../icons/check/check.component';
 import { CloseComponent } from '../../icons/close/close.component';
 import { ExportComponent } from '../../icons/export/export.component';
 import { ForwardComponent } from '../../icons/forward/forward.component';
-import { ResetComponent } from '../../icons/reset/reset.component';
 import { Dataset } from '../../services/dataset';
 import { ChartOptions, ChartType } from '../../types/data.types';
 import { ChartRulesRegistryService } from '../services/chart-rules-registry.service';
 import { ConfigFactory } from '../services/config-factory.service';
 import { isDimensionUsedInAxis } from '../strategies/base-chart-rules.strategy';
-import { ControlRuleContext, ControlState, WizardStep } from '../strategies/chart-type-rules.interface';
+import { ControlRuleContext, ControlState } from '../strategies/chart-type-rules.interface';
+import { WizardStep } from '../types/wizard.types';
 
 @Component({
     selector: 'lib-chart-config-editor',
@@ -46,7 +46,6 @@ import { ControlRuleContext, ControlState, WizardStep } from '../strategies/char
         BackComponent,
         ForwardComponent,
         CloseComponent,
-        ResetComponent,
         CheckComponent,
         ExportComponent
     ],

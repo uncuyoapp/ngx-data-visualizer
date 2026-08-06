@@ -18,17 +18,17 @@
   <div class="wizard-progress-container">
     <div class="wizard-steps">
       <div class="wizard-progress-line-container">
-        <div class="wizard-progress-bar" [style.width.%]="(currentStep() - 1) / (steps.length - 1) * 100"></div>
+        <div class="wizard-progress-bar" [style.width.%]="(currentStep() - 1) / (activeSteps().length - 1) * 100"></div>
       </div>
-      <button type="button" *ngFor="let step of steps; let i = index" class="wizard-step-pill"
+      <button type="button" *ngFor="let step of activeSteps(); let i = index" class="wizard-step-pill"
         [class.active]="currentStep() === i + 1" [class.completed]="currentStep() > i + 1" (click)="goToStep(i + 1)"
         [title]="step.label">
         {{ i + 1 }}
       </button>
     </div>
     <div class="wizard-step-label">
-      Paso {{ currentStep() }} de {{ steps.length }}: <span class="accent-step">{{ steps[currentStep() - 1].label
-        }}</span>
+      Paso {{ currentStep() }} de {{ activeSteps().length }}: <span class="accent-step">{{ activeSteps()[currentStep() -
+        1].label }}</span>
     </div>
   </div>
 
@@ -82,7 +82,36 @@
             <option value="percentOfRow">% de Fila</option>
             <option value="percentOfColumn">% de Columna</option>
           </select>
+          <small *ngIf="controlStatesMap().get('valueDisplay')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('valueDisplay')?.disabledReason }}
+          </small>
         </div>
+
+        <div class="form-group">
+          <label class="switch-container">
+            <span class="switch-text">Deshabilitar cambio de modo de visualización</span>
+            <input type="checkbox" formControlName="disableSetValueDisplay" />
+            <span class="switch-slider"></span>
+          </label>
+          <small *ngIf="controlStatesMap().get('disableSetValueDisplay')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('disableSetValueDisplay')?.disabledReason }}
+          </small>
+        </div>
+
+
+        <div class="form-group">
+          <label class="switch-container">
+            <span class="switch-text">Modo Multi-Métrica</span>
+            <input type="checkbox" [checked]="configForm.get('percentDisplayMode')?.value === 'multiMetric'"
+              [disabled]="controlStatesMap().get('percentDisplayMode')?.enabled === false"
+              (change)="togglePercentDisplayMode($event)" />
+            <span class="switch-slider"></span>
+          </label>
+          <small *ngIf="controlStatesMap().get('percentDisplayMode')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('percentDisplayMode')?.disabledReason }}
+          </small>
+        </div>
+
 
         <div class="form-grid-2">
           <div class="form-group">
@@ -95,12 +124,27 @@
             <div class="input-clearable-container">
               <input id="table-suffix" type="text" formControlName="suffix" placeholder="Ej: $" />
               <button type="button" class="btn-clear" (click)="configForm.get('suffix')?.setValue('')"
-                *ngIf="configForm.get('suffix')?.value" title="Limpiar">
+                *ngIf="configForm.get('suffix')?.value && controlStatesMap().get('suffix')?.enabled !== false"
+                title="Limpiar">
                 <lib-icon-close [width]="14" [height]="14"></lib-icon-close>
               </button>
             </div>
+            <small *ngIf="controlStatesMap().get('suffix')?.disabledReason" class="info-text hint-text">
+              {{ controlStatesMap().get('suffix')?.disabledReason }}
+            </small>
           </div>
         </div>
+
+        <div class="form-group">
+          <label for="table-percent-decimals">Decimales Porcentuales</label>
+          <input id="table-percent-decimals" type="number" formControlName="percentDigitsAfterDecimal" min="0"
+            max="4" />
+          <small *ngIf="controlStatesMap().get('percentDigitsAfterDecimal')?.disabledReason"
+            class="info-text hint-text">
+            {{ controlStatesMap().get('percentDigitsAfterDecimal')?.disabledReason }}
+          </small>
+        </div>
+
       </div>
     </div>
 
@@ -129,9 +173,9 @@
       <span>Anterior</span>
     </button>
     <button type="button" class="btn-next" (click)="nextStep()">
-      <span>{{ currentStep() === steps.length ? 'Finalizar' : 'Siguiente' }}</span>
-      <lib-icon-forward *ngIf="currentStep() < steps.length" [width]="14" [height]="14"></lib-icon-forward>
-      <lib-icon-check *ngIf="currentStep() === steps.length" [width]="14" [height]="14"></lib-icon-check>
+      <span>{{ currentStep() === activeSteps().length ? 'Finalizar' : 'Siguiente' }}</span>
+      <lib-icon-forward *ngIf="currentStep() < activeSteps().length" [width]="14" [height]="14"></lib-icon-forward>
+      <lib-icon-check *ngIf="currentStep() === activeSteps().length" [width]="14" [height]="14"></lib-icon-check>
     </button>
   </div>
 </div>

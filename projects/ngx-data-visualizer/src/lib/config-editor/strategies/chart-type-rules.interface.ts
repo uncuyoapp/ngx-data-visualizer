@@ -1,11 +1,6 @@
 import { Dataset } from '../../services/dataset';
 import { ChartOptions, ChartType } from '../../types/data.types';
-
-/** Definición de un paso del asistente (wizard) */
-export interface WizardStep {
-  id: string;
-  label: string;
-}
+import { WizardStep } from '../types/wizard.types';
 
 /** Estado resultante de evaluar las reglas de un control de formulario */
 export interface ControlState {

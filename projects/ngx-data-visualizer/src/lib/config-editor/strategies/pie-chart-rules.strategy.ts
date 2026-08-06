@@ -1,7 +1,8 @@
 import { Dataset } from '../../services/dataset';
 import { ChartType } from '../../types/data.types';
+import { WizardStep } from '../types/wizard.types';
 import { BaseChartTypeRules } from './base-chart-rules.strategy';
-import { ControlRuleEvaluator, WizardStep } from './chart-type-rules.interface';
+import { ControlRuleEvaluator } from './chart-type-rules.interface';
 
 /**
  * Estrategia de reglas para gráficos circulares (Pie).

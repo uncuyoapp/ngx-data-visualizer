@@ -1,9 +1,9 @@
 import { Dataset } from '../../services/dataset';
 import { ChartType } from '../../types/data.types';
+import { WizardStep } from '../types/wizard.types';
 import {
   ChartTypeRules,
-  ControlRuleEvaluator,
-  WizardStep
+  ControlRuleEvaluator
 } from './chart-type-rules.interface';
 
 /**
@@ -11,8 +11,8 @@ import {
  */
 export function isDimensionUsedInAxis(
   dimId: string | number | undefined | null,
-  firstLevel?: unknown,
-  secondLevel?: unknown
+  firstLevel?: string | number | null,
+  secondLevel?: string | number | null
 ): boolean {
   const isUsedInFirst = firstLevel !== null && firstLevel !== undefined && String(firstLevel) !== '' && String(dimId) === String(firstLevel);
   const isUsedInSecond = secondLevel !== null && secondLevel !== undefined && String(secondLevel) !== '' && String(dimId) === String(secondLevel);

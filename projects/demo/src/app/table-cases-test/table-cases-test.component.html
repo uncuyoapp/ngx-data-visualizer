@@ -48,19 +48,19 @@
             <span class="fw-semibold d-block text-secondary-emphasis mb-2">Modo de Visualización de Valores</span>
             <div class="d-flex flex-wrap gap-2">
               <button mat-flat-button [color]="tableConfig.valueDisplay === 'nominal' ? 'primary' : 'basic'"
-                (click)="onValueDisplayChange('nominal')" class="btn-sm">
+                (click)="casesTable.setValueDisplay('nominal')" class="btn-sm">
                 Nominal
               </button>
               <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfTotal' ? 'primary' : 'basic'"
-                (click)="onValueDisplayChange('percentOfTotal')" class="btn-sm">
+                (click)="casesTable.setValueDisplay('percentOfTotal')" class="btn-sm">
                 % Total
               </button>
               <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfRow' ? 'primary' : 'basic'"
-                (click)="onValueDisplayChange('percentOfRow')" class="btn-sm">
+                (click)="casesTable.setValueDisplay('percentOfRow')" class="btn-sm">
                 % Fila
               </button>
               <button mat-flat-button [color]="tableConfig.valueDisplay === 'percentOfColumn' ? 'primary' : 'basic'"
-                (click)="onValueDisplayChange('percentOfColumn')" class="btn-sm">
+                (click)="casesTable.setValueDisplay('percentOfColumn')" class="btn-sm">
                 % Columna
               </button>
             </div>

@@ -99,6 +99,7 @@ export class TableCasesTestComponent {
     totalRow: true,
     totalCol: true,
     valueDisplay: 'nominal',
+    percentDisplayMode: 'multiMetric'
   };
 
   @ViewChild('casesTable', { read: TableComponent })
@@ -159,17 +160,12 @@ export class TableCasesTestComponent {
   }
 
   /**
-   * Cambia el modo de visualización de los valores de la tabla
+   * Cambia el modo de visualización de los valores de la tabla invocando setValueDisplay
    */
   onValueDisplayChange(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void {
-    this.tableConfig = {
-      ...this.tableConfig,
-      valueDisplay: mode,
-    };
     if (this.tableComponent) {
       this.tableComponent.setValueDisplay(mode);
     }
-    this.cdr.markForCheck();
   }
 
 

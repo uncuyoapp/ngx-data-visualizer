@@ -135,8 +135,8 @@ export interface TableOptions {
   | "percentOfTotal"
   | "percentOfRow"
   | "percentOfColumn";
-  /** Define la estructura de despliegue de celdas: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
-  displayMode?: "single" | "multiMetric";
+  /** Define la estructura de despliegue de celdas en vistas porcentuales: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
+  percentDisplayMode?: "single" | "multiMetric";
   /** Indica si se debe habilitar el tooltip flotante en celdas porcentuales (default: true) */
   showCellTooltip?: boolean;
   /** Número de decimales a mostrar exclusivamente en vistas porcentuales (default: 1) */
@@ -148,6 +148,8 @@ export interface TableOptions {
   >;
   /** Indica si se debe deshabilitar la actualización automática de la tabla */
   disableAutoUpdate?: boolean;
+  /** Indica si se deshabilita la función de cambio en vivo del modo de visualización */
+  disableSetValueDisplay?: boolean;
 }
 
 /**

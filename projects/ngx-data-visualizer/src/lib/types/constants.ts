@@ -277,6 +277,10 @@ export const Table = {
     totalRow: true,
     totalCol: true,
     suffix: "",
+    percentDisplayMode: 'multiMetric',
+    percentDigitsAfterDecimal: 1,
+    valueDisplay: 'nominal',
+    disableSetValueDisplay: false
   },
 
   /** Posiciones predefinidas para elementos de tabla */

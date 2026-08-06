@@ -303,6 +303,22 @@ table.pvtTable {
   }
 
   // Estilos específicos para etiquetas
+
+  .pvtMetricAxisLabel {
+    color: var(--table-data-bg) !important;
+    background-color: var(--table-data-bg) !important;
+    outline-color: var(--table-data-bg) !important;
+    user-select: none;
+
+    &::after {
+      background-color: var(--table-data-bg);
+    }
+
+    &::before {
+      background: var(--table-data-bg);
+    }
+  }
+
   .pvtRowLabel,
   .pvtColLabel,
   .pvtAxisLabel,
@@ -352,8 +368,7 @@ table.pvtTable {
   }
 
   // Estilos para hover
-  .header-hovered,
-  .header-related-hovered {
+  .header-hovered {
     &::after {
       background-color: var(--table-label-hover);
     }
@@ -361,18 +376,6 @@ table.pvtTable {
     color: var(--table-label-hover-contrast);
     z-index: 2;
     outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style) var(--table-label-hover-border-color);
-  }
-
-  .header-hovered-cell {
-    background-color: var(--table-header-hover, #e0e7ef);
-    color: var(--table-header-hover-contrast, #1a237e);
-    z-index: 2;
-  }
-
-  .header-related-hovered-cell {
-    background-color: var(--table-label-hover, #f5f7fa);
-    color: var(--table-label-hover-contrast, #263238);
-    z-index: 1;
   }
 
   .data-hovered {

@@ -208,7 +208,7 @@ export class TableComponent implements OnDestroy {
       this.tableHelperService.renderPivot(tableElement, tableData, pivotConfig);
       this.tableHelperService.stickyTable(tableElement);
     } else {
-      throw new Error("El elemento pivotTable debe ser un HTMLDivElement");
+      throw new TypeError("El elemento pivotTable debe ser un HTMLDivElement");
     }
   }
 
@@ -225,10 +225,11 @@ export class TableComponent implements OnDestroy {
   public setValueDisplay(
     mode: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn",
   ): void {
-    const config = this.tableConfiguration();
-    if (config) {
-      config.options.valueDisplay = mode;
-      this.configure();
+    const current = this.internalOptions();
+    if (current && !current.disableSetValueDisplay) {
+      const updated = { ...current, valueDisplay: mode };
+      this.internalOptions.set(updated);
+      this.tableOptionsChange.emit(updated);
     }
   }
 
@@ -282,6 +283,25 @@ export class TableComponent implements OnDestroy {
     return this.pivotTable?.nativeElement || null;
   }
 
+  /**
+   * Cambia el modo de despliegue entre 'single' (compacto con tooltip) y 'multiMetric' (subdivisión).
+   * @param mode El modo de despliegue: 'single' o 'multiMetric'.
+   */
+  public setDisplayMode(mode: "single" | "multiMetric"): void {
+    const current = this.internalOptions();
+    if (current) {
+      const updated = { ...current, percentDisplayMode: mode };
+      this.internalOptions.set(updated);
+      this.tableOptionsChange.emit(updated);
+    }
+  }
+
+  /**
+   * Callback invocado cuando la hoja de estilos del tema ha sido aplicada a la tabla.
+   * Utiliza un retardo intencional de 5ms mediante setTimeout para dar tiempo al navegador
+   * a recalcular la especificación de estilos y dimensiones en el DOM antes de fijar
+   * las posiciones sticky de cabeceras y columnas.
+   */
   public onThemeApplied(): void {
     setTimeout(() => {
       const tableElement = this.getTableElement();

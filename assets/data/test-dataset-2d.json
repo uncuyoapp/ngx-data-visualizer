@@ -1,0 +1,20 @@
+[
+  { "Año": "2010", "Sector de gestión del sistema educativo": "Estatal", "valor": 7500 },
+  { "Año": "2010", "Sector de gestión del sistema educativo": "Privado", "valor": 5000 },
+  { "Año": "2011", "Sector de gestión del sistema educativo": "Estatal", "valor": 8100 },
+  { "Año": "2011", "Sector de gestión del sistema educativo": "Privado", "valor": 5700 },
+  { "Año": "2012", "Sector de gestión del sistema educativo": "Estatal", "valor": 8400 },
+  { "Año": "2012", "Sector de gestión del sistema educativo": "Privado", "valor": 5800 },
+  { "Año": "2013", "Sector de gestión del sistema educativo": "Estatal", "valor": 9000 },
+  { "Año": "2013", "Sector de gestión del sistema educativo": "Privado", "valor": 6100 },
+  { "Año": "2014", "Sector de gestión del sistema educativo": "Estatal", "valor": 9800 },
+  { "Año": "2014", "Sector de gestión del sistema educativo": "Privado", "valor": 7100 },
+  { "Año": "2015", "Sector de gestión del sistema educativo": "Estatal", "valor": 10500 },
+  { "Año": "2015", "Sector de gestión del sistema educativo": "Privado", "valor": 7700 },
+  { "Año": "2016", "Sector de gestión del sistema educativo": "Estatal", "valor": 11200 },
+  { "Año": "2016", "Sector de gestión del sistema educativo": "Privado", "valor": 8300 },
+  { "Año": "2017", "Sector de gestión del sistema educativo": "Estatal", "valor": 12000 },
+  { "Año": "2017", "Sector de gestión del sistema educativo": "Privado", "valor": 9000 },
+  { "Año": "2018", "Sector de gestión del sistema educativo": "Estatal", "valor": 12800 },
+  { "Año": "2018", "Sector de gestión del sistema educativo": "Privado", "valor": 9500 }
+]

@@ -419,9 +419,12 @@ chartConfig4: ChartOptions = {
   example5TypeScript = `// Métodos interactivos para el gráfico
 @ViewChild('chartInteractive', { read: ChartComponent }) chart!: ChartComponent;
 
-// Cambiar a modo porcentaje
+// Cambiar a modo porcentaje (retorna PercentTransformationResult)
 togglePercentage(): void {
-  this.chart.toPercentage();
+  const result: PercentTransformationResult = this.chart.toPercentage();
+  if (!result.success) {
+    console.warn('No se pudo transformar a porcentaje:', result.message);
+  }
 }
 
 // Exportar gráfico como PNG

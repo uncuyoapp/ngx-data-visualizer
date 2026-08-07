@@ -269,6 +269,14 @@ export class TableHeaderHoverManager {
 
       this.clearActiveHover();
 
+      if (
+        th &&
+        (th.classList.contains("pvtCorner") ||
+          th.classList.contains("pvtMetricAxisLabel"))
+      ) {
+        return;
+      }
+
       const currentGridIndex = this.getOrBuildGridIndex(htmlTable);
 
       if (th) {
@@ -286,33 +294,6 @@ export class TableHeaderHoverManager {
     });
   }
 
-  /**
-   * Limpia las clases de resaltado de las celdas y cabeceras activas.
-   * @param _table Tabla jQuery opcional mantenida por retrocompatibilidad.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public clearHoverClasses(_table?: JQuery<HTMLElement>): void {
-    this.clearActiveHover();
-  }
-
-  /**
-   * Callback de hover mantenido por retrocompatibilidad con la API pública.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public hoverFunction(e: any, _filter: any): void {
-    const target = e?.currentTarget as HTMLElement;
-    if (!target) return;
-    const table = target.closest("table");
-    if (!table) return;
-
-    this.clearActiveHover();
-    const gridIndex = this.getOrBuildGridIndex(table);
-    if (target.tagName === "TH") {
-      this.handleThHover(target, gridIndex, table);
-    } else if (target.tagName === "TD") {
-      this.handleTdHover(target, gridIndex, table);
-    }
-  }
 
   /**
    * Maneja el resaltado cuando el cursor está sobre una cabecera TH.
@@ -322,6 +303,12 @@ export class TableHeaderHoverManager {
     gridIndex: TableGridIndex,
     table: HTMLTableElement,
   ): void {
+    if (
+      th.classList.contains("pvtCorner") ||
+      th.classList.contains("pvtMetricAxisLabel")
+    ) {
+      return;
+    }
     this.addHoverClass(th, "header-hovered");
 
     const span = gridIndex.headerSpanMap.get(th);
@@ -349,15 +336,13 @@ export class TableHeaderHoverManager {
           this.addHoverClass(el, "data-hovered");
         }
       });
-    } else {
+    } else if (th.classList.contains("pvtColTotalLabel")) {
       // Manejar totales (ColTotal, RowTotal, GrandTotal)
-      if (th.classList.contains("pvtColTotalLabel")) {
-        const totalTds = table.querySelectorAll<HTMLElement>("td.colTotal");
-        totalTds.forEach((td) => this.addHoverClass(td, "data-hovered"));
-      } else if (th.classList.contains("pvtRowTotalLabel")) {
-        const totalTds = table.querySelectorAll<HTMLElement>("td.rowTotal");
-        totalTds.forEach((td) => this.addHoverClass(td, "data-hovered"));
-      }
+      const totalTds = table.querySelectorAll<HTMLElement>("td.colTotal");
+      totalTds.forEach((td) => this.addHoverClass(td, "data-hovered"));
+    } else if (th.classList.contains("pvtRowTotalLabel")) {
+      const totalTds = table.querySelectorAll<HTMLElement>("td.rowTotal");
+      totalTds.forEach((td) => this.addHoverClass(td, "data-hovered"));
     }
   }
 
@@ -433,6 +418,12 @@ export class TableHeaderHoverManager {
     el: HTMLElement,
     className: "header-hovered" | "data-hovered",
   ): void {
+    if (
+      el.classList.contains("pvtCorner") ||
+      el.classList.contains("pvtMetricAxisLabel")
+    ) {
+      return;
+    }
     el.classList.add(className);
     this.activeHoveredElements.push(el);
   }

@@ -77,9 +77,7 @@ export class TableHelperService {
    * @param config Opciones de la tabla (`TableOptions`).
    */
   public configurePivot(config: TableOptions): any {
-    return this.pivotEngine.configurePivot(config, (e, filter) =>
-      this.hoverManager.hoverFunction(e, filter),
-    );
+    return this.pivotEngine.configurePivot(config);
   }
 
   /**

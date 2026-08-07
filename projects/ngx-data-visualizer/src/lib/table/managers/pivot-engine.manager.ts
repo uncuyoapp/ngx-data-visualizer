@@ -57,9 +57,8 @@ export class PivotEngineManager {
   /**
    * Transforma la configuración de la tabla a un objeto compatible con `pivot.js`.
    * @param config La configuración de la tabla (`TableOptions`).
-   * @param hoverCallback Callback opcional para eventos de hover/click en celdas.
    */
-  public configurePivot(config: TableOptions, hoverCallback?: (e: any, filter: any) => void): any {
+  public configurePivot(config: TableOptions): any {
     const $ = this.jQueryService.$;
     const tpl = ($.pivotUtilities as any).aggregatorTemplates;
     const numberFormat = $.pivotUtilities.numberFormat;
@@ -128,11 +127,6 @@ export class PivotEngineManager {
         table: {
           rowTotals: config.cols.length > 0 ? config.totalRow : true,
           colTotals: config.rows.length > 0 ? config.totalCol : true,
-          clickCallback: (e: any, _value: any, filter: any) => {
-            if (hoverCallback) {
-              hoverCallback(e, filter);
-            }
-          },
         },
       },
       renderer: (pivotData: any, opts: any) => {

@@ -129,7 +129,7 @@ export class JQueryService {
       const options = { ...defaults, ...opts };
 
       return (x: number) => {
-        if (isNaN(x) || !isFinite(x)) return "";
+        if (Number.isNaN(x) || !Number.isFinite(x)) return "";
         const result = (x * options.scaler).toFixed(options.digitsAfterDecimal);
         const parts = result.split(".");
         parts[0] = parts[0].replace(

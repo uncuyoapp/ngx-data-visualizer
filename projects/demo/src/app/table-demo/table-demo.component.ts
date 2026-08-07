@@ -414,13 +414,21 @@ interface TableOptions {
     | "percentOfTotal"
     | "percentOfRow"
     | "percentOfColumn";
+  /** Estructura de despliegue de celdas en vistas porcentuales: 'single' o 'multiMetric' */
+  percentDisplayMode?: "single" | "multiMetric";
+  /** Habilita el tooltip flotante en celdas porcentuales */
+  showCellTooltip?: boolean;
+  /** Decimales a mostrar exclusivamente en vistas porcentuales */
+  percentDigitsAfterDecimal?: number;
   /** Atributos derivados personalizados para la tabla pivot */
   derivedAttributes?: Record<
     string,
     (record: Record<string, unknown>) => unknown
   >;
-  /** Indica si se desabilita la actualización automática de la tabla */
+  /** Indica si se deshabilita la actualización automática de la tabla */
   disableAutoUpdate?: boolean;
+  /** Deshabilita la función de cambio en vivo del modo de visualización */
+  disableSetValueDisplay?: boolean;
 }
 
 /**

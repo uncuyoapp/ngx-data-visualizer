@@ -1,6 +1,6 @@
 {
   "name": "@uncuyoapp/ngx-data-visualizer",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0-beta.0",
   "description": "Librería Angular moderna para visualización de datos mediante gráficos y tablas interactivas. Incluye directivas standalone, sistema de proveedores configurables y soporte completo para ECharts y PivotTable.js.",
   "keywords": [
     "angular",

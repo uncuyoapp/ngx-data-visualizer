@@ -168,6 +168,16 @@ export class TableCasesTestComponent {
     }
   }
 
+  /**
+   * Exporta la tabla activa a un archivo Excel (.xlsx) usando el método export expuesto por TableComponent.
+   */
+  exportToExcel(): void {
+    if (this.tableComponent) {
+      this.tableComponent.export('xlsx', 'tabla-casos-prueba');
+    }
+  }
+
+
 
 
   /**

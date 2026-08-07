@@ -86,11 +86,17 @@
             </div>
           </div>
 
-          <!-- Botón de Descarga -->
-          <button mat-raised-button color="primary" class="w-100 btn-download py-3 shadow" (click)="downloadJson()">
-            <mat-icon fontIcon="file_download" class="me-2"></mat-icon>
-            Descargar Configuración JSON
-          </button>
+          <!-- Botones de Descarga y Exportación -->
+          <div class="d-flex flex-column gap-2">
+            <button mat-raised-button color="primary" class="w-100 btn-download py-3 shadow" (click)="downloadJson()">
+              <mat-icon fontIcon="file_download" class="me-2"></mat-icon>
+              Descargar Configuración JSON
+            </button>
+            <button mat-stroked-button color="accent" class="w-100 py-2 shadow-sm" (click)="exportToExcel()">
+              <mat-icon fontIcon="description" class="me-2"></mat-icon>
+              Exportar Tabla Excel (.xlsx)
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -104,9 +110,15 @@
             <mat-icon fontIcon="table_chart" class="text-success"></mat-icon>
             Visualización Activa de Tabla
           </h3>
-          <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-            ID del Dataset: {{ activeDataset.id }}
-          </span>
+          <div class="d-flex align-items-center gap-2">
+            <button mat-stroked-button color="primary" class="d-flex align-items-center gap-1 btn-sm" (click)="exportToExcel()">
+              <mat-icon fontIcon="file_download"></mat-icon>
+              Exportar XLSX
+            </button>
+            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+              ID del Dataset: {{ activeDataset.id }}
+            </span>
+          </div>
         </div>
 
         <div class="card-body px-4 py-4 d-flex flex-column justify-content-start">

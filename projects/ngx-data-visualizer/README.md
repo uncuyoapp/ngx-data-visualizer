@@ -214,8 +214,17 @@ Encapsula el lienzo de visualización de gráficos interactivos, la tarjeta KPI 
 // Redimensiona manualmente el gráfico (por ejemplo, al alternar paneles de layout)
 this.chartComponent.resize();
 
-// Alterna de forma programática el modo porcentual (0-100%)
-this.chartComponent.toPercentage();
+// Alterna de forma programática el modo porcentual (0-100%) retornando el resultado de la transformación
+const result: PercentTransformationResult = this.chartComponent.toPercentage(true); // Opcional: boolean para forzar estado
+
+// Consulta si el gráfico se encuentra actualmente en modo porcentual
+const isPercent: boolean = this.chartComponent.isPercentMode();
+
+// Obtiene los valores extremos actuales del navegador de zoom (start/end en rango 0-100)
+const extremes = this.chartComponent.getExtremes();
+
+// Alterna programáticamente la apertura/cierre del panel flotante de edición
+this.chartComponent.toggleEditor();
 
 // Descarga el lienzo actual como imagen
 this.chartComponent.export('png'); // 'png' | 'jpg'
@@ -257,6 +266,13 @@ Renderiza tablas dinámicas bidimensionales interactivas basadas en PivotTable.j
 // Cambia la modalidad de presentación de valores en las celdas
 this.tableComponent.setValueDisplay('percentOfTotal');
 // Opciones: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'
+
+// Cambia la estructura de despliegue de celdas en vistas porcentuales
+this.tableComponent.setDisplayMode('single');
+// Opciones: 'single' (compacto con tooltip) | 'multiMetric' (subdivisión en sub-filas/columnas)
+
+// Obtiene el elemento HTML nativo del contenedor de la tabla pivot
+const tableElement: HTMLElement | null = this.tableComponent.getTableElement();
 
 // Exporta la tabla activa a Excel o HTML
 this.tableComponent.export('xlsx', 'reporte-ventas'); // Descarga .xlsx
@@ -394,8 +410,39 @@ export interface TableOptions {
   suffix?: string;
   /** Modo de cálculo del valor de celda */
   valueDisplay?: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn";
+  /** Estructura de despliegue de celdas en vistas porcentuales: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
+  percentDisplayMode?: "single" | "multiMetric";
+  /** Habilita el tooltip flotante en celdas porcentuales (default: true) */
+  showCellTooltip?: boolean;
+  /** Decimales a mostrar exclusivamente en vistas porcentuales (default: 1) */
+  percentDigitsAfterDecimal?: number;
+  /** Atributos derivados para la tabla pivot */
+  derivedAttributes?: Record<string, (record: Record<string, unknown>) => unknown>;
   /** Deshabilita la actualización automática */
   disableAutoUpdate?: boolean;
+  /** Deshabilita la función de cambio en vivo del modo de visualización */
+  disableSetValueDisplay?: boolean;
+}
+```
+
+### `PercentTransformationResult` & `PercentErrorCode`
+
+```ts
+export type PercentErrorCode =
+  | 'SINGLE_SERIES'
+  | 'ALREADY_PERCENT'
+  | 'KPI_NO_DIMENSION'
+  | 'INTRINSIC_PERCENT'
+  | 'NEGATIVE_VALUES_STACKED'
+  | 'EMPTY_DATASET';
+
+export interface PercentTransformationResult {
+  /** Indica si la transformación al modo porcentual fue exitosa */
+  success: boolean;
+  /** Código de error en caso de fallo en la transformación */
+  code?: PercentErrorCode;
+  /** Mensaje explicativo descriptivo */
+  message?: string;
 }
 ```
 
@@ -454,9 +501,47 @@ export class Dataset {
 
 ---
 
+## 🎨 Gestión de Temas en Tablas (`ThemeService`)
+
+La librería incluye el servicio `ThemeService` (`export * from "./lib/table/services/theme.service"`) para la administración dinámica de temas visuales en las tablas dinámicas.
+
+### Temas Soportados
+- `'default'`: Tema limpio y minimalista.
+- `'material'`: Diseño adaptado a los lineamientos de Material Design.
+- `'bootstrap'`: Integración estética directa con la paleta y celdas de Bootstrap.
+
+### Ejemplo de Uso
+
+```ts
+import { Component, inject } from '@angular/core';
+import { ThemeService, ThemeType, TableComponent } from '@uncuyoapp/ngx-data-visualizer';
+
+@Component({ ... })
+export class MiComponenteConTablas {
+  private readonly themeService = inject(ThemeService);
+
+  // Aplica el tema globalmente a todas las tablas de la aplicación
+  public cambiarTemaGlobal(tema: ThemeType): void {
+    this.themeService.setTheme(tema);
+  }
+
+  // Aplica el tema únicamente a una instancia específica de TableComponent
+  public cambiarTemaInstancia(tema: ThemeType, tableComponent: TableComponent): void {
+    this.themeService.setTheme(tema, tableComponent);
+  }
+}
+```
+
+---
+
 ## 📡 Sistema de Eventos y Auditoría (`EventBusService` & `AuditService`)
 
 La librería incluye una infraestructura reactiva centralizada para monitorear, auditar e integrar los eventos del ciclo de vida de los componentes con herramientas externas de analítica o logs.
+
+### Tipos de Eventos (`VisualizerEventType`)
+
+- **Gráficos**: `CHART_INIT`, `CHART_CONFIG_CHANGE`, `CHART_RENDER_START`, `CHART_RENDER_COMPLETE`, `CHART_RESIZE`, `CHART_VIEW_INIT`, `CHART_VIEW_READY`, `CHART_INSTANCE_SET`, `CHART_EMIT_SERIES`, `CHART_LAYOUT_CONFIGURE`, `CHART_SERIES_CONFIGURE`, `CHART_AXIS_CONFIGURE`.
+- **Tablas**: `TABLE_INIT`, `TABLE_CONFIGURE`, `TABLE_RENDER`, `TABLE_EXPORT`.
 
 ### Uso de `EventBusService`
 

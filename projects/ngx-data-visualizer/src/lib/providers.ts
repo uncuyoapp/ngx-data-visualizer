@@ -1,5 +1,6 @@
 import { EnvironmentProviders, InjectionToken, Provider } from "@angular/core";
 import { NGX_ECHARTS_CONFIG } from "ngx-echarts";
+import { AuditService } from "./services/audit.service";
 import { JQueryService } from "./table/utils/jquery.service";
 import { TableHelperService } from "./table/utils/table-helper.service";
 
@@ -13,6 +14,16 @@ export interface DataVisualizerConfig {
   defaultHeight?: number | string;
   /** Ancho predeterminado para los gráficos (fallback si el contenedor es 0px) */
   defaultWidth?: number | string;
+  /** Activar depuración por consola para gráficos ([Chart]*) */
+  debug?: boolean;
+}
+
+/**
+ * Interfaz para la configuración de tablas de la librería.
+ */
+export interface TableVisualizerConfig {
+  /** Activar depuración por consola para tablas ([Table]*) */
+  debug?: boolean;
 }
 
 /**
@@ -31,6 +42,9 @@ export const DATA_VISUALIZER_CONFIG = new InjectionToken<DataVisualizerConfig>(
 export function provideDataVisualizerCharts(
   config?: DataVisualizerConfig,
 ): (Provider | EnvironmentProviders)[] {
+  if (config?.debug) {
+    AuditService.enablePattern("[Chart]*");
+  }
   return [
     {
       provide: DATA_VISUALIZER_CONFIG,
@@ -49,8 +63,14 @@ export function provideDataVisualizerCharts(
  * Configura los proveedores necesarios para los componentes de TABLAS de ngx-data-visualizer.
  * Registra los servicios internos necesarios para la funcionalidad de tablas,
  * encapsulando la gestión de dependencias como jQuery y PivotTable.
+ * @param config Configuración opcional para las tablas.
  * @returns Un array de proveedores específicos para las tablas.
  */
-export function provideDataVisualizerTables(): Provider[] {
+export function provideDataVisualizerTables(
+  config?: TableVisualizerConfig,
+): Provider[] {
+  if (config?.debug) {
+    AuditService.enablePattern("[Table]*");
+  }
   return [JQueryService, TableHelperService];
 }

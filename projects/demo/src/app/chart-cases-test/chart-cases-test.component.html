@@ -1,0 +1,187 @@
+<div class="container-fluid py-4 cases-test-page">
+  <div class="row g-4">
+    <!-- Columna Izquierda: Panel de Control e Inspección JSON -->
+    <div class="col-xl-4 col-lg-5">
+      <div class="card card-premium shadow-lg border-0 mb-4 h-100">
+        <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+          <h3 class="fw-semibold text-secondary-emphasis d-flex align-items-center gap-2 m-0">
+            <mat-icon fontIcon="tune" class="text-primary"></mat-icon>
+            Controles de Prueba
+          </h3>
+        </div>
+
+        <div class="card-body px-4 py-3">
+          <!-- Selector de Datasets -->
+          <div class="mb-4">
+            <span class="form-label text-muted fw-medium mb-2 d-block" id="dataset-select-label">
+              1. Seleccione Conjunto de Datos (Dimensión N-D):
+            </span>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Dataset Activo</mat-label>
+              <mat-select [value]="selectedDatasetId" (selectionChange)="onDatasetChange($event.value)"
+                aria-labelledby="dataset-select-label">
+                <mat-option [value]="1">Dataset 1D: Temporal Básico (Año)</mat-option>
+                <mat-option [value]="2">Dataset 2D: Temporal + Gestión (Año × Sector)</mat-option>
+                <mat-option [value]="3">Dataset 3D: Demográfico (Año × Sector × Sexo)</mat-option>
+                <mat-option [value]="4">Dataset 4D: Académico (Año × Sector × Sexo × Condición)</mat-option>
+                <mat-option [value]="5">Dataset 5D: Complejo Mendoza (Año × Sector × Sexo × Condición ×
+                  Departamentos)</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Panel de Edición -->
+          <div class="control-switch-card mb-3 d-flex justify-content-between align-items-center">
+            <label for="toggleEditorSwitch" class="cursor-pointer mb-0 me-2">
+              <span class="fw-semibold d-block text-secondary-emphasis">Panel de Edición</span>
+              <small class="text-muted d-block">Muestra u oculta el panel de configuración integrado</small>
+            </label>
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input fs-4 cursor-pointer" type="checkbox" role="switch" id="toggleEditorSwitch"
+                [checked]="showEditor" [attr.aria-checked]="showEditor" (change)="toggleEditor()">
+            </div>
+          </div>
+
+          <!-- Ver Porcentajes / Valores -->
+          <div class="control-switch-card mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold text-secondary-emphasis">Visualización Porcentual</span>
+              <span *ngIf="isPercentActive" class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                Activo
+              </span>
+            </div>
+
+            <div class="position-relative overflow-hidden rounded-3 p-2 border border-secondary-subtle">
+              <div class="d-flex justify-content-between align-items-center">
+                <label for="togglePercentSwitch" class="mb-0 me-2 cursor-pointer">
+                  <small class="text-muted d-block">Alterna entre valores nominales y porcentajes</small>
+                </label>
+                <div class="form-check form-switch m-0 ms-2">
+                  <input class="form-check-input fs-4 cursor-pointer" type="checkbox" role="switch" id="togglePercentSwitch"
+                    [(ngModel)]="isPercentActive" (change)="togglePercentView()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque de alerta de error si falla la validación -->
+            <div *ngIf="percentResult && !percentResult.success" class="alert alert-danger mt-2 mb-0 py-2 px-3 d-flex align-items-center gap-2">
+              <mat-icon fontIcon="warning" class="fs-5 text-danger"></mat-icon>
+              <small class="fw-medium">{{ percentResult.message }}</small>
+            </div>
+          </div>
+
+          <!-- Inspección del chartConfig en Vivo -->
+          <div class="mb-4 d-flex flex-column" style="flex: 1; min-height: 250px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="form-label text-muted fw-medium m-0">
+                2. Configuración en Tiempo Real (chartConfig):
+              </span>
+              <span
+                class="badge rounded-pill bg-success-subtle text-success border border-success-subtle py-1 px-2 d-flex align-items-center gap-1">
+                <span class="pulsing-dot"></span> Sincronizado
+              </span>
+            </div>
+
+            <div
+              class="json-viewer-container flex-grow-1 p-3 rounded bg-dark border border-secondary border-opacity-25 shadow-inner">
+              <pre
+                class="m-0 text-success-emphasis text-monospace font-monospace"><code class="json-code">{{ chartOptionsJson }}</code></pre>
+            </div>
+          </div>
+
+          <!-- Botón de Descarga -->
+          <button mat-raised-button color="primary" class="w-100 btn-download py-3 shadow" (click)="downloadJson()">
+            <mat-icon fontIcon="file_download" class="me-2"></mat-icon>
+            Descargar Configuración JSON
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Gráfico en Vivo -->
+    <div class="col-xl-8 col-lg-7">
+      <div class="card card-premium shadow-lg border-0 h-100">
+        <div
+          class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
+          <h3 class="fw-semibold text-secondary-emphasis d-flex align-items-center gap-2 m-0">
+            <mat-icon fontIcon="query_stats" class="text-success"></mat-icon>
+            Visualización Activa
+          </h3>
+          <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+            ID del Dataset: {{ activeDataset.id }}
+          </span>
+        </div>
+
+        <div class="card-body px-4 py-4 d-flex flex-column justify-content-start">
+          <div class="chart-wrapper p-3 rounded shadow-sm mb-4">
+            <libChart [dataset]="activeDataset" [(chartOptions)]="chartConfig" [(showEditor)]="showEditor" #casesChart>
+            </libChart>
+          </div>
+
+          <!-- Bloque de Filtrado y Agrupamiento -->
+          <div class="filter-section mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <h4 class="m-0 d-flex align-items-center gap-2">
+                <mat-icon fontIcon="filter_alt" class="text-primary"></mat-icon>
+                Filtrado y Agrupamiento
+              </h4>
+              <button class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1" (click)="clearFilters()">
+                <mat-icon fontIcon="restart_alt" class="fs-5"></mat-icon>
+                Restablecer Filtros
+              </button>
+            </div>
+
+            <!-- Contenedor en cuadrícula de Dimensiones -->
+            <div class="row g-3 align-items-start">
+              <div class="col-md-6 col-lg-4" *ngFor="let dimension of activeDataset.dimensions">
+                <div class="filter-group d-flex flex-column mb-0">
+
+                  <!-- Cabecera de Dimensión -->
+                  <div class="dimension-header pb-2 border-bottom mb-2">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input cursor-pointer" [(ngModel)]="dimension.selected"
+                        (change)="onDimensionChange()" [id]="'dim-' + dimension.id" />
+                      <label class="form-check-label fw-semibold cursor-pointer text-secondary-emphasis"
+                        [for]="'dim-' + dimension.id">
+                        {{ dimension.name }}
+                      </label>
+                    </div>
+
+                    <button class="toggle-button d-flex align-items-center justify-content-center"
+                      (click)="toggleDimensionItems(dimension)" type="button">
+                      <span [innerHTML]="isDimensionCollapsed(dimension.id.toString()) ? '&#43;' : '&#8722;'"></span>
+                    </button>
+                  </div>
+
+                  <!-- Items de la Dimensión -->
+                  <div class="dimension-items flex-grow-1"
+                    [class.collapsed]="isDimensionCollapsed(dimension.id.toString())">
+                    <!-- Opción "Todos" -->
+                    <div class="form-check ms-4">
+                      <input type="checkbox" class="form-check-input cursor-pointer"
+                        [checked]="areAllItemsSelected(dimension)" [id]="'all-' + dimension.id"
+                        (change)="toggleAllItems(dimension, $any($event.target).checked)" />
+                      <label class="form-check-label" [for]="'all-' + dimension.id">
+                        Todos
+                      </label>
+                    </div>
+
+                    <!-- Items individuales -->
+                    <div class="form-check ms-4" *ngFor="let item of dimension.items">
+                      <input type="checkbox" class="form-check-input cursor-pointer" [(ngModel)]="item.selected"
+                        [id]="'item-' + item.id" (ngModelChange)="onItemChange()" />
+                      <label class="form-check-label" [for]="'item-' + item.id">
+                        {{ item.name }}
+                      </label>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,116 +5,133 @@
 [![Angular](https://img.shields.io/badge/Angular-18+-red.svg)](https://angular.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Nota:** Esta es la documentación técnica de la librería. Para una guía de instalación, configuración y ejemplos de uso, consulta el [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md) o la [demo interactiva](https://uncuyoapp.github.io/ngx-data-visualizer/).
+> **Nota:** Esta es la documentación técnica oficial de la librería `@uncuyoapp/ngx-data-visualizer`. Para guías de integración y la suite interactiva de ejemplos, consulta la [demo interactiva](https://uncuyoapp.github.io/ngx-data-visualizer/) o el [README principal del workspace](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md).
 
-`@uncuyoapp/ngx-data-visualizer` es una librería de código abierto desarrollada por el **Área de Políticas Públicas de la Universidad Nacional de Cuyo**. Su objetivo es facilitar la visualización de datos en proyectos Angular, promoviendo el uso de herramientas tecnológicas para el análisis de datos públicos.
+`@uncuyoapp/ngx-data-visualizer` es una librería de código abierto desarrollada por el **Área de Políticas Públicas de la Universidad Nacional de Cuyo**. Su objetivo es simplificar la creación de visualizaciones de datos en aplicaciones Angular mediante un conjunto de componentes `standalone`, accesibles, reactivos y desacoplados del DOM.
 
-La librería proporciona un conjunto de directivas `standalone` para la visualización de datos mediante gráficos y tablas interactivas.
+---
 
 ## ✨ Características principales
 
-- **🚀 Standalone Architecture** - Completamente compatible con Angular standalone APIs
-- **⚙️ Proveedores configurables** - Incluye solo las funcionalidades que necesitas
-- **📊 Visualizaciones potentes** - Integración con ECharts y PivotTable.js
-- **🎨 Altamente personalizable** - Temas y estilos configurables
-- **📤 Exportación múltiple** - Soporta SVG, PNG, JPG, Excel y HTML
-- **🔧 TypeScript completo** - Interfaces tipadas para mejor experiencia de desarrollo
-- **📱 Responsive** - Optimizado para dispositivos móviles y desktop
-- **🎯 Filtros avanzados** - Sistema de filtrado y agrupación integrado
-- **🎛️ Editor panel integrado** - Permite configurar visualizaciones en tiempo real sin salir de la vista
+- **🚀 Arquitectura 100% Standalone** - Diseñada para Angular 18+ sin necesidad de NgModules.
+- **⚙️ Inyección Modular de Proveedores** - Inclusión bajo demanda con `provideDataVisualizerCharts` y `provideDataVisualizerTables`.
+- **📊 Motor de Visualizaciones Potente** - Integración transparente y optimizada con ECharts y PivotTable.js.
+- **🎛️ Panel de Edición con Overlays CDK y Asistentes por Pasos** - Editor flotante e interactivo re-arquitecturado sobre Angular CDK Overlays con wizard interactivo por pasos.
+- **📈 Tarjeta KPI Autónoma para 0 Dimensiones (`DA = 0`)** - Renderizado automático de tarjeta resumen interactiva cuando no hay dimensiones activas.
+- **💡 Tooltip Adaptativo Multicolumna** - Tooltip compartido dinámico con maquetación en múltiples columnas (`columnThreshold`, `maxColumns`), toggle de porcentaje (`showPercentage`), fila de total y métricas de torta agregadas.
+- **✂️ Truncamiento Nativo y Optimización de Ejes** - Truncamiento dinámico en ECharts para títulos y etiquetas de ejes (`xAxis.rotateLabels`, `xAxis.disableAutoTitle`).
+- **🎯 Series de Referencia y Líneas de Meta** - Soporte nativo para clasificar series de referencia (`isReferenceSeries`) e integrar metas globales (`Goal`).
+- **📡 Bus de Eventos y Auditoría en Tiempo Real** - `EventBusService` para transmisión reactiva de eventos del ciclo de vida y `AuditService` para depuración mediante DI, LocalStorage o URL params.
+- **🎨 Sistema de Design Tokens (Variables CSS)** - Control visual total mediante CSS Custom Properties (`--viz-*`) con soporte nativo para Modo Oscuro.
+- **🎨 Componentes Standalone de Íconos SVG** - Componentes de íconos SVG reutilizables y desacoplados (`libIconClose`, `libIconReset`, `libIconCheck`, `libIconExport`).
+- **📤 Exportación Multiformato** - Exportación nativa a imágenes (PNG, JPG), hojas de cálculo Excel (XLSX) y marcado HTML.
+
+---
 
 ## 📁 Estructura de la Librería
 
-La estructura del código fuente en `projects/ngx-data-visualizer/src/lib` está organizada por funcionalidad:
+La estructura del código fuente dentro de `projects/ngx-data-visualizer/src/lib` se organiza de manera modular y desacoplada:
 
 ```
-/src/lib/
-├── chart/               # Lógica principal para gráficos (ChartComponent)
-├── table/               # Lógica principal para tablas (TableComponent)
-├── multiple-chart/      # Componente para múltiples gráficos
-├── directives/          # Directivas standalone (chart, table, multiple-chart)
-├── services/            # Servicios principales (Dataset, DataProvider)
-├── providers.ts         # Proveedores de servicios para la inyección de dependencias
-├── icons/               # Componentes de íconos SVG
-├── legend/              # Componente de leyenda para gráficos
-└── types/               # Interfaces y tipos de datos globales
+projects/ngx-data-visualizer/src/lib/
+├── chart/               # Componente principal (ChartComponent) y motor ECharts
+│   ├── echart/          # Lienzo nativo, variables CSS y truncamiento
+│   └── services/        # LayoutManager, TooltipManager, EchartsFactoryService
+├── table/               # Componente principal (TableComponent) y tablas dinámicas
+│   ├── services/        # Lógica de temas (ThemeService) y exportaciones
+│   └── utils/           # Servicios de integración con jQuery y PivotTable.js
+├── multiple-chart/      # Componente orquestador declarativo (MultipleChartComponent)
+├── config-editor/       # Overlays CDK y asistentes por pasos (ConfigEditorOverlayService)
+├── services/            # Servicios transversales
+│   ├── dataset.ts       # Modelo de datos reactivo (Dataset)
+│   ├── event-bus.service.ts # Bus de eventos reactivo
+│   └── audit.service.ts # Servicio de auditoría y depuración en consola
+├── providers.ts         # Funciones de configuración y proveedores DI
+├── icons/               # Componentes standalone de íconos SVG
+├── legend/              # Componentes de leyenda para gráficos
+└── types/               # Tipos de datos TypeScript (data.types, visualizer-event.types)
 ```
 
-## 📖 Uso en Componentes
+---
 
-Una vez instalada y configurada según el [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md), puedes usar las directivas en cualquier componente standalone:
+## 🚀 Instalación y Configuración de Proveedores
+
+### 1. Instalación de la librería y dependencias peer
+
+```bash
+npm install @uncuyoapp/ngx-data-visualizer echarts ngx-echarts pivottable jquery
+```
+
+### 2. Registro de Proveedores en la Aplicación
+
+Registra los proveedores necesarios en `app.config.ts` (o en la configuración del nivel deseado):
 
 ```ts
-// my-component.component.ts
-import { Component } from '@angular/core';
-import { 
-  ChartDirective, 
-  TableDirective,
-  Dataset,
-  ChartOptions,
-  TableOptions,
-  Dimension,
-  RowData
-} from '@uncuyoapp/ngx-data-visualizer';
+import { ApplicationConfig } from "@angular/core";
+import { provideDataVisualizerCharts, provideDataVisualizerTables } from "@uncuyoapp/ngx-data-visualizer";
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // Registra los proveedores de gráficos con configuración global opcional
+    provideDataVisualizerCharts({
+      defaultColors: ["#0450ff", "#00b894", "#fdcb6e", "#e17055", "#d63031"],
+      defaultHeight: 400,
+      defaultWidth: "100%",
+      debug: false, // Activa la auditoría de gráficos en consola ([Chart]*)
+    }),
+
+    // Registra los proveedores necesarios para las tablas dinámicas
+    provideDataVisualizerTables({
+      debug: false, // Activa la auditoría de tablas en consola ([Table]*)
+    }),
+  ],
+};
+```
+
+---
+
+## 📖 Uso en Componentes (Standalone)
+
+Importa los componentes standalone directamente en los metadatos de tus componentes Angular:
+
+```ts
+import { Component } from "@angular/core";
+import { ChartComponent, TableComponent, MultipleChartComponent, Dataset, ChartOptions, TableOptions, Dimension, RowData } from "@uncuyoapp/ngx-data-visualizer";
 
 @Component({
-  selector: 'app-my-component',
+  selector: "app-mi-visualizacion",
   standalone: true,
   imports: [
-    ChartDirective, // ✅ Importa las directivas que necesites
-    TableDirective
+    ChartComponent, // Selector <libChart> o [libChart]
+    TableComponent, // Selector <libTable> o [libTable]
+    MultipleChartComponent, // Selector <libMultipleChart>
   ],
   template: `
-    <!-- Gráfico -->
-    <div libChart 
-         [dataset]="dataset" 
-         [chartOptions]="chartOptions"
-         [enableEditor]="true"
-         (configChange)="onConfigChange($event)">
-    </div>
+    <!-- Gráfico Individual -->
+    <libChart [dataset]="dataset" [(chartOptions)]="chartOptions" [(showEditor)]="showEditor"> </libChart>
 
-    <!-- Tabla -->
-    <div libTable 
-         [dataset]="dataset" 
-         [tableOptions]="tableOptions"
-         [enableEditor]="true">
-    </div>
-  `
+    <!-- Tabla Dinámica -->
+    <libTable [dataset]="dataset" [(tableOptions)]="tableOptions" [(showEditor)]="showEditor"> </libTable>
+  `,
 })
-export class MyComponent {
-  // Configuración de datos
+export class MiVisualizacionComponent {
+  showEditor = false;
+
   dimensions: Dimension[] = [
     {
       id: 1,
-      name: 'region',
-      nameView: 'Región',
+      name: "region",
+      nameView: "Región",
       items: [
-        { id: 1, name: 'Norte', selected: true },
-        { id: 2, name: 'Sur', selected: true },
-        { id: 3, name: 'Este', selected: true },
-        { id: 4, name: 'Oeste', selected: true },
-      ],
-    },
-    {
-      id: 2,
-      name: 'periodo',
-      nameView: 'Período',
-      items: [
-        { id: 10, name: '2023', selected: true },
-        { id: 11, name: '2024', selected: true },
+        { id: 1, name: "Norte", selected: true },
+        { id: 2, name: "Sur", selected: true },
       ],
     },
   ];
 
   rowData: RowData[] = [
-    { region: 'Norte', periodo: '2023', valor: 1500 },
-    { region: 'Sur', periodo: '2023', valor: 1200 },
-    { region: 'Este', periodo: '2023', valor: 1800 },
-    { region: 'Oeste', periodo: '2023', valor: 1600 },
-    { region: 'Norte', periodo: '2024', valor: 1400 },
-    { region: 'Sur', periodo: '2024', valor: 1100 },
-    { region: 'Este', periodo: '2024', valor: 1900 },
-    { region: 'Oeste', periodo: '2024', valor: 1700 },
+    { region: "Norte", valor: 1500 },
+    { region: "Sur", valor: 1200 },
   ];
 
   dataset = new Dataset({
@@ -124,447 +141,524 @@ export class MyComponent {
   });
 
   chartOptions: ChartOptions = {
-    type: 'bar',
-    stacked: 1,
-    xAxis: {
-      title: '',
-      rotateLabels: null,
-      firstLevel: 2,
-      secondLevel: null,
-    },
-    yAxis: {
-      title: '',
-      max: null,
-    },
+    type: "bar",
+    stacked: null,
+    xAxis: { title: "", rotateLabels: null, firstLevel: 1, secondLevel: null },
+    yAxis: { title: "Ventas", max: null },
     tooltip: {
       shared: true,
-      decimals: null,
-      suffix: null,
+      decimals: 2,
+      suffix: " U",
       format: null,
-      showTotal: false,
+      showTotal: true,
+      showPercentage: false,
+      columnThreshold: 8,
+      maxColumns: 3,
     },
-    legends: {
-      enabled: false,
-      show: false,
-      position: '',
-    },
-    navigator: {
-      show: false,
-      start: null,
-      end: null,
-    },
-    width: 600,
+    legends: { enabled: true, show: true, position: "top" },
+    navigator: { show: false, start: null, end: null },
+    width: null, // Responsivo 100%
     height: 400,
     filterLastYear: false,
     showYearsLegend: false,
     toPercent: false,
-    measureUnit: '',
+    measureUnit: "U",
     isPreview: false,
     disableAutoUpdate: false,
   };
 
   tableOptions: TableOptions = {
-    digitsAfterDecimal: 0,
+    digitsAfterDecimal: 2,
     sorters: [],
-    totalRow: false,
-    totalCol: false,
+    totalRow: true,
+    totalCol: true,
     cols: [1],
-    rows: [2],
+    rows: [],
+    valueDisplay: "nominal",
   };
-
-  onSeriesChange(series: any[]): void {
-    console.log('Series actualizadas:', series);
-  }
-
-  onConfigChange(config: ChartOptions): void {
-    console.log('Nueva configuración:', config);
-  }
 }
 ```
 
-## 🧩 API de Directivas
+> 💡 **Nota de Retrocompatibilidad:** Los aliases heredados `ChartDirective`, `TableDirective` y `MultipleChartDirective` se mantienen disponibles en la API pública para no romper proyectos existentes.
 
-### ChartDirective
+---
 
-Directiva para renderizar gráficos individuales.
+## 🧩 API Detallada de Componentes
+
+### 📊 ChartComponent (`libChart`, `[libChart]`)
+
+Encapsula el lienzo de visualización de gráficos interactivos, la tarjeta KPI para casos especiales y el panel lateral de edición.
 
 #### Inputs
 
-| Propiedad | Tipo | Descripción |
-|-----------|------|-------------|
-| `dataset` | `Dataset` | ✅ **Requerido** - Conjunto de datos a visualizar |
-| `chartOptions` | `ChartOptions` | ✅ **Requerido** - Configuración del gráfico |
-| `enableEditor` | `boolean` | Habilita el panel de edición lateral (default: `false`) |
+| Propiedad      | Tipo           | Por defecto   | Descripción                                                                                                            |
+| -------------- | -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `dataset`      | `Dataset`      | **Requerido** | Instancia del modelo de datos reactivo (`input.required`).                                                             |
+| `chartOptions` | `ChartOptions` | **Requerido** | Configuración estructural y estética del gráfico (`input.required`).                                                   |
+| `showEditor`   | `boolean`      | `false`       | Controla la apertura y cierre del panel flotante de edición (`model<boolean>`). Enlace bidireccional `[(showEditor)]`. |
+| `showLegends`  | `boolean`      | `true`        | Controla la visibilidad de las leyendas nativas en el gráfico (`input<boolean>`).                                      |
 
 #### Outputs
 
-| Evento | Tipo | Descripción |
-|--------|------|-------------|
-| `seriesChange` | `Series[]` | Se emite cuando cambian las series del gráfico |
-| `configChange` | `ChartOptions` | Se emite cuando se guarda una nueva configuración desde el editor |
+| Evento               | Tipo           | Descripción                                                                                               |
+| -------------------- | -------------- | --------------------------------------------------------------------------------------------------------- |
+| `chartOptionsChange` | `ChartOptions` | Se emite cuando cambia la configuración del gráfico, habilitando enlace bidireccional `[(chartOptions)]`. |
+| `seriesChange`       | `Series[]`     | Se emite cuando se recalculan las series de datos del gráfico.                                            |
+| `showEditorChange`   | `boolean`      | Se emite al alternar el estado del panel flotante de edición (soportado por `model`).                     |
 
-#### Métodos públicos
-
-Para interactuar directamente con la directiva mediante `@ViewChild`:
+#### Métodos Públicos (`@ViewChild`)
 
 ```ts
-@ViewChild(ChartDirective) chartDirective!: ChartDirective;
+@ViewChild(ChartComponent) chartComponent!: ChartComponent;
 
-// Cambiar a vista porcentual
-this.chartDirective.toPercentage();
+// Redimensiona manualmente el gráfico (por ejemplo, al alternar paneles de layout)
+this.chartComponent.resize();
 
-// Exportar gráfico
-const svgData = this.chartDirective.export('svg');
-this.chartDirective.export('jpg'); // Descarga automática
+// Alterna de forma programática el modo porcentual (0-100%) retornando el resultado de la transformación
+const result: PercentTransformationResult = this.chartComponent.toPercentage(true); // Opcional: boolean para forzar estado
 
-// Mostrar/ocultar línea de meta
-this.chartDirective.toggleShowGoal(goalConfig);
+// Consulta si el gráfico se encuentra actualmente en modo porcentual
+const isPercent: boolean = this.chartComponent.isPercentMode();
+
+// Obtiene los valores extremos actuales del navegador de zoom (start/end en rango 0-100)
+const extremes = this.chartComponent.getExtremes();
+
+// Alterna programáticamente la apertura/cierre del panel flotante de edición
+this.chartComponent.toggleEditor();
+
+// Descarga el lienzo actual como imagen
+this.chartComponent.export('png'); // 'png' | 'jpg'
+
+// Muestra u oculta de forma dinámica una línea de meta u objetivo
+this.chartComponent.toggleShowGoal(goalConfig);
 ```
 
-### TableDirective
+#### 💡 Comportamiento de Tarjeta KPI para `DA = 0`
 
-Directiva para renderizar tablas dinámicas e interactivas.
+Cuando se desmarcan todos los ítems de las dimensiones o no hay dimensiones activas seleccionadas (`DA = 0`), `ChartComponent` conmuta automáticamente a un modo **Tarjeta KPI**. En este modo se muestra un valor agregado destacado, con su unidad de medida y un estado neutro elegante sin colapsar el lienzo de ECharts.
+
+---
+
+### 📋 TableComponent (`libTable`, `[libTable]`)
+
+Renderiza tablas dinámicas bidimensionales interactivas basadas en PivotTable.js.
 
 #### Inputs
 
-| Propiedad | Tipo | Descripción |
-|-----------|------|-------------|
-| `dataset` | `Dataset` | ✅ **Requerido** - Conjunto de datos a visualizar |
-| `tableOptions` | `TableOptions` | ✅ **Requerido** - Configuración de la tabla |
-| `enableEditor` | `boolean` | Habilita el panel de edición lateral (default: `false`) |
+| Propiedad      | Tipo           | Por defecto   | Descripción                                                                                                   |
+| -------------- | -------------- | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| `dataset`      | `Dataset`      | **Requerido** | Instancia del conjunto de datos (`input.required`).                                                           |
+| `tableOptions` | `TableOptions` | **Requerido** | Opciones de configuración de filas, columnas y totales (`input.required`).                                    |
+| `showEditor`   | `boolean`      | `false`       | Controla la apertura y cierre del panel de edición (`model<boolean>`). Enlace bidireccional `[(showEditor)]`. |
 
 #### Outputs
 
-| Evento | Tipo | Descripción |
-|--------|------|-------------|
-| `configChange` | `TableOptions` | Se emite cuando se guarda una nueva configuración desde el editor |
+| Evento               | Tipo           | Descripción                                                                                            |
+| -------------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
+| `tableOptionsChange` | `TableOptions` | Se emite al cambiar la configuración de la tabla, habilitando enlace bidireccional `[(tableOptions)]`. |
+| `showEditorChange`   | `boolean`      | Se emite al alternar el estado del panel de edición (soportado por `model`).                           |
 
-#### Métodos públicos
+#### Métodos Públicos (`@ViewChild`)
 
 ```ts
-@ViewChild(TableDirective) tableDirective!: TableDirective;
+@ViewChild(TableComponent) tableComponent!: TableComponent;
 
-// Cambiar modo de visualización
-this.tableDirective.setValueDisplay('percentOfTotal');
-this.tableDirective.setValueDisplay('percentOfRow');
-this.tableDirective.setValueDisplay('percentOfColumn');
-this.tableDirective.setValueDisplay('nominal');
+// Cambia la modalidad de presentación de valores en las celdas
+this.tableComponent.setValueDisplay('percentOfTotal');
+// Opciones: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'
 
-// Exportar tabla
-this.tableDirective.export('xlsx', 'mi-tabla');
-const htmlData = this.tableDirective.export('html');
+// Cambia la estructura de despliegue de celdas en vistas porcentuales
+this.tableComponent.setDisplayMode('single');
+// Opciones: 'single' (compacto con tooltip) | 'multiMetric' (subdivisión en sub-filas/columnas)
+
+// Obtiene el elemento HTML nativo del contenedor de la tabla pivot
+const tableElement: HTMLElement | null = this.tableComponent.getTableElement();
+
+// Exporta la tabla activa a Excel o HTML
+this.tableComponent.export('xlsx', 'reporte-ventas'); // Descarga .xlsx
+const htmlContent = this.tableComponent.export('html'); // Retorna string con marcado HTML
 ```
 
-### MultipleChartDirective
+---
 
-Directiva para renderizar múltiples gráficos simultáneamente.
+### 🔀 MultipleChartComponent (`libMultipleChart`, `[libMultipleChart]`)
+
+Componente declarativo para desglose multivariado. Divide el conjunto de datos en una rejilla de gráficos independientes según una dimensión dada.
 
 #### Inputs
 
-| Propiedad | Tipo | Descripción |
-|-----------|------|-------------|
-| `dataset` | `Dataset` | ✅ **Requerido** - Conjunto de datos a visualizar |
-| `options` | `ChartOptions` | ✅ **Requerido** - Configuración base de los gráficos |
-| `splitDimension` | `Dimension` | ✅ **Requerido** - Dimensión a partir de la cuál se generarán múltiples |
+| Propiedad           | Tipo           | Por defecto   | Descripción                                                                   |
+| ------------------- | -------------- | ------------- | ----------------------------------------------------------------------------- |
+| `dataset`           | `Dataset`      | **Requerido** | Conjunto de datos base (`input.required`).                                    |
+| `options`           | `ChartOptions` | **Requerido** | Opciones de configuración compartidas por los gráficos (`input.required`).    |
+| `splitDimension`    | `Dimension`    | **Requerido** | Dimensión por la cual se desagrega la grilla (`input.required`).              |
+| `disableAutoUpdate` | `boolean`      | `false`       | Permite deshabilitar la actualización automática de datos (`input<boolean>`). |
 
-## 📊 Configuración de Datos
+---
 
-### Dataset
+## 🎛️ Panel de Edición y Asistentes por Pasos (`ConfigEditorOverlayService`)
 
-La clase `Dataset` es el núcleo de la visualización de datos. Gestiona los datos, dimensiones y filtros.
+La arquitectura del panel de edición de gráficos y tablas fue completamente re-diseñada sobre **Angular CDK Overlays** mediante el servicio `ConfigEditorOverlayService`.
 
-```ts
-import { Dataset, Dimension, RowData } from '@uncuyoapp/ngx-data-visualizer';
+### Características clave del editor:
 
-const dataset = new Dataset({
-  id: 1,                    // Opcional - Identificador único
-  dimensions: dimensions,   // ✅ Requerido - Definición de dimensiones
-  rowData: rowData,        // ✅ Requerido - Datos en formato tabular
-  enableRollUp: true       // Opcional - Habilita agrupaciones
-});
-```
+- **Asistente interactivo por pasos (Step Wizard)**: Guía al usuario de manera intuitiva a través de la selección de tipos de gráfico, asignación de ejes, formateo de tooltips y personalización de leyendas.
+- **Gestión reactiva de memoria**: Utiliza la API `takeUntilDestroyed` de Angular para prevenir fugas de memoria en suscripciones del editor.
+- **Aislamiento visual**: Se despliega en una capa overlay flotante desacoplada con backdrop difuminado que respeta los eventos de ratón en el lienzo subyacente.
 
-### Dimension
+---
 
-Define las categorías de datos disponibles:
+## 📐 Tipos de Datos y Configuraciones Completa
+
+### `ChartOptions`
 
 ```ts
-const dimension: Dimension = {
-  id: 1,                    // Identificador único
-  name: 'region',          // Clave en los datos
-  nameView: 'Región',      // Nombre para mostrar
-  selected: true,          // Si está seleccionada por defecto
-  enableMulti: true,       // Permite desagregar en multiples gráficos
-  items: [                 // Valores posibles
-    {
-      id: 1,
-      name: 'Norte',
-      selected: true,
-      color: '#ff0000',    // Color opcional
-      order: 1             // Orden opcional
-    }
-  ]
-};
-```
-
-### ChartOptions
-
-Configuración completa para gráficos.
-
-```ts
-interface ChartOptions {
-  /** Tipo de gráfico (ej: 'column', 'line', 'pie', etc.) */
-  type: string;
-  /** Título del gráfico */
+export interface ChartOptions {
+  /** Tipo de gráfico principal */
+  type: "column" | "line" | "pie" | "bar" | "area" | "spline" | "areaspline";
+  /** Título principal del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado por una dimensión específica (ID) */
-  stacked: number | null;
+  /** Modo de apilamiento: ID de dimensión, 'all' para apilar todo, o null */
+  stacked: number | "all" | null;
   /** Configuración del eje X */
   xAxis: {
-    /** Título del eje X */
-    title: string,
-    /** Ángulo de rotación de las etiquetas en grados */
-    rotateLabels: number | null,
-    /** Nivel de agrupación primario (id de una de las dimensiones del conjunto de datos) */
-    firstLevel: number,
-    /** Nivel de agrupación secundario (id de una de las dimensiones del conjunto de datos) (opcional) */
-    secondLevel: number | null
-  },
+    /** Rotación de las etiquetas en grados (ej: 45, 90) o null */
+    rotateLabels: number | null;
+    /** Nivel de dimensión asignado como primer nivel */
+    firstLevel: number;
+    /** Nivel de dimensión asignado como segundo nivel o null */
+    secondLevel: number | null;
+    /** Deshabilita la generación automática del título del eje X */
+    disableAutoTitle?: boolean;
+  };
   /** Configuración del eje Y */
   yAxis: {
-    /** Título del eje Y */
-    title: string,
-    /** Valor máximo del eje Y */
-    max: number | null
-  },
-  /** Configuración del tooltip */
+    /** Título descriptivo del eje vertical */
+    title: string;
+    /** Valor máximo manual o null para cálculo automático */
+    max: number | null;
+  };
+  /** Configuración de tooltips */
   tooltip: {
-    /** Indica si el tooltip es compartido entre series */
-    shared: boolean,
-    /** Número de decimales a mostrar */
-    decimals: number | null,
-    /** Sufijo para los valores */
-    suffix: string | null,
-    /** Formato personalizado para los valores */
-    format: string | null,
-    /** Indica si se muestra el total en el tooltip */
-    showTotal: boolean
-  },
-  /** Configuración de las leyendas */
+    /** Compartir tooltip entre series */
+    shared: boolean;
+    /** Cantidad de decimales en los valores */
+    decimals: number | null;
+    /** Sufijo textual (ej: '%', ' USD') */
+    suffix: string | null;
+    /** Formato personalizado usando placeholders */
+    format: string | null;
+    /** Muestra la fila del total en el tooltip compartido */
+    showTotal: boolean;
+    /** Muestra el porcentaje relativo en el tooltip */
+    showPercentage?: boolean;
+    /** Umbral de cantidad de series para pasar a maquetación multicolumna */
+    columnThreshold?: number;
+    /** Máximo de columnas permitidas en el tooltip (default: 3) */
+    maxColumns?: number;
+  };
+  /** Configuración de leyendas */
   legends: {
-    /** Indica si las leyendas están habilitadas */
-    enabled: boolean,
-    /** Indica si se muestran las leyendas */
-    show: boolean,
-    /** Posición de las leyendas */
-    position: string
-  },
-  /** Configuración del navegador */
+    enabled: boolean;
+    show: boolean;
+    position: "top" | "right" | "bottom" | "left" | string;
+  };
+  /** Configuración del navegador / Zoom */
   navigator: {
-    /** Indica si se muestra el navegador */
-    show: boolean,
-    /** Valor inicial del navegador */
-    start: number | null,
-    /** Valor final del navegador */
-    end: number | null
-  },
-  /** Array de colores personalizados para las series. Si no se especifica, se usará la paleta global o la nativa de ECharts. */
-  colors?: string[],
-  /** Ancho del gráfico */
-  width: number | null,
-  /** Alto del gráfico */
-  height: number | string | null,
-  /** Indica si se filtra el último año */
-  filterLastYear: boolean,
-  /** Indica si se muestra la leyenda de años */
-  showYearsLegend: boolean,
-  /** Indica si los valores se muestran en porcentaje */
-  toPercent: boolean,
-  /** Unidad de medida para los valores */
+    show: boolean;
+    start: number | null;
+    end: number | null;
+  };
+  /** Paleta de colores personalizada */
+  colors?: string[];
+  /** Ancho en píxeles (o null para responsivo 100%) */
+  width: number | null;
+  /** Alto en píxeles, porcentaje u otra unidad CSS (o null) */
+  height: number | string | null;
+  /** Filtra automáticamente los datos al último año disponible */
+  filterLastYear: boolean;
+  /** Muestra leyenda especial para comparativa anual */
+  showYearsLegend: boolean;
+  /** Muestra valores convertidos a porcentaje */
+  toPercent: boolean;
+  /** Unidad de medida textual de la variable */
   measureUnit: string;
-  /** Indica si el gráfico está en modo vista previa */
+  /** Modo vista previa reducida */
   isPreview: boolean;
-  /** Indica si se deshabilita la actualización automática */
+  /** Inhabilita la actualización automática al cambiar el dataset */
   disableAutoUpdate: boolean;
 }
 ```
 
-### TableOptions
-
-Configuración para tablas.
+### `TableOptions`
 
 ```ts
-interface TableOptions {
-  /** Número de decimales a mostrar */
+export interface TableOptions {
+  /** Decimales para los valores tabulados */
   digitsAfterDecimal: number;
-  /** Configuración de ordenamiento para cada dimensión */
+  /** Reglas de ordenamiento para dimensiones */
   sorters: TableSorter[];
-  /** Indica si se debe mostrar la fila de totales */
+  /** Muestra fila de totales generales */
   totalRow: boolean;
-  /** Indica si se debe mostrar la columna de totales */
+  /** Muestra columna de totales generales */
   totalCol: boolean;
-  /** Lista de nombres o IDs de columnas */
+  /** Dimensiones asignadas a columnas */
   cols: (string | number)[];
-  /** Lista de nombres o IDs de filas */
+  /** Dimensiones asignadas a filas */
   rows: (string | number)[];
-  /** Sufijo opcional para los valores numéricos */
+  /** Sufijo textual para celdas */
   suffix?: string;
-  /** Define el modo de visualización de los valores en la tabla */
-  valueDisplay?:
-    | "nominal"
-    | "percentOfTotal"
-    | "percentOfRow"
-    | "percentOfColumn";
-}
-
-/**
-* Interfaz para la configuración del ordenamiento de dimensiones
-*/
-interface TableSorter {
-  /** Nombre o ID de la dimensión a ordenar */
-  name: string | number;
-  /** Lista de ítems con su orden específico */
-  items: {
-    /** Nombre del ítem */
-    name: string;
-    /** Orden del ítem */
-    order: number;
-  }[];
+  /** Modo de cálculo del valor de celda */
+  valueDisplay?: "nominal" | "percentOfTotal" | "percentOfRow" | "percentOfColumn";
+  /** Estructura de despliegue de celdas en vistas porcentuales: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
+  percentDisplayMode?: "single" | "multiMetric";
+  /** Habilita el tooltip flotante en celdas porcentuales (default: true) */
+  showCellTooltip?: boolean;
+  /** Decimales a mostrar exclusivamente en vistas porcentuales (default: 1) */
+  percentDigitsAfterDecimal?: number;
+  /** Atributos derivados para la tabla pivot */
+  derivedAttributes?: Record<string, (record: Record<string, unknown>) => unknown>;
+  /** Deshabilita la actualización automática */
+  disableAutoUpdate?: boolean;
+  /** Deshabilita la función de cambio en vivo del modo de visualización */
+  disableSetValueDisplay?: boolean;
 }
 ```
 
-## 🎨 Filtros y Agrupaciones
-
-### Aplicar filtros
+### `PercentTransformationResult` & `PercentErrorCode`
 
 ```ts
-import { FiltersConfig } from '@uncuyoapp/ngx-data-visualizer';
+export type PercentErrorCode =
+  | 'SINGLE_SERIES'
+  | 'ALREADY_PERCENT'
+  | 'KPI_NO_DIMENSION'
+  | 'INTRINSIC_PERCENT'
+  | 'NEGATIVE_VALUES_STACKED'
+  | 'EMPTY_DATASET';
 
-// Configuración de filtros
-const filtersConfig: FiltersConfig = {
-  // Agrupar por dimensiones (rollUp)
-  rollUp: [1], // Agrupa por la dimensión con id 1
-  
-  // Filtrar valores específicos
-  filter: [
-    {
-      name: 2,              // ID de dimensión
-      items: ['2024']       // Valores a incluir
-    }
-  ]
-};
-
-// Aplicar al dataset
-dataset.applyFilters(filtersConfig);
-
-// Limpiar todos los filtros
-dataset.applyFilters({});
-```
-
-### Escuchar cambios
-
-```ts
-// Suscribirse a cambios en los datos
-dataset.dataUpdated.subscribe(() => {
-  console.log('Datos actualizados');
-  console.log(dataset.getCurrentData());
-});
-```
-
-
-## ⚙️ Configuración Global
-
-La librería permite configurar una paleta de colores predeterminada que se aplicará a todos los gráficos del proyecto si no especifican una propia.
-
-### Proveedor de Gráficos
-
-En tu `app.config.ts`:
-
-```ts
-import { provideDataVisualizerCharts } from '@uncuyoapp/ngx-data-visualizer';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideDataVisualizerCharts({
-      defaultColors: ['#1976d2', '#4caf50', '#ff9800', '#f44336']
-    })
-  ]
-};
-```
-
-Si no se provee `defaultColors`, la librería utilizará la paleta nativa de **ECharts 6**, lo que garantiza una visualización moderna y variada de forma automática.
-
-## 📤 Exportación de Datos
-
-### Gráficos
-
-```ts
-// SVG (vector, escalable)
-const svgData = chartDirective.export('svg');
-
-// JPG (imagen, descarga automática)
-chartDirective.export('jpg');
-```
-
-### Tablas
-
-```ts
-// Excel (descarga automática)
-tableDirective.export('xlsx', 'mi-reporte');
-
-// HTML (retorna string)
-const htmlTable = tableDirective.export('html');
-```
-
-## 🚀 Optimización y Rendimiento
-
-### Lazy Loading
-
-Los proveedores de la librería (`provideDataVisualizerCharts` y `provideDataVisualizerTables`) ya implementan carga diferida (lazy loading) de forma automática para dependencias pesadas como ECharts y PivotTable.js.
-
-### Tree Shaking
-
-La librería está optimizada para tree shaking. Para asegurar un tamaño de bundle mínimo, importa solo los componentes y clases que necesites.
-
-```ts
-// ✅ Bueno - Solo importa lo necesario
-import { ChartDirective, Dataset } from '@uncuyoapp/ngx-data-visualizer';
-
-// ❌ Evita - Importa todo el namespace
-import * as NgxDataVisualizer from '@uncuyoapp/ngx-data-visualizer';
-```
-
-### Gestión de memoria
-
-Es una buena práctica desuscribirse de los observables para evitar fugas de memoria.
-
-```ts
-export class MyComponent implements OnDestroy {
-  private subscription?: Subscription;
-  
-  ngOnInit(): void {
-    this.subscription = this.dataset.dataUpdated.subscribe(/* ... */);
-  }
-  
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
+export interface PercentTransformationResult {
+  /** Indica si la transformación al modo porcentual fue exitosa */
+  success: boolean;
+  /** Código de error en caso de fallo en la transformación */
+  code?: PercentErrorCode;
+  /** Mensaje explicativo descriptivo */
+  message?: string;
 }
 ```
 
-## 📚 Ejemplos Adicionales
+### `Series`
 
-Para ejemplos completos y casos de uso avanzados, consulta:
+```ts
+export interface Series {
+  color: string;
+  visible: boolean;
+  type?: string;
+  name: string;
+  data: Array<number | [number, number] | { value: number }>;
+  smooth?: boolean;
+  stacking?: string;
+  chartType?: string;
+  symbol?: string;
+  symbolSize?: number;
+  lineStyle?: { width?: number; type?: string };
+  /** Identifica si la serie corresponde a una línea de meta o referencia global */
+  isReferenceSeries?: boolean;
+}
+```
 
-- **Demo interactiva**: [Ver ejemplos en vivo](https://uncuyoapp.github.io/ngx-data-visualizer/)
-- **Guía de instalación**: [README principal](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/README.md)
-- **Repositorio**: [GitHub - @uncuyoapp/ngx-data-visualizer](https://github.com/uncuyoapp/ngx-data-visualizer)
+### `Dataset`
 
+Clase fachada reactiva que administra la estructura de datos, dimensiones y filtrado/agrupación (_roll-up_):
 
-## 📄 Licencia
+```ts
+export class Dataset {
+  public readonly id?: number;
+  public readonly dimensions: Dimension[];
+  public readonly enableRollUp: boolean;
+  public readonly isPercent: boolean;
+  public readonly rowData: RowData[];
+  public readonly dataProvider: DataProvider;
+  public readonly dataUpdated: Subject<boolean>;
 
-MIT License. Ver [LICENSE](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/LICENSE) para detalles completos.
+  constructor(config: { id?: number; dimensions: Dimension[]; enableRollUp?: boolean; isPercent?: boolean; rowData: RowData[] });
+
+  /** Aplica configuración de filtros y/o roll-up */
+  public applyFilters(config: FiltersConfig): void;
+  /** Obtiene copia de los datos crudos originales */
+  public getRawData(): RowData[];
+  /** Obtiene los datos procesados actuales (tras filtros y roll-up) */
+  public getCurrentData(): RowData[];
+  /** Obtiene todas las dimensiones definidas */
+  public getAllDimensions(): Dimension[];
+  /** Obtiene las dimensiones actualmente activas (no colapsadas) */
+  public getActiveDimensions(): Dimension[];
+  /** Obtiene la clave de datos ('key') asociada al ID de dimensión */
+  public getDimensionKey(dimensionId: number): string | undefined;
+  /** Obtiene valores únicos para una dimensión por su ID */
+  public getDimensionValues(dimensionId: number): (string | number)[];
+}
+```
 
 ---
 
-**Desarrollado con ❤️ por el [Área de Políticas Públicas](https://www.uncuyo.edu.ar/politicaspublicas/) - Universidad Nacional de Cuyo**
+## 🎨 Gestión de Temas en Tablas (`ThemeService`)
+
+La librería incluye el servicio `ThemeService` (`export * from "./lib/table/services/theme.service"`) para la administración dinámica de temas visuales en las tablas dinámicas.
+
+### Temas Soportados
+- `'default'`: Tema limpio y minimalista.
+- `'material'`: Diseño adaptado a los lineamientos de Material Design.
+- `'bootstrap'`: Integración estética directa con la paleta y celdas de Bootstrap.
+
+### Ejemplo de Uso
+
+```ts
+import { Component, inject } from '@angular/core';
+import { ThemeService, ThemeType, TableComponent } from '@uncuyoapp/ngx-data-visualizer';
+
+@Component({ ... })
+export class MiComponenteConTablas {
+  private readonly themeService = inject(ThemeService);
+
+  // Aplica el tema globalmente a todas las tablas de la aplicación
+  public cambiarTemaGlobal(tema: ThemeType): void {
+    this.themeService.setTheme(tema);
+  }
+
+  // Aplica el tema únicamente a una instancia específica de TableComponent
+  public cambiarTemaInstancia(tema: ThemeType, tableComponent: TableComponent): void {
+    this.themeService.setTheme(tema, tableComponent);
+  }
+}
+```
+
+---
+
+## 📡 Sistema de Eventos y Auditoría (`EventBusService` & `AuditService`)
+
+La librería incluye una infraestructura reactiva centralizada para monitorear, auditar e integrar los eventos del ciclo de vida de los componentes con herramientas externas de analítica o logs.
+
+### Tipos de Eventos (`VisualizerEventType`)
+
+- **Gráficos**: `CHART_INIT`, `CHART_CONFIG_CHANGE`, `CHART_RENDER_START`, `CHART_RENDER_COMPLETE`, `CHART_RESIZE`, `CHART_VIEW_INIT`, `CHART_VIEW_READY`, `CHART_INSTANCE_SET`, `CHART_EMIT_SERIES`, `CHART_LAYOUT_CONFIGURE`, `CHART_SERIES_CONFIGURE`, `CHART_AXIS_CONFIGURE`.
+- **Tablas**: `TABLE_INIT`, `TABLE_CONFIGURE`, `TABLE_RENDER`, `TABLE_EXPORT`.
+
+### Uso de `EventBusService`
+
+Puedes inyectar `EventBusService` en cualquier servicio o componente para escuchar eventos con tipado estricto:
+
+```ts
+import { Component, inject, OnInit } from '@angular/core';
+import { EventBusService, VisualizerEventType } from '@uncuyoapp/ngx-data-visualizer';
+
+@Component({ ... })
+export class AnalyticsLoggerComponent implements OnInit {
+  private readonly eventBus = inject(EventBusService);
+
+  ngOnInit(): void {
+    // Escucha un evento específico con payload tipado automáticamente
+    this.eventBus.on(VisualizerEventType.CHART_RENDER_COMPLETE).subscribe((event) => {
+      console.log(`[Gráfico Renderizado] Instancia ID: ${event.instanceId}`);
+    });
+
+    // Escucha la totalidad del stream de eventos
+    this.eventBus.events$.subscribe((event) => {
+      console.log('Evento emitido:', event.type, event);
+    });
+  }
+}
+```
+
+### Depuración con `AuditService`
+
+El servicio `AuditService` permite auditar eventos formateados en la consola del navegador. Se puede activar mediante tres vías:
+
+1. **Configuración en Proveedores (DI)**:
+   ```ts
+   provideDataVisualizerCharts({ debug: true });
+   ```
+2. **LocalStorage**:
+   Establece la clave `ngx-viz-debug` en `localStorage`:
+   ```js
+   localStorage.setItem("ngx-viz-debug", "*"); // Audita todos los eventos
+   localStorage.setItem("ngx-viz-debug", "[Chart]*"); // Audita solo eventos de gráficos
+   ```
+3. **URL Query Parameters**:
+   Añade el parámetro a la URL de la aplicación: `https://mi-app.com/?ngx-viz-debug=*`.
+
+---
+
+## 🎨 Dimensiones, Personalización y Estilos (Design Tokens)
+
+El sistema de estilos utiliza una arquitectura basada en **CSS Custom Properties** (Variables CSS) que permite personalizar la apariencia visual y adaptar temas sin romper la encapsulación de los componentes Angular.
+
+### Las 4 Formas de Configurar el Tamaño del Gráfico
+
+1. **Por `chartOptions`**: Asigna `width` o `height` como números o cadenas CSS (`height: '50vh'`).
+2. **Layout Responsivo 100%**: Asigna `width: null` y `height: null`. El gráfico se expandirá al 100% de su contenedor padre mediante `ResizeObserver`.
+3. **Variables CSS en Línea / SCSS**:
+   ```css
+   libChart {
+     --viz-chart-min-height: 450px;
+     --viz-chart-width: 100%;
+   }
+   ```
+4. **Configuración Global por Inyección (`DATA_VISUALIZER_CONFIG`)**:
+   ```ts
+   provideDataVisualizerCharts({ defaultHeight: 500 });
+   ```
+
+### 🎨 Design Tokens CSS Soportados
+
+Puedes sobreescribir estos tokens a nivel global en tu hoja de estilos principal (`styles.scss`):
+
+```css
+:root {
+  /* Colores de marca y estado */
+  --viz-primary: #0450ff; /* Color de énfasis principal */
+  --viz-primary-contrast: #ffffff; /* Contraste para texto sobre color primario */
+  --viz-bg-card: #ffffff; /* Fondo para las tarjetas de gráficos */
+  --viz-bg-overlay: rgba(255, 255, 255, 0.85); /* Fondo para overlays CDK */
+  --viz-text: #333333; /* Texto principal */
+  --viz-text-muted: #666666; /* Texto secundario / atenuado */
+  --viz-border-color: #e6e6e6; /* Color de bordes */
+  --viz-focus-color: #6467f3; /* Anillo de enfoque (accesibilidad) */
+
+  /* Sombras y bordes */
+  --viz-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --viz-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --viz-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --viz-border-radius: 8px;
+
+  /* Transiciones */
+  --viz-transition-duration: 0.3s;
+  --viz-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ejemplo de Modo Oscuro */
+[data-theme="dark"] {
+  --viz-bg-card: #1e1e24;
+  --viz-bg-overlay: rgba(30, 30, 36, 0.9);
+  --viz-text: #f3f4f6;
+  --viz-text-muted: #9ca3af;
+  --viz-border-color: #374151;
+}
+```
+
+---
+
+## ⚡ Optimización y Rendimiento
+
+- **Carga Diferida (Lazy Loading)**: Dependencias pesadas como ECharts y módulos de PivotTable se importan dinámicamente de manera asíncrona mediante `useFactory`.
+- **Estrategia OnPush & Signals**: Todos los componentes utilizan `ChangeDetectionStrategy.OnPush` y gestionan su estado interno con `Signals` y `Computed`, minimizando re-renders innecesarios.
+- **Desacoplamiento de Resize**: Las dimensiones físicas se gestionan de forma nativa mediante el `ResizeObserver` de `ngx-echarts` con debounce, previniendo reconstrucciones lógicas del dataset durante el cambio de tamaño del viewport.
+
+---
+
+## 📄 Licencia
+
+Distribución bajo Licencia MIT. Consulta el archivo [LICENSE](https://github.com/uncuyoapp/ngx-data-visualizer/blob/main/LICENSE) para más detalles.
+
+---
+
+**Desarrollado por el [Área de Políticas Públicas](https://www.uncuyo.edu.ar/politicaspublicas/) — Universidad Nacional de Cuyo**

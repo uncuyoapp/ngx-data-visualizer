@@ -1,60 +1,74 @@
-import { EChartsOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
-import { EC_AXIS_CONFIG } from "../../../types/constants";
-import { ChartOptions } from "../../../types/data.types";
-import { ChartData } from "../../utils/chart-data";
-import { TooltipManager } from "./tooltip-manager";
-import { SeriesManager } from "./series-manager";
+import { EChartsOption, XAXisComponentOption, YAXisComponentOption } from 'echarts';
+import { Dataset } from '../../../services/dataset';
+import { EC_AXIS_CONFIG } from '../../../types/constants';
+import { ChartOptions } from '../../../types/data.types';
+import { ChartData } from '../../utils/chart-data';
+import { ChartLogicHelper } from '../../utils/chart-logic.helper';
+import { LayoutResult } from './layout-manager';
+import { SeriesManager } from './series-manager';
 
 /**
- * Interface que agrupa el contexto de los ejes necesario para su configuración,
+ * @description Interfaz que agrupa el contexto de los ejes necesario para su configuración,
  * que incluye las opciones de renderizado y la colección procesada de datos del gráfico.
  */
 export interface AxisContext {
+  /** @description Opciones genéricas del gráfico definidas por el usuario. */
   chartOptions: ChartOptions;
+  /** @description Instancia con los datos procesados del gráfico. */
   chartData: ChartData;
+  /** @description Conjunto de datos opcional con metadatos y dimensiones. */
+  dataset?: Dataset;
+  /** @description Resultado del cálculo dinámico de márgenes y layout. */
+  layoutResult?: LayoutResult;
 }
 
 /**
+ * @description
  * Clase administradora encargada de todo lo referido a la configuración de los Ejes X e Y
  * en los gráficos de ECharts. Interpola datos proporcionados por los manejadores de series
- * y tooltips para generar las estructuras finales esperadas por la librería gráfica.
+ * para generar las estructuras finales esperadas por la librería gráfica.
  */
 export class AxisManager {
 
   /**
-   * Inicializa el administrador de Ejes
-   * @param tooltipManager - Instancia del manejador de tooltips para formateo de labels.
+   * @description Crea la instancia del gestor de ejes de ECharts.
    * @param seriesManager - Instancia del manejador de series para cálculos como el maxValue.
    */
   constructor(
-    private tooltipManager: TooltipManager,
-    private seriesManager: SeriesManager
-  ) {}
+    private readonly seriesManager: SeriesManager
+  ) { }
 
   /**
-   * Orquesta la configuración principal de ambos ejes (X e Y), inyectando las configuraciones 
+   * @description Orquesta la configuración principal de ambos ejes (X e Y), inyectando las configuraciones 
    * resultantes dentro de las opciones de rendering nativas de la librería ECharts.
    * Maneja tanto gráficos convencionales como gráficos con rotación de ejes (barras horizontales).
-   * 
    * @param libraryOptions - Referencia al objeto de opciones nativo de ECharts a mutar.
    * @param context - Contexto con opciones y datos definidos por el componente padre.
+   * @public
    */
   public configureAxis(
     libraryOptions: EChartsOption,
     context: AxisContext
   ): void {
-    const { chartOptions, chartData } = context;
-    const nameGap = this.calculateNameGap();
+    const { chartOptions, chartData, dataset, layoutResult } = context;
+    if (!layoutResult) return;
+
+    if (!chartData?.seriesConfig?.x1 || ChartLogicHelper.isDaZero(dataset)) {
+      libraryOptions.xAxis = { show: false };
+      libraryOptions.yAxis = { show: false };
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const xAxis: any[] = [];
-    const yAxis = this.createYAxis(chartOptions, nameGap);
+    const yAxis = this.createYAxis(chartOptions, layoutResult);
 
     if (chartData.seriesConfig.x2) {
       this.configureDualXAxis(
         xAxis,
         chartData.seriesConfig.x1,
         chartData.seriesConfig.x2,
-        context,
-        libraryOptions
+        context
       );
     } else {
       this.configureSingleXAxis(xAxis, context);
@@ -62,116 +76,177 @@ export class AxisManager {
 
     // Intercambia la ubicación de atributos si es un gráfico de barras horizontales
     libraryOptions.xAxis =
-      chartOptions.type === "bar"
+      chartOptions.type === 'bar'
         ? (yAxis as XAXisComponentOption)
         : xAxis;
-    
+
     libraryOptions.yAxis =
-      chartOptions.type === "bar"
+      chartOptions.type === 'bar'
         ? xAxis
         : (yAxis as YAXisComponentOption);
   }
 
   /**
-   * Calcula de forma dinámica la distancia (gap) del nombre del eje respecto a este, 
+   * @description Calcula de forma dinámica la distancia (gap) del nombre del eje respecto a este, 
    * en función de la longitud que ocupa el valor máximo a dibujar.
    * @returns Distancia numérica recomendada para el label.
+   * @private
    */
   private calculateNameGap(): number {
     const maxVal = this.seriesManager ? this.seriesManager.getMaxValue() : 0;
-    return Math.max(((Math.log(Math.max(1, maxVal)) * Math.LOG10E + 1) | 1) * 10, 30);
+    return Math.max(((Math.log10(Math.max(1, maxVal)) + 1) | 1) * 10, 30);
   }
 
   /**
-   * Crea la configuración base para el Eje Y del gráfico.
-   * En Echarts el eje de valores suele representarse con tipo 'value' y delega el 
-   * formato del índice a la configuración designada en el Tooltip.
-   * 
-   * @param chartOptions - Opciones visuales del gráfico provistas por el usario.
-   * @param nameGap - Separación numérica frente al laber calculada en instantes previos.
-   * @returns Configuración en formato Objeto inyectable como Eje (YAXisComponentOption).
+   * @description Crea la configuración base para el Eje Y del gráfico.
+   * En ECharts el eje de valores se representa con tipo 'value' y formatea las marcas
+   * de forma nativa sin concatenar sufijos (los cuales se reservan para el Tooltip).
+   * @param chartOptions - Opciones de configuración del gráfico.
+   * @param layoutResult - Resultados del cálculo dinámico de layout.
+   * @returns Objeto de opciones de configuración del eje Y para ECharts.
+   * @private
    */
-  private createYAxis(chartOptions: ChartOptions, nameGap: number): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createYAxis(chartOptions: ChartOptions, layoutResult: LayoutResult): any {
+    const yAxisTitle = chartOptions.yAxis.title;
+    const name = typeof yAxisTitle === 'string' && yAxisTitle.trim().length > 0 ? yAxisTitle : undefined;
+
+    const isBar = chartOptions.type === 'bar';
+    const maxWidth = layoutResult.axis.valueTitleMaxWidth;
+
+    const finalNameGap = isBar
+      ? layoutResult.axis.valueNameGap
+      : layoutResult.axis.valueNameGap + this.calculateNameGap();
+
     return {
-      show: chartOptions.type !== "pie",
-      type: "value",
-      name: chartOptions.yAxis.title,
-      nameLocation: "middle",
-      nameGap: nameGap,
-      nameTextStyle: { fontWeight: "bold" },
-      max: chartOptions.yAxis.max,
-      axisLabel: {
-        formatter: (value: string) => this.tooltipManager.formatValue(value),
+      show: chartOptions.type !== 'pie',
+      type: 'value',
+      name,
+      nameLocation: 'center',
+      nameRotate: isBar ? 0 : 90,
+      nameGap: finalNameGap,
+      nameTextStyle: { fontWeight: 'bold' },
+      nameTruncate: {
+        maxWidth: maxWidth,
+        ellipsis: '...',
       },
+      max: chartOptions.yAxis.max,
+      tooltip: {
+        show: true,
+      },
+      triggerEvent: true,
     };
   }
 
   /**
-   * Configura la visualización de Doble Eje en X cuando el gráfico incluye
+   * @description Configura la visualización de Doble Eje en X cuando el gráfico incluye
    * agrupaciones secundarias. Instancia dos ejes paralelos modificando el objeto de entrada `xAxis`.
+   * @param xAxis - Arreglo de configuración de ejes X a poblar.
+   * @param x1 - Clave de la dimensión primaria.
+   * @param x2 - Clave de la dimensión secundaria.
+   * @param context - Contexto de los ejes.
+   * @private
    */
   private configureDualXAxis(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     xAxis: any[],
     x1: string,
     x2: string,
-    context: AxisContext,
-    libraryOptions: EChartsOption
+    context: AxisContext
   ) {
-    const { chartOptions, chartData } = context;
+    const { chartData, layoutResult } = context;
+    if (!layoutResult) return;
+
     const items1 = chartData.getItems(x1);
     const items2 = chartData.getItems(x2);
 
     const dataX1 = this.createDataX1(items1, items2);
     const dataX2 = this.createDataX2(items1, items2, context);
 
-    // Eje X Primario (x1)
+    // Agregar Eje X Primario (x1) y Eje X Secundario (x2) en una sola llamada
     xAxis.push(
       this.configureAxisOptions(
-        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
+        structuredClone(EC_AXIS_CONFIG),
         dataX1,
         context
       ),
-    );
-    // Eje X Secundario (x2)
-    xAxis.push(
       this.configureAxisOptions(
-        JSON.parse(JSON.stringify(EC_AXIS_CONFIG)),
+        structuredClone(EC_AXIS_CONFIG),
         dataX2,
         context,
         true
-      ),
+      )
     );
 
-    // Incrementa la separación del primer eje para que no colisionen los labels de ambos
-    xAxis[0].nameGap = 70;
-    
-    // Si la barra de navegación inferior está activa, ensancha el padding de la gráfica
-    if (chartOptions.navigator.show && libraryOptions.grid) {
-      (libraryOptions.grid as any).bottom = 100;
-    }
+    // Asignar el offset dinámico calculado al eje secundario de forma nativa
+    xAxis[1].offset = layoutResult.axis.dualLevelOffset;
+
+    // Ocultar la línea horizontal/vertical del eje secundario para evitar la doble línea flotante
+    xAxis[1].axisLine = {
+      ...(xAxis[1].axisLine || {}),
+      show: false
+    };
+
+    // Usar un margen estándar para las etiquetas respecto a su offset
+    xAxis[1].axisLabel = {
+      ...(xAxis[1].axisLabel || {}),
+      margin: 8
+    };
+
+    // Estirar los ticks del Eje Primario (nivel 0, y=0) hacia abajo la distancia exacta del offset
+    // para que funcionen como divisores verticales continuos que conectan con el segundo nivel
+    xAxis[0].axisTick = {
+      ...(xAxis[0].axisTick || {}),
+      show: true,
+      length: layoutResult.axis.dualLevelOffset
+    };
+
+    // Ticks cortos estándar en el Eje Secundario (nivel 1) apuntando hacia afuera (inside: false)
+    // para enmarcar limpiamente los bloques de categorías superiores sin colisionar con el título
+    xAxis[1].axisTick = {
+      ...(xAxis[1].axisTick || {}),
+      show: true,
+      inside: false
+    };
+
+    // Posición del título por debajo del segundo nivel
+    xAxis[0].nameGap = Math.max(xAxis[0].nameGap || 0, layoutResult.axis.categoryNameGap);
   }
 
   /**
-   * Helper para extrapolar los ítems de las agrupaciones del Eje X Primario
+   * @description Extrapola y construye la lista de ítems para el primer nivel del eje X primario.
+   * @param items1 - Ítems de la dimensión primaria.
+   * @param items2 - Ítems de la dimensión secundaria.
+   * @returns Arreglo extrapolado de datos para el eje primario.
+   * @private
    */
-  private createDataX1(items1: any[], items2: any[]): string[] {
-    return Array<string>().concat(...new Array(items1.length).fill(items2));
+  private createDataX1(items1: (string | number)[], items2: (string | number)[]): (string | number)[] {
+    return new Array<string | number>().concat(...new Array(items1.length).fill(items2));
   }
 
   /**
-   * Helper para extrapolar los ítems del Eje X Secundario basado en si posee un visualizador scrollable
+   * @description Extrapola y construye la lista de ítems para el segundo nivel del eje X secundario.
+   * @param items1 - Ítems de la dimensión primaria.
+   * @param items2 - Ítems de la dimensión secundaria.
+   * @param context - Contexto de los ejes.
+   * @returns Arreglo extrapolado de datos para el eje secundario.
+   * @private
    */
-  private createDataX2(items1: any[], items2: any[], context: AxisContext): string[] {
+  private createDataX2(items1: (string | number)[], items2: (string | number)[], context: AxisContext): (string | number)[] {
     return context.chartOptions.navigator.show
-      ? Array<string>().concat(
+      ? new Array<string | number>().concat(
         ...items1.map((i) => new Array(items2.length).fill(i)),
       )
       : items1;
   }
 
   /**
-   * Agrega la configuración de un Único Eje X para el gráfico actual al listado.
+   * @description Agrega la configuración de un único eje X para el gráfico actual al listado.
+   * @param xAxis - Arreglo de configuración de ejes X a poblar.
+   * @param context - Contexto de los ejes.
+   * @private
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configureSingleXAxis(xAxis: any[], context: AxisContext) {
     const { chartData } = context;
     const dataX1 = chartData.getItems(chartData.seriesConfig.x1);
@@ -179,42 +254,195 @@ export class AxisManager {
   }
 
   /**
-   * Aplica la personalización visual detallada que comparten tanto el Eje X Secundario como Primario,
-   * incluyendo su rotación de texto, ubicación, estilos, etc, basados en `chartOptions`.
-   * 
-   * @param axisOptions - Opciones nativas crudas a modificar referenciadas desde la constante `EC_AXIS_CONFIG`.
-   * @param data - Arrays de strings representantes de los items o ticks definidos en los ejes.
-   * @param context - Contexto con el ChartData y el ChartOptions.
-   * @param isSecondaryAxis - Flag booleano para definir si la inyección asume un layout secundario/inferior.
+   * @description Aplica la personalización visual detallada que comparten tanto el eje X secundario como primario.
+   * @param axisOptions - Objeto base de opciones del eje a personalizar.
+   * @param data - Arreglo de datos asignado al eje.
+   * @param context - Contexto de los ejes.
+   * @param isSecondaryAxis - Indica si el eje corresponde a un nivel secundario (por defecto false).
+   * @returns Objeto de opciones del eje configurado.
+   * @private
    */
   private configureAxisOptions(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axisOptions: any,
-    data: any[],
+    data: unknown[],
     context: AxisContext,
     isSecondaryAxis: boolean = false
   ) {
-    const { chartOptions, chartData } = context;
-    
-    // Gráficos como las tortas ('pie') no poseen ejes
-    axisOptions.show = chartOptions.type !== "pie";
-    axisOptions.name = isSecondaryAxis ? null : chartOptions.xAxis.title;
-    axisOptions.nameGap = chartOptions.type === "bar" ? 20 : 35;
-    axisOptions.nameLocation =
-      chartOptions.type === "bar" ? "end" : "middle";
-    axisOptions.nameTextStyle = { fontWeight: "bold" };
-    axisOptions.axisLabel.rotate = chartOptions.xAxis.rotateLabels;
+    const { chartOptions, chartData, dataset, layoutResult } = context;
+    if (!layoutResult) return axisOptions;
+    const isBar = chartOptions.type === 'bar';
+
+    // 1. Visibilidad básica y habilitación de interacción/events del eje
+    axisOptions.show = chartOptions.type !== 'pie';
+    axisOptions.triggerEvent = true;
     axisOptions.data = data;
-    axisOptions.axisTick.show = true;
-    axisOptions.splitArea.show =
-      !isSecondaryAxis && !chartData.seriesConfig.x2;
+    axisOptions.axisTick = { ...(axisOptions.axisTick || {}), show: true };
+    axisOptions.tooltip = { show: true };
+
+    // 2. Resolver y asignar el nombre (título) del eje
+    axisOptions.name = this.resolveAxisName(chartOptions, chartData, dataset, isSecondaryAxis);
+
+    // 3. Configurar el truncamiento automático del título del eje
+    this.configureAxisTitleTruncate(axisOptions, isBar, layoutResult);
+
+    // 4. Configurar posición, gap y rotación del título del eje
+    this.configureAxisTitleLayout(axisOptions, isBar, layoutResult);
+
+    // 5. Configurar truncado, ancho y rotación selectiva para las etiquetas (axisLabel)
+    this.configureAxisLabels(axisOptions, chartOptions, isSecondaryAxis, layoutResult);
+
+    // 6. Configurar la división del área y posición específica del eje secundario
+    this.configureSecondaryAxisLayout(axisOptions, chartData, chartOptions.type, isSecondaryAxis, layoutResult);
+
+    return axisOptions;
+  }
+
+  /**
+   * @description Determina el título o nombre del eje según las dimensiones seleccionadas.
+   * @param chartOptions - Opciones de configuración del gráfico.
+   * @param chartData - Datos procesados del gráfico.
+   * @param dataset - Conjunto de datos opcional.
+   * @param isSecondaryAxis - Indica si es un eje secundario.
+   * @returns Nombre formateado del eje o null si está deshabilitado.
+   * @private
+   */
+  private resolveAxisName(
+    chartOptions: ChartOptions,
+    chartData: ChartData,
+    dataset: Dataset | undefined,
+    isSecondaryAxis: boolean
+  ): string | null {
+    if (isSecondaryAxis || chartOptions.xAxis?.disableAutoTitle) {
+      return null;
+    }
+
+    const x1 = chartData.seriesConfig.x1;
+    const x2 = chartData.seriesConfig.x2;
+    const name1 = this.getDimensionName(x1, dataset);
+
+    if (x2) {
+      const name2 = this.getDimensionName(x2, dataset);
+      return `${name1} / ${name2}`;
+    }
+
+    return name1;
+  }
+
+  /**
+   * @description Configura las propiedades de truncado y estilo en negrita para el título del eje.
+   * @param axisOptions - Objeto de opciones del eje a mutar.
+   * @param isBar - Indica si el gráfico es de barras horizontales.
+   * @param layoutResult - Resultado del cálculo dinámico de layout.
+   * @private
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private configureAxisTitleTruncate(axisOptions: any, isBar: boolean, layoutResult: LayoutResult): void {
+    const maxWidth = isBar ? layoutResult.axis.valueTitleMaxWidth : layoutResult.axis.categoryTitleMaxWidth;
+    axisOptions.nameTruncate = {
+      maxWidth: maxWidth,
+      ellipsis: '...',
+    };
+    axisOptions.nameTextStyle = { fontWeight: 'bold' };
+  }
+
+  /**
+   * @description Configura la posición, rotación y separación del título del eje.
+   * @param axisOptions - Objeto de opciones del eje a mutar.
+   * @param isBar - Indica si el gráfico es de barras horizontales.
+   * @param layoutResult - Resultado del cálculo dinámico de layout.
+   * @private
+   */
+  private configureAxisTitleLayout(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    axisOptions: any,
+    isBar: boolean,
+    layoutResult: LayoutResult
+  ): void {
+    axisOptions.nameLocation = 'center';
+    axisOptions.nameGap = layoutResult.axis.categoryNameGap;
+    axisOptions.nameRotate = isBar ? 90 : 0;
+  }
+
+  /**
+   * @description Configura el truncado, ancho máximo y rotación de las etiquetas de texto del eje.
+   * @param axisOptions - Objeto de opciones del eje a mutar.
+   * @param chartOptions - Opciones de configuración del gráfico.
+   * @param isSecondaryAxis - Indica si es un eje secundario.
+   * @param layoutResult - Resultado del cálculo dinámico de layout.
+   * @private
+   */
+  private configureAxisLabels(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    axisOptions: any,
+    chartOptions: ChartOptions,
+    isSecondaryAxis: boolean,
+    layoutResult: LayoutResult
+  ): void {
+    const hasNavigator = !!chartOptions.navigator?.show;
+
+    if (hasNavigator) {
+      axisOptions.axisLabel = {
+        ...(axisOptions.axisLabel || {}),
+        rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
+        hideOverlap: true,
+      };
+      delete axisOptions.axisLabel.overflow;
+      delete axisOptions.axisLabel.ellipsis;
+      delete axisOptions.axisLabel.width;
+    } else {
+      axisOptions.axisLabel = {
+        ...(axisOptions.axisLabel || {}),
+        rotate: isSecondaryAxis ? 0 : (chartOptions.xAxis?.rotateLabels ?? 0),
+        overflow: 'truncate',
+        ellipsis: '...',
+        hideOverlap: false,
+        width: isSecondaryAxis
+          ? layoutResult.axis.secondLevelLabelMaxWidth
+          : layoutResult.axis.firstLevelLabelMaxWidth
+      };
+    }
+  }
+
+  /**
+   * @description Configura la división de áreas visuales (splitArea) y posición específica para el eje secundario.
+   * @param axisOptions - Objeto de opciones del eje a mutar.
+   * @param chartData - Datos procesados del gráfico.
+   * @param chartType - Tipo de gráfico.
+   * @param isSecondaryAxis - Indica si es un eje secundario.
+   * @param layoutResult - Resultado del cálculo dinámico de layout.
+   * @private
+   */
+  private configureSecondaryAxisLayout(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    axisOptions: any,
+    chartData: ChartData,
+    chartType: string,
+    isSecondaryAxis: boolean,
+    layoutResult: LayoutResult
+  ): void {
+    axisOptions.splitArea = axisOptions.splitArea || {};
+    axisOptions.splitArea.show = !isSecondaryAxis && !chartData.seriesConfig.x2;
 
     if (isSecondaryAxis) {
       axisOptions.splitArea.show = true;
-      axisOptions.position =
-        chartOptions.type === "bar" ? "left" : "bottom";
-      axisOptions.offset = chartOptions.type === "bar" ? 60 : 30;
+      axisOptions.position = chartType === 'bar' ? 'left' : 'bottom';
+      axisOptions.offset = layoutResult.axis.dualLevelOffset;
     }
-    return axisOptions;
+  }
+
+  /**
+   * @description Obtiene el nombre legible de una dimensión basada en su clave de datos consultando el dataset.
+   * @param key - Clave identificatoria de la dimensión.
+   * @param dataset - Conjunto de datos opcional.
+   * @returns Nombre de vista legible de la dimensión o la clave por defecto.
+   * @private
+   */
+  private getDimensionName(key: string, dataset?: Dataset): string {
+    if (!dataset?.dimensions) {
+      return key;
+    }
+    const dim = dataset.dimensions.find(d => dataset.getDimensionKey(d.id) === key);
+    return dim ? dim.nameView : key;
   }
 }
-

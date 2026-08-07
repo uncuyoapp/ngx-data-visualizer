@@ -1,5 +1,3 @@
-@import "../editor-base.scss";
-
 .config-editor-container {
   max-height: 90vh;
 }
@@ -7,10 +5,10 @@
 .form-section-title {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #3182ce;
+  color: var(--viz-editor-primary, #0450ff);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid rgba(49, 130, 206, 0.1);
+  border-bottom: 1px solid var(--viz-editor-primary-light, rgba(4, 80, 255, 0.1));
 }

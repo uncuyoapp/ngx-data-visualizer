@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  ECharts,
-  EChartsOption
-} from "echarts";
-import { Chart } from "../types/chart";
-import {
-  ChartConfiguration,
-  EChartsLibraryOptions,
-} from "../types/chart-configuration";
-import { AxisContext, AxisManager } from "./managers/axis-manager";
-import { ExportManager } from "./managers/export-manager";
-import { SeriesManager } from "./managers/series-manager";
-import { TooltipManager } from "./managers/tooltip-manager";
-import { SeriesConfigType } from "./types/echart-base";
+import { ECharts } from 'echarts';
+import cloneDeep from 'lodash.clonedeep';
+import { EC_KPI_GRAPHIC_CONFIG, EC_NO_DATA_GRAPHIC_CONFIG, ECharts as EChartsConstants } from '../../types/constants';
+import { PercentTransformationResult } from '../../types/data.types';
+import { Chart } from '../types/chart';
+import { ChartConfiguration, EChartsLibraryOptions } from '../types/chart-configuration';
+import { ChartLogicHelper } from '../utils/chart-logic.helper';
+import { AxisContext, AxisManager } from './managers/axis-manager';
+import { ExportManager } from './managers/export-manager';
+import { LayoutManager } from './managers/layout-manager';
+import { SeriesManager } from './managers/series-manager';
+import { TooltipManager } from './managers/tooltip-manager';
+import { SeriesConfigType } from './types/echart-base';
+import { PercentTransformer } from './utils/percent-transformer';
 
 /**
+ * @description
  * Clase EChart que extiende la clase base Chart para implementar gráficos usando la biblioteca ECharts.
  * Esta clase maneja la configuración, renderizado y manipulación de gráficos ECharts.
  *
  * @example
  * ```typescript
- * // Crear una instancia de EChart
  * const config: ChartConfiguration = {
  *   type: 'bar',
  *   data: {
@@ -35,64 +35,53 @@ import { SeriesConfigType } from "./types/echart-base";
  *   }
  * };
  * const chart = new EChart(config);
- *
- * // Renderizar el gráfico
  * chart.render();
- *
- * // Exportar a SVG
- * const svg = chart.export('svg');
  * ```
- *
- * @param configuration - Configuración del gráfico
- * @property {string} configuration.type - Tipo de gráfico ('bar', 'line', 'pie', etc.)
- * @property {object} configuration.data - Datos del gráfico
- * @property {Array<SeriesConfigType>} configuration.data.series - Series de datos
- * @property {object} configuration.data.seriesConfig - Configuración de series
- * @property {object} configuration.options - Opciones de visualización
- *
- * @limitations
- * - El modo porcentual solo funciona con series apiladas
- * - La exportación a JPG puede tener problemas con gráficos muy grandes
- * - El tooltip personalizado no soporta HTML complejo
- * - El redimensionamiento automático puede ser lento con muchos datos
- *
- * @performance
- * - Se implementa memoización para cálculos costosos
- * - Se usa debounce para reducir redibujados
- * - Se optimiza el manejo de eventos
- *
- * @see {@link Chart} Clase base
- * @see {@link SeriesManager} Gestión de series
- * @see {@link TooltipManager} Gestión de tooltips
- * @see {@link ExportManager} Gestión de exportación
  */
 export class EChart extends Chart {
-  // Instancia de ECharts que maneja el gráfico
+  /** Instancia nativa de ECharts que maneja el lienzo del gráfico. */
   public chartInstance!: ECharts;
+
+  /** Manejador de formateo y comportamiento del tooltip. */
   private readonly tooltipManager: TooltipManager;
+
+  /** Manejador de exportaciones (PNG, JPG, SVG, Canvas). */
   private exportManager!: ExportManager;
+
+  /** Manejador de configuración y transformaciones de series de datos. */
   private seriesManager!: SeriesManager;
+
+  /** Manejador de configuración de ejes cartesianos y categóricos. */
   private axisManager!: AxisManager;
 
-  // Propiedades heredadas de la clase base Chart
-  override name: string = "";
+  /** Manejador de distribución espacial y cálculo de grilla (layout). */
+  private layoutManager!: LayoutManager;
+
+  /** Módulo de transformación y validación de modo porcentual */
+  private readonly percentTransformer = new PercentTransformer();
+
+  /** Opciones nativas computadas de la biblioteca ECharts. */
   override libraryOptions!: EChartsLibraryOptions;
+
+  /** Colección de series configuradas en el gráfico. */
   override series: SeriesConfigType[] = [];
 
-  // Propiedades para control de renderizado
+  /** Estado que indica si la instancia se encuentra ejecutando un ciclo de renderizado. */
   public isRendering: boolean = false;
+
+  /** Estado que indica si la instancia ya ha completado al menos un renderizado inicial. */
   public hasRendered: boolean = false;
 
-  // Propiedades privadas para manejo interno
-  private suffixSaved: string | null = ""; // Guarda el sufijo original para restaurarlo
-  private decimalsSaved: number | null = null; // Guarda los decimales originales para restaurarlos
-  private savedYAxisMaxValue: number | null = null; // Guarda el valor máximo del eje Y
+  /** Lista de series añadidas dinámicamente en caliente. */
+  private addedSeries: SeriesConfigType[] = [];
 
-  // Cache para memoización
-  private readonly optionsCache: Map<string, EChartsOption> = new Map();
-
+  /** Timestamp del último renderizado ejecutado para control de debounce. */
   private lastRenderTime: number = 0;
+
+  /** Identificador del temporizador activo de debounce para el renderizado. */
   private renderDebounceTimeout: number | null = null;
+
+  /** Tiempo de espera en milisegundos para el debounce de renderizado. */
   private readonly RENDER_DEBOUNCE_MS = 100;
 
   constructor(public override configuration: ChartConfiguration) {
@@ -104,20 +93,20 @@ export class EChart extends Chart {
   }
 
   /**
-   * Getters y Setters para la instancia del gráfico
-   * @param instance - Instancia de ECharts
-   * @throws {Error} Si la instancia es inválida
+   * Asigna la instancia nativa de ECharts e inicializa sus manejadores secundarios.
+   * @param instance - Instancia de ECharts.
+   * @throws {Error} Si la instancia es nula o indefinida.
    */
   set instance(instance: ECharts) {
     if (!instance) {
-      throw new Error("La instancia de ECharts es requerida");
+      throw new Error('La instancia de ECharts es requerida');
     }
     this.chartInstance = instance;
     this.exportManager = new ExportManager(instance);
     this.seriesManager = new SeriesManager(instance);
-    this.axisManager = new AxisManager(this.tooltipManager, this.seriesManager);
+    this.axisManager = new AxisManager(this.seriesManager);
+    this.layoutManager = new LayoutManager();
 
-    // Optimización de eventos
     this.setupEventHandlers();
     this.setupFormatter();
   }
@@ -127,7 +116,7 @@ export class EChart extends Chart {
    * @private
    */
   private setupFormatter(): void {
-    if (this.libraryOptions && this.libraryOptions.tooltip) {
+    if (this.libraryOptions?.tooltip) {
       (this.libraryOptions.tooltip as any).formatter = (params: any) =>
         this.tooltipManager.formatTooltip(params, this.libraryOptions);
     }
@@ -151,13 +140,16 @@ export class EChart extends Chart {
     this.libraryOptions = config.libraryOptions;
     this.chartOptions = config.options;
 
+    if (!config.options?.toPercent && this.percentTransformer?.isProcessed()) {
+      this.percentTransformer.process(this, false);
+    }
+
     if (this.tooltipManager) {
       this.tooltipManager.updateDecimals(this.chartOptions.tooltip.decimals);
       this.tooltipManager.updateSuffix(this.chartOptions.tooltip.suffix);
     }
 
     this.setupFormatter();
-    this.invalidateCache();
   }
 
   /**
@@ -167,23 +159,20 @@ export class EChart extends Chart {
   private setupEventHandlers(): void {
     if (!this.chartInstance) return;
 
-    // Usar un solo listener para múltiples eventos
-    const eventHandler = this.debounce(() => {
-      this.handleChartEvent();
-    }, 100);
+    // Guardar el índice de la serie hovered para el tooltip
+    this.chartInstance.on('mouseover', (params: any) => {
+      if (params && typeof params.seriesIndex === 'number') {
+        this.tooltipManager.setHoveredSeriesIndex(params.seriesIndex);
+      }
+    });
 
-    this.chartInstance.on("click", eventHandler);
-    this.chartInstance.on("mouseover", eventHandler);
-    this.chartInstance.on("mouseout", eventHandler);
-  }
-
-  /**
-   * Manejo optimizado de eventos del gráfico
-   * @private
-   */
-  private handleChartEvent(): void {
-    // Implementar lógica de manejo de eventos aquí
-    // Evitar operaciones costosas durante eventos frecuentes
+    this.chartInstance.on('mouseout', (params: any) => {
+      if (params && typeof params.seriesIndex === 'number') {
+        if (this.tooltipManager.getHoveredSeriesIndex() === params.seriesIndex) {
+          this.tooltipManager.setHoveredSeriesIndex(null);
+        }
+      }
+    });
   }
 
   /**
@@ -194,36 +183,10 @@ export class EChart extends Chart {
     if (this.renderDebounceTimeout) {
       window.clearTimeout(this.renderDebounceTimeout);
     }
-    this.optionsCache.clear();
-    this.chartInstance.dispose();
-  }
-
-  /**
-   * Obtiene las opciones actuales del gráfico con memoización
-   * @returns {object} Opciones del gráfico
-   */
-  getOptions(): object {
-    const cacheKey = this.generateCacheKey();
-    if (this.optionsCache.has(cacheKey)) {
-      return this.optionsCache.get(cacheKey) || {};
+    this.addedSeries = [];
+    if (this.chartInstance && !this.chartInstance.isDisposed()) {
+      this.chartInstance.dispose();
     }
-    const options = this.chartInstance?.getOption() || {};
-    this.optionsCache.set(cacheKey, options as EChartsOption);
-    return options;
-  }
-
-  /**
-   * Genera una clave única para el cache basada en el estado actual
-   * @private
-   * @returns {string} Clave del cache
-   */
-  private generateCacheKey(): string {
-    return JSON.stringify({
-      series: this.series,
-      maxValue: this.seriesManager?.getMaxValue(),
-      toPercent: this.chartOptions.toPercent,
-      totals: this.seriesManager?.getTotals(),
-    });
   }
 
   /**
@@ -239,8 +202,10 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a añadir
    */
   addSeries(series: SeriesConfigType): void {
+    if (!this.addedSeries.some(s => s.name === series.name)) {
+      this.addedSeries.push(series);
+    }
     this.seriesManager.addSeries(series);
-    this.invalidateCache();
   }
 
   /**
@@ -248,142 +213,92 @@ export class EChart extends Chart {
    * @param series - Configuración de la serie a eliminar
    */
   delSeries(series: SeriesConfigType): void {
+    this.addedSeries = this.addedSeries.filter(s => s.name !== series.name);
     this.seriesManager.deleteSeries(series);
-    this.invalidateCache();
   }
 
-  /**
-   * Invalida el cache de opciones y datos
-   * @private
-   */
-  private invalidateCache(): void {
-    this.optionsCache.clear();
-  }
 
   /**
-   * Maneja el hover de una serie
-   * @param series - Serie sobre la que se hace hover
+   * Alterna el modo porcentual del gráfico delegando en el PercentTransformer
    */
-  hoverSeries(series: SeriesConfigType): void {
-    this.seriesManager.handleHover(series);
-  }
-
-  /**
-   * Maneja la selección de una serie
-   * @param series - Serie a seleccionar
-   */
-  selectSeries(series: SeriesConfigType): void {
-    this.seriesManager.handleSelection(series);
-  }
-
-  /**
-   * Expande el gráfico para mejor visualización
-   */
-  expand(): void { }
-
-  /**
-   * Condensa el gráfico
-   */
-  condense(): void { }
-
-  /**
-   * Oculta el gráfico
-   */
-  hide(): void { }
-
-  /**
-   * Alterna el modo porcentual del gráfico
-   * @throws {Error} Si el gráfico no está en modo apilado
-   */
-  togglePercentMode(): void {
-    if (!this.chartData.seriesConfig.stack) {
-      throw new Error("El modo porcentual requiere series apiladas");
+  override togglePercentMode(enable?: boolean): PercentTransformationResult {
+    const result = this.percentTransformer.process(this, enable);
+    if (result.success) {
+      this.render();
     }
-    this.chartOptions.toPercent = !this.chartOptions.toPercent;
-    this.invalidateCache();
-    if (this.chartOptions.toPercent) {
-      this.enablePercentMode();
-    } else {
-      this.disablePercentMode();
+    return result;
+  }
+
+  /**
+   * Indica si el gráfico se encuentra en modo porcentual
+   */
+  override isPercentMode(): boolean {
+    return !!this.chartOptions?.toPercent;
+  }
+
+  /**
+   * Alterna la visibilidad de la leyenda nativa del gráfico
+   * @param show - Indica si se debe mostrar o ocultar la leyenda
+   */
+  override toggleLegendVisibility(show: boolean): void {
+    this.chartOptions.legends.show = show;
+    this.chartOptions.legends.enabled = show;
+    if (this.libraryOptions) {
+      (this.libraryOptions as any).legend = (this.libraryOptions as any).legend || {};
+      (this.libraryOptions as any).legend.show = show;
     }
-    this.render();
-  }
 
-  /**
-   * Habilita el modo porcentual
-   * @private
-   */
-  private enablePercentMode() {
-    this.ensureStackedSeries();
-    this.suffixSaved = this.chartOptions.tooltip.suffix;
-    this.decimalsSaved = this.chartOptions.tooltip.decimals;
-    this.chartOptions.tooltip.suffix = "%";
-    this.chartOptions.tooltip.decimals = 2; // Por defecto 2 decimales para porcentajes
-    this.tooltipManager.updateSuffix("%");
-    this.tooltipManager.updateDecimals(2);
-    this.seriesManager.summarizeTotals(this.chartData.getSeries());
-    this.saveAndSetYAxisMax(100);
-  }
+    if (this.chartInstance) {
+      this.hideTooltip();
+      // 1. Modificar en caliente la visibilidad de la leyenda en ECharts
+      this.chartInstance.setOption({
+        legend: {
+          show: show
+        }
+      });
 
-  /**
-   * Deshabilita el modo porcentual
-   * @private
-   */
-  private disablePercentMode() {
-    this.unstackSeriesIfNotStacked();
-    this.chartOptions.tooltip.suffix = this.suffixSaved;
-    this.chartOptions.tooltip.decimals = this.decimalsSaved;
-    this.tooltipManager.updateSuffix(this.suffixSaved);
-    this.tooltipManager.updateDecimals(this.decimalsSaved);
-    this.restoreYAxisMax();
-  }
+      // 2. Recalcular grilla (grid) reactivamente usando LayoutManager
+      if (this.layoutManager) {
+        const layoutResult = this.layoutManager.configureLayout(this.libraryOptions, this.chartOptions, this.chartData);
+        // 3. Aplicar el grid/legend/series modificado en caliente
+        const optionsUpdate: any = {
+          legend: (this.libraryOptions as any).legend
+        };
 
-  /**
-   * Asegura que las series estén apiladas
-   * @private
-   */
-  private ensureStackedSeries() {
-    this.chartData.seriesConfig.stack ??= "stack";
-  }
+        if (this.chartOptions.type !== 'pie') {
+          optionsUpdate.grid = (this.libraryOptions as any).grid;
+        } else if (layoutResult.pie) {
+          const pieResult = layoutResult.pie;
+          const currentSeries = this.chartInstance.getOption()['series'];
+          if (Array.isArray(currentSeries)) {
+            optionsUpdate.series = currentSeries.map((s: any) => {
+              if (s.type === 'pie') {
+                return {
+                  ...s,
+                  center: pieResult.center
+                  // radius no se sobreescribe: lo define EC_SERIES_CONFIG.pie
+                };
+              }
+              return s;
+            });
+          }
+        }
 
-  /**
-   * Desapila las series si no están configuradas como apiladas
-   * @private
-   */
-  private unstackSeriesIfNotStacked() {
-    if (!this.chartOptions.stacked) {
-      this.chartData.seriesConfig.stack = null;
+        this.chartInstance.setOption(optionsUpdate);
+      }
     }
   }
 
-  /**
-   * Guarda y establece el valor máximo del eje Y
-   * @private
-   * @param maxValue - Valor máximo a establecer
-   */
-  private saveAndSetYAxisMax(maxValue: number) {
-    if (this.chartOptions.yAxis.max) {
-      this.savedYAxisMaxValue = this.chartOptions.yAxis.max;
-    }
-    this.chartOptions.yAxis.max = maxValue;
-  }
 
   /**
-   * Restaura el valor máximo del eje Y
-   * @private
-   */
-  private restoreYAxisMax() {
-    this.chartOptions.yAxis.max = this.savedYAxisMaxValue;
-    this.savedYAxisMaxValue = null;
-  }
-
-  /**
-   * Establece los extremos del gráfico
+   * Establece los extremos del zoom (dataZoom) en el gráfico.
+   * @param start - Porcentaje o índice de inicio.
+   * @param end - Porcentaje o índice de fin.
    */
   setExtremes(start?: number, end?: number): void {
     if (this.chartInstance && start != null && end != null) {
       this.chartInstance.dispatchAction({
-        type: "dataZoom",
+        type: 'dataZoom',
         start,
         end,
       });
@@ -391,12 +306,13 @@ export class EChart extends Chart {
   }
 
   /**
-   * Obtiene los extremos del navegador del gráfico
+   * Obtiene los extremos actuales del navegador (dataZoom) del gráfico.
+   * @returns Los valores de inicio y fin o null si no está disponible.
    */
   getExtremes(): { start: number; end: number } | null {
     if (!this.chartInstance) return null;
     const option = this.chartInstance.getOption() as Record<string, any>;
-    if (option && option['dataZoom'] && option['dataZoom'].length > 0) {
+    if (option?.['dataZoom']?.length > 0) {
       const dataZoom = option['dataZoom'][0];
       if (dataZoom.start != null && dataZoom.end != null) {
         return {
@@ -409,14 +325,13 @@ export class EChart extends Chart {
   }
 
   /**
-   * Exporta el gráfico en el formato especificado
-   * @param type - Tipo de exportación ('png' | 'jpg')
-   * @returns {void}
-   * @throws {Error} Si el tipo de exportación no es válido
+   * Exporta el gráfico en el formato especificado.
+   * @param type - Tipo de exportación ('png' | 'jpg').
+   * @throws {Error} Si el tipo de exportación no es válido.
    */
-  export(type: "png" | "jpg" = "png"): void {
-    if (!["png", "jpg"].includes(type)) {
-      throw new Error("Tipo de exportación no válido");
+  export(type: 'png' | 'jpg' = 'png'): void {
+    if (!['png', 'jpg'].includes(type)) {
+      throw new Error('Tipo de exportación no válido');
     }
     return this.exportManager.export(type);
   }
@@ -432,7 +347,7 @@ export class EChart extends Chart {
       }
       this.renderDebounceTimeout = window.setTimeout(() => {
         this.performRender();
-      }, this.RENDER_DEBOUNCE_MS);
+      }, this.RENDER_DEBOUNCE_MS) as any;
       return;
     }
     this.performRender();
@@ -443,20 +358,37 @@ export class EChart extends Chart {
    * @private
    */
   private performRender(): void {
+    if (!this.chartInstance) return;
     this.lastRenderTime = Date.now();
     this.generateConfiguration();
-    if (this.chartInstance) {
-      this.chartInstance.resize();
-      // this.chartInstance.clear();
-      this.chartInstance.setOption(this.libraryOptions, {
-        notMerge: true,
-        lazyUpdate: true,
-      });
 
-      if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
-        setTimeout(() => {
-          this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
-        }, 100);
+    this.hideTooltip();
+
+    this.chartInstance.setOption(this.libraryOptions, {
+      notMerge: true,
+      lazyUpdate: false,
+    });
+
+    if (this.chartOptions.navigator?.show && this.chartOptions.navigator?.start != null && this.chartOptions.navigator?.end != null) {
+      setTimeout(() => {
+        this.setExtremes(this.chartOptions.navigator.start as number, this.chartOptions.navigator.end as number);
+      }, 100);
+    }
+  }
+
+  /**
+   * Oculta de manera segura el tooltip activo del gráfico de ECharts.
+   * Se utiliza antes de realizar re-renderizados o cambios significativos de diseño
+   * (como ocultar/mostrar la leyenda o recalcular el tamaño) para prevenir que
+   * el tooltip quede visible en una posición incorrecta o desalineado.
+   * @private
+   */
+  private hideTooltip(): void {
+    if (this.chartInstance) {
+      try {
+        this.chartInstance.dispatchAction({ type: 'hideTip' });
+      } catch (e) {
+        // Ignorar si falla al intentar ocultar el tooltip
       }
     }
   }
@@ -464,13 +396,71 @@ export class EChart extends Chart {
   /**
    * @description
    * Orquesta la creación de la configuración completa de ECharts.
-   * Llama a los métodos para configurar las series y los ejes antes de renderizar.
+   * Modifica `libraryOptions` según el número de dimensiones activas (DA).
    * @private
    */
-  private generateConfiguration() {
+  private generateConfiguration(): void {
+    if (this.chartOptions.toPercent) {
+      const validationError = this.percentTransformer.validate(this);
+      if (validationError) {
+        this.percentTransformer.process(this, false);
+      }
+    }
+
+    const hasRows = !!this.chartData?.dataProvider?.getData()?.length;
+    if (!hasRows) {
+      this.generateNoDataConfiguration();
+      return;
+    }
+
+    if (ChartLogicHelper.isDaZero(this.configuration.dataset)) {
+      this.generateKpiConfiguration();
+      return;
+    }
+
+    delete (this.libraryOptions as any).graphic;
+    this.generateStandardConfiguration();
+  }
+
+  /**
+   * Configura las opciones de la biblioteca gráfica para mostrar la tarjeta KPI / Big Number (DA = 0).
+   * @private
+   */
+  private generateKpiConfiguration(): void {
+    const total = ChartLogicHelper.calculateConsolidatedTotal(this.chartData.dataProvider);
+    const text = ChartLogicHelper.formatKpiValue(total, this.chartOptions);
+    const subtext =
+      typeof this.chartOptions.yAxis?.title === "string" &&
+        this.chartOptions.yAxis.title.trim().length > 0
+        ? this.chartOptions.yAxis.title
+        : this.chartOptions.measureUnit ||
+        this.chartData.seriesConfig.measure ||
+        "Total";
+
+    this.libraryOptions.series = [];
+    this.libraryOptions.xAxis = { show: false };
+    this.libraryOptions.yAxis = { show: false };
+    delete (this.libraryOptions as any).grid;
+    delete (this.libraryOptions as any).legend;
+    delete (this.libraryOptions as any).dataZoom;
+    const kpiGraphic = cloneDeep(EC_KPI_GRAPHIC_CONFIG) as unknown as any[];
+    kpiGraphic[0].children[0].style.text = text;
+    kpiGraphic[0].children[1].style.text = subtext;
+    (this.libraryOptions as any).graphic = kpiGraphic;
+  }
+
+  /**
+   * Genera y aplica la configuración estándar (series, layout, ejes) para gráficos cartesianos/radiales (DA >= 1).
+   * @private
+   */
+  private generateStandardConfiguration(): void {
+    if (this.chartOptions.toPercent && !this.percentTransformer.isProcessed()) {
+      this.percentTransformer.process(this, true);
+    }
+
     const ctx = {
-      chartType: this.libraryOptions["type"] as string,
-      isPie: this.chartOptions.type === "pie",
+      chartType: this.libraryOptions['type'] as string,
+      isPie: this.chartOptions.type === 'pie',
       toPercent: this.chartOptions.toPercent,
       stack: this.chartData.seriesConfig.stack,
       colors: this.chartOptions.colors,
@@ -480,32 +470,55 @@ export class EChart extends Chart {
       this.seriesManager.summarizeTotals(this.chartData.getSeries());
     }
 
-    this.libraryOptions.series = this.seriesManager.configureSeries(
+    let layoutResult;
+    if (this.layoutManager) {
+      const containerWidth =
+        this.chartInstance?.getWidth() || EChartsConstants.DEFAULT_DIMENSIONS.WIDTH;
+      layoutResult = this.layoutManager.configureLayout(
+        this.libraryOptions,
+        this.chartOptions,
+        this.chartData,
+        containerWidth
+      );
+    }
+
+    const mainSeries = this.seriesManager.configureSeries(
       this.chartData.getSeries(),
       ctx
     );
+
+    const allSeries = [...mainSeries, ...this.addedSeries];
+    this.libraryOptions.series = allSeries;
+
+    if (this.chartOptions.type === 'pie' && layoutResult?.pie) {
+      allSeries.forEach((s: any) => {
+        if (s.type === 'pie') {
+          s.center = layoutResult.pie.center;
+        }
+      });
+    }
+
     const axisCtx: AxisContext = {
       chartData: this.chartData,
       chartOptions: this.chartOptions,
+      dataset: this.configuration.dataset,
+      layoutResult: layoutResult,
     };
     this.axisManager.configureAxis(this.libraryOptions, axisCtx);
   }
 
   /**
-   * Utilidad para debounce
+   * Configura las opciones de la biblioteca cuando no existen datos para graficar.
+   * Oculta los ejes X e Y y despliega un mensaje 'Sin datos para mostrar'.
+   * @private
    */
-  private debounce<T extends (...args: any[]) => any>(
-    func: T,
-    wait: number,
-  ): (...args: Parameters<T>) => void {
-    let timeout: number | null = null;
-    return (...args: Parameters<T>) => {
-      if (timeout) {
-        window.clearTimeout(timeout);
-      }
-      timeout = window.setTimeout(() => {
-        func(...args);
-      }, wait);
-    };
+  private generateNoDataConfiguration(): void {
+    this.libraryOptions.series = [];
+    this.libraryOptions.xAxis = { show: false };
+    this.libraryOptions.yAxis = { show: false };
+    delete (this.libraryOptions as any).grid;
+    delete (this.libraryOptions as any).legend;
+    delete (this.libraryOptions as any).dataZoom;
+    (this.libraryOptions as any).graphic = EC_NO_DATA_GRAPHIC_CONFIG;
   }
 }

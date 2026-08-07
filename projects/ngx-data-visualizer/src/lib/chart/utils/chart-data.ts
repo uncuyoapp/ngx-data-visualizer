@@ -20,7 +20,7 @@ export class ChartData {
     public dataProvider: DataProvider,
     public seriesConfig: SeriesConfig,
     private readonly colorPalette?: Map<string, string>,
-  ) {}
+  ) { }
 
   /**
    * @description Obtiene los valores únicos para una columna (clave) específica de los datos procesados.
@@ -36,6 +36,9 @@ export class ChartData {
    * @returns Un array de objetos que representan las series de datos para la librería de gráficos.
    */
   public getSeries(): object[] {
+    if (!this.seriesConfig.x1) {
+      return [];
+    }
     const { stackKey, axis0, axis1, items, items2 } = this.extractVariables();
     const dataStruct = this.createDataStruct(items, items2);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +61,7 @@ export class ChartData {
       const rawValue = row[DIMENSION_VALUE];
       const valor =
         rawValue !== null && rawValue !== undefined
-          ? parseFloat(String(rawValue))
+          ? Number.parseFloat(String(rawValue))
           : null;
 
       if (!firstLevel) {
@@ -68,9 +71,8 @@ export class ChartData {
         throw new Error("An error occurred when finding series");
       }
 
-      // Solo agregar el valor si es un número válido o null
       if (secondLevel) {
-        // Utilizamos concatenación con separador para evitar ambigüedades
+        // Agregamos el valor utilizando una clave combinada para evitar colisiones entre subcategorías distintas.
         actualSeries.data.set(firstLevel.concat(secondLevel), [
           secondLevel,
           valor,
@@ -158,26 +160,20 @@ export class ChartData {
     axis1: string,
     palette: Map<string, string> | undefined,
   ) {
-    let nameSeries: string = "";
+    let nameSeries = "";
     let stack: string | undefined;
     let firstLevel: string | undefined;
     let secondLevel: string | undefined;
     let color: string | undefined;
 
-    Object.entries(row).forEach(([key, value]) => {
-      // Aseguramos que value sea string
+    for (const [key, value] of Object.entries(row)) {
       const valueStr = String(value);
 
       switch (key) {
         case stackKey:
           stack = valueStr;
-          nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-
-          // Manejo seguro de colores desde la paleta
-          if (!color && palette) {
-            const paletteColor = palette.get(valueStr);
-            if (paletteColor) color = paletteColor;
-          }
+          nameSeries = this.appendSeriesName(nameSeries, valueStr);
+          color = this.resolveColor(color, valueStr, palette);
           break;
 
         case axis0:
@@ -189,27 +185,36 @@ export class ChartData {
           break;
 
         case DIMENSION_VALUE:
-          nameSeries =
-            nameSeries === "" ? (this.seriesConfig.measure ?? "") : nameSeries;
+          nameSeries = nameSeries || (this.seriesConfig.measure ?? "");
           break;
 
         default:
-          nameSeries = nameSeries ? `${nameSeries} → ${valueStr}` : valueStr;
-
-          // Actualizar stack solo si la clave corresponde a stackKey
-          if (key === stackKey) {
-            stack = valueStr;
-          }
-
-          // Manejo seguro de colores desde la paleta
-          if (!color && palette) {
-            const paletteColor = palette.get(valueStr);
-            if (paletteColor) color = paletteColor;
-          }
+          nameSeries = this.appendSeriesName(nameSeries, valueStr);
+          color = this.resolveColor(color, valueStr, palette);
           break;
       }
-    });
+    }
 
     return { nameSeries, stack, firstLevel, secondLevel, color };
+  }
+
+  /**
+   * @description Agrega una parte al nombre de la serie usando un separador visual.
+   * @private
+   */
+  private appendSeriesName(currentName: string, value: string): string {
+    return currentName ? `${currentName} → ${value}` : value;
+  }
+
+  /**
+   * @description Resuelve el color de la serie desde la paleta si aún no ha sido asignado.
+   * @private
+   */
+  private resolveColor(
+    currentColor: string | undefined,
+    value: string,
+    palette?: Map<string, string>,
+  ): string | undefined {
+    return currentColor ?? palette?.get(value);
   }
 }

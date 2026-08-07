@@ -10,7 +10,7 @@ export class ConfigFactory {
      * Returns a copy of the default chart options.
      */
     getDefaultChartOptions(): ChartOptions {
-        return JSON.parse(JSON.stringify(DEFAULT_OPTIONS));
+        return structuredClone(DEFAULT_OPTIONS);
     }
 
     /**
@@ -25,7 +25,10 @@ export class ConfigFactory {
             cols: [],
             rows: [],
             suffix: Table.PIVOT_CONFIG.suffix,
-            valueDisplay: 'nominal'
+            valueDisplay: Table.PIVOT_CONFIG.valueDisplay,
+            percentDigitsAfterDecimal: Table.PIVOT_CONFIG.percentDigitsAfterDecimal,
+            disableSetValueDisplay: Table.PIVOT_CONFIG.disableSetValueDisplay,
+            percentDisplayMode: Table.PIVOT_CONFIG.percentDisplayMode
         };
     }
 

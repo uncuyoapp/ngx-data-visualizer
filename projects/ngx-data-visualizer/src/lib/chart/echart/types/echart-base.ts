@@ -36,6 +36,8 @@ export interface SeriesConfigType {
   hover?: boolean;
   /** Color de la serie */
   color?: string;
+  /** Indica si la serie es una línea de referencia global o meta (goal) */
+  isReferenceSeries?: boolean;
   /** Indica si la serie debe mostrarse con líneas suaves */
   smooth?: boolean;
   /** Símbolo para los puntos de la serie */

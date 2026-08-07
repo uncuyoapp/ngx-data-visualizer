@@ -1,8 +1,8 @@
 <div class="container my-5">
-  <h1 class="mb-4">Uso de la directiva <code>libChart</code></h1>
+  <h1 class="mb-4">Uso del componente <code>ChartComponent</code></h1>
   <p class="col-lg-12 fs-5 text-muted mb-4">
-    Esta sección proporciona una guía completa sobre el uso de la directiva
-    <code>libChart</code> para la visualización de gráficos. Incluye
+    Esta sección proporciona una guía completa sobre el uso del componente
+    <code>ChartComponent</code> para la visualización de gráficos. Incluye
     configuraciones disponibles, opciones de personalización y ejemplos
     prácticos de implementación.
   </p>
@@ -11,9 +11,10 @@
 
   <!-- Documentación de uso -->
   <section class="my-5">
-    <h2>Uso de la directiva <code>libChart</code></h2>
+    <h2>Uso del componente <code>ChartComponent</code></h2>
     <p>
-      La directiva <code>libChart</code> se utiliza para incrustar y configurar
+      El componente <code>ChartComponent</code> (con selector de etiqueta <code>&lt;libChart&gt;</code>) se utiliza para
+      incrustar y configurar
       gráficos. Requiere un objeto <code>Dataset</code> y un objeto
       <code>ChartOptions</code> como entradas. Adicionalmente, proporciona
       funcionalidades avanzadas como la gestión de líneas de meta (Goals)
@@ -46,9 +47,9 @@
   <section class="my-5">
     <h2>Panel de Configuración Interactiva</h2>
     <p>
-      La directiva <code>libChart</code> ahora incluye un panel de configuración integrado.
-      Al habilitar la opción <code>[enableEditor]="true"</code>, aparecerá un ícono de engranaje en la esquina superior
-      derecha de la visualización.
+      El componente <code>ChartComponent</code> incluye un panel de configuración integrado.
+      Al pasar la propiedad de entrada <code>[showEditor]="showBaseEditor"</code> (o llamando al método público
+      <code>toggleEditor()</code>), se mostrará u ocultará de forma dinámica el panel interactivo de configuración.
     </p>
     <ul>
       <li><strong>Edición en Vivo:</strong> Modifica títulos, tipos de gráficos, colores y leyendas en tiempo real.</li>
@@ -63,13 +64,16 @@
   <!-- Ejemplos prácticos -->
   <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
   <p class="introduction">
-    Los siguientes ejemplos demuestran diferentes configuraciones y usos de la
-    directiva <code>libChart</code> con casos reales de visualización de datos.
+    Los siguientes ejemplos demuestran diferentes configuraciones y usos del
+    componente <code>ChartComponent</code> con casos reales de visualización de datos.
   </p>
 
   <section class="demo-section">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>1. Gráfico de Columnas Básico (Con Editor Habilitado)</h2>
+      <button mat-stroked-button color="primary" (click)="showBaseEditor = !showBaseEditor">
+        {{ showBaseEditor ? 'Cerrar Editor' : 'Configurar Gráfico' }}
+      </button>
     </div>
 
     <p class="section-description">
@@ -82,8 +86,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1" [enableEditor]="true"
-              (optionsChange)="chartConfig1 = $event"></div>
+            <libChart [dataset]="dataset1" [(chartOptions)]="chartConfig1" [(showEditor)]="showBaseEditor"></libChart>
           </div>
         </div>
       </mat-tab>
@@ -127,7 +130,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig2" [enableEditor]="true"></div>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></libChart>
           </div>
         </div>
       </mat-tab>
@@ -171,7 +174,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" [enableEditor]="true"></div>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></libChart>
           </div>
         </div>
       </mat-tab>
@@ -211,7 +214,7 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="chart-container">
-            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig4" [enableEditor]="true"></div>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></libChart>
           </div>
         </div>
       </mat-tab>
@@ -243,8 +246,8 @@
   <section class="demo-section">
     <h2>5. Funcionalidades Interactivas</h2>
     <p class="section-description">
-      Esta sección demuestra las capacidades interactivas de la directiva
-      libChart. Incluye métodos para alternar entre vista normal y porcentual,
+      Esta sección demuestra las capacidades interactivas del componente
+      ChartComponent. Incluye métodos para alternar entre vista normal y porcentual,
       así como opciones de exportación en formatos SVG y JPG. Los botones
       interactivos permiten cambiar dinámicamente el modo de visualización y
       descargar el gráfico en diferentes formatos, proporcionando flexibilidad
@@ -258,10 +261,16 @@
             <button mat-raised-button color="primary" (click)="togglePercentage()">
               Alternar Porcentaje
             </button>
+            <button mat-raised-button color="accent" (click)="exportAsPNG()">
+              Exportar PNG
+            </button>
+            <button mat-raised-button color="warn" (click)="exportAsJPG()">
+              Exportar JPG
+            </button>
           </div>
           <div class="chart-container">
-            <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3" [enableEditor]="true" #chartInteractive>
-            </div>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive>
+            </libChart>
           </div>
         </div>
       </mat-tab>
@@ -310,7 +319,7 @@
             </button>
           </div>
           <div class="chart-container">
-            <libChart [dataset]="dataset1" [chartOptions]="chartConfig6" [enableEditor]="true" #chartGoals></libChart>
+            <libChart [dataset]="dataset1" [chartOptions]="chartConfig6" #chartGoals></libChart>
           </div>
         </div>
       </mat-tab>
@@ -365,7 +374,7 @@
             <i class="fas fa-table me-2"></i>
             <div>
               <div class="btn-title">Tablas</div>
-              <small class="btn-subtitle">Directiva libTable</small>
+              <small class="btn-subtitle">Componente TableComponent</small>
             </div>
           </button>
         </div>
@@ -375,7 +384,7 @@
             <i class="fas fa-chart-line me-2"></i>
             <div>
               <div class="btn-title">Múltiples Gráficos</div>
-              <small class="btn-subtitle">Directiva libMultipleChart</small>
+              <small class="btn-subtitle">Componente MultipleChartComponent</small>
             </div>
           </button>
         </div>

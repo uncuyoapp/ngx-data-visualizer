@@ -1,9 +1,9 @@
 import { DataProvider } from "../../services/data-provider";
-import { DIMENSION_VALUE, DIMENSION_YEAR } from "../../types/constants";
 import { Filters } from "../../services/types";
+import { DIMENSION_VALUE, DIMENSION_YEAR, EC_SERIES_CONFIG } from "../../types/constants";
+import { Goal, Series } from "../../types/data.types";
 import { ChartConfiguration, SeriesConfig } from "../types/chart-configuration";
 import { ChartData } from "./chart-data";
-import { Goal } from "../../types/data.types";
 
 /**
  * Clase auxiliar para manejar la visualización de metas en los gráficos.
@@ -22,7 +22,7 @@ export class GoalChartHelper {
    * Constructor de la clase
    * @param chartConfiguration - Configuración del gráfico principal
    */
-  constructor(private readonly chartConfiguration: ChartConfiguration) {}
+  constructor(private readonly chartConfiguration: ChartConfiguration) { }
 
   /**
    * Muestra la meta en el gráfico
@@ -123,5 +123,51 @@ export class GoalChartHelper {
     this.chartConfiguration.seriesConfig = seriesConfig;
     dataset.applyFilters(filters);
     dataset.dataUpdated.next(true);
+  }
+
+  /**
+   * Genera la estructura de una serie de datos configurada para mostrar una meta.
+   * @param chartData Instancia de ChartData que contiene la información del gráfico.
+   * @param chartType Tipo de gráfico actual.
+   * @returns Serie configurada para la meta.
+   * @throws {Error} Si `chartData` no se proporciona.
+   */
+  public static createGoalSeries(chartData: ChartData, chartType: string): Series {
+    if (!chartData) {
+      throw new Error("El parámetro chartData es requerido");
+    }
+    try {
+      const data = chartData.dataProvider.getData();
+      const goalData = data.map((row) => {
+        const value = row["valor"];
+        return typeof value === "number" ? value : 0;
+      });
+      const seriesType = chartType === "column" ? "bar" : chartType;
+      const goalSeries: Series = {
+        name: "Meta",
+        color: "black",
+        visible: true,
+        data: goalData,
+        smooth: true,
+        stacking: undefined,
+        chartType: chartType,
+        type: seriesType,
+        symbol: "circle",
+        symbolSize: 6,
+        lineStyle: {
+          width: 2,
+          type: "dashed",
+        },
+        isReferenceSeries: true,
+      };
+      type SeriesType = keyof typeof EC_SERIES_CONFIG;
+      if (seriesType in EC_SERIES_CONFIG) {
+        Object.assign(goalSeries, EC_SERIES_CONFIG[seriesType as SeriesType]);
+      }
+      return goalSeries;
+    } catch (error) {
+      console.error("Error al generar la serie de meta:", error);
+      throw new Error("No se pudo generar la serie de meta");
+    }
   }
 }

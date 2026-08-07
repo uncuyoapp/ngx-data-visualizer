@@ -42,17 +42,22 @@ export class ExcelService {
   private replaceCharactersInTable(table: HTMLElement, className: string): void {
     const elements = Array.from(table.getElementsByClassName(className));
     for (const element of elements) {
-      element.innerHTML = this.processCellContent(element.innerHTML);
+      element.textContent = this.processCellContent(element.textContent || "");
     }
   }
 
   /**
-   * Procesa el contenido de una celda, reemplazando comas por puntos y eliminando puntos decimales.
-   * @param cellContent Contenido de la celda a procesar.
-   * @returns Contenido procesado de la celda.
+   * Convierte el formato numérico regional hispano (ej: `1.234,56`) al formato estándar anglosajón (`1234.56`)
+   * requerido por bibliotecas de exportación a Excel:
+   * 1. Reemplaza comas decimales por un marcador temporal `-`.
+   * 2. Elimina puntos de separación de miles.
+   * 3. Convierte el marcador temporal `-` en punto decimal.
+   *
+   * @param cellContent Contenido textual de la celda a procesar.
+   * @returns Contenido numérico procesado en formato estándar anglosajón.
    */
   private processCellContent(cellContent: string): string {
-    return cellContent.replace(/,/g, '-').split('.').join('').replace(/-/g, '.');
+    return cellContent.replaceAll(',', '-').replaceAll('.', '').replaceAll('-', '.');
   }
 
   /**

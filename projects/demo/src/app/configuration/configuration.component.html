@@ -5,8 +5,8 @@
   <p class="col-lg-12 fs-5 text-muted mb-4">
     Esta sección explica cómo configurar e integrar la librería
     <code>&#64;uncuyoapp/ngx-data-visualizer</code> dentro de una aplicación Angular. Abarca
-    desde la instalación del paquete, la importación de módulos necesarios,
-    hasta las configuraciones necesarias para utilizar las directivas
+    desde la instalación del paquete, la importación de módulos y componentes necesarios,
+    hasta las configuraciones necesarias para utilizar los componentes
     disponibles. Si estás comenzando, este es el primer paso para incorporar
     nuestros componentes a tu proyecto.
   </p>
@@ -28,7 +28,9 @@
   <div class="alert alert-warning" role="alert">
     <h5 class="alert-heading">Nota para desarrolladores</h5>
     <p>
-      Los ejemplos de código en esta documentación utilizan el nombre del paquete público (<code>&#64;uncuyoapp/ngx-data-visualizer</code>), que es como lo usarías en tu propia aplicación. El código fuente de esta demo utiliza alias de rutas internas del workspace para su funcionamiento local.
+      Los ejemplos de código en esta documentación utilizan el nombre del paquete público
+      (<code>&#64;uncuyoapp/ngx-data-visualizer</code>), que es como lo usarías en tu propia aplicación. El código
+      fuente de esta demo utiliza alias de rutas internas del workspace para su funcionamiento local.
     </p>
   </div>
   <section class="my-5">
@@ -43,6 +45,30 @@
       <div class="card-header fw-semibold">TypeScript - app.config.ts</div>
       <div class="card-body bg-dark">
         <pre><code class="language-typescript" [textContent]="providerConfigCode"></code></pre>
+      </div>
+    </div>
+
+    <h3 class="mt-4">Opciones de Configuración Global de Gráficos</h3>
+    <p>
+      Puedes personalizar el comportamiento global de los gráficos pasando un objeto de configuración
+      opcional de tipo <code>DataVisualizerConfig</code> al proveedor:
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - Opciones globales</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="providerOptionsExampleCode"></code></pre>
+      </div>
+    </div>
+
+    <h3 class="mt-4">Opciones de Configuración Global de Tablas</h3>
+    <p>
+      Puedes personalizar el comportamiento global de las tablas pasando un objeto de configuración
+      opcional de tipo <code>TableVisualizerConfig</code> al proveedor:
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - Opciones globales</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="providerTableOptionsExampleCode"></code></pre>
       </div>
     </div>
 
@@ -77,7 +103,8 @@
   <section class="my-5">
     <h2>Importar Estilos Globales (obligatorio)</h2>
     <p>
-      Para que los componentes se visualicen correctamente, importa el archivo de estilos principal de la librería en tu archivo <code>styles.scss</code> global (o equivalente).
+      Para que los componentes se visualicen correctamente, importa el archivo de estilos principal de la librería en tu
+      archivo <code>styles.scss</code> global (o equivalente).
     </p>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">SCSS</div>
@@ -91,7 +118,7 @@
     <h2>Importación de la librería</h2>
     <p>
       Para comenzar a usar <code>ngx-data-visualizer</code>, debes importar los
-      módulos y directivas necesarios en tu componente o módulo Angular.
+      componentes y tipos necesarios en tu componente Angular.
     </p>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">TypeScript</div>
@@ -102,52 +129,280 @@
   </section>
   <hr />
   <section class="my-5">
-    <h2>Directivas disponibles</h2>
+    <h2>Componentes disponibles</h2>
     <p>
-      La librería proporciona las siguientes directivas, que debes importar y
+      La librería proporciona los siguientes componentes standalone, que debes importar y
       usar según tus necesidades:
     </p>
     <ul>
       <li>
-        <code>ChartDirective</code>: para visualización de gráficos
-        individuales, con selector <code>libChart</code>.
+        <code>ChartComponent</code>: para visualización de gráficos
+        individuales, con selector de etiqueta o atributo <code>libChart</code>.
       </li>
       <li>
-        <code>MultipleChartDirective</code>: para visualizar múltiples gráficos
-        simultáneamente, con selector <code>libMultipleChart</code>.
+        <code>MultipleChartComponent</code>: para visualizar múltiples gráficos
+        simultáneamente, con selector de etiqueta o atributo <code>libMultipleChart</code>.
       </li>
       <li>
-        <code>TableDirective</code>: para mostrar datos en formato tabular, con
-        selector <code>libTable</code>.
+        <code>TableComponent</code>: para mostrar datos en formato tabular, con
+        selector de etiqueta o atributo <code>libTable</code>.
       </li>
     </ul>
   </section>
   <hr />
   <section class="my-5">
-    <h2>API de las Directivas</h2>
+    <h2>API de los Componentes</h2>
     <p>
-      Además de la configuración inicial a través de inputs, las directivas exponen métodos públicos que permiten interactuar con los componentes de forma dinámica. Para acceder a ellos, primero necesitas obtener una referencia a la directiva en tu componente usando el decorador <code>ViewChild</code>.
+      Nuestros componentes standalone están diseñados bajo una arquitectura robusta y reactiva, exponiendo entradas
+      (Inputs),
+      salidas (Outputs) y una API de métodos públicos interactivos. Para invocar métodos o suscribirte a eventos
+      complejos,
+      puedes usar el decorador <code>ViewChild</code> en tu componente padre.
     </p>
-    <div class="card bg-light mb-3 shadow-sm">
-      <div class="card-header fw-semibold">TypeScript</div>
-      <div class="card-body bg-dark">
+
+    <div class="code-card mb-4">
+      <div class="card-header">TypeScript - Ejemplo de Referencia ViewChild</div>
+      <div class="card-body">
         <pre><code class="language-typescript" [textContent]="viewChildCode"></code></pre>
       </div>
     </div>
 
-    <h3 class="mt-4">ChartDirective</h3>
-    <ul>
-      <li><code>toPercentage(): void</code>: Cambia la visualización del gráfico a modo porcentual.</li>
-      <li><code>export(type: 'svg' | 'jpg'): string | void</code>: Exporta el gráfico como una imagen SVG o JPG.</li>
-      <li><code>toggleShowGoal(goal: Goal): void</code>: Muestra u oculta una línea de "meta" en el gráfico.</li>
-    </ul>
+    <!-- Inputs & Outputs Generales -->
+    <h3 class="mt-4 pb-2 text-primary">Propiedades de Entrada (Inputs)</h3>
+    <div class="api-table-wrapper">
+      <table class="table api-table-custom table-inputs align-middle">
+        <thead>
+          <tr>
+            <th style="width: 25%">Input</th>
+            <th style="width: 20%">Tipo</th>
+            <th style="width: 15%">Por Defecto</th>
+            <th style="width: 40%">Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[dataset]</code></td>
+            <td><code>Dataset</code></td>
+            <td><span class="text-danger fw-bold">Requerido</span></td>
+            <td>Instancia de la clase <code>Dataset</code> que provee las dimensiones, filtros y datos en bruto.</td>
+          </tr>
+          <tr>
+            <td><code>[(chartOptions)]</code> / <code>[(tableOptions)]</code></td>
+            <td><code>ChartOptions | TableOptions</code></td>
+            <td><span class="text-danger fw-bold">Requerido</span></td>
+            <td>Configuraciones visuales y de comportamiento específicas para cada gráfico o tabla. Soporta enlace
+              bidireccional automático.</td>
+          </tr>
 
-    <h3 class="mt-4">TableDirective</h3>
-    <ul>
-      <li><code>setValueDisplay(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void</code>: Cambia cómo se muestran los valores (real, % del total, % de fila, etc.).</li>
-      <li><code>export(type: 'html' | 'xlsx', name?: string): any</code>: Exporta la tabla a formato HTML o a un archivo Excel.</li>
-    </ul>
-    <p>La directiva <code>MultipleChartDirective</code> no expone métodos públicos.</p>
+          <tr>
+            <td><code>[(showEditor)]</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Controla y sincroniza de forma programática y bidireccional (two-way binding) la apertura y cierre del
+              panel lateral de edición CDK Overlay.</td>
+          </tr>
+          <tr>
+            <td><code>[showLegends]</code> <span class="badge bg-secondary">Solo Gráficos</span></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Controla si se renderiza el componente de leyendas interactivas de series y años debajo o a los lados
+              del gráfico.</td>
+          </tr>
+          <tr>
+            <td><code>[splitDimension]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span>
+            </td>
+            <td><code>Dimension</code></td>
+            <td><span class="text-danger fw-bold">Requerido</span></td>
+            <td>Dimensión seleccionada para realizar la segmentación y renderizado de un gráfico por cada ítem marcado
+              como activo.</td>
+          </tr>
+          <tr>
+            <td><code>[options]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span></td>
+            <td><code>ChartOptions</code></td>
+            <td><span class="text-danger fw-bold">Requerido</span></td>
+            <td>Configuraciones visuales y de comportamiento específicas para el conjunto de gráficos segmentados.</td>
+          </tr>
+          <tr>
+            <td><code>[disableAutoUpdate]</code> <span class="badge bg-warning text-dark">Solo Múltiples Gráficos</span>
+            </td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Deshabilita la actualización automática de los gráficos segmentados ante cambios en el dataset.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-4 pb-2 text-success">Eventos de Salida (Outputs)</h3>
+    <div class="api-table-wrapper">
+      <table class="table api-table-custom table-outputs align-middle">
+        <thead>
+          <tr>
+            <th style="width: 25%">Output</th>
+            <th style="width: 20%">Tipo de Emisión</th>
+            <th style="width: 55%">Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>(chartOptionsChange)</code> <span class="badge bg-secondary">Solo Gráficos</span></td>
+            <td><code>EventEmitter&lt;ChartOptions&gt;</code></td>
+            <td>Emite el nuevo objeto de configuración de gráficos cada vez que el usuario realiza cambios en el editor.
+              Habilita <code>[(chartOptions)]</code>.</td>
+          </tr>
+          <tr>
+            <td><code>(tableOptionsChange)</code> <span class="badge bg-secondary">Solo Tablas</span></td>
+            <td><code>EventEmitter&lt;TableOptions&gt;</code></td>
+            <td>Emite el nuevo objeto de configuración de tablas cada vez que el usuario realiza cambios en el editor.
+              Habilita <code>[(tableOptions)]</code>.</td>
+          </tr>
+          <tr>
+            <td><code>(showEditorChange)</code></td>
+            <td><code>EventEmitter&lt;boolean&gt;</code></td>
+            <td>Emite el nuevo estado del editor flotante (true/false) cuando se abre o cierra interactivamente.
+              Habilita <code>[(showEditor)]</code> de forma bidireccional pura.</td>
+          </tr>
+          <tr>
+            <td><code>(seriesChange)</code> <span class="badge bg-secondary">Solo Gráficos</span></td>
+            <td><code>EventEmitter&lt;Series[]&gt;</code></td>
+            <td>Emite el conjunto de series generadas y procesadas por el motor cuando cambian los datos o filtros.
+              Ideal para leyendas externas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Métodos Públicos de la API -->
+    <h3 class="mt-5 pb-2 text-info">Métodos Públicos (API de Componentes)</h3>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="api-card api-chart">
+          <div class="card-header">
+            <i class="fas fa-chart-bar me-2"></i> ChartComponent
+          </div>
+          <ul class="api-method-list">
+            <li>
+              <code>toPercentage(enable?: boolean): PercentTransformationResult</code>
+              <p class="text-muted small mb-0">Alterna de forma interactiva entre valores absolutos/nominales y cálculo de porcentajes del total, retornando el estado del resultado.</p>
+            </li>
+            <li>
+              <code>isPercentMode(): boolean</code>
+              <p class="text-muted small mb-0">Consulta si el gráfico se encuentra actualmente en modo porcentual.</p>
+            </li>
+            <li>
+              <code>export(type: 'png' | 'jpg' = 'png'): void</code>
+              <p class="text-muted small mb-0">Exporta y descarga el gráfico renderizado como archivo de imagen de alta calidad.</p>
+            </li>
+            <li>
+              <code>toggleShowGoal(goal: Goal): void</code>
+              <p class="text-muted small mb-0">Muestra u oculta de forma dinámica la línea y el área de meta definidos en el modelo Goal.</p>
+            </li>
+            <li>
+              <code>toggleEditor(): void</code>
+              <p class="text-muted small mb-0">Abre o cierra el CDK Overlay del panel de edición de configuraciones visuales.</p>
+            </li>
+            <li>
+              <code>resize(): void</code>
+              <p class="text-muted small mb-0">Fuerza el redimensionamiento del canvas de ECharts para ajustarse al tamaño de su contenedor.</p>
+            </li>
+            <li>
+              <code>getExtremes(): {{ '{' }} start: number; end: number {{ '}' }} | null</code>
+              <p class="text-muted small mb-0">Retorna los límites superior e inferior del navigator del gráfico (si está activo).</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="api-card api-table">
+          <div class="card-header">
+            <i class="fas fa-table me-2"></i> TableComponent
+          </div>
+          <ul class="api-method-list">
+            <li>
+              <code>setValueDisplay(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void</code>
+              <p class="text-muted small mb-0">Establece el modo de cálculo matemático para las celdas de la PivotTable en tiempo de ejecución.</p>
+            </li>
+            <li>
+              <code>setDisplayMode(mode: 'single' | 'multiMetric'): void</code>
+              <p class="text-muted small mb-0">Cambia la estructura de despliegue de celdas en vistas porcentuales entre compacto con tooltip ('single') o subdivisión ('multiMetric').</p>
+            </li>
+            <li>
+              <code>getTableElement(): HTMLElement | null</code>
+              <p class="text-muted small mb-0">Obtiene la referencia al elemento HTML nativo del contenedor de la tabla pivot.</p>
+            </li>
+            <li>
+              <code>export(type: 'html' | 'xlsx', name?: string): any</code>
+              <p class="text-muted small mb-0">Exporta los datos calculados a un archivo Excel (.xlsx) estructurado o extrae su marcado HTML nativo.</p>
+            </li>
+            <li>
+              <code>toggleEditor(): void</code>
+              <p class="text-muted small mb-0">Abre o cierra de manera dinámica el panel interactivo CDK Overlay para configurar las columnas y filas de la tabla.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="api-info-alert">
+      <i class="fas fa-info-circle"></i>
+      <span>
+        El componente <code>MultipleChartComponent</code> delega la personalización de configuraciones de forma masiva a
+        los componentes de gráficos hijos, por lo que no expone métodos públicos adicionales.
+      </span>
+    </div>
+  </section>
+  <hr />
+
+  <!-- Sección de Bus de Eventos y Auditoría -->
+  <section class="my-5">
+    <h2>Sistema de Eventos y Auditoría</h2>
+    <p>
+      La librería incluye una infraestructura reactiva centralizada para monitorear, auditar e integrar los eventos del
+      ciclo de vida de los componentes con herramientas externas de analítica o logs.
+    </p>
+
+    <h3>1. Uso de <code>EventBusService</code></h3>
+    <p>
+      Puedes inyectar <code>EventBusService</code> en cualquier servicio o componente para escuchar eventos con tipado
+      estricto:
+    </p>
+    <div class="card bg-light mb-4 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript - Suscripción al EventBus</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="eventBusExampleCode"></code></pre>
+      </div>
+    </div>
+
+    <h3>2. Depuración en Consola con <code>AuditService</code></h3>
+    <p>
+      El servicio <code>AuditService</code> permite auditar eventos formateados en la consola del navegador. Se puede
+      activar mediante tres vías:
+    </p>
+    <div class="card bg-light mb-4 shadow-sm">
+      <div class="card-header fw-semibold">TypeScript / Bash - Modos de activación de auditoría</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-typescript" [textContent]="auditExampleCode"></code></pre>
+      </div>
+    </div>
+  </section>
+  <hr />
+
+  <!-- Sección de Estilos y Design Tokens -->
+  <section class="my-5">
+    <h2>Personalización Visual y Design Tokens (Variables CSS)</h2>
+    <p>
+      El sistema de estilos utiliza una arquitectura basada en <strong>CSS Custom Properties</strong> (Variables CSS)
+      que permite personalizar la apariencia visual y adaptar temas sin romper la encapsulación de los componentes
+      Angular.
+    </p>
+    <div class="card bg-light mb-3 shadow-sm">
+      <div class="card-header fw-semibold">SCSS - Sobreescritura de Tokens Globales y Modo Oscuro</div>
+      <div class="card-body bg-dark">
+        <pre><code class="language-scss" [textContent]="designTokensExampleCode"></code></pre>
+      </div>
+    </div>
   </section>
   <hr />
   <section class="my-5">
@@ -203,7 +458,7 @@
     <h2>Ejemplos prácticos de uso</h2>
     <p class="section-description">
       Una vez configurado el dataset, puedes explorar ejemplos detallados de uso
-      de cada directiva. Cada sección incluye documentación específica,
+      de cada componente. Cada sección incluye documentación específica,
       configuraciones disponibles y ejemplos prácticos con código fuente
       completo.
     </p>
@@ -211,40 +466,31 @@
     <div class="navigation-buttons">
       <div class="row g-3">
         <div class="col-md-4">
-          <button
-            class="btn btn-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToChartDemo()"
-          >
+          <button class="btn btn-primary btn-lg w-100 navigation-btn" (click)="navigateToChartDemo()">
             <i class="fas fa-chart-bar me-2"></i>
             <div>
               <div class="btn-title">Gráficos</div>
-              <small class="btn-subtitle">Directiva libChart</small>
+              <small class="btn-subtitle">Componente ChartComponent</small>
             </div>
           </button>
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-success btn-lg w-100 navigation-btn"
-            (click)="navigateToTableDemo()"
-          >
+          <button class="btn btn-success btn-lg w-100 navigation-btn" (click)="navigateToTableDemo()">
             <i class="fas fa-table me-2"></i>
             <div>
               <div class="btn-title">Tablas</div>
-              <small class="btn-subtitle">Directiva libTable</small>
+              <small class="btn-subtitle">Componente TableComponent</small>
             </div>
           </button>
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-warning btn-lg w-100 navigation-btn"
-            (click)="navigateToMultichartDemo()"
-          >
+          <button class="btn btn-warning btn-lg w-100 navigation-btn" (click)="navigateToMultichartDemo()">
             <i class="fas fa-chart-line me-2"></i>
             <div>
               <div class="btn-title">Múltiples Gráficos</div>
-              <small class="btn-subtitle">Directiva libMultipleChart</small>
+              <small class="btn-subtitle">Componente MultipleChartComponent</small>
             </div>
           </button>
         </div>

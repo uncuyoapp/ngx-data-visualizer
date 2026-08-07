@@ -1,23 +1,23 @@
 import { CommonModule } from "@angular/common";
 import {
-  Component,
-  ViewChild,
   AfterViewInit,
   ChangeDetectorRef,
+  Component,
+  ViewChild,
 } from "@angular/core";
-import { Router, RouterModule } from "@angular/router";
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectModule } from "@angular/material/select";
+import { MatTabsModule } from "@angular/material/tabs";
+import { Router, RouterModule } from "@angular/router";
 import {
+  ChartOptions,
   Dataset,
   Dimension,
-  MultipleChartDirective,
-  ChartOptions,
-  ThemeService,
   FiltersConfig,
+  MultipleChartComponent,
+  ThemeService,
 } from "ngx-data-visualizer";
-import { MatSelectModule } from "@angular/material/select";
-import { MatFormFieldModule } from "@angular/material/form-field";
 import dashDimensions from "../../assets/data/dash-dimensions.json";
 import exampleData from "../../assets/data/example-data-2.json";
 
@@ -30,7 +30,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   imports: [
     CommonModule,
     RouterModule,
-    MultipleChartDirective,
+    MultipleChartComponent,
     MatTabsModule,
     MatButtonModule,
     MatSelectModule,
@@ -67,7 +67,6 @@ export class MultichartDemoComponent implements AfterViewInit {
     title: "Distribución por Año",
     stacked: 12,
     xAxis: {
-      title: "Condición",
       rotateLabels: 0,
       firstLevel: 117, // Condición
       secondLevel: null,
@@ -110,7 +109,6 @@ export class MultichartDemoComponent implements AfterViewInit {
     title: "Evolución Temporal",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -147,8 +145,8 @@ export class MultichartDemoComponent implements AfterViewInit {
     disableAutoUpdate: false,
   };
 
-  @ViewChild("multichartInteractive", { read: MultipleChartDirective })
-  multiChart!: MultipleChartDirective;
+  @ViewChild("multichartInteractive", { read: MultipleChartComponent })
+  multiChart!: MultipleChartComponent;
 
   // Variables para funcionalidad interactiva
   selectedDimensionId: number = 0; // Año por defecto
@@ -190,9 +188,9 @@ export class MultichartDemoComponent implements AfterViewInit {
     }
   }
 
-  // Documentación real de MultipleChartDirective
+  // Documentación real de MultipleChartComponent
   multichartOptionsDocumentation = `/**
- * La directiva libMultipleChart genera múltiples gráficos automáticamente
+ * El componente MultipleChartComponent genera múltiples gráficos automáticamente
  * basándose en los elementos seleccionados de una dimensión específica.
  *
  * COMPORTAMIENTOS AUTOMÁTICOS:
@@ -204,8 +202,9 @@ export class MultichartDemoComponent implements AfterViewInit {
  *
  * ENTRADAS REQUERIDAS:
  * - [dataset]: Dataset con los datos a visualizar
- * - [options]: ChartOptions estándar (igual que libChart)
+ * - [options]: ChartOptions estándar (igual que en ChartComponent)
  * - [splitDimension]: Dimension por la cual dividir los gráficos
+ * - [disableAutoUpdate]: boolean (opcional, deshabilita actualización de datos)
  *
  * CONFIGURACIÓN DE LA DIMENSIÓN:
  * La dimensión debe tener ítems con 'selected: true' para generar gráficos.
@@ -244,7 +243,6 @@ multichartConfig1: ChartOptions = {
   title: "Distribución por Año",
   stacked: "Sexo",
   xAxis: {
-    title: "Condición",
     rotateLabels: 0,
     firstLevel: 117, // Condición
     secondLevel: null,
@@ -302,7 +300,6 @@ multichartConfig1: ChartOptions = {
     title: "Evolución Temporal",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -366,8 +363,8 @@ onDimensionChange(dimensionId: number): void {
   }
 }
 
-@ViewChild('multichartInteractive', { read: MultipleChartDirective })
-multiChart!: MultipleChartDirective;`;
+@ViewChild('multichartInteractive', { read: MultipleChartComponent })
+multiChart!: MultipleChartComponent;`;
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="multichart-container">

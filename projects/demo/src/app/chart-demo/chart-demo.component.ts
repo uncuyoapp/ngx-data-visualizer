@@ -9,7 +9,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatTabsModule } from "@angular/material/tabs";
 import { Router, RouterModule } from "@angular/router";
 import {
-  ChartDirective,
+  ChartComponent,
   ChartOptions,
   Dataset,
   Dimension,
@@ -30,7 +30,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   imports: [
     CommonModule,
     RouterModule,
-    ChartDirective,
+    ChartComponent,
     MatTabsModule,
     MatButtonModule,
   ],
@@ -38,6 +38,7 @@ declare let Prism: any; // Declara Prism para que TypeScript lo reconozca
   styleUrls: ["./chart-demo.component.scss"],
 })
 export class ChartDemoComponent implements AfterViewInit {
+  showBaseEditor = false;
   // Dataset 1: Datos de ejemplo con dimensiones del dashboard
   dataset1 = new Dataset({
     rowData: exampleData,
@@ -60,7 +61,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por Año y Condición",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -103,7 +103,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Evolución Temporal por Sector de Gestión",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -146,7 +145,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Distribución por Condición (Apilado)",
     stacked: 117,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -189,7 +187,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por año y sector",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: 54,
@@ -231,7 +228,6 @@ export class ChartDemoComponent implements AfterViewInit {
     title: "Estudiantes por Año con Meta",
     stacked: null,
     xAxis: {
-      title: "Año",
       rotateLabels: null,
       firstLevel: 0, // Año
       secondLevel: null,
@@ -284,14 +280,14 @@ export class ChartDemoComponent implements AfterViewInit {
   // Estado de visibilidad de la meta
   showingGoal = false;
 
-  @ViewChild("chartInteractive", { read: ChartDirective })
-  chart!: ChartDirective;
+  @ViewChild("chartInteractive", { read: ChartComponent })
+  chart!: ChartComponent;
 
 
 
 
-  @ViewChild("chartGoals", { read: ChartDirective })
-  chartGoals!: ChartDirective;
+  @ViewChild("chartGoals", { read: ChartComponent })
+  chartGoals!: ChartComponent;
 
   // Código TypeScript para mostrar en las tabs
   example1TypeScript = `// Dataset con datos de ejemplo y dimensiones
@@ -308,7 +304,6 @@ chartConfig1: ChartOptions = {
   title: 'Estudiantes por Año y Condición',
   stacked: null,
   xAxis: {
-    title: 'Año',
     rotateLabels: null,
     firstLevel: 0, // Año
     secondLevel: null
@@ -340,7 +335,6 @@ chartConfig2: ChartOptions = {
   title: 'Evolución Temporal por Sector de Gestión',
   stacked: null,
   xAxis: {
-    title: 'Año',
     firstLevel: 0, // Año
     secondLevel: null
   },
@@ -367,9 +361,8 @@ chartConfig2: ChartOptions = {
 chartConfig3: ChartOptions = {
   type: 'column',
   title: 'Distribución por Condición (Apilado)',
-  stacked: 'condicion',
+  stacked: 117,
   xAxis: {
-    title: 'Año',
     firstLevel: 0, // Año
     secondLevel: null
   },
@@ -392,43 +385,56 @@ chartConfig3: ChartOptions = {
   measureUnit: 'total'
 };`;
 
-  example4TypeScript = `// Configuración: Gráfico circular (pie)
+  example4TypeScript = `// Configuración: Gráfico columnas con doble eje x
 chartConfig4: ChartOptions = {
-  type: 'pie',
-  title: 'Distribución por Sector de Gestión',
+  type: 'column',
+  title: 'Estudiantes por año y sector',
   stacked: null,
   xAxis: {
-    title: '',
-    firstLevel: 1, // Sector de gestión
-    secondLevel: null
+    rotateLabels: null,
+    firstLevel: 0, // Año
+    secondLevel: 54 // ID de dimensión Sector de Gestión
+  },
+  yAxis: {
+    title: 'Total Acumulado',
+    max: null
   },
   tooltip: {
-    shared: false,
-    decimals: 1,
-    suffix: '%'
+    shared: true,
+    decimals: 0,
+    suffix: null,
+    format: null,
+    showTotal: true
   },
   legends: {
     enabled: true,
     show: true,
-    position: 'right'
+    position: 'bottom'
   },
-  colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'],
-  height: 400,
-  toPercent: true,
-  measureUnit: 'porcentaje'
+  colors: undefined,
+  height: null,
+  measureUnit: 'total'
 };`;
 
   example5TypeScript = `// Métodos interactivos para el gráfico
-@ViewChild('chartInteractive', { read: ChartDirective }) chart!: ChartDirective;
+@ViewChild('chartInteractive', { read: ChartComponent }) chart!: ChartComponent;
 
-// Cambiar a modo porcentaje
+// Cambiar a modo porcentaje (retorna PercentTransformationResult)
 togglePercentage(): void {
-  this.chart.toPercentage();
+  const result: PercentTransformationResult = this.chart.toPercentage();
+  if (!result.success) {
+    console.warn('No se pudo transformar a porcentaje:', result.message);
+  }
 }
 
-// Exportar gráfico como Imagen (PNG por defecto)
-exportAsImage(): void {
+// Exportar gráfico como PNG
+exportAsPNG(): void {
   this.chart.export('png');
+}
+
+// Exportar gráfico como JPG
+exportAsJPG(): void {
+  this.chart.export('jpg');
 }
 `;
 
@@ -438,7 +444,6 @@ chartConfig6: ChartOptions = {
   title: "Estudiantes por Año con Meta",
   stacked: null,
   xAxis: {
-    title: "Año",
     rotateLabels: null,
     firstLevel: 0,
     secondLevel: null,
@@ -469,19 +474,19 @@ goalLine: Goal = {
   chartType: "line",
   text: "Objetivo 2024: 15,000 estudiantes",
   data: [
-    { Año: "2019", Valor: 15000 },
-    { Año: "2020", Valor: 15000 },
-    { Año: "2021", Valor: 15000 },
-    { Año: "2022", Valor: 15000 },
-    { Año: "2023", Valor: 15000 },
+    { year: "2010", valor: 1950000 },
+    { year: "2011", valor: 2000000 },
+    { year: "2012", valor: 2050000 },
+    { year: "2013", valor: 2100000 },
+    { year: "2014", valor: 2150000 },
   ],
 };
 
 // Estado de visibilidad de la meta
 showingGoal = false;
 
-@ViewChild("chartGoals", { read: ChartDirective })
-chartGoals!: ChartDirective;
+@ViewChild("chartGoals", { read: ChartComponent })
+chartGoals!: ChartComponent;
 
 // Método para alternar la visibilidad de la línea de meta
 toggleGoal(): void {
@@ -491,19 +496,19 @@ toggleGoal(): void {
 
   // Código HTML para mostrar en las tabs
   example1HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig1" [enableEditor]="true"></div>
+  <libChart [dataset]="dataset1" [(chartOptions)]="chartConfig1" [(showEditor)]="showBaseEditor"></libChart>
 </div>`;
 
   example2HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig2"></libChart>
 </div>`;
 
   example3HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig3"></libChart>
 </div>`;
 
   example4HTML = `<div class="chart-container">
-  <div libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></div>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig4"></libChart>
 </div>`;
 
   example5HTML = `<div class="interactive-buttons">
@@ -518,7 +523,7 @@ toggleGoal(): void {
   </button>
 </div>
 <div class="chart-container">
-  <libChart [dataset]="dataset1" [chartOptions]="chartConfig4" #chartInteractive></libChart>
+  <libChart [dataset]="dataset1" [chartOptions]="chartConfig3" #chartInteractive></libChart>
 </div>`;
 
   example6HTML = `<div class="goal-buttons mb-3">
@@ -551,18 +556,18 @@ interface ChartOptions {
   type: string;
   /** Título del gráfico */
   title?: string;
-  /** Indica si el gráfico está apilado y el valor debe corresponder al nombre de una de las dimensiones del conjunto de datos */
-  stacked: string | null;
+  /** Indica si el gráfico está apilado por una dimensión específica (ID), todas ('all') o ninguna (null) */
+  stacked: number | 'all' | null;
   /** Configuración del eje X */
   xAxis: {
-    /** Título del eje X */
-    title: string,
     /** Ángulo de rotación de las etiquetas en grados */
     rotateLabels: number | null,
     /** Nivel de agrupación primario (id de una de las dimensiones del conjunto de datos) */
     firstLevel: number,
     /** Nivel de agrupación secundario (id de una de las dimensiones del conjunto de datos) (opcional) */
-    secondLevel: number | null
+    secondLevel: number | null,
+    /** Indica si se deshabilita la generación automática del título del eje X */
+    disableAutoTitle?: boolean
   },
   /** Configuración del eje Y */
   yAxis: {
@@ -582,7 +587,13 @@ interface ChartOptions {
     /** Formato personalizado para los valores */
     format: string | null,
     /** Indica si se muestra el total en el tooltip */
-    showTotal: boolean
+    showTotal: boolean,
+    /** Indica si se debe mostrar el porcentaje en el tooltip */
+    showPercentage?: boolean,
+    /** Umbral de series para activar la maquetación en múltiples columnas */
+    columnThreshold?: number,
+    /** Cantidad máxima de columnas permitidas en el tooltip */
+    maxColumns?: number
   },
   /** Configuración de las leyendas */
   legends: {
@@ -646,6 +657,14 @@ interface ChartOptions {
   // Métodos interactivos para el gráfico
   togglePercentage(): void {
     this.chart.toPercentage();
+  }
+
+  exportAsPNG(): void {
+    this.chart.export("png");
+  }
+
+  exportAsJPG(): void {
+    this.chart.export("jpg");
   }
 
   // Método para alternar la visibilidad de la línea de meta

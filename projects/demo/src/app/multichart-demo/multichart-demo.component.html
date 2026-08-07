@@ -1,8 +1,8 @@
 <div class="container my-5">
-  <h1 class="mb-4">Uso de la directiva <code>libMultipleChart</code></h1>
+  <h1 class="mb-4">Uso del componente <code>MultipleChartComponent</code></h1>
   <p class="col-lg-12 fs-5 text-muted mb-4">
-    Esta sección proporciona una guía completa sobre el uso de la directiva
-    <code>libMultipleChart</code> para la visualización de múltiples gráficos
+    Esta sección proporciona una guía completa sobre el uso del componente
+    <code>MultipleChartComponent</code> para la visualización de múltiples gráficos
     simultáneamente. Incluye configuraciones disponibles, opciones de
     personalización y ejemplos prácticos de implementación con separación
     automática por dimensiones.
@@ -12,9 +12,10 @@
 
   <!-- Documentación de uso -->
   <section class="my-5">
-    <h2>Uso de la directiva <code>libMultipleChart</code></h2>
+    <h2>Uso del componente <code>MultipleChartComponent</code></h2>
     <p>
-      La directiva <code>libMultipleChart</code> genera múltiples gráficos
+      El componente <code>MultipleChartComponent</code> (con selector de etiqueta <code>&lt;libMultipleChart&gt;</code>)
+      genera múltiples gráficos
       automáticamente basándose en los ítems seleccionados de una dimensión
       específica del dataset. Cada ítem con <code>selected: true</code> crea un
       gráfico independiente con datos filtrados automáticamente. La misma
@@ -25,13 +26,15 @@
 
     <h3>Comportamientos Automáticos</h3>
     <ul class="list-unstyled">
-      <li><strong>Filtrado de datos:</strong> Cada gráfico muestra solo los datos correspondientes a su ítem de dimensión</li>
+      <li><strong>Filtrado de datos:</strong> Cada gráfico muestra solo los datos correspondientes a su ítem de
+        dimensión</li>
       <li><strong>Títulos automáticos:</strong> Cada gráfico recibe el nombre del ítem como título</li>
       <li><strong>Leyendas optimizadas:</strong> Se ocultan automáticamente para evitar redundancia</li>
-      <li><strong>Configuración consistente:</strong> Todas las opciones avanzadas de ChartOptions se aplican a todos los gráficos</li>
+      <li><strong>Configuración consistente:</strong> Todas las opciones avanzadas de ChartOptions se aplican a todos
+        los gráficos</li>
     </ul>
 
-    <h3>Configuración de la directiva (<code>MultipleChartDirective</code>)</h3>
+    <h3>Configuración del componente (<code>MultipleChartComponent</code>)</h3>
     <div class="card bg-light mb-3 shadow-sm">
       <div class="card-header fw-semibold">TypeScript</div>
       <div class="card-body bg-dark">
@@ -57,8 +60,8 @@
   <!-- Ejemplos prácticos -->
   <h2 class="mb-4">Ejemplos prácticos de implementación</h2>
   <p class="introduction">
-    Los siguientes ejemplos demuestran diferentes configuraciones y usos de la
-    directiva <code>libMultipleChart</code> con casos reales de visualización de
+    Los siguientes ejemplos demuestran diferentes configuraciones y usos del
+    componente <code>MultipleChartComponent</code> con casos reales de visualización de
     datos múltiples y comparaciones entre categorías.
   </p>
 
@@ -75,11 +78,8 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1"
-              [options]="multichartConfig1"
-              [splitDimension]="dataset1.dimensions[3]"
-            ></libMultipleChart>
+            <libMultipleChart [dataset]="dataset1" [options]="multichartConfig1"
+              [splitDimension]="dataset1.dimensions[3]"></libMultipleChart>
           </div>
         </div>
       </mat-tab>
@@ -89,9 +89,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example1TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example1TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -102,9 +100,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example1HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example1HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -126,11 +122,8 @@
       <mat-tab label="Ejemplo">
         <div class="tab-content">
           <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1Rolled"
-              [options]="multichartConfig2"
-              [splitDimension]="dataset1.dimensions[1]"
-            ></libMultipleChart>
+            <libMultipleChart [dataset]="dataset1Rolled" [options]="multichartConfig2"
+              [splitDimension]="dataset1.dimensions[1]"></libMultipleChart>
           </div>
         </div>
       </mat-tab>
@@ -140,9 +133,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example2TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example2TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -153,9 +144,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example2HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example2HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -166,8 +155,8 @@
   <section class="demo-section">
     <h2>3. Funcionalidades Interactivas</h2>
     <p class="section-description">
-      Esta sección demuestra las capacidades interactivas avanzadas de la
-      directiva libMultipleChart para cambiar de dimensión por la que se generan los gráficos.
+      Esta sección demuestra las capacidades interactivas avanzadas del
+      componente MultipleChartComponent para cambiar de dimensión por la que se generan los gráficos.
       El selector permite cambiar dinámicamente la dimensión utilizada para separar los datos en múltiples gráficos.
     </p>
 
@@ -177,9 +166,7 @@
           <div class="interactive-controls mb-3">
             <mat-form-field appearance="outline" style="min-width: 250px;">
               <mat-label>Dimensión para separar gráficos</mat-label>
-              <mat-select
-                [value]="selectedDimensionId"
-                (selectionChange)="onDimensionChange($event.value)">
+              <mat-select [value]="selectedDimensionId" (selectionChange)="onDimensionChange($event.value)">
                 <mat-option *ngFor="let dimension of availableDimensions" [value]="dimension.id">
                   {{dimension.nameView}}
                 </mat-option>
@@ -187,10 +174,7 @@
             </mat-form-field>
           </div>
           <div class="multichart-container">
-            <libMultipleChart
-              [dataset]="dataset1"
-              [options]="multichartConfig1"
-              [splitDimension]="selectedDimension"
+            <libMultipleChart [dataset]="dataset1" [options]="multichartConfig1" [splitDimension]="selectedDimension"
               #multichartInteractive>
             </libMultipleChart>
           </div>
@@ -202,9 +186,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">TypeScript</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-typescript"
-              ><code [textContent]="example3TypeScript"></code></pre>
+              <pre class="language-typescript"><code [textContent]="example3TypeScript"></code></pre>
             </div>
           </div>
         </div>
@@ -215,9 +197,7 @@
           <div class="card bg-light mb-3 shadow-sm">
             <div class="card-header fw-semibold">HTML</div>
             <div class="card-body bg-dark">
-              <pre
-                class="language-html"
-              ><code [textContent]="example3HTML"></code></pre>
+              <pre class="language-html"><code [textContent]="example3HTML"></code></pre>
             </div>
           </div>
         </div>
@@ -239,10 +219,7 @@
     <div class="navigation-buttons">
       <div class="row g-3">
         <div class="col-md-4">
-          <button
-            class="btn btn-outline-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToConfiguration()"
-          >
+          <button class="btn btn-outline-primary btn-lg w-100 navigation-btn" (click)="navigateToConfiguration()">
             <i class="fas fa-cog me-2"></i>
             <div>
               <div class="btn-title">Configuración</div>
@@ -252,27 +229,21 @@
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-primary btn-lg w-100 navigation-btn"
-            (click)="navigateToChartDemo()"
-          >
+          <button class="btn btn-primary btn-lg w-100 navigation-btn" (click)="navigateToChartDemo()">
             <i class="fas fa-chart-bar me-2"></i>
             <div>
               <div class="btn-title">Gráficos</div>
-              <small class="btn-subtitle">Directiva libChart</small>
+              <small class="btn-subtitle">Componente ChartComponent</small>
             </div>
           </button>
         </div>
 
         <div class="col-md-4">
-          <button
-            class="btn btn-success btn-lg w-100 navigation-btn"
-            (click)="navigateToTableDemo()"
-          >
+          <button class="btn btn-success btn-lg w-100 navigation-btn" (click)="navigateToTableDemo()">
             <i class="fas fa-table me-2"></i>
             <div>
               <div class="btn-title">Tablas</div>
-              <small class="btn-subtitle">Directiva libTable</small>
+              <small class="btn-subtitle">Componente TableComponent</small>
             </div>
           </button>
         </div>

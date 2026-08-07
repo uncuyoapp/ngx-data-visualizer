@@ -1,4 +1,4 @@
-<div #editorContainer class="config-editor-container" cdkDrag>
+<div class="config-editor-container" cdkDrag>
   <div class="config-editor-header" cdkDragHandle>
     <div class="drag-handle">
       <div class="header-title">
@@ -6,87 +6,176 @@
       </div>
       <div class="actions">
         <button type="button" class="btn-icon" (click)="exportConfig()" title="Exportar JSON">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
+          <lib-icon-export [width]="16" [height]="16"></lib-icon-export>
         </button>
-        <button type="button" class="btn-icon editor-close-btn" (click)="close.emit()" title="Cerrar Editor">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+        <button type="button" class="btn-icon editor-close-btn" (click)="closeEditor.emit()" title="Cerrar Editor">
+          <lib-icon-close [width]="16" [height]="16"></lib-icon-close>
         </button>
       </div>
     </div>
   </div>
 
+  <div class="wizard-progress-container">
+    <div class="wizard-steps">
+      <div class="wizard-progress-line-container">
+        <div class="wizard-progress-bar" [style.width.%]="(currentStep() - 1) / (activeSteps().length - 1) * 100"></div>
+      </div>
+      <button type="button" *ngFor="let step of activeSteps(); let i = index" class="wizard-step-pill"
+        [class.active]="currentStep() === i + 1" [class.completed]="currentStep() > i + 1" (click)="goToStep(i + 1)"
+        [title]="step.label">
+        {{ i + 1 }}
+      </button>
+    </div>
+    <div class="wizard-step-label">
+      Paso {{ currentStep() }} de {{ activeSteps().length }}: <span class="accent-step">{{ activeSteps()[currentStep() -
+        1].label }}</span>
+    </div>
+  </div>
+
   <form [formGroup]="configForm" class="editor-content">
-
-    <div class="pivot-drag-drop mt-3">
-      <div class="pivot-grid">
-        <div class="pivot-section">
-          <label>Columnas</label>
-          <div cdkDropList #colsList="cdkDropList" [cdkDropListData]="selectedCols"
-            [cdkDropListConnectedTo]="[rowsList]" class="dimension-list highlight-cols"
-            (cdkDropListDropped)="drop($event)">
-            <div class="dimension-box" *ngFor="let dim of selectedCols" cdkDrag>
-              {{ dim.nameView }}
+    <!-- Paso 1: Estructura Pivot -->
+    <div *ngIf="currentStep() === 1" class="tab-pane">
+      <div class="control-section-card">
+        <div class="pivot-drag-drop">
+          <div class="pivot-grid">
+            <div class="pivot-section">
+              <span class="pivot-section-title">Columnas</span>
+              <div cdkDropList #colsList="cdkDropList" [cdkDropListData]="selectedCols"
+                [cdkDropListConnectedTo]="[rowsList]" class="dimension-list highlight-cols"
+                (cdkDropListDropped)="drop($event)">
+                <div class="dimension-box" *ngFor="let dim of selectedCols" cdkDrag>
+                  {{ dim.nameView }}
+                </div>
+                <div class="placeholder" *ngIf="selectedCols.length === 0">
+                  Arrastre columnas aquí
+                </div>
+              </div>
             </div>
-            <div class="placeholder" *ngIf="selectedCols.length === 0">
-              Arrastre columnas aquí
+
+            <div class="pivot-section">
+              <span class="pivot-section-title">Filas</span>
+              <div cdkDropList #rowsList="cdkDropList" [cdkDropListData]="selectedRows"
+                [cdkDropListConnectedTo]="[colsList]" class="dimension-list highlight-rows"
+                (cdkDropListDropped)="drop($event)">
+                <div class="dimension-box" *ngFor="let dim of selectedRows" cdkDrag>
+                  {{ dim.nameView }}
+                </div>
+                <div class="placeholder" *ngIf="selectedRows.length === 0">
+                  Arrastre filas aquí
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="pivot-section">
-          <label>Filas</label>
-          <div cdkDropList #rowsList="cdkDropList" [cdkDropListData]="selectedRows"
-            [cdkDropListConnectedTo]="[colsList]" class="dimension-list highlight-rows"
-            (cdkDropListDropped)="drop($event)">
-            <div class="dimension-box" *ngFor="let dim of selectedRows" cdkDrag>
-              {{ dim.nameView }}
-            </div>
-            <div class="placeholder" *ngIf="selectedRows.length === 0">
-              Arrastre filas aquí
-            </div>
-          </div>
+          <small class="info-text">Arrastra las dimensiones para reordenar o cambiar entre filas/columnas.</small>
         </div>
       </div>
-      <small class="info-text">Arrastra las dimensiones para reordenar o cambiar entre
-        filas/columnas.</small>
-    </div>
-    <div class="form-group">
-      <label>Modo Visualización</label>
-      <select formControlName="valueDisplay">
-        <option value="nominal">Nominal</option>
-        <option value="percentOfTotal">% del Total</option>
-        <option value="percentOfRow">% de Fila</option>
-        <option value="percentOfColumn">% de Columna</option>
-      </select>
     </div>
 
-    <div class="form-group">
-      <label>Decimales</label>
-      <input type="number" formControlName="digitsAfterDecimal" min="0" max="4" />
+    <!-- Paso 2: Visualización y Formato -->
+    <div *ngIf="currentStep() === 2" class="tab-pane">
+      <div class="control-section-card">
+        <div class="form-group">
+          <label for="table-value-display">Modo Visualización</label>
+          <select id="table-value-display" formControlName="valueDisplay">
+            <option value="nominal">Nominal</option>
+            <option value="percentOfTotal">% del Total</option>
+            <option value="percentOfRow">% de Fila</option>
+            <option value="percentOfColumn">% de Columna</option>
+          </select>
+          <small *ngIf="controlStatesMap().get('valueDisplay')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('valueDisplay')?.disabledReason }}
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label class="switch-container">
+            <span class="switch-text">Deshabilitar cambio de modo de visualización</span>
+            <input type="checkbox" formControlName="disableSetValueDisplay" />
+            <span class="switch-slider"></span>
+          </label>
+          <small *ngIf="controlStatesMap().get('disableSetValueDisplay')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('disableSetValueDisplay')?.disabledReason }}
+          </small>
+        </div>
+
+
+        <div class="form-group">
+          <label class="switch-container">
+            <span class="switch-text">Modo Multi-Métrica</span>
+            <input type="checkbox" [checked]="configForm.get('percentDisplayMode')?.value === 'multiMetric'"
+              [disabled]="controlStatesMap().get('percentDisplayMode')?.enabled === false"
+              (change)="togglePercentDisplayMode($event)" />
+            <span class="switch-slider"></span>
+          </label>
+          <small *ngIf="controlStatesMap().get('percentDisplayMode')?.disabledReason" class="info-text hint-text">
+            {{ controlStatesMap().get('percentDisplayMode')?.disabledReason }}
+          </small>
+        </div>
+
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="table-decimals">Decimales</label>
+            <input id="table-decimals" type="number" formControlName="digitsAfterDecimal" min="0" max="4" />
+          </div>
+
+          <div class="form-group">
+            <label for="table-suffix">Sufijo</label>
+            <div class="input-clearable-container">
+              <input id="table-suffix" type="text" formControlName="suffix" placeholder="Ej: $" />
+              <button type="button" class="btn-clear" (click)="configForm.get('suffix')?.setValue('')"
+                *ngIf="configForm.get('suffix')?.value && controlStatesMap().get('suffix')?.enabled !== false"
+                title="Limpiar">
+                <lib-icon-close [width]="14" [height]="14"></lib-icon-close>
+              </button>
+            </div>
+            <small *ngIf="controlStatesMap().get('suffix')?.disabledReason" class="info-text hint-text">
+              {{ controlStatesMap().get('suffix')?.disabledReason }}
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="table-percent-decimals">Decimales Porcentuales</label>
+          <input id="table-percent-decimals" type="number" formControlName="percentDigitsAfterDecimal" min="0"
+            max="4" />
+          <small *ngIf="controlStatesMap().get('percentDigitsAfterDecimal')?.disabledReason"
+            class="info-text hint-text">
+            {{ controlStatesMap().get('percentDigitsAfterDecimal')?.disabledReason }}
+          </small>
+        </div>
+
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Sufijo</label>
-      <input type="text" formControlName="suffix" placeholder="Ej: $" />
-    </div>
-    <div class="form-group row">
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="totalRow" /> Totalizar filas
-      </label>
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="totalCol" /> Totalizar columnas
-      </label>
-    </div>
+    <!-- Paso 3: Totales -->
+    <div *ngIf="currentStep() === 3" class="tab-pane">
+      <div class="control-section-card">
+        <label class="switch-container">
+          <span class="switch-text">Totalizar filas</span>
+          <input type="checkbox" formControlName="totalRow" />
+          <span class="switch-slider"></span>
+        </label>
 
-
+        <label class="switch-container">
+          <span class="switch-text">Totalizar columnas</span>
+          <input type="checkbox" formControlName="totalCol" />
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
   </form>
+
+  <!-- Pie de navegación del Wizard -->
+  <div class="wizard-footer">
+    <button type="button" class="btn-prev" (click)="prevStep()" [disabled]="currentStep() === 1">
+      <lib-icon-back [width]="14" [height]="14"></lib-icon-back>
+      <span>Anterior</span>
+    </button>
+    <button type="button" class="btn-next" (click)="nextStep()">
+      <span>{{ currentStep() === activeSteps().length ? 'Finalizar' : 'Siguiente' }}</span>
+      <lib-icon-forward *ngIf="currentStep() < activeSteps().length" [width]="14" [height]="14"></lib-icon-forward>
+      <lib-icon-check *ngIf="currentStep() === activeSteps().length" [width]="14" [height]="14"></lib-icon-check>
+    </button>
+  </div>
 </div>

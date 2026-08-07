@@ -1,3 +1,6 @@
 <div class="charts-container">
-  <ng-container #chartHost></ng-container>
+  @for (config of configurations(); track config.options.title) {
+  <lib-chart-wrapper [chartConfiguration]="config" [index]="$index" [total]="configurations().length"
+    (navigate)="handleNavigation($index, $event)"></lib-chart-wrapper>
+  }
 </div>

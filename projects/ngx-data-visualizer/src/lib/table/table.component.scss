@@ -21,36 +21,18 @@ $z-index-inner: 9;
 
 }
 
-/**
- * Botón para abrir/cerrar el editor de configuración
- */
-.lib-table-config-toggle {
+:host ::ng-deep .pvt-cell-tooltip,
+.pvt-cell-tooltip {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: $z-index-inner + 1;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #4a5568;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-  &:hover {
-    background: #fff;
-    color: #2b6cb0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
+  z-index: var(--table-cell-tooltip-z-index, 1000);
+  background: var(--table-cell-tooltip-bg, rgba(15, 23, 42, 0.9));
+  color: var(--table-cell-tooltip-color, #f8fafc);
+  padding: var(--table-cell-tooltip-padding, 6px 12px);
+  border-radius: var(--table-cell-tooltip-radius, 6px);
+  font-size: var(--table-cell-tooltip-font-size, 12px);
+  font-weight: var(--table-cell-tooltip-font-weight, 500);
+  pointer-events: none;
+  box-shadow: var(--table-cell-tooltip-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+  border: var(--table-cell-tooltip-border, 1px solid rgba(255, 255, 255, 0.1));
+  white-space: nowrap;
 }

@@ -1,6 +1,6 @@
 import { ApplicationConfig } from "@angular/core";
-import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import { provideAnimations } from "@angular/platform-browser/animations";
+import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import {
   provideDataVisualizerCharts,
   provideDataVisualizerTables,
@@ -14,7 +14,13 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: "enabled" }),
     ),
     provideAnimations(),
-    provideDataVisualizerCharts(),
-    provideDataVisualizerTables(),
+    provideDataVisualizerCharts({
+      debug: true,
+      defaultHeight: 420,
+      defaultWidth: "100%",
+    }),
+    provideDataVisualizerTables({
+      debug: true,
+    }),
   ],
 };

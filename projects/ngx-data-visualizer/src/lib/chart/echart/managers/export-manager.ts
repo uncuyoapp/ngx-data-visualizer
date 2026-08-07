@@ -1,19 +1,20 @@
 import { ECharts } from 'echarts';
 
 /**
- * Interfaz para las dimensiones del gráfico
+ * @description Interfaz para definir las dimensiones de renderizado del gráfico.
  */
 interface ChartDimensions {
-  /** Ancho del gráfico en píxeles */
+  /** @description Ancho del gráfico en píxeles. */
   width: number;
-  /** Alto del gráfico en píxeles */
+  /** @description Alto del gráfico en píxeles. */
   height: number;
 }
 
 /**
+ * @description
  * Clase administradora encargada de gestionar y ejecutar la exportación del gráfico
- * renderizado por ECharts hacia formatos de archivo como SVG y JPG.
- * Proporciona funcionalidades para manejar el redimensionamiento, la recomposición
+ * renderizado por ECharts hacia formatos de archivo de imagen como PNG y JPG.
+ * Proporciona funcionalidades para manejar el redimensionamiento temporal, la recomposición
  * del layout y la descarga interactiva de los archivos generados en el navegador.
  */
 export class ExportManager {
@@ -30,15 +31,16 @@ export class ExportManager {
   };
 
   /**
-   * Constructor de la clase
-   * @param chartInstance - Instancia de ECharts que maneja el gráfico
+   * @description Crea la instancia del gestor de exportación de ECharts.
+   * @param chartInstance - Referencia a la instancia de renderizado nativa de ECharts.
    */
   constructor(private readonly chartInstance: ECharts) { }
 
   /**
-   * Exporta el gráfico en el formato especificado
-   * @param type - Tipo de formato de exportación ('png' o 'jpg')
-   * @throws Error si no hay una instancia de gráfico disponible
+   * @description Exporta el gráfico actual en el formato de imagen especificado.
+   * @param type - Tipo de formato de exportación de imagen ('png' o 'jpg', por defecto 'png').
+   * @throws {Error} Si no hay una instancia de gráfico disponible.
+   * @public
    */
   export(type: 'png' | 'jpg' = 'png'): void {
     if (!this.chartInstance) {
@@ -48,8 +50,8 @@ export class ExportManager {
   }
 
   /**
-   * Exporta el gráfico a un formato de imagen (PNG o JPG)
-   * @param type - Formato de imagen ('png' | 'jpg')
+   * @description Exporta el gráfico a un formato de imagen realizando el redimensionamiento y descarga.
+   * @param type - Formato de imagen deseado ('png' o 'jpg').
    * @private
    */
   private exportToImage(type: 'png' | 'jpg'): void {
@@ -68,16 +70,18 @@ export class ExportManager {
   }
 
   /**
-   * Obtiene el nombre del archivo basado en el título del gráfico
-   * @param extension - Extensión del archivo
-   * @returns Nombre de archivo formateado
+   * @description Obtiene un nombre de archivo seguro basado en el título configurado en el gráfico.
+   * @param extension - Extensión del archivo objetivo (ej: 'png', 'jpg').
+   * @returns Nombre de archivo formateado y sanitizado.
    * @private
    */
   private getFileName(extension: string): string {
-    const options = this.chartInstance.getOption() as any;
+    const options = (this.chartInstance.getOption() || {}) as Record<string, unknown>;
     // ECharts puede tener title como objeto o array de objetos
-    const titleOption = Array.isArray(options.title) ? options.title[0] : options.title;
-    const titleText = titleOption?.text || 'grafico';
+    const titleOption = Array.isArray(options['title'])
+      ? (options['title'] as Record<string, unknown>[])[0]
+      : (options['title'] as Record<string, unknown>);
+    const titleText = (titleOption?.['text'] as string) || 'grafico';
 
     // Limpiar el título para usarlo como nombre de archivo
     const safeTitle = titleText
@@ -90,8 +94,8 @@ export class ExportManager {
   }
 
   /**
-   * Obtiene las dimensiones originales del gráfico
-   * @returns Objeto con las dimensiones actuales del gráfico
+   * @description Obtiene las dimensiones actuales del lienzo del gráfico antes de exportar.
+   * @returns Objeto de tipo ChartDimensions con el ancho y alto en píxeles.
    * @private
    */
   private getOriginalDimensions(): ChartDimensions {
@@ -102,8 +106,8 @@ export class ExportManager {
   }
 
   /**
-   * Redimensiona el gráfico a las dimensiones especificadas
-   * @param dimensions - Nuevas dimensiones para el gráfico
+   * @description Redimensiona temporalmente el lienzo del gráfico a las dimensiones especificadas.
+   * @param dimensions - Nuevas dimensiones a aplicar al lienzo.
    * @private
    */
   private resizeChart(dimensions: ChartDimensions): void {
@@ -111,9 +115,9 @@ export class ExportManager {
   }
 
   /**
-   * Descarga la imagen generada como archivo
-   * @param dataUrl - URL de datos de la imagen a descargar
-   * @param fileName - Nombre del archivo para la descarga
+   * @description Descarga la imagen generada como archivo en el navegador del usuario.
+   * @param dataUrl - URL de datos codificada en base64 de la imagen.
+   * @param fileName - Nombre asignado al archivo descargado.
    * @private
    */
   private downloadImage(dataUrl: string, fileName: string): void {

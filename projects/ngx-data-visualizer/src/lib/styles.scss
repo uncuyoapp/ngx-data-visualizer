@@ -1,7 +1,122 @@
+@forward "./variables";
+@use "./variables" as *;
+@use "./config-editor/editor-base";
+
 :root {
   // Valores por defecto
   --table-hover: #0450ff;
   --table-hover-contrast: #ffff;
+
+  // Nuevos Tokens de Estilos Globales de la Librería
+  --viz-primary: var(--table-hover, #0450ff);
+  --viz-primary-contrast: var(--table-hover-contrast, #ffff);
+  --viz-bg-card: #ffffff;
+  --viz-bg-overlay: rgba(255, 255, 255, 0.9);
+  --viz-bg-overlay-hover: rgba(255, 255, 255, 1);
+  --viz-text: #333333;
+  --viz-text-muted: #666666;
+  --viz-border-color: #e6e6e6;
+  --viz-focus-color: #6467f3;
+
+  // Sombras Premium
+  --viz-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --viz-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --viz-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+  // Espaciado y Bordes
+  --viz-border-radius: 8px;
+  --viz-border-radius-pill: 50%;
+  --viz-grid-gap: 16px;
+  --viz-padding-card: 16px;
+
+  // Micro-animaciones y Transiciones
+  --viz-transition-duration: 0.3s;
+  --viz-transition-duration-fast: 0.2s;
+  --viz-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  // ============================================
+  // TOKENS ESPECÍFICOS DE EDITORES (CONFIG-EDITOR)
+  // ============================================
+  --viz-editor-primary: var(--table-hover, #0450ff);
+  --viz-editor-primary-contrast: var(--table-hover-contrast, #ffffff);
+  --viz-editor-primary-light: rgba(4, 80, 255, 0.1);
+  --viz-editor-focus-ring: 0 0 0 3px rgba(4, 80, 255, 0.2);
+
+  --viz-editor-bg: var(--viz-bg-overlay, rgba(255, 255, 255, 0.9));
+  --viz-editor-bg-subcard: rgba(255, 255, 255, 0.45);
+  --viz-editor-bg-drag-handle: rgba(4, 80, 255, 0.06);
+
+  --viz-editor-text: #333333;
+  --viz-editor-text-muted: #666666;
+  --viz-editor-text-disabled: #a0aec0;
+  --viz-editor-warning: #d69e2e;
+  --viz-editor-danger: #e53e3e;
+  --viz-editor-danger-light: rgba(229, 62, 62, 0.1);
+
+  --viz-editor-input-bg: rgba(255, 255, 255, 0.65);
+  --viz-editor-input-bg-focus: #ffffff;
+  --viz-editor-input-bg-disabled: rgba(226, 232, 240, 0.75);
+  --viz-editor-input-border: rgba(0, 0, 0, 0.1);
+  --viz-editor-input-border-focus: var(--viz-editor-primary);
+  --viz-editor-input-border-disabled: rgba(160, 174, 192, 0.35);
+
+  --viz-editor-switch-bg-off: #cbd5e0;
+  --viz-editor-switch-bg-on: var(--viz-editor-primary);
+
+  --viz-editor-wizard-bar-bg: #e2e8f0;
+  --viz-editor-wizard-step-bg: #ffffff;
+  --viz-editor-wizard-step-border: #cbd5e0;
+  --viz-editor-wizard-step-active-bg: var(--viz-editor-primary);
+  --viz-editor-wizard-step-active-border: var(--viz-editor-primary);
+
+  --viz-editor-border: #e6e6e6;
+  --viz-editor-border-subtle: rgba(0, 0, 0, 0.05);
+  --viz-editor-border-glass: rgba(255, 255, 255, 0.3);
+  --viz-editor-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --viz-editor-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --viz-editor-radius: 8px;
+
+  // ============================================
+  // TOKENS ESPECÍFICOS DEL TOOLTIP (EC-TOOLTIP)
+  // ============================================
+  --viz-tooltip-font-family: inherit;
+  --viz-tooltip-font-size: 12px;
+  --viz-tooltip-line-height: 1.4;
+  --viz-tooltip-text-color: #333333;
+  --viz-tooltip-divider-color: #c3c3c3;
+
+  // Anchos Máximos por Cantidad de Columnas
+  --viz-tooltip-max-width-cols-1: 450px;
+  --viz-tooltip-max-width-cols-2: 650px;
+  --viz-tooltip-max-width-cols-3: 900px;
+  --viz-tooltip-max-width-mobile: 320px;
+  --viz-tooltip-col-min-width: 180px;
+
+  // Espaciados y Gaps
+  --viz-tooltip-header-margin-bottom: 6px;
+  --viz-tooltip-body-gap: 4px;
+  --viz-tooltip-grid-gap: 6px 16px;
+  --viz-tooltip-item-gap: 6px;
+  --viz-tooltip-footer-margin-top: 6px;
+  --viz-tooltip-footer-hr-margin: 4px 0 6px 0;
+
+  // Pesos de Fuentes
+  --viz-tooltip-header-font-weight: bold;
+  --viz-tooltip-value-font-weight: bold;
+  --viz-tooltip-total-font-weight: bold;
+
+  // ============================================
+  // TOKENS ESPECÍFICOS DEL TOOLTIP DE CELDA (TABLE-CELL-TOOLTIP)
+  // ============================================
+  --table-cell-tooltip-bg: rgba(15, 23, 42, 0.9);
+  --table-cell-tooltip-color: #f8fafc;
+  --table-cell-tooltip-padding: 6px 12px;
+  --table-cell-tooltip-radius: 6px;
+  --table-cell-tooltip-font-size: 12px;
+  --table-cell-tooltip-font-weight: 500;
+  --table-cell-tooltip-z-index: 1000;
+  --table-cell-tooltip-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --table-cell-tooltip-border: 1px solid rgba(255, 255, 255, 0.1);
 
   // Tamaños y espaciado
   --table-font-size: 12pt;
@@ -59,101 +174,6 @@
   --table-data-border-radius: 1rem;
 }
 
-/*
- *  BreakPoints and mixins
- */
-// Small tablets and large smartphones (landscape view)
-$screen-sm-min: 576px;
-
-// Small tablets (portrait view)
-$screen-md-min: 768px;
-
-// Tablets and small desktops
-$screen-lg-min: 992px;
-
-// Large tablets and desktops
-$screen-xl-min: 1200px;
-
-// XXLarge desktops
-$sceeen-xxl-min: 1400px;
-
-// Small devices
-@mixin min-sm {
-  @media (min-width: #{$screen-sm-min}) {
-    @content;
-  }
-}
-
-@mixin max-sm {
-  @media (max-width: #{$screen-sm-min}) {
-    @content;
-  }
-}
-
-// Medium devices
-@mixin min-md {
-  @media (min-width: #{$screen-md-min}) {
-    @content;
-  }
-}
-
-@mixin max-md {
-  @media (max-width: #{$screen-lg-min}) {
-    @content;
-  }
-}
-
-// Large devices
-@mixin min-lg {
-  @media (min-width: #{$screen-lg-min}) {
-    @content;
-  }
-}
-
-@mixin max-lg {
-  @media (max-width: #{$screen-xl-min}) {
-    @content;
-  }
-}
-
-// Extra large devices
-@mixin min-xl {
-  @media (min-width: #{$screen-xl-min}) {
-    @content;
-  }
-}
-
-@mixin max-xl {
-  @media (max-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-// Extra extra large devices
-@mixin min-xxl {
-  @media (min-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-@mixin max-xxl {
-  @media (max-width: #{$screen-xxl-min}) {
-    @content;
-  }
-}
-
-@mixin isMobile {
-  @media only screen and (hover: none) and (pointer: coarse) {
-    @content;
-  }
-  @media (max-width: #{$screen-sm-min}) and (max-height: 800px) {
-    @content;
-  }
-  @media (max-height: 500px) {
-    @content;
-  }
-}
-
 // Estilos de la tabla pivot
 table.pvtTable {
   // Propiedades base
@@ -179,12 +199,14 @@ table.pvtTable {
       font-weight: normal;
       font-size: var(--table-header-font-size);
     }
+
     th {
       line-height: var(--table-line-height);
     }
   }
 
   tbody {
+
     tr,
     td {
       text-align: var(--table-data-text-align);
@@ -208,6 +230,7 @@ table.pvtTable {
       z-index: -1;
       outline: 1px var(--table-data-bg);
     }
+
     &::after {
       background-color: var(--table-label-bg);
       position: absolute;
@@ -222,8 +245,7 @@ table.pvtTable {
 
     transform: translateZ(0);
     outline-offset: calc((var(--table-label-border-width) / 2) * -1);
-    outline: var(--table-label-border-width) var(--table-label-border-style)
-      var(--table-label-border-color);
+    outline: var(--table-label-border-width) var(--table-label-border-style) var(--table-label-border-color);
     text-align: center;
     padding: var(--table-label-padding);
     border-radius: var(--table-label-border-radius);
@@ -241,19 +263,14 @@ table.pvtTable {
 
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
 
     tr {
+
       .pvtCorner:first-of-type,
       .pvtAxisLabel:first-of-type {
         &::before {
@@ -267,18 +284,14 @@ table.pvtTable {
   tbody {
     th {
       &::before {
-        box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -webkit-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
-        -moz-box-shadow: calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4)
-          calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -webkit-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
+        -moz-box-shadow: calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) calc(var(--table-border-spacing) / 4) var(--table-data-bg);
       }
     }
+
     tr {
+
       .pvtRowLabel:left,
       .pvtTotalLabel:first-of-type {
         &::before {
@@ -290,6 +303,22 @@ table.pvtTable {
   }
 
   // Estilos específicos para etiquetas
+
+  .pvtMetricAxisLabel {
+    color: var(--table-data-bg) !important;
+    background-color: var(--table-data-bg) !important;
+    outline-color: var(--table-data-bg) !important;
+    user-select: none;
+
+    &::after {
+      background-color: var(--table-data-bg);
+    }
+
+    &::before {
+      background: var(--table-data-bg);
+    }
+  }
+
   .pvtRowLabel,
   .pvtColLabel,
   .pvtAxisLabel,
@@ -307,8 +336,7 @@ table.pvtTable {
   }
 
   .pvtCorner {
-    border: var(--table-border-width) var(--table-border-style)
-      var(--table-border-color) !important;
+    border: var(--table-border-width) var(--table-border-style) var(--table-border-color) !important;
     background: var(--table-data-bg);
     outline: var(--table-data-bg);
   }
@@ -323,8 +351,7 @@ table.pvtTable {
     vertical-align: middle;
     padding: var(--table-cell-padding);
     // box-shadow: var(--table-cell-box-shadow);
-    border: var(--table-data-border-width) var(--table-data-border-style)
-      var(--table-data-border-color);
+    border: var(--table-data-border-width) var(--table-data-border-style) var(--table-data-border-color);
     border-radius: var(--table-data-border-radius);
   }
 
@@ -341,35 +368,20 @@ table.pvtTable {
   }
 
   // Estilos para hover
-  .header-hovered,
-  .header-related-hovered {
+  .header-hovered {
     &::after {
       background-color: var(--table-label-hover);
     }
 
     color: var(--table-label-hover-contrast);
     z-index: 2;
-    outline: var(--table-label-hover-border-width)
-      var(--table-label-hover-border-style)
-      var(--table-label-hover-border-color);
-  }
-
-  .header-hovered-cell {
-    background-color: var(--table-header-hover, #e0e7ef);
-    color: var(--table-header-hover-contrast, #1a237e);
-    z-index: 2;
-  }
-  .header-related-hovered-cell {
-    background-color: var(--table-label-hover, #f5f7fa);
-    color: var(--table-label-hover-contrast, #263238);
-    z-index: 1;
+    outline: var(--table-label-hover-border-width) var(--table-label-hover-border-style) var(--table-label-hover-border-color);
   }
 
   .data-hovered {
     background-color: var(--table-data-hover);
     color: var(--table-data-hover-contrast);
-    border: var(--table-data-hover-border-width)
-      var(--table-data-hover-border-style) var(--table-data-hover-border-color);
+    border: var(--table-data-hover-border-width) var(--table-data-hover-border-style) var(--table-data-hover-border-color);
   }
 
   .pvtCorner,
@@ -392,32 +404,135 @@ table.pvtTable {
   }
 }
 
-// Estilos del tooltip
+// Estilos del tooltip responsivo y multicolumna
 .ec-tooltip {
-  .title {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--viz-tooltip-max-width-cols-1);
+  font-family: var(--viz-tooltip-font-family);
+  font-size: var(--viz-tooltip-font-size);
+  line-height: var(--viz-tooltip-line-height);
+  color: var(--viz-tooltip-text-color);
+
+  &.ec-tooltip-cols-1 {
+    max-width: var(--viz-tooltip-max-width-cols-1);
+  }
+
+  &.ec-tooltip-cols-2 {
+    max-width: var(--viz-tooltip-max-width-cols-2);
+  }
+
+  &.ec-tooltip-cols-3 {
+    max-width: var(--viz-tooltip-max-width-cols-3);
+  }
+
+  .ec-tooltip-header {
     width: 100%;
-    font-weight: bold;
-    border-bottom: 1px solid #c3c3c3;
-    text-align: center;
-    display: inline-block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--viz-tooltip-header-margin-bottom);
+
+    .title {
+      width: 100%;
+      font-weight: var(--viz-tooltip-header-font-weight);
+      border-bottom: 1px solid var(--viz-tooltip-divider-color);
+      text-align: center;
+      display: block;
+      padding-bottom: 4px;
+    }
   }
 
-  .series-name {
-    margin-bottom: 0.2rem;
+  .ec-tooltip-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viz-tooltip-body-gap);
   }
 
-  .value {
-    font-weight: bold;
-    margin-left: 10px;
-    float: right;
+  .ec-tooltip-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--viz-tooltip-item-gap);
+    white-space: nowrap;
+
+    .marker {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .series-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .value {
+      font-weight: var(--viz-tooltip-value-font-weight);
+      margin-left: 8px;
+    }
   }
 
-  .summation {
-    font-weight: bold;
+  .ec-tooltip-footer {
+    width: 100%;
+    margin-top: var(--viz-tooltip-footer-margin-top);
+
+    hr {
+      margin: var(--viz-tooltip-footer-hr-margin);
+      border: 0;
+      border-top: 1px solid var(--viz-tooltip-divider-color);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      font-weight: var(--viz-tooltip-total-font-weight);
+
+      .summation {
+        font-weight: var(--viz-tooltip-total-font-weight);
+      }
+
+      .value {
+        font-weight: var(--viz-tooltip-total-font-weight);
+        margin-left: 4px;
+      }
+    }
   }
 
-  hr {
-    margin: 5px auto;
+  // --- Modificadores de Múltiples Columnas ---
+  &.ec-tooltip-multicol {
+    .ec-tooltip-body {
+      display: grid;
+      grid-template-columns: repeat(var(--tooltip-cols, 1), minmax(var(--viz-tooltip-col-min-width), 1fr));
+      gap: var(--viz-tooltip-grid-gap);
+    }
+
+    // Adaptabilidad a pantallas medianas y estrechas
+    @media (max-width: 850px) {
+      &.ec-tooltip-cols-3 {
+        max-width: var(--viz-tooltip-max-width-cols-2);
+
+        .ec-tooltip-body {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      max-width: var(--viz-tooltip-max-width-mobile) !important;
+
+      .ec-tooltip-body {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  }
+}
+
+// Estilos locales seguros para el pane del editor de configuración para liberar eventos de mouse en la ubicación inicial
+.viz-config-editor-pane {
+  pointer-events: none !important;
+
+  .config-editor-container {
+    pointer-events: auto;
   }
 }

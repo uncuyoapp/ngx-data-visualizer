@@ -135,11 +135,21 @@ export interface TableOptions {
   | "percentOfTotal"
   | "percentOfRow"
   | "percentOfColumn";
+  /** Define la estructura de despliegue de celdas en vistas porcentuales: 'single' (compacto con tooltip) o 'multiMetric' (sub-filas/columnas) */
+  percentDisplayMode?: "single" | "multiMetric";
+  /** Indica si se debe habilitar el tooltip flotante en celdas porcentuales (default: true) */
+  showCellTooltip?: boolean;
+  /** Número de decimales a mostrar exclusivamente en vistas porcentuales (default: 1) */
+  percentDigitsAfterDecimal?: number;
   /** Atributos derivados para la tabla pivot */
   derivedAttributes?: Record<
     string,
     (record: Record<string, unknown>) => unknown
   >;
+  /** Indica si se debe deshabilitar la actualización automática de la tabla */
+  disableAutoUpdate?: boolean;
+  /** Indica si se deshabilita la función de cambio en vivo del modo de visualización */
+  disableSetValueDisplay?: boolean;
 }
 
 /**
@@ -208,14 +218,14 @@ export interface ChartOptions {
   stacked: number | 'all' | null;
   /** Configuración del eje X - define títulos, rotación de etiquetas y niveles de agrupación */
   xAxis: {
-    /** Título del eje X que se muestra junto al eje */
-    title: string;
     /** Ángulo de rotación de las etiquetas en grados (0-360). Útil para etiquetas largas */
     rotateLabels: number | null;
     /** Nivel de agrupación primario para datos jerárquicos */
     firstLevel: number;
     /** Nivel de agrupación secundario para datos jerárquicos (opcional) */
     secondLevel: number | null;
+    /** Indica si se deshabilita la generación automática del título del eje X */
+    disableAutoTitle?: boolean;
   };
   /** Configuración del eje Y - define título y límites del eje vertical */
   yAxis: {
@@ -236,6 +246,12 @@ export interface ChartOptions {
     format: string | null;
     /** Indica si se debe mostrar el total en el tooltip cuando hay múltiples series */
     showTotal: boolean;
+    /** Indica si se debe mostrar el porcentaje en el tooltip */
+    showPercentage?: boolean;
+    /** Umbral de series para activar la maquetación en múltiples columnas */
+    columnThreshold?: number;
+    /** Cantidad máxima permitida de columnas en el tooltip (default: 3) */
+    maxColumns?: number;
   };
   /** Configuración de las leyendas - controla la visualización y posición de las leyendas */
   legends: {
@@ -328,4 +344,21 @@ export interface Series {
     /** Tipo de línea (ej: 'solid', 'dashed', 'dotted') */
     type?: string;
   };
+  /** Indica si la serie es una línea de referencia global o meta (goal) */
+  isReferenceSeries?: boolean;
 }
+
+export type PercentErrorCode =
+  | 'SINGLE_SERIES'
+  | 'ALREADY_PERCENT'
+  | 'KPI_NO_DIMENSION'
+  | 'INTRINSIC_PERCENT'
+  | 'NEGATIVE_VALUES_STACKED'
+  | 'EMPTY_DATASET';
+
+export interface PercentTransformationResult {
+  success: boolean;
+  code?: PercentErrorCode;
+  message?: string;
+}
+

@@ -1,9 +1,10 @@
-import { Injectable, Type, inject, Optional } from "@angular/core";
+import { inject, Injectable, Type } from "@angular/core";
 import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
+import { DATA_VISUALIZER_CONFIG } from "../../providers";
 import { Dataset } from "../../services/dataset";
 import { Filters } from "../../services/types";
-import { DEFAULT_OPTIONS } from "../../types/constants";
+import { DEFAULT_OPTIONS, ECharts } from "../../types/constants";
 import { ChartOptions, Dimension } from "../../types/data.types";
 import { EchartsComponent } from "../echart/echarts.component";
 import { EChartParser } from "../echart/utils/echart-parser";
@@ -11,7 +12,6 @@ import { ChartConfiguration } from "../types/chart-configuration";
 import { ParserOptions } from "../types/parser-options";
 import { ChartData } from "../utils/chart-data";
 import { ChartUpdater } from "./chart-updater.service";
-import { DATA_VISUALIZER_CONFIG, DataVisualizerConfig } from "../../providers";
 
 /**
  * Servicio de tipo "Fábrica" (Factory) para crear instancias de `ChartConfiguration`.
@@ -47,11 +47,18 @@ export class ChartFactory {
     }
 
     const mergedOptions = { ...cloneDeep(DEFAULT_OPTIONS), ...options };
-    
-    // Si el usuario no proveyó colores, usamos los del proveedor si existen
-    if (!mergedOptions.colors && this.config?.defaultColors) {
-      mergedOptions.colors = this.config.defaultColors;
+
+    // En inicialización limpia para datasets 1D sin preferencia explícita, ocultar leyendas por defecto
+    if (dataset.dimensions?.length === 1 && options?.legends?.show === undefined) {
+      mergedOptions.legends = {
+        ...mergedOptions.legends,
+        show: false,
+        enabled: false,
+      };
     }
+
+    // Asignar colores según la jerarquía: opciones usuario -> proveedor global -> paleta por defecto
+    mergedOptions.colors = mergedOptions.colors ?? this.config?.defaultColors ?? [...ECharts.DEFAULT_PALETTE];
 
     const chartConfiguration: ChartConfiguration = {
       dataset,
@@ -171,8 +178,19 @@ export class ChartFactory {
     if (!options) {
       throw new Error("El parámetro options es requerido");
     }
-    return options.isPreview
+    const libraryOptions = options.isPreview
       ? (this.parserOptions.getPreviewOptions(options) as EChartsOption)
       : (this.parserOptions.getFullOptions(options) as EChartsOption);
+
+    // Configuración defensiva de tooltips para evitar recortes
+    if (libraryOptions?.tooltip) {
+      libraryOptions.tooltip = {
+        ...(libraryOptions.tooltip as Record<string, unknown>),
+        confine: true,
+        appendTo: 'body'
+      };
+    }
+
+    return libraryOptions;
   }
 }

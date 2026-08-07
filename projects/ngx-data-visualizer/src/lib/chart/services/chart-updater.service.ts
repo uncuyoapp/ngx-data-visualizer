@@ -1,9 +1,6 @@
 import { Injectable } from "@angular/core";
-import { EChartsOption } from "echarts";
 import cloneDeep from "lodash.clonedeep";
-import { EChartParser } from "../echart/utils/echart-parser";
 import { ChartConfiguration, SeriesConfig } from "../types/chart-configuration";
-import { ParserOptions } from "../types/parser-options";
 import { ChartData } from "../utils/chart-data";
 import { ChartLogicHelper } from "../utils/chart-logic.helper";
 
@@ -15,28 +12,6 @@ import { ChartLogicHelper } from "../utils/chart-logic.helper";
   providedIn: "root",
 })
 export class ChartUpdater {
-  private readonly parserOptions: ParserOptions;
-
-  constructor() {
-    this.parserOptions = new EChartParser();
-  }
-
-  /**
-   * Actualiza las opciones de la librería de gráficos (ECharts) basadas en la configuración general.
-   * @param chartConfiguration La configuración del gráfico a actualizar.
-   * @throws {Error} Si el parámetro chartConfiguration no está definido.
-   */
-  public updateLibraryConfig(chartConfiguration: ChartConfiguration): void {
-    if (!chartConfiguration) {
-      throw new Error("El parámetro chartConfiguration es requerido");
-    }
-    chartConfiguration.libraryOptions =
-      this.parserOptions.applyChartConfigurations(
-        chartConfiguration.options,
-        chartConfiguration.libraryOptions,
-      ) as EChartsOption;
-  }
-
   /**
    * Actualiza la configuración de las series (ejes, apilamiento) del gráfico.
    * Determina automáticamente los ejes a utilizar si no se especifican.
@@ -59,6 +34,13 @@ export class ChartUpdater {
     }
     chartConfiguration.chartData.seriesConfig =
       ChartLogicHelper.initializeSeriesConfig(seriesConfig);
+
+    if (ChartLogicHelper.isDaZero(dataset)) {
+      chartConfiguration.chartData.seriesConfig.x1 = "";
+      chartConfiguration.chartData.seriesConfig.x2 = undefined;
+      return;
+    }
+
     if (ChartLogicHelper.canUseAxis(seriesConfig.x1, rollUp)) {
       chartConfiguration.chartData.seriesConfig.x1 = seriesConfig.x1;
       if (
@@ -82,9 +64,8 @@ export class ChartUpdater {
         chartConfiguration.chartData.seriesConfig.x1 = availableDimension;
         chartConfiguration.chartData.seriesConfig.x2 = undefined;
       } else {
-        throw new Error(
-          "No se pudo encontrar una dimensión disponible para el eje X.",
-        );
+        chartConfiguration.chartData.seriesConfig.x1 = "";
+        chartConfiguration.chartData.seriesConfig.x2 = undefined;
       }
     }
   }
@@ -109,6 +90,13 @@ export class ChartUpdater {
       return chartConfiguration.dataset.getDimensionKey(id);
     };
 
+    let stackValue: string | null = null;
+    if (chartConfiguration.options.stacked === 'all') {
+      stackValue = 'all';
+    } else if (typeof chartConfiguration.options.stacked === 'number') {
+      stackValue = getDimensionKeyById(chartConfiguration.options.stacked) ?? null;
+    }
+
     const seriesConfig: SeriesConfig = {
       x1:
         getDimensionKeyById(chartConfiguration.options?.xAxis?.firstLevel) ?? "",
@@ -116,12 +104,7 @@ export class ChartUpdater {
         chartConfiguration.options?.xAxis?.secondLevel ?? undefined,
       ),
       measure: chartConfiguration.options.measureUnit,
-      stack:
-        chartConfiguration.options.stacked === 'all'
-          ? 'all'
-          : typeof chartConfiguration.options.stacked === "number"
-          ? getDimensionKeyById(chartConfiguration.options.stacked) ?? null
-          : null,
+      stack: stackValue,
     };
 
     try {

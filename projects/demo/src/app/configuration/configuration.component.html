@@ -283,34 +283,32 @@
           </div>
           <ul class="api-method-list">
             <li>
-              <code>toPercentage(): void</code>
-              <p class="text-muted small mb-0">Alterna de forma interactiva entre valores absolutos/nominales y
-                cálculo de porcentajes del total.</p>
+              <code>toPercentage(enable?: boolean): PercentTransformationResult</code>
+              <p class="text-muted small mb-0">Alterna de forma interactiva entre valores absolutos/nominales y cálculo de porcentajes del total, retornando el estado del resultado.</p>
+            </li>
+            <li>
+              <code>isPercentMode(): boolean</code>
+              <p class="text-muted small mb-0">Consulta si el gráfico se encuentra actualmente en modo porcentual.</p>
             </li>
             <li>
               <code>export(type: 'png' | 'jpg' = 'png'): void</code>
-              <p class="text-muted small mb-0">Exporta y descarga el gráfico renderizado como archivo de imagen de
-                alta calidad.</p>
+              <p class="text-muted small mb-0">Exporta y descarga el gráfico renderizado como archivo de imagen de alta calidad.</p>
             </li>
             <li>
               <code>toggleShowGoal(goal: Goal): void</code>
-              <p class="text-muted small mb-0">Muestra u oculta de forma dinámica la línea y el área de meta definidos
-                en el modelo Goal.</p>
+              <p class="text-muted small mb-0">Muestra u oculta de forma dinámica la línea y el área de meta definidos en el modelo Goal.</p>
             </li>
             <li>
               <code>toggleEditor(): void</code>
-              <p class="text-muted small mb-0">Abre o cierra el CDK Overlay del panel de edición de configuraciones
-                visuales.</p>
+              <p class="text-muted small mb-0">Abre o cierra el CDK Overlay del panel de edición de configuraciones visuales.</p>
             </li>
             <li>
               <code>resize(): void</code>
-              <p class="text-muted small mb-0">Fuerza el redimensionamiento del canvas de ECharts para ajustarse al
-                tamaño de su contenedor.</p>
+              <p class="text-muted small mb-0">Fuerza el redimensionamiento del canvas de ECharts para ajustarse al tamaño de su contenedor.</p>
             </li>
             <li>
               <code>getExtremes(): {{ '{' }} start: number; end: number {{ '}' }} | null</code>
-              <p class="text-muted small mb-0">Retorna los límites superior e inferior del navigator del gráfico (si
-                está activo).</p>
+              <p class="text-muted small mb-0">Retorna los límites superior e inferior del navigator del gráfico (si está activo).</p>
             </li>
           </ul>
         </div>
@@ -324,18 +322,23 @@
           <ul class="api-method-list">
             <li>
               <code>setValueDisplay(mode: 'nominal' | 'percentOfTotal' | 'percentOfRow' | 'percentOfColumn'): void</code>
-              <p class="text-muted small mb-0">Establece el modo de cálculo matemático para las celdas de la
-                PivotTable en tiempo de ejecución.</p>
+              <p class="text-muted small mb-0">Establece el modo de cálculo matemático para las celdas de la PivotTable en tiempo de ejecución.</p>
+            </li>
+            <li>
+              <code>setDisplayMode(mode: 'single' | 'multiMetric'): void</code>
+              <p class="text-muted small mb-0">Cambia la estructura de despliegue de celdas en vistas porcentuales entre compacto con tooltip ('single') o subdivisión ('multiMetric').</p>
+            </li>
+            <li>
+              <code>getTableElement(): HTMLElement | null</code>
+              <p class="text-muted small mb-0">Obtiene la referencia al elemento HTML nativo del contenedor de la tabla pivot.</p>
             </li>
             <li>
               <code>export(type: 'html' | 'xlsx', name?: string): any</code>
-              <p class="text-muted small mb-0">Exporta los datos calculados a un archivo Excel (.xlsx) estructurado o
-                extrae su marcado HTML nativo.</p>
+              <p class="text-muted small mb-0">Exporta los datos calculados a un archivo Excel (.xlsx) estructurado o extrae su marcado HTML nativo.</p>
             </li>
             <li>
               <code>toggleEditor(): void</code>
-              <p class="text-muted small mb-0">Abre o cierra de manera dinámica el panel interactivo CDK Overlay para
-                configurar las columnas y filas de la tabla.</p>
+              <p class="text-muted small mb-0">Abre o cierra de manera dinámica el panel interactivo CDK Overlay para configurar las columnas y filas de la tabla.</p>
             </li>
           </ul>
         </div>

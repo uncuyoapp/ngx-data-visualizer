@@ -16,7 +16,6 @@ import {
   signal,
 } from "@angular/core";
 import { ConfigEditorOverlayService } from '../config-editor/services/config-editor-overlay.service';
-
 import { AuditService } from "../services/audit.service";
 import { Dataset } from "../services/dataset";
 import { EventBusService } from "../services/event-bus.service";
@@ -144,6 +143,10 @@ export class TableComponent implements OnDestroy {
   // PROCESAMIENTO Y RENDEREADO DE TABLAS
   // ============================================
 
+  /**
+   * Procesa y enriquece la configuración actual de la tabla con los alias de las dimensiones del dataset,
+   * emite el evento de configuración y solicita la generación de las opciones para la tabla pivot.
+   */
   public configure(): void {
     const config = this.tableConfiguration();
     if (!config) return;
@@ -193,6 +196,10 @@ export class TableComponent implements OnDestroy {
     this.render(pivotConfig);
   }
 
+  /**
+   * Renderiza la tabla pivot en el contenedor DOM correspondiente y aplica la funcionalidad de fijado (sticky).
+   * @param pivotConfig Opciones de configuración generadas para el PivotTable.
+   */
   private render(pivotConfig: TableOptions): void {
     this.eventBus.emit({
       type: VisualizerEventType.TABLE_RENDER,
@@ -268,6 +275,11 @@ export class TableComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Obtiene la estructura HTML interna del elemento contenedor de la tabla pivot,
+   * asegurando la inclusión de clases de estilo Bootstrap para tabla.
+   * @returns El contenido HTML interno del elemento de la tabla.
+   */
   public getHtmlTable(): string {
     const tableElement = this.pivotTable.nativeElement;
     const firstChild = tableElement.firstElementChild;
@@ -279,6 +291,10 @@ export class TableComponent implements OnDestroy {
     return tableElement.innerHTML;
   }
 
+  /**
+   * Obtiene el elemento HTML nativo del contenedor de la tabla pivot.
+   * @returns El elemento HTMLElement correspondiente a la tabla pivot o null si no se encuentra disponible.
+   */
   public getTableElement(): HTMLElement | null {
     return this.pivotTable?.nativeElement || null;
   }
@@ -320,6 +336,10 @@ export class TableComponent implements OnDestroy {
     this.showEditor.set(!this.showEditor());
   }
 
+  /**
+   * Inicializa e inyecta asíncronamente el componente de edición de configuración
+   * dentro de un overlay administrado por CDK.
+   */
   private async createEditorComponent() {
     if (this.overlayRef) return;
 
@@ -345,6 +365,9 @@ export class TableComponent implements OnDestroy {
     this.configEditorComponentRef = componentRef;
   }
 
+  /**
+   * Destruye el overlay activo y libera las referencias asociadas al editor de configuración.
+   */
   private destroyEditorComponent() {
     if (this.overlayRef) {
       this.overlayRef.dispose();
@@ -357,6 +380,10 @@ export class TableComponent implements OnDestroy {
   // DESTRUCCIÓN
   // ============================================
 
+  /**
+   * Hook del ciclo de vida de Angular que se ejecuta al destruir el componente.
+   * Garantiza la limpieza de recursos y la destrucción del editor de configuración.
+   */
   ngOnDestroy(): void {
     this.destroyEditorComponent();
   }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ECharts, EChartsOption } from 'echarts';
+import { ECharts } from 'echarts';
 import cloneDeep from 'lodash.clonedeep';
 import { EC_KPI_GRAPHIC_CONFIG, EC_NO_DATA_GRAPHIC_CONFIG, ECharts as EChartsConstants } from '../../types/constants';
 import { PercentTransformationResult } from '../../types/data.types';
@@ -60,9 +60,6 @@ export class EChart extends Chart {
   /** Módulo de transformación y validación de modo porcentual */
   private readonly percentTransformer = new PercentTransformer();
 
-  /** Nombre identificador heredado de la clase base. */
-  override name: string = '';
-
   /** Opciones nativas computadas de la biblioteca ECharts. */
   override libraryOptions!: EChartsLibraryOptions;
 
@@ -77,9 +74,6 @@ export class EChart extends Chart {
 
   /** Lista de series añadidas dinámicamente en caliente. */
   private addedSeries: SeriesConfigType[] = [];
-
-  /** Caché para memoización de opciones calculadas. */
-  private readonly optionsCache: Map<string, EChartsOption> = new Map();
 
   /** Timestamp del último renderizado ejecutado para control de debounce. */
   private lastRenderTime: number = 0;
@@ -156,7 +150,6 @@ export class EChart extends Chart {
     }
 
     this.setupFormatter();
-    this.invalidateCache();
   }
 
   /**
@@ -190,39 +183,10 @@ export class EChart extends Chart {
     if (this.renderDebounceTimeout) {
       window.clearTimeout(this.renderDebounceTimeout);
     }
-    this.optionsCache.clear();
     this.addedSeries = [];
     if (this.chartInstance && !this.chartInstance.isDisposed()) {
       this.chartInstance.dispose();
     }
-  }
-
-  /**
-   * Obtiene las opciones actuales del gráfico con memoización
-   * @returns {object} Opciones del gráfico
-   */
-  getOptions(): object {
-    const cacheKey = this.generateCacheKey();
-    if (this.optionsCache.has(cacheKey)) {
-      return this.optionsCache.get(cacheKey) || {};
-    }
-    const options = this.chartInstance?.getOption() || {};
-    this.optionsCache.set(cacheKey, options as EChartsOption);
-    return options;
-  }
-
-  /**
-   * Genera una clave única para el cache basada en el estado actual
-   * @private
-   * @returns {string} Clave del cache
-   */
-  private generateCacheKey(): string {
-    return JSON.stringify({
-      series: this.series,
-      maxValue: this.seriesManager?.getMaxValue(),
-      toPercent: this.chartOptions.toPercent,
-      totals: this.seriesManager?.getTotals(),
-    });
   }
 
   /**
@@ -242,7 +206,6 @@ export class EChart extends Chart {
       this.addedSeries.push(series);
     }
     this.seriesManager.addSeries(series);
-    this.invalidateCache();
   }
 
   /**
@@ -252,31 +215,6 @@ export class EChart extends Chart {
   delSeries(series: SeriesConfigType): void {
     this.addedSeries = this.addedSeries.filter(s => s.name !== series.name);
     this.seriesManager.deleteSeries(series);
-    this.invalidateCache();
-  }
-
-  /**
-   * Invalida el cache de opciones y datos
-   * @private
-   */
-  private invalidateCache(): void {
-    this.optionsCache.clear();
-  }
-
-  /**
-   * Maneja el hover de una serie
-   * @param series - Serie sobre la que se hace hover
-   */
-  hoverSeries(series: SeriesConfigType): void {
-    this.seriesManager.handleHover(series);
-  }
-
-  /**
-   * Maneja la selección de una serie
-   * @param series - Serie a seleccionar
-   */
-  selectSeries(series: SeriesConfigType): void {
-    this.seriesManager.handleSelection(series);
   }
 
 
@@ -286,7 +224,6 @@ export class EChart extends Chart {
   override togglePercentMode(enable?: boolean): PercentTransformationResult {
     const result = this.percentTransformer.process(this, enable);
     if (result.success) {
-      this.invalidateCache();
       this.render();
     }
     return result;
@@ -350,8 +287,6 @@ export class EChart extends Chart {
         this.chartInstance.setOption(optionsUpdate);
       }
     }
-
-    this.invalidateCache();
   }
 
 
@@ -585,23 +520,5 @@ export class EChart extends Chart {
     delete (this.libraryOptions as any).legend;
     delete (this.libraryOptions as any).dataZoom;
     (this.libraryOptions as any).graphic = EC_NO_DATA_GRAPHIC_CONFIG;
-  }
-
-  /**
-   * Utilidad para debounce
-   */
-  private debounce<T extends (...args: any[]) => any>(
-    func: T,
-    wait: number,
-  ): (...args: Parameters<T>) => void {
-    let timeout: number | null = null;
-    return (...args: Parameters<T>) => {
-      if (timeout) {
-        window.clearTimeout(timeout);
-      }
-      timeout = window.setTimeout(() => {
-        func(...args);
-      }, wait);
-    };
   }
 }

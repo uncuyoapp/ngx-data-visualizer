@@ -116,43 +116,6 @@ export class SeriesManager {
   }
 
   /**
-   * @description Maneja la interacción de hover (foco/resaltado) sobre una serie.
-   * @param series - Serie sobre la que se realiza la acción de hover.
-   * @public
-   */
-  handleHover(series: SeriesConfigType): void {
-    if (series.hover) {
-      this.chartInstance.dispatchAction({ type: "downplay" });
-    } else {
-      this.chartInstance.dispatchAction({
-        type: "highlight",
-        seriesName: series.name,
-      });
-    }
-    series.hover = !series.hover;
-  }
-
-  /**
-   * @description Maneja la selección/deselección interactiva de una serie en la leyenda.
-   * @param series - Serie a seleccionar o deseleccionar.
-   * @public
-   */
-  handleSelection(series: SeriesConfigType): void {
-    if (series.visible) {
-      this.chartInstance.dispatchAction({
-        type: "legendUnSelect",
-        name: series.name,
-      });
-    } else {
-      this.chartInstance.dispatchAction({
-        type: "legendSelect",
-        name: series.name,
-      });
-    }
-    series.visible = !series.visible;
-  }
-
-  /**
    * @description Orquesta el formato estructural de las series. Muta su formato interno 
    * inyectando las configuraciones constantes (`EC_SERIES_CONFIG`) requeridas por la biblioteca, 
    * calcula los valores porcentuales y asigna propiedades visuales tales como color y apilamiento.

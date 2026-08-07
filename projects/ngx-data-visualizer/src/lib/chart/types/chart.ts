@@ -10,12 +10,6 @@ import { ChartConfiguration } from "./chart-configuration";
  * @abstract
  */
 export abstract class Chart {
-  /** Nombre identificador del tipo de gráfico */
-  abstract name: string;
-
-  /** Indica si el gráfico está habilitado para su visualización */
-  enabled = true;
-
   /** Array de series de datos del gráfico */
   protected abstract series: object[];
 
@@ -62,28 +56,10 @@ export abstract class Chart {
   abstract delSeries(series: object): void;
 
   /**
-   * Resalta una serie específica al pasar el mouse por encima
-   * @param series - Serie a resaltar
-   */
-  abstract hoverSeries(series: object): void;
-
-  /**
-   * Selecciona una serie específica del gráfico
-   * @param series - Serie a seleccionar
-   */
-  abstract selectSeries(series: object): void;
-
-  /**
    * Renderiza el gráfico con los datos y opciones actuales
    * @throws {ChartError} Si hay un error al renderizar el gráfico
    */
   abstract render(): void;
-
-  /**
-   * Obtiene las opciones actuales del gráfico
-   * @returns Objeto con las opciones de configuración
-   */
-  abstract getOptions(): object;
 
   /** Alterna el modo de visualización de porcentajes */
   abstract togglePercentMode(enable?: boolean): PercentTransformationResult;

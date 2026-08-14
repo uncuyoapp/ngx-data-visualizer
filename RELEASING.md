@@ -90,9 +90,3 @@ npm link ../app-uncuyo/dist/ngx-data-visualizer
 ng serve
 ```
 
----
-
-## 📚 4. Documentación Centralizada
-
-Para registrar el resumen funcional de cambios en la bóveda de documentación:
-* Documentar los deltas en `30 - Libreria (ngx-data-visualizer)/04 - Historico y Entregas/`.

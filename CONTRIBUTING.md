@@ -91,10 +91,3 @@ ng test ngx-data-visualizer
 * **Estilos y Design Tokens**: Usar propiedades CSS personalizadas (`--viz-*`) para permitir tematización y modo oscuro.
 * **Inmutabilidad**: Tratar las opciones y datos de entrada como inmutables para garantizar detección de cambios óptima.
 
----
-
-## 📚 6. Documentación Centralizada
-
-Este proyecto forma parte del ecosistema Quipu de la UNCUYO. Para consultar especificaciones funcionales, registros de decisiones de arquitectura (ADR) y guías de testing, consulta el repositorio de documentación:
-
-➡️ **[quipu-docs-hub](https://github.com/uncuyoapp/quipu-docs-hub)**

@@ -29,7 +29,7 @@ export class PivotEngineManager {
       config.valueDisplay !== undefined &&
       config.valueDisplay !== "nominal";
     const splitAxis: "cols" | "rows" =
-      config.valueDisplay === "percentOfColumn" ? "rows" : "cols";
+      config.valueDisplay === "percentOfColumn" ? "cols" : "rows";
     const effectiveConfig: TableOptions = {
       ...config,
       percentDisplayMode: isMultiMetric ? "multiMetric" : "single",

@@ -32,13 +32,26 @@ function checkIsTotalCell(
 /**
  * Suma los valores nominales de todas las columnas 'Nominal' en una fila dada
  */
-function sumRowNominals(data: any, rowKey: any[]): number {
+function sumRowNominals(
+  data: any,
+  rowKey: any[],
+  splitAxis: "cols" | "rows"
+): number {
   let sum = 0;
-  const allCols = data.getColKeys();
-  for (let i = 0; i < allCols.length; i++) {
-    const cKey = allCols[i];
-    if (cKey?.at(-1) === "Nominal") {
-      const agg = data.getAggregator(rowKey, cKey);
+  if (splitAxis === "cols") {
+    const allCols = data.getColKeys();
+    for (let i = 0; i < allCols.length; i++) {
+      const cKey = allCols[i];
+      if (cKey?.at(-1) === "Nominal") {
+        const agg = data.getAggregator(rowKey, cKey);
+        sum += agg.sum;
+      }
+    }
+  } else {
+    const nominalRowKey = [...rowKey.slice(0, -1), "Nominal"];
+    const allCols = data.getColKeys();
+    for (let i = 0; i < allCols.length; i++) {
+      const agg = data.getAggregator(nominalRowKey, allCols[i]);
       sum += agg.sum;
     }
   }
@@ -48,13 +61,26 @@ function sumRowNominals(data: any, rowKey: any[]): number {
 /**
  * Suma los valores nominales de todas las filas 'Nominal' en una columna dada
  */
-function sumColNominals(data: any, colKey: any[]): number {
+function sumColNominals(
+  data: any,
+  colKey: any[],
+  splitAxis: "cols" | "rows"
+): number {
   let sum = 0;
-  const allRows = data.getRowKeys();
-  for (let i = 0; i < allRows.length; i++) {
-    const rKey = allRows[i];
-    if (rKey?.at(-1) === "Nominal") {
-      const agg = data.getAggregator(rKey, colKey);
+  if (splitAxis === "rows") {
+    const allRows = data.getRowKeys();
+    for (let i = 0; i < allRows.length; i++) {
+      const rKey = allRows[i];
+      if (rKey?.at(-1) === "Nominal") {
+        const agg = data.getAggregator(rKey, colKey);
+        sum += agg.sum;
+      }
+    }
+  } else {
+    const nominalColKey = [...colKey.slice(0, -1), "Nominal"];
+    const allRows = data.getRowKeys();
+    for (let i = 0; i < allRows.length; i++) {
+      const agg = data.getAggregator(allRows[i], nominalColKey);
       sum += agg.sum;
     }
   }
@@ -64,15 +90,22 @@ function sumColNominals(data: any, colKey: any[]): number {
 /**
  * Suma los valores nominales de todas las celdas 'Nominal' de la tabla entera
  */
-function sumTotalNominals(data: any): number {
+function sumTotalNominals(data: any, splitAxis: "cols" | "rows"): number {
   let sum = 0;
   const allRows = data.getRowKeys();
   const allCols = data.getColKeys();
   for (let i = 0; i < allRows.length; i++) {
     for (let j = 0; j < allCols.length; j++) {
-      if (allCols[j]?.at(-1) === "Nominal") {
-        const agg = data.getAggregator(allRows[i], allCols[j]);
-        sum += agg.sum;
+      if (splitAxis === "cols") {
+        if (allCols[j]?.at(-1) === "Nominal") {
+          const agg = data.getAggregator(allRows[i], allCols[j]);
+          sum += agg.sum;
+        }
+      } else {
+        if (allRows[i]?.at(-1) === "Nominal") {
+          const agg = data.getAggregator(allRows[i], allCols[j]);
+          sum += agg.sum;
+        }
       }
     }
   }
@@ -86,15 +119,16 @@ function calculateDenominator(
   valueDisplay: string,
   data: any,
   rowKey: any[],
-  colKey: any[]
+  colKey: any[],
+  splitAxis: "cols" | "rows"
 ): number {
   switch (valueDisplay) {
     case "percentOfRow":
-      return sumRowNominals(data, rowKey);
+      return sumRowNominals(data, rowKey, splitAxis);
     case "percentOfColumn":
-      return sumColNominals(data, colKey);
+      return sumColNominals(data, colKey, splitAxis);
     case "percentOfTotal":
-      return sumTotalNominals(data);
+      return sumTotalNominals(data, splitAxis);
     default:
       return 0;
   }
@@ -165,7 +199,7 @@ export function createMultiMetricAggregator(
             return isTotalCell ? this.sum / 2 : this.sum;
           }
 
-          const denominator = calculateDenominator(valueDisplay, data, rowKey, colKey);
+          const denominator = calculateDenominator(valueDisplay, data, rowKey, colKey, splitAxis);
           return denominator > 0 ? this.sum / denominator : 0;
         },
         format(val: any) {

@@ -54,8 +54,8 @@ export interface Item {
   /** Orden de visualización del ítem (opcional) */
   order?: number;
 
-  /** Indica si el ítem está seleccionado */
-  selected: boolean;
+  /** Indica si el ítem está seleccionado (opcional, por defecto true) */
+  selected?: boolean;
 }
 
 /**

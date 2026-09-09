@@ -303,7 +303,7 @@ interface Item {
   name: string;
   color?: string;
   order?: number;
-  selected: boolean;
+  selected?: boolean;
 }
 
 /**

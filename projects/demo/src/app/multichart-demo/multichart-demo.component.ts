@@ -194,7 +194,7 @@ export class MultichartDemoComponent implements AfterViewInit {
  * basándose en los elementos seleccionados de una dimensión específica.
  *
  * COMPORTAMIENTOS AUTOMÁTICOS:
- * - Cada ítem con 'selected: true' en la dimensión genera un gráfico independiente
+ * - Cada ítem seleccionado (selected: true o por defecto true) en la dimensión genera un gráfico independiente
  * - Los datos se filtran automáticamente por cada ítem de la dimensión
  * - Cada gráfico recibe el nombre del ítem como título automáticamente
  * - Las leyendas se ocultan automáticamente (legends.show = false)
@@ -207,7 +207,7 @@ export class MultichartDemoComponent implements AfterViewInit {
  * - [disableAutoUpdate]: boolean (opcional, deshabilita actualización de datos)
  *
  * CONFIGURACIÓN DE LA DIMENSIÓN:
- * La dimensión debe tener ítems con 'selected: true' para generar gráficos.
+ * La dimensión genera gráficos para los ítems activos (por defecto todos están seleccionados salvo 'selected: false').
  * No se requiere ninguna propiedad especial adicional.
  */
 
@@ -225,7 +225,7 @@ interface Item {
   name: string;
   color?: string;
   order?: number;
-  selected: boolean; // ¡IMPORTANTE! Solo los ítems con selected: true generan gráficos
+  selected?: boolean; // Opcional (por defecto true). Los ítems con selected: false se excluyen
 }`;
 
   // Código TypeScript para mostrar en las tabs

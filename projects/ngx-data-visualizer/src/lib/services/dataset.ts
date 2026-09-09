@@ -132,7 +132,17 @@ export class Dataset {
       }
       uniqueNames.add(dim.name);
 
-      return { ...dim };
+      const items = Array.isArray(dim.items)
+        ? dim.items.map((item) => ({
+            ...item,
+            selected: item.selected ?? true,
+          }))
+        : [];
+
+      return {
+        ...dim,
+        items,
+      };
     });
   }
 
@@ -268,7 +278,10 @@ export class Dataset {
    * @returns Un array de `Dimension`.
    */
   public getAllDimensions(): Dimension[] {
-    return this.dimensions.map((dim) => ({ ...dim }));
+    return this.dimensions.map((dim) => ({
+      ...dim,
+      items: dim.items ? dim.items.map((item) => ({ ...item })) : [],
+    }));
   }
 
   /**

@@ -108,7 +108,7 @@ export class ChartFactory {
     }
 
     return dimension.items
-      .filter((item) => item.selected)
+      .filter((item) => item.selected ?? true)
       .map((item) => {
         const datasetCopy = new Dataset({
           id: dataset.id,
